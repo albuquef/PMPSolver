@@ -3,8 +3,9 @@
 using  DataFrames, Cbc, JuMP, DelimitedFiles
 
 #PATH_FILES="/home/rosa/Dropbox/MyWork/Research/Geo/Quentin/Model_Xk/toulon/"
-PATH_FILES="/home/figueiredo/Dropbox/MyWork/Research/Geo/Quentin/Optimisation_txt/Model_Xk/FromAnthony/toulon/"
+#PATH_FILES="/home/figueiredo/Dropbox/MyWork/Research/Geo/Quentin/Optimisation_txt/Model_Xk/FromAnthony/toulon/"
 #PATH_FILES="E:\\Optimisation\\"
+PATH_FILES="./toulon/"
 
 println("vec de destination.txt")
 @time txt_destination=Vector{Int64}(vec(readdlm(PATH_FILES*"toulon_destination.txt")))
