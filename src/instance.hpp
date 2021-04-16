@@ -11,7 +11,7 @@ class Instance {
 private:
     set<uint_t> locations;
     set<uint_t> customers;
-    dist_t *dist_matrix;
+    shared_ptr<dist_t[]> dist_matrix;
 
     uint_t p;
     uint_t loc_max;
@@ -20,7 +20,6 @@ private:
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
     Instance(const string& loc_filename, const string& cust_filename, const string& dist_filename, uint_t p);
-    ~Instance();
 
     dist_t getDist(uint_t loc, uint_t cust);
 };

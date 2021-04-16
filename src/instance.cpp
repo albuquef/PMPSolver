@@ -27,7 +27,7 @@ Instance::Instance(const string& loc_filename, const string& cust_filename, cons
         // Preallocate distance matrix
         loc_max = *locations.rbegin();
         cust_max = *customers.rbegin();
-        dist_matrix = new dist_t [(loc_max + 1) * (cust_max + 1)];
+        dist_matrix = shared_ptr<dist_t[]> (new dist_t[(loc_max + 1) * (cust_max + 1)], std::default_delete<dist_t []>());
         // Fill it
         while (getline(loc_file, loc_str)) {
             getline(cust_file, cust_str);
@@ -39,10 +39,6 @@ Instance::Instance(const string& loc_filename, const string& cust_filename, cons
         cerr << "Error while opening some of the input files\n";
         exit(-1);
     }
-}
-
-Instance::~Instance() {
-    delete[] dist_matrix;
 }
 
 void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
