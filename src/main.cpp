@@ -1,5 +1,4 @@
 #include <set>
-#include <iostream>
 #include "instance.hpp"
 
 using namespace std;
@@ -11,6 +10,5 @@ int main() {
 
     Instance instance(loc_filename, cust_filename, dist_filename, 5);
 
-    cout << instance.getDist(690, 1) << endl;
     return 0;
 }

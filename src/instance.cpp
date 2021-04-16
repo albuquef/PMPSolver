@@ -2,17 +2,19 @@
 #include <iostream>
 #include "instance.hpp"
 
-Instance::Instance(string loc_filename, string cust_filename, string dist_filename, uint_t p): p(p) {
+Instance::Instance(const string& loc_filename, const string& cust_filename, const string& dist_filename, uint_t p): p(p) {
     fstream loc_file(loc_filename);
     fstream cust_file(cust_filename);
     fstream dist_file(dist_filename);
 
     if (loc_file.is_open() && cust_file.is_open() && dist_file.is_open()) {
         cout << "Reading input files...\n";
-        string str;
+        string loc_str;
+        string cust_str;
+        string dist_str;
         // Process unique locations and customers
-        while (getline(loc_file, str)) locations.insert(stoi(str));
-        while (getline(cust_file, str)) customers.insert(stoi(str));
+        while (getline(loc_file, loc_str)) locations.insert(stoi(loc_str));
+        while (getline(cust_file, cust_str)) customers.insert(stoi(cust_str));
         // Clear eof and fail flags
         loc_file.clear();
         cust_file.clear();
@@ -27,18 +29,20 @@ Instance::Instance(string loc_filename, string cust_filename, string dist_filena
         cust_max = *customers.rbegin();
         dist_matrix = new dist_t [(loc_max + 1) * (cust_max + 1)];
         // Fill it
-        string loc_str;
-        string cust_str;
-        string dist_str;
         while (getline(loc_file, loc_str)) {
             getline(cust_file, cust_str);
             getline(dist_file, dist_str);
             setDist(stoi(loc_str), stoi(cust_str), stod(dist_str));
         }
+        cout << "Distance matrix loaded, dimensions: " << loc_max + 1 << " x " << cust_max + 1 << " = " << (loc_max + 1) * (cust_max + 1) << "\n";
     } else {
         cerr << "Error while opening some of the input files\n";
         exit(-1);
     }
+}
+
+Instance::~Instance() {
+    delete[] dist_matrix;
 }
 
 void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
@@ -51,6 +55,3 @@ dist_t Instance::getDist(uint_t loc, uint_t cust) {
     return dist_matrix[index];
 }
 
-Instance::~Instance() {
-    delete[] dist_matrix;
-}
