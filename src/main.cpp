@@ -1,28 +1,16 @@
 #include <set>
-#include "parsing.hpp"
+#include <iostream>
+#include "instance.hpp"
 
 using namespace std;
 
 int main() {
-    string filename = "./provided/toulon/toulon_destination.txt";
+    string loc_filename = "./provided/toulon/toulon_destination.txt";
+    string cust_filename = "./provided/toulon/toulon_origin.txt";
+    string dist_filename = "./provided/toulon/toulon_orig_x_tps.txt";
 
-    auto locations = get_vector(filename);
+    Instance instance(loc_filename, cust_filename, dist_filename, 5);
 
-    // Extract unique locations
-    set<uint_t> unique_locations;
-    for (auto l:locations) {
-        unique_locations.insert(l);
-    }
-
-    for (auto l:unique_locations) {
-        cout << l << endl;
-    }
-    auto max = *unique_locations.rbegin();
-    cout << max << endl;
-
-
-
-
-
+    cout << instance.getDist(690, 1) << endl;
     return 0;
 }
