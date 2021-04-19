@@ -18,8 +18,11 @@ int main() {
     default_random_engine generator;
     Instance instance1 = instance.sampleSubproblem(100, 50, 4, &generator);
 
-//    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
-//    cout << instance1.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+    cout << instance1.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+
+    instance.print();
+    instance1.print();
 
     return 0;
 }
