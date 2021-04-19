@@ -2,6 +2,7 @@
 #define LARGE_PMP_INSTANCE_HPP
 
 #include <set>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 #include <memory>
@@ -9,8 +10,8 @@
 
 class Instance {
 private:
-    set<uint_t> locations;
-    set<uint_t> customers;
+    vector<uint_t> locations;
+    vector<uint_t> customers;
     shared_ptr<dist_t[]> dist_matrix;
 
     uint_t p;

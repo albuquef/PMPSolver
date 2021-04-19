@@ -17,7 +17,7 @@ int main() {
     Instance instance(loc_filename, cust_filename, dist_filename, 5);
 
 //    Instance instance1 = instance;
-    cout << instance.getDist(690, 1) << endl;
+    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
 
     return 0;
 }
