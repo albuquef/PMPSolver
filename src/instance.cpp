@@ -1,8 +1,9 @@
-#include <fstream>
-#include <iostream>
-#include <chrono>
 #include "instance.hpp"
-#include "utils.hpp"
+
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> dist_matrix, uint_t p):locations(std::move(locations)), customers(std::move(customers)), dist_matrix(std::move(dist_matrix)), p(p) {
+    loc_max = *max_element(this->locations.begin(), this->locations.end());
+    cust_max = *max_element(this->customers.begin(), this->customers.end());
+}
 
 Instance::Instance(const string& loc_filename, const string& cust_filename, const string& dist_filename, uint_t p): p(p) {
     fstream loc_file(loc_filename);
@@ -70,4 +71,12 @@ dist_t Instance::getDist(uint_t loc, uint_t cust) {
     uint_t index = loc * cust_max + cust;
     return dist_matrix[index];
 }
+
+Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator) {
+    auto locations_new = sampleSubvector(&locations, loc_max, loc_cnt, generator);
+    auto customers_new = sampleSubvector(&customers, cust_max, cust_cnt, generator);
+    return Instance(locations_new, customers_new, dist_matrix, p_new);
+}
+
+
 
