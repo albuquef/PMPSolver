@@ -81,8 +81,10 @@ dist_t Instance::getDist(uint_t loc, uint_t cust) {
 }
 
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator) {
-    auto locations_new = sampleSubvector(&locations, loc_max_id, loc_cnt, generator);
-    auto customers_new = sampleSubvector(&customers, cust_max_id, cust_cnt, generator);
+    auto locations_new = getRandomSubvector(locations, loc_cnt, generator);
+    auto customers_new = getRandomSubvector(customers, cust_cnt, generator);
+//    auto locations_new = sampleSubvector(&locations, loc_max_id, loc_cnt, generator);
+//    auto customers_new = sampleSubvector(&customers, cust_max_id, cust_cnt, generator);
     return Instance(locations_new, customers_new, dist_matrix, p_new, loc_max_id, cust_max_id);
 }
 
