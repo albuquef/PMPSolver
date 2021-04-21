@@ -1,3 +1,4 @@
+#include <iomanip>
 #include "solution.hpp"
 
 Solution::Solution(Instance *instance, unordered_set<uint_t> locations): instance(instance), p_locations(std::move(locations)) {
@@ -34,6 +35,6 @@ void Solution::print() {
         cout << p << " ";
     }
     cout << endl;
-    cout << "objective: " << objective << endl << endl;
+    cout << setprecision(15) << "objective: " << objective << endl << endl;
 }
 
