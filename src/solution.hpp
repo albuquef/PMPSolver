@@ -15,10 +15,15 @@ private:
 public:
     Instance *instance;
 
+    Solution() = default;
     Solution(Instance *instance, unordered_set<uint_t> locations);
     void naiveEval();
     uint_t getClosestpLoc(uint_t cust);
+    const unordered_set<uint_t>& get_pLocations() const;
     void print();
+    void replaceLocation(uint_t loc_old, uint_t loc_new);
+    dist_t get_objective();
+
 };
 
 

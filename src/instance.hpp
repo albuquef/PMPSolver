@@ -31,6 +31,9 @@ public:
     Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator);
     void print();
     const vector<uint_t>& getCustomers() const;
+    const vector<uint_t>& getLocations() const;
+    uint_t get_p() const;
+    uint_t getDistIndex(uint_t loc, uint_t cust);
 };
 
 

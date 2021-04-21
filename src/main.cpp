@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include "instance.hpp"
 #include "solution.hpp"
+#include "TB.hpp"
 
 using namespace std;
 
@@ -26,11 +27,13 @@ int main() {
 //    instance.print();
 //    instance1.print();
 
-//    unordered_set<uint_t> locations = {1, 2, 3, 4, 5};
-    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // optimal solution, objective: 1112707.98040259
-    Solution solution(&instance, locations);
+//    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // optimal solution, objective: 1112707.98040259
+//    Solution solution(&instance, locations);
+//    solution.print();
 
-    solution.print();
+    TB heuristic(&instance, 1);
+    auto sol = heuristic.run();
+    sol.print();
 
     return 0;
 }

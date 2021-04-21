@@ -65,13 +65,18 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
     }
 }
 
+uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
+//    return loc * cust_max_id + cust;    // faster extraction of cust values
+    return cust * loc_max_id + loc;    // faster extraction of loc values
+}
+
 void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
-    uint_t index = loc * cust_max_id + cust;
+    uint_t index = getDistIndex(loc, cust);
     dist_matrix[index] = value;
 }
 
 dist_t Instance::getDist(uint_t loc, uint_t cust) {
-    uint_t index = loc * cust_max_id + cust;
+    uint_t index = getDistIndex(loc, cust);
     return dist_matrix[index];
 }
 
@@ -90,9 +95,9 @@ void Instance::print() {
     for (auto c:customers) cout << c << " ";
     cout << endl;
 
-    cout << "loc_max_id: " << loc_max_id << endl;
+//    cout << "loc_max_id: " << loc_max_id << endl;
     cout << "loc_cnt: " << locations.size() << endl;
-    cout << "cust_max_id: " << cust_max_id << endl;
+//    cout << "cust_max_id: " << cust_max_id << endl;
     cout << "cust_cnt: " << customers.size() << endl;
     cout << "p: " << p << endl << endl;
 }
@@ -100,6 +105,18 @@ void Instance::print() {
 const vector<uint_t> &Instance::getCustomers() const {
     return this->customers;
 }
+
+const vector<uint_t> &Instance::getLocations() const {
+    return this->locations;
+}
+
+uint_t Instance::get_p() const {
+    return p;
+}
+
+
+
+
 
 
 

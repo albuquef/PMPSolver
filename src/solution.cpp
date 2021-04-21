@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <cassert>
 #include "solution.hpp"
 
 Solution::Solution(Instance *instance, unordered_set<uint_t> locations): instance(instance), p_locations(std::move(locations)) {
@@ -6,6 +7,7 @@ Solution::Solution(Instance *instance, unordered_set<uint_t> locations): instanc
 }
 
 void Solution::naiveEval() {
+//    assert(p_locations.size() == instance->get_p());
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
@@ -37,4 +39,20 @@ void Solution::print() {
     cout << endl;
     cout << setprecision(15) << "objective: " << objective << endl << endl;
 }
+
+const unordered_set<uint_t> &Solution::get_pLocations() const {
+    return this->p_locations;
+}
+
+void Solution::replaceLocation(uint_t loc_old, uint_t loc_new) {
+    p_locations.erase(loc_old);
+    p_locations.insert(loc_new);
+    naiveEval();
+}
+
+dist_t Solution::get_objective() {
+    return objective;
+}
+
+
 
