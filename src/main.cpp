@@ -2,6 +2,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "instance.hpp"
+#include "solution.hpp"
 
 using namespace std;
 
@@ -15,14 +16,20 @@ int main() {
 //    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
 
     Instance instance(loc_filename, cust_filename, dist_filename, 5);
-    default_random_engine generator;
-    Instance instance1 = instance.sampleSubproblem(100, 50, 4, &generator);
 
-    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
-    cout << instance1.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+//    default_random_engine generator;
+//    Instance instance1 = instance.sampleSubproblem(100, 50, 4, &generator);
+//
+//    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+//    cout << instance1.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+//
+//    instance.print();
+//    instance1.print();
 
-    instance.print();
-    instance1.print();
+    unordered_set<uint_t> locations = {1, 2, 3, 4, 5};
+    Solution solution(&instance, locations);
+
+    solution.print();
 
     return 0;
 }

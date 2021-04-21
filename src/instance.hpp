@@ -19,8 +19,8 @@ private:
     shared_ptr<dist_t[]> dist_matrix;
 
     uint_t p;
-    uint_t loc_max; // kept for addressing the full distance matrix
-    uint_t cust_max; // kept for addressing the full distance matrix
+    uint_t loc_max_id; // kept for addressing the full distance matrix
+    uint_t cust_max_id; // kept for addressing the full distance matrix
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
@@ -30,6 +30,7 @@ public:
     dist_t getDist(uint_t loc, uint_t cust);
     Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator);
     void print();
+    const vector<uint_t>& getCustomers() const;
 };
 
 
