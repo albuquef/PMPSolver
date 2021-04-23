@@ -4,6 +4,7 @@
 #include "instance.hpp"
 #include "solution.hpp"
 #include "TB.hpp"
+#include "RSSV.hpp"
 
 using namespace std;
 
@@ -18,14 +19,16 @@ int main() {
 
     Instance instance(loc_filename, cust_filename, dist_filename, 5);
 
-    default_random_engine generator;
-    Instance instance1 = instance.sampleSubproblem(10, 10, 4, &generator);
+//    auto start = tick();
+//    default_random_engine generator;
+//    Instance instance1 = instance.sampleSubproblem(800, 800, 4, &generator);
+//    tock(start);
 
 //    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
 //    cout << instance1.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
 
-    instance.print();
-    instance1.print();
+//    instance.print();
+//    instance1.print();
 
 //    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // optimal solution, objective: 1112707.98040259
 //    Solution solution(&instance, locations);
@@ -34,6 +37,9 @@ int main() {
 //    TB heuristic(&instance, 1);
 //    auto sol = heuristic.run();
 //    sol.print();
+
+    RSSV metaheuristic(&instance, 1, 761);
+    metaheuristic.run();
 
     return 0;
 }

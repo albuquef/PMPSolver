@@ -3,7 +3,7 @@
 TB::TB(Instance *instance, uint_t seed):instance(instance) {
     engine.seed(seed);
     cout << "TB heuristic initialized\n";
-    instance->print();
+//    instance->print();
 }
 
 Solution TB::initRandomSolution() {
@@ -46,7 +46,7 @@ Solution TB::run() {
             }
             if (improved) {
                 sol_best = sol_cand;
-                sol_best.print();
+//                sol_best.print();
                 break;
             };
         }
