@@ -16,7 +16,7 @@ public:
     Instance *instance;
 
     Solution() = default;
-    Solution(Instance *instance, unordered_set<uint_t> locations);
+    Solution(Instance *instance, unordered_set<uint_t> p_locations);
     void naiveEval();
     uint_t getClosestpLoc(uint_t cust);
     const unordered_set<uint_t>& get_pLocations() const;

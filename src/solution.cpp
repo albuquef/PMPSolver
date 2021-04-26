@@ -2,7 +2,7 @@
 #include <cassert>
 #include "solution.hpp"
 
-Solution::Solution(Instance *instance, unordered_set<uint_t> locations): instance(instance), p_locations(std::move(locations)) {
+Solution::Solution(Instance *instance, unordered_set<uint_t> p_locations): instance(instance), p_locations(std::move(p_locations)) {
     naiveEval();
 }
 
@@ -11,7 +11,7 @@ void Solution::naiveEval() {
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
-//        cout << "cust: " << cust << ", loc: " << loc << ", dist: " << instance->getDist(loc, cust) << endl;
+        cout << "cust: " << cust << ", loc: " << loc << ", dist: " << instance->getDist(loc, cust) << endl;
         objective += instance->getDist(loc, cust);
     }
 }

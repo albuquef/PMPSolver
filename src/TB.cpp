@@ -2,7 +2,7 @@
 
 TB::TB(Instance *instance, uint_t seed):instance(instance) {
     engine.seed(seed);
-//    cout << "TB heuristic initialized\n";
+    cout << "TB heuristic initialized\n";
 //    instance->print();
 }
 
@@ -17,13 +17,14 @@ Solution TB::initRandomSolution() {
         auto loc = locations[loc_id];
         p_locations.insert(loc);
     }
-
-    return Solution(instance, p_locations);
+    cout << "Random solution initialized" << endl;
+    return Solution(instance, p_locations); // todo SIGSEGV here?
 }
 
 Solution TB::run() {
     auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();
+    cout << "locations obtained" << endl;
     bool improved = true;
     Solution sol_tmp;
     Solution sol_cand;
@@ -31,9 +32,11 @@ Solution TB::run() {
     while (improved) {
         improved = false;
         sol_cand = sol_best;
-//        auto start = tick();
+        auto start = tick();
         auto p_locations = sol_best.get_pLocations();
+        cout << "p locations obtained" << endl;
         for (auto loc:locations) { // First improvement over locations
+            cout << "loc: " << loc << endl;
             if (!p_locations.contains(loc)) {
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     sol_tmp = sol_best;
@@ -46,11 +49,11 @@ Solution TB::run() {
             }
             if (improved) {
                 sol_best = sol_cand;
-//                sol_best.print();
+                sol_best.print();
                 break;
             };
         }
-//        tock(start);
+        tock(start);
     }
     return sol_best;
 }
