@@ -30,17 +30,17 @@ int main() {
 //    instance.print();
 //    instance1.print();
 
-    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // Toulon optimal solution, objective: 1112707.98040259
+//    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // Toulon optimal solution, objective: 1112707.98040259
 //    unordered_set<uint_t> locations = {37743, 32521, 53446, 9467, 1}; // PACA, locations with missing distances
-    Solution solution(&instance, locations);
-    solution.print();
+//    Solution solution(&instance, locations);
+//    solution.print();
 
 //    TB heuristic(&instance, 1);
 //    auto sol = heuristic.run();
 //    sol.print();
 
-//    RSSV metaheuristic(&instance, 1, 761);
-//    metaheuristic.run();
+    RSSV metaheuristic(&instance, 1, 763);
+    metaheuristic.run();
 
     return 0;
 }

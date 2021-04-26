@@ -1,4 +1,5 @@
 #include <thread>
+#include <unistd.h>
 #include "RSSV.hpp"
 #include "TB.hpp"
 
@@ -16,8 +17,7 @@ Solution RSSV::run() {
 
 
     uint_t thread_cnt = 4;
-
-    // Limit no. of threads by semaphore.h
+    sem.setCount(thread_cnt);
 
     vector<thread> threads;
     for (uint_t i = 1; i <= M; i++) {
@@ -32,12 +32,14 @@ Solution RSSV::run() {
 }
 
 void RSSV::solveSubproblem(uint_t seed) {
+    sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << endl;
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
-    subInstance.print();
+//    subInstance.print();
     TB heuristic(&subInstance, seed);
     auto sol = heuristic.run();
-    sol.print();
+//    sol.print();
+    sem.notify(seed);
 }
 
 

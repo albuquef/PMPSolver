@@ -3,6 +3,7 @@
 
 #include "instance.hpp"
 #include "solution.hpp"
+#include "semaphore.hpp"
 
 
 using namespace std;
@@ -14,6 +15,7 @@ private:
     uint_t N;
     uint_t M;
     uint_t n;
+    Semaphore sem;
 public:
     RSSV(Instance *instance, uint_t seed, uint_t n);
     Solution run();
