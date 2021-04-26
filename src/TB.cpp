@@ -31,7 +31,7 @@ Solution TB::run() {
     while (improved) {
         improved = false;
         sol_cand = sol_best;
-
+        auto start = tick();
         auto p_locations = sol_best.get_pLocations();
         for (auto loc:locations) { // First improvement over locations
             if (!p_locations.contains(loc)) {
@@ -46,12 +46,12 @@ Solution TB::run() {
             }
             if (improved) {
                 sol_best = sol_cand;
-//                sol_best.print();
+                sol_best.print();
                 break;
             };
         }
+        tock(start);
     }
-
     return sol_best;
 }
 

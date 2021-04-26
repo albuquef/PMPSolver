@@ -29,11 +29,15 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
         // Go to beginning
         loc_file.seekg(0);
         cust_file.seekg(0);
+        uint_t size = (loc_max_id + 1) * (cust_max_id + 1);
         cout << "Distance matrix dimensions: " << loc_max_id + 1 << " x " << cust_max_id + 1 << " = "
-             << (loc_max_id + 1) * (cust_max_id + 1) << "\n";
+             << size << "\n";
         tock(start);
         // Preallocate distance matrix and loc, cust flag vectors
-        dist_matrix = shared_ptr<dist_t[]>(new dist_t[(loc_max_id + 1) * (cust_max_id + 1)], std::default_delete<dist_t[]>());
+        dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());
+        for (uint_t i = 0; i < size; i++) {
+            dist_matrix[i] = numeric_limits<dist_t>::max();
+        }
         vector<bool> loc_flags(loc_max_id + 1, false);
         vector<bool> cust_flags(cust_max_id + 1, false);
         // Fill it
@@ -71,6 +75,7 @@ uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
 }
 
 void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
+//    cout << loc << " " << cust << " " << value << endl;
     uint_t index = getDistIndex(loc, cust);
     dist_matrix[index] = value;
 }
