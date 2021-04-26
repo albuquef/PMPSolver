@@ -2,14 +2,19 @@
 #include <cassert>
 #include "solution.hpp"
 
-Solution::Solution(Instance *instance, unordered_set<uint_t> p_locations): instance(instance), p_locations(std::move(p_locations)) {
+Solution::Solution(Instance *instance, unordered_set<uint_t> p_locations) {
+    this->instance = instance;
+    this->p_locations = p_locations;
+    cout << "Solution initialized" << endl;
     naiveEval();
 }
 
 void Solution::naiveEval() {
 //    assert(p_locations.size() == instance->get_p());
+    cout << "Naive eval" << endl;
     objective = 0;
     for (auto cust:instance->getCustomers()) {
+        cout << "cust: " << cust << endl;
         auto loc = getClosestpLoc(cust);
         cout << "cust: " << cust << ", loc: " << loc << ", dist: " << instance->getDist(loc, cust) << endl;
         objective += instance->getDist(loc, cust);
@@ -17,12 +22,14 @@ void Solution::naiveEval() {
 }
 
 uint_t Solution::getClosestpLoc(uint_t cust) {
-    dist_t dist_min = numeric_limits<uint_t>::max();
+    dist_t dist_min = numeric_limits<dist_t>::max();
     dist_t dist;
     uint_t loc_closest;
     for (auto loc:p_locations) {
+        cout << "cand_loc: " << loc << endl;
         dist = instance->getDist(loc, cust);
-        if (dist < dist_min) {
+        cout << "dist: " << dist << endl;
+        if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;
         }

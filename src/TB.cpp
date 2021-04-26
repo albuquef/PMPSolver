@@ -11,14 +11,20 @@ Solution TB::initRandomSolution() {
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
     auto locations = instance->getLocations();
+    cout << "ALL LOCATIONS: " << endl;
+    for (auto l:locations) cout << l << endl;
+
+    cout << "SELECTED LOCATIONS: " << endl;
     uniform_int_distribution<uint_t> distribution (0, locations.size() - 1);
     while (p_locations.size() < p) {
         auto loc_id = distribution(engine);
         auto loc = locations[loc_id];
         p_locations.insert(loc);
+        cout << "loc_id: " << loc_id << ", loc: " << loc << endl;
     }
+    Solution sol(instance, p_locations);
     cout << "Random solution initialized" << endl;
-    return Solution(instance, p_locations); // todo SIGSEGV here?
+    return sol; // todo SIGSEGV here?
 }
 
 Solution TB::run() {
@@ -34,9 +40,8 @@ Solution TB::run() {
         sol_cand = sol_best;
         auto start = tick();
         auto p_locations = sol_best.get_pLocations();
-        cout << "p locations obtained" << endl;
+//        cout << "p locations obtained" << endl;
         for (auto loc:locations) { // First improvement over locations
-            cout << "loc: " << loc << endl;
             if (!p_locations.contains(loc)) {
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     sol_tmp = sol_best;

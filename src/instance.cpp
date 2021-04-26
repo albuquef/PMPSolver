@@ -82,6 +82,7 @@ void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
 
 dist_t Instance::getDist(uint_t loc, uint_t cust) {
     uint_t index = getDistIndex(loc, cust);
+    cout << "loc, cust, index: " << loc << ", "<< cust << ", " << index << endl;
     return dist_matrix[index];
 }
 
@@ -105,16 +106,16 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
 
 void Instance::print() {
     cout << "Locations: ";
-    for (auto l:locations) cout << l << " ";
+    for (auto l:locations) cout << l << endl;
     cout << endl;
 
     cout << "Customers: ";
-    for (auto c:customers) cout << c << " ";
+    for (auto c:customers) cout << c << endl;
     cout << endl;
 
-//    cout << "loc_max_id: " << loc_max_id << endl;
+    cout << "loc_max_id: " << loc_max_id << endl;
     cout << "loc_cnt: " << locations.size() << endl;
-//    cout << "cust_max_id: " << cust_max_id << endl;
+    cout << "cust_max_id: " << cust_max_id << endl;
     cout << "cust_cnt: " << customers.size() << endl;
     cout << "p: " << p << endl << endl;
 }

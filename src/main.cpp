@@ -27,7 +27,7 @@ int main() {
 //    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
 //    cout << instance1.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
 
-//    instance.print();
+    instance.print();
 //    instance1.print();
 
 //    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // Toulon optimal solution, objective: 1112707.98040259
@@ -38,7 +38,7 @@ int main() {
     auto start = tick();
 
     TB heuristic(&instance, 1);
-    auto sol = heuristic.run();
+    auto sol = heuristic.initRandomSolution();
     sol.print();
 
     tock(start);
