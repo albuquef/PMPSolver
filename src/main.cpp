@@ -9,15 +9,15 @@
 using namespace std;
 
 int main() {
-//    string loc_filename = "./provided/toulon/toulon_destination.txt"; // p = 5
-//    string cust_filename = "./provided/toulon/toulon_origin.txt";
-//    string dist_filename = "./provided/toulon/toulon_orig_x_tps.txt";
+    string loc_filename = "./provided/toulon/toulon_destination.txt"; // p = 5
+    string cust_filename = "./provided/toulon/toulon_origin.txt";
+    string dist_filename = "./provided/toulon/toulon_orig_x_tps.txt";
 
-    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
-    string cust_filename = "./provided/paca/global_origin.txt";
-    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
+//    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
+//    string cust_filename = "./provided/paca/global_origin.txt";
+//    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
 
-    Instance instance(loc_filename, cust_filename, dist_filename, 100);
+    Instance instance(loc_filename, cust_filename, dist_filename, 5);
 
 //    auto start = tick();
 //    default_random_engine generator;
@@ -38,9 +38,10 @@ int main() {
     auto start = tick();
 
     TB heuristic(&instance, 1);
-    auto sol = heuristic.initRandomSolution();
+    auto sol = heuristic.run();
     sol.print();
 
+    cout << "TB: ";
     tock(start);
 
 //    RSSV metaheuristic(&instance, 1, 763);

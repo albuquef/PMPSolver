@@ -5,18 +5,14 @@
 Solution::Solution(Instance *instance, unordered_set<uint_t> p_locations) {
     this->instance = instance;
     this->p_locations = p_locations;
-    cout << "Solution initialized" << endl;
     naiveEval();
 }
 
 void Solution::naiveEval() {
 //    assert(p_locations.size() == instance->get_p());
-    cout << "Naive eval" << endl;
     objective = 0;
     for (auto cust:instance->getCustomers()) {
-        cout << "cust: " << cust << endl;
         auto loc = getClosestpLoc(cust);
-        cout << "cust: " << cust << ", loc: " << loc << ", dist: " << instance->getDist(loc, cust) << endl;
         objective += instance->getDist(loc, cust);
     }
 }
@@ -26,9 +22,7 @@ uint_t Solution::getClosestpLoc(uint_t cust) {
     dist_t dist;
     uint_t loc_closest;
     for (auto loc:p_locations) {
-        cout << "cand_loc: " << loc << endl;
         dist = instance->getDist(loc, cust);
-        cout << "dist: " << dist << endl;
         if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;
