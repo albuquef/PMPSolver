@@ -11,21 +11,22 @@ using namespace std;
 int main() {
     string loc_filename = "./provided/toulon/toulon_destination.txt"; // p = 5
     string cust_filename = "./provided/toulon/toulon_origin.txt";
-    string dist_filename = "./provided/toulon/toulon_orig_x_tps.txt";
+    string dist_filename = "./provided/toulon/toulon_tps.txt";
+    string weights_filename = "./provided/toulon/pts_origines_toulon.txt";
 
 //    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
 //    string cust_filename = "./provided/paca/global_origin.txt";
 //    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
 
-    Instance instance(loc_filename, cust_filename, dist_filename, 5);
+    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
 
 //    auto start = tick();
 //    default_random_engine generator;
 //    Instance instance1 = instance.sampleSubproblem(800, 800, 4, &generator);
 //    tock(start);
 
-//    cout << instance.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
-//    cout << instance1.getDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+//    cout << instance.getWeightedDist(690, 1) << endl; // Should return 0.226392658 for Toulon
+//    cout << instance1.getWeightedDist(690, 1) << endl; // Should return 0.226392658 for Toulon
 
     instance.print();
 //    instance1.print();
@@ -37,15 +38,15 @@ int main() {
 
 //    auto start = tick();
 //
-//    TB heuristic(&instance, 1);
-//    auto sol = heuristic.run();
-//    sol.print();
-//
+    TB heuristic(&instance, 2);
+    auto sol = heuristic.run();
+    sol.print();
+
 //    cout << "TB: ";
 //    tock(start);
 
-    RSSV metaheuristic(&instance, 1, 761);
-    metaheuristic.run();
+//    RSSV metaheuristic(&instance, 1, 761);
+//    metaheuristic.run();
 
     return 0;
 }

@@ -59,7 +59,7 @@ void RSSV::processSubsolution(Solution *solution) {
 //        dist_t dist_min = numeric_limits<dist_t>::max();
 //        uint_t cust_cl;
 //        for (auto cust:solution->instance->getCustomers()) {
-//            auto dist = solution->instance->getDist(loc_sol, cust);
+//            auto dist = solution->instance->getWeightedDist(loc_sol, cust);
 //            if (dist <= dist_min) {
 //                dist_min = dist;
 //                cust_cl = cust;

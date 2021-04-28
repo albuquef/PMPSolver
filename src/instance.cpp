@@ -1,21 +1,25 @@
 #include "instance.hpp"
 
-Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> dist_matrix, uint_t p,
+#include <utility>
+
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, uint_t p,
                    uint_t loc_max, uint_t cust_max)
-        : locations(std::move(locations)), customers(std::move(customers)), dist_matrix(std::move(dist_matrix)), p(p),
+        : locations(std::move(locations)), customers(std::move(customers)), cust_weights(std::move(cust_weights)), dist_matrix(std::move(dist_matrix)), p(p),
           loc_max_id(loc_max), cust_max_id(cust_max) {
 }
 
-Instance::Instance(const string &loc_filename, const string &cust_filename, const string &dist_filename, uint_t p) : p(
+Instance::Instance(const string &loc_filename, const string &cust_filename, const string &dist_filename, const string& weights_filename, uint_t p) : p(
         p) {
     fstream loc_file(loc_filename);
     fstream cust_file(cust_filename);
     fstream dist_file(dist_filename);
+    fstream weights_file(weights_filename);
 
-    if (loc_file.is_open() && cust_file.is_open() && dist_file.is_open()) {
+    if (loc_file.is_open() && cust_file.is_open() && dist_file.is_open() && weights_file.is_open()) {
         string loc_str;
         string cust_str;
         string dist_str;
+        string weight_str;
         loc_max_id = 0;
         cust_max_id = 0;
         // Process unique p_locations and customers
@@ -70,11 +74,18 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
         cout << "dists stdev: " << stdev << endl;
         cout << "bandwidth h: " << h << endl;
         // Extract unique p_locations and customers
+        cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
         for (uint_t loc = 0; loc < loc_flags.size(); loc++) {
             if (loc_flags[loc]) locations.push_back(loc);
         }
         for (uint_t cust = 0; cust < cust_flags.size(); cust++) {
-            if (cust_flags[cust]) customers.push_back(cust);
+            cust_weights[cust] = 1;
+            if (cust_flags[cust]) {
+                customers.push_back(cust);
+                getline(weights_file, weight_str);
+                dist_t weight = stod(weight_str);
+                cust_weights[cust] = weight;
+            }
         }
         cout << "locations: " << locations.size() << endl;
         cout << "customers: " << customers.size() << endl;
@@ -96,9 +107,9 @@ void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
     dist_matrix[index] = value;
 }
 
-dist_t Instance::getDist(uint_t loc, uint_t cust) {
+dist_t Instance::getWeightedDist(uint_t loc, uint_t cust) {
     uint_t index = getDistIndex(loc, cust);
-    return dist_matrix[index];
+    return cust_weights[cust] * dist_matrix[index];
 }
 
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator) {
@@ -116,7 +127,7 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
         customers_new = customers;
     }
 
-    return Instance(locations_new, customers_new, dist_matrix, p_new, loc_max_id, cust_max_id);
+    return Instance(locations_new, customers_new, cust_weights, dist_matrix, p_new, loc_max_id, cust_max_id);
 }
 
 void Instance::print() {
