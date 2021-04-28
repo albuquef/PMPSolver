@@ -13,7 +13,7 @@ void Solution::naiveEval() {
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
-        objective += instance->getDist(loc, cust);
+        objective += instance->getWeightedDist(loc, cust);
     }
 }
 
@@ -22,7 +22,7 @@ uint_t Solution::getClosestpLoc(uint_t cust) {
     dist_t dist;
     uint_t loc_closest;
     for (auto loc:p_locations) {
-        dist = instance->getDist(loc, cust);
+        dist = instance->getWeightedDist(loc, cust);
         if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;
