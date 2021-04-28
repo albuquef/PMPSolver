@@ -22,6 +22,7 @@ public:
     RSSV(Instance *instance, uint_t seed, uint_t n);
     Solution run();
     void solveSubproblem(uint_t seed);
+    void processSubsolution(Solution *solution);
 };
 
 

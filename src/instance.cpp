@@ -66,7 +66,6 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
         dist_t stdev = sqrt(variance);
         dist_t a = (4 * pow(stdev, 5)) / (3 * cnt);
         dist_t b = 0.2;
-        cout << a << endl;
         h = pow(a, b);
         cout << "dists stdev: " << stdev << endl;
         cout << "bandwidth h: " << h << endl;

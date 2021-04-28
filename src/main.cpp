@@ -44,8 +44,8 @@ int main() {
 //    cout << "TB: ";
 //    tock(start);
 
-    RSSV metaheuristic(&instance, 1, 763);
-//    metaheuristic.run();
+    RSSV metaheuristic(&instance, 1, 761);
+    metaheuristic.run();
 
     return 0;
 }
