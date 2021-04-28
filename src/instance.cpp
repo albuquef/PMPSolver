@@ -36,7 +36,8 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
         // Preallocate distance matrix and loc, cust flag vectors
         dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());
         for (uint_t i = 0; i < size; i++) {
-            dist_matrix[i] = numeric_limits<dist_t>::max();
+//            dist_matrix[i] = numeric_limits<dist_t>::max();
+            dist_matrix[i] = 1000000;
         }
         vector<bool> loc_flags(loc_max_id + 1, false);
         vector<bool> cust_flags(cust_max_id + 1, false);
@@ -103,13 +104,13 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
 }
 
 void Instance::print() {
-    cout << "Locations: ";
-    for (auto l:locations) cout << l << " ";
-    cout << endl;
-
-    cout << "Customers: ";
-    for (auto c:customers) cout << c << " ";
-    cout << endl;
+//    cout << "Locations: ";
+//    for (auto l:locations) cout << l << " ";
+//    cout << endl;
+//
+//    cout << "Customers: ";
+//    for (auto c:customers) cout << c << " ";
+//    cout << endl;
 
     cout << "loc_max_id: " << loc_max_id << endl;
     cout << "loc_cnt: " << locations.size() << endl;

@@ -39,6 +39,7 @@ Solution TB::run() {
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     sol_tmp = sol_best;
                     sol_tmp.replaceLocation(p_loc, loc);
+//                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
                     if (sol_tmp.get_objective() < sol_cand.get_objective()) {
                         sol_cand = sol_tmp;
                         improved = true;
