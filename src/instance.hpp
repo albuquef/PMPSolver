@@ -21,6 +21,7 @@ private:
     uint_t p;
     uint_t loc_max_id; // kept for addressing the full distance matrix
     uint_t cust_max_id; // kept for addressing the full distance matrix
+    dist_t h; // bandwidth
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:

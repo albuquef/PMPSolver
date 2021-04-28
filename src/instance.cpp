@@ -43,16 +43,33 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
         vector<bool> cust_flags(cust_max_id + 1, false);
         // Fill it
         cout << "Loading distance matrix...\n";
+        dist_t sum = 0; // sum of distances
+        dist_t sum_sq = 0; // sum of squared distances
+        uint_t cnt = 0;
         start = tick();
         while (getline(dist_file, dist_str)) {
             getline(loc_file, loc_str);
             getline(cust_file, cust_str);
             auto loc = stoi(loc_str);
             auto cust = stoi(cust_str);
-            setDist(loc, cust, stod(dist_str));
+            dist_t dist = stod(dist_str);
+            setDist(loc, cust, dist);
             loc_flags[loc] = true;
             cust_flags[cust] = true;
+            sum += dist;
+            sum_sq += dist * dist;
+            cnt++;
         }
+        // Determine stdev and bandwidth
+        dist_t mean = sum/cnt;
+        dist_t variance = sum_sq/cnt - mean*mean;
+        dist_t stdev = sqrt(variance);
+        dist_t a = (4 * pow(stdev, 5)) / (3 * cnt);
+        dist_t b = 0.2;
+        cout << a << endl;
+        h = pow(a, b);
+        cout << "dists stdev: " << stdev << endl;
+        cout << "bandwidth h: " << h << endl;
         // Extract unique p_locations and customers
         for (uint_t loc = 0; loc < loc_flags.size(); loc++) {
             if (loc_flags[loc]) locations.push_back(loc);

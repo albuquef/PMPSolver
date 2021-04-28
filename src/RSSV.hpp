@@ -1,6 +1,7 @@
 #ifndef LARGE_PMP_RSSV_HPP
 #define LARGE_PMP_RSSV_HPP
 
+#include <unordered_map>
 #include "instance.hpp"
 #include "solution.hpp"
 #include "semaphore.hpp"
@@ -16,6 +17,7 @@ private:
     uint_t M;
     uint_t n;
     Semaphore sem;
+    unordered_map<uint_t, double> weights;
 public:
     RSSV(Instance *instance, uint_t seed, uint_t n);
     Solution run();

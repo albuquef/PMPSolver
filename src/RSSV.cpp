@@ -7,6 +7,10 @@ RSSV::RSSV(Instance *instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
     N = instance->getLocations().size();
     M = 5*N/n;
+
+    for (auto loc : instance->getLocations()) {
+        weights[loc] = 0;
+    }
 }
 
 Solution RSSV::run() {
@@ -38,7 +42,9 @@ void RSSV::solveSubproblem(uint_t seed) {
 //    subInstance.print();
     TB heuristic(&subInstance, seed);
     auto sol = heuristic.run();
-//    sol.print();
+
+    cout << "Solution " << seed << endl;
+    sol.print();
     sem.notify(seed);
 }
 
