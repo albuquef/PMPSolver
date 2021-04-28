@@ -38,15 +38,15 @@ int main() {
 
 //    auto start = tick();
 //
-    TB heuristic(&instance, 2);
-    auto sol = heuristic.run();
-    sol.print();
+//    TB heuristic(&instance, 2);
+//    auto sol = heuristic.run();
+//    sol.print();
 
 //    cout << "TB: ";
 //    tock(start);
 
-//    RSSV metaheuristic(&instance, 1, 761);
-//    metaheuristic.run();
+    RSSV metaheuristic(&instance, 1, 761);
+    metaheuristic.run();
 
     return 0;
 }

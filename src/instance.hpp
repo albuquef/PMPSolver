@@ -30,6 +30,7 @@ public:
     Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max, uint_t cust_max);
 
     dist_t getWeightedDist(uint_t loc, uint_t cust);
+    dist_t getRealDist(uint_t loc, uint_t cust);
     Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator);
     void print();
     const vector<uint_t>& getCustomers() const;

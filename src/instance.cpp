@@ -112,6 +112,11 @@ dist_t Instance::getWeightedDist(uint_t loc, uint_t cust) {
     return cust_weights[cust] * dist_matrix[index];
 }
 
+dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
+    uint_t index = getDistIndex(loc, cust);
+    return dist_matrix[index];
+}
+
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator) {
     vector<uint_t> locations_new;
     vector<uint_t> customers_new;
@@ -157,6 +162,8 @@ const vector<uint_t> &Instance::getLocations() const {
 uint_t Instance::get_p() const {
     return p;
 }
+
+
 
 
 
