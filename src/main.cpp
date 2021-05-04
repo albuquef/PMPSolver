@@ -9,18 +9,20 @@
 using namespace std;
 
 int main() {
-    string loc_filename = "./provided/toulon/toulon_destination.txt"; // p = 5
-    string cust_filename = "./provided/toulon/toulon_origin.txt";
-    string dist_filename = "./provided/toulon/toulon_tps.txt";
-    string weights_filename = "./provided/toulon/pts_origines_toulon.txt";
+//    string loc_filename = "./provided/toulon/toulon_destination.txt"; // p = 5
+//    string cust_filename = "./provided/toulon/toulon_origin.txt";
+//    string dist_filename = "./provided/toulon/toulon_tps.txt";
+//    string weights_filename = "./provided/toulon/pts_origines_toulon.txt";
 
-//    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
-//    string cust_filename = "./provided/paca/global_origin.txt";
-//    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
+    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
+    string cust_filename = "./provided/paca/global_origin.txt";
+    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
+    string weights_filename = "./provided/paca/global_pts_origines.txt";
 
-    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
+    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 100);
 
 //    auto start = tick();
+
 //    default_random_engine generator;
 //    Instance instance1 = instance.sampleSubproblem(800, 800, 4, &generator);
 //    tock(start);
@@ -36,17 +38,18 @@ int main() {
 //    Solution solution(&instance, locations);
 //    solution.print();
 
-//    auto start = tick();
+    auto start = tick();
 //
 //    TB heuristic(&instance, 2);
 //    auto sol = heuristic.run();
 //    sol.print();
 
 //    cout << "TB: ";
-//    tock(start);
 
-    RSSV metaheuristic(&instance, 1, 761);
+    RSSV metaheuristic(&instance, 1, 400);
     metaheuristic.run();
+
+    tock(start);
 
     return 0;
 }

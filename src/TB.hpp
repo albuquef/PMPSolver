@@ -13,7 +13,7 @@ private:
 public:
     explicit TB(Instance *instance, uint_t seed);
     Solution initRandomSolution();
-    Solution run();
+    Solution run(bool verbose);
 
 };
 

@@ -24,6 +24,7 @@ public:
     Solution run();
     void solveSubproblem(uint_t seed);
     void processSubsolution(Solution *solution);
+    vector<uint_t> filterLocations(uint_t cnt);
 };
 
 

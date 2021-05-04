@@ -22,7 +22,7 @@ Solution TB::initRandomSolution() {
     return sol;
 }
 
-Solution TB::run() {
+Solution TB::run(bool verbose) {
     auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();
     bool improved = true;
@@ -48,7 +48,7 @@ Solution TB::run() {
             }
             if (improved) {
                 sol_best = sol_cand;
-//                sol_best.print();
+                if (verbose) sol_best.print();
                 break;
             };
         }

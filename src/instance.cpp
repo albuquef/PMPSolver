@@ -185,6 +185,10 @@ double Instance::getVotingScore(uint_t loc, uint_t cust) {
     return score;
 }
 
+Instance Instance::getReducedSubproblem(const vector<uint_t>& locations_new) {
+    return Instance(locations_new, customers, cust_weights, dist_matrix, p, loc_max_id, cust_max_id);
+}
+
 
 
 
