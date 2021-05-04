@@ -17,6 +17,7 @@ private:
     uint_t M;
     uint_t n;
     Semaphore sem;
+    mutex weights_mutex;
     unordered_map<uint_t, double> weights;
 public:
     RSSV(Instance *instance, uint_t seed, uint_t n);

@@ -163,7 +163,27 @@ uint_t Instance::get_p() const {
     return p;
 }
 
+uint_t Instance::getClosestCust(uint_t loc) {
+    dist_t dist_min = numeric_limits<dist_t>::max();
+    uint_t cust_cl;
+    for (auto cust:customers) {
+        auto dist = getRealDist(loc, cust);
+        if (dist <= dist_min) {
+            dist_min = dist;
+            cust_cl = cust;
+        }
+    }
+    return cust_cl;
+}
 
+double Instance::getVotingScore(uint_t loc, uint_t cust) {
+    auto dist = getRealDist(loc, cust);
+    double score = 0;
+    if (dist <= 2*h) {
+        score = exp(-(dist * dist)/(h * h));
+    }
+    return score;
+}
 
 
 
