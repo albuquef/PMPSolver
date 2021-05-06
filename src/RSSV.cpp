@@ -44,7 +44,7 @@ Solution RSSV::run(int thread_cnt) {
     filtered_instance.print();
 
     TB heuristic(&filtered_instance, 1); // solve filtered instance by the TB heuristic
-    auto sol = heuristic.run(false);
+    auto sol = heuristic.run(true);
     cout << "Final solution:\n";
     sol.print();
 
@@ -58,6 +58,7 @@ Solution RSSV::run(int thread_cnt) {
 void RSSV::solveSubproblem(int seed) {
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
+    auto start = tick();
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
     TB heuristic(&subInstance, seed);
     auto sol = heuristic.run(false);
@@ -65,6 +66,7 @@ void RSSV::solveSubproblem(int seed) {
     cout << "Solution " << seed << ": ";
     sol.print();
     processSubsolution(&sol);
+    tock(start);
     sem.notify(seed);
 }
 

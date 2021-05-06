@@ -48,7 +48,10 @@ Solution TB::run(bool verbose) {
             }
             if (improved) {
                 sol_best = sol_cand;
-                if (verbose) sol_best.print();
+                if (verbose) {
+                    sol_best.print();
+                    cout << endl;
+                }
                 break;
             };
         }
