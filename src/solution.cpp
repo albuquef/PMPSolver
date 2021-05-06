@@ -14,7 +14,10 @@ void Solution::naiveEval() {
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
-        objective += instance->getWeightedDist(loc, cust);
+        auto dist = instance->getWeightedDist(loc, cust);
+        objective += dist;
+        assignment[cust] = my_pair{loc, dist};
+//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
     }
 }
 
@@ -47,9 +50,26 @@ const unordered_set<uint_t> &Solution::get_pLocations() const {
 }
 
 void Solution::replaceLocation(uint_t loc_old, uint_t loc_new) {
+    // Update p_locations
     p_locations.erase(loc_old);
     p_locations.insert(loc_new);
-    naiveEval();
+    // Update assignment and objective
+    for (auto cust:instance->getCustomers()) {
+        auto dist_old = assignment[cust].dist;
+        auto dist_new = instance->getWeightedDist(loc_new, cust);
+        if (assignment[cust].node == loc_old) { // cust must be reassigned to some other p location
+            auto loc_closest = getClosestpLoc(cust);
+            auto dist_closest = instance->getWeightedDist(loc_closest, cust);
+            assignment[cust] = my_pair {loc_closest, dist_closest};
+            objective -= dist_old;
+            objective += dist_closest;
+        } else if (dist_old - dist_new > TOLERANCE) { // cust may be reassigned to loc_new
+            assignment[cust] = my_pair {loc_new, dist_new};
+            objective -= dist_old;
+            objective += dist_new;
+        }
+//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
+    }
 }
 
 dist_t Solution::get_objective() {

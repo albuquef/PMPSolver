@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <unordered_set>
+#include <unordered_map>
 #include "globals.hpp"
 #include "instance.hpp"
 
@@ -11,6 +12,7 @@ using namespace std;
 class Solution {
 private:
     unordered_set<uint_t> p_locations; // p selected locations
+    unordered_map<uint_t, my_pair> assignment; // customer -> p location, distance to it
     dist_t objective; // objective value
 public:
     Instance *instance; // solved instance

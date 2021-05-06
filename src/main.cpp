@@ -16,7 +16,8 @@ int main() {
 //    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
 //    string weights_filename = "./provided/paca/global_pts_origines.txt";
 
-    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 50);
+    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 100);
+
 
 //    Simple tests
 //    default_random_engine generator;
@@ -27,7 +28,7 @@ int main() {
 
 //    TB heuristic
     auto start = tick();
-    TB heuristic(&instance, 1);
+    TB heuristic(&instance, 2);
     auto sol = heuristic.run(true);
     sol.print();
     tock(start);
@@ -38,6 +39,9 @@ int main() {
 //    metaheuristic.run(1);
 //    tock(start);
 
-
+//    auto sol = heuristic.initRandomSolution();
+//    sol.print(); // 1727438.83154983
+//    sol.replaceLocation(1, 2);
+//    sol.print(); // 1715925.48594329
     return 0;
 }
