@@ -41,6 +41,9 @@ void Solution::print() {
     for (auto p:p_locations) {
         cout << p << " ";
     }
+//    for (auto cust:instance->getCustomers()) {
+//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
+//    }
     cout << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
 }
@@ -74,6 +77,26 @@ void Solution::replaceLocation(uint_t loc_old, uint_t loc_new) {
 
 dist_t Solution::get_objective() {
     return objective;
+}
+
+void Solution::printAssignment() {
+    for (auto p_loc:p_locations) {
+        cout << "location: " << p_loc << endl;
+        cout << "customers: ";
+        for (auto cust:instance->getCustomers()) {
+            if (assignment[cust].node == p_loc) {
+                cout << cust << " ";
+            }
+        }
+        cout << endl;
+        for (auto cust:instance->getCustomers()) {
+            if (assignment[cust].node == p_loc) {
+                cout << cust << " (" << (int)assignment[cust].dist << ") ";
+            }
+        }
+        cout << endl;
+    }
+
 }
 
 

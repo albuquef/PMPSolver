@@ -13,11 +13,10 @@ int main() {
 
 //    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
 //    string cust_filename = "./provided/paca/global_origin.txt";
-//    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
+//    string dist_filename = "./provided/paca/global_tps.txt";
 //    string weights_filename = "./provided/paca/global_pts_origines.txt";
 
-    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 100);
-
+    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
 
 //    Simple tests
 //    default_random_engine generator;
@@ -32,6 +31,8 @@ int main() {
     auto sol = heuristic.run(true);
     sol.print();
     tock(start);
+
+    sol.printAssignment();
 
 //  RSSV heuristic
 //    auto start = tick();

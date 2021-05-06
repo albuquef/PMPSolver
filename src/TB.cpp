@@ -48,15 +48,15 @@ Solution TB::run(bool verbose) {
             }
             if (improved) {
                 sol_best = sol_cand;
-                if (verbose) {
-                    sol_best.print();
-                    cout << endl;
-                }
                 break;
             };
         }
-//        cout << "TB loop: ";
-//        tock(start);
+        if (verbose) {
+            sol_best.print();
+            cout << "TB loop: ";
+            tock(start);
+            cout << endl;
+        }
     }
     return sol_best;
 }
