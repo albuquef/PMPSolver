@@ -1,6 +1,7 @@
 #include <set>
 #include "instance.hpp"
 #include "RSSV.hpp"
+#include "TB.hpp"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ int main() {
 //    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
 //    string weights_filename = "./provided/paca/global_pts_origines.txt";
 
-    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
+    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 50);
 
 //    Simple tests
 //    default_random_engine generator;
@@ -25,17 +26,17 @@ int main() {
 //    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // Toulon optimal solution, objective: 1112707.98040259
 
 //    TB heuristic
-//    auto start = tick();
-//    TB heuristic(&instance, 1);
-//    auto sol = heuristic.run();
-//    sol.print();
-//    tock(start);
+    auto start = tick();
+    TB heuristic(&instance, 1);
+    auto sol = heuristic.run(true);
+    sol.print();
+    tock(start);
 
 //  RSSV heuristic
-    auto start = tick();
-    RSSV metaheuristic(&instance, 1, 800);
-    metaheuristic.run(1);
-    tock(start);
+//    auto start = tick();
+//    RSSV metaheuristic(&instance, 1, 800);
+//    metaheuristic.run(1);
+//    tock(start);
 
 
     return 0;

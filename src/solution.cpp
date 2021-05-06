@@ -1,10 +1,11 @@
 #include <iomanip>
 #include <cassert>
+#include <utility>
 #include "solution.hpp"
 
 Solution::Solution(Instance *instance, unordered_set<uint_t> p_locations) {
     this->instance = instance;
-    this->p_locations = p_locations;
+    this->p_locations = std::move(p_locations);
     naiveEval();
 }
 

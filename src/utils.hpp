@@ -3,7 +3,7 @@
 
 #include <chrono>
 #include <random>
-#include "types.hpp"
+#include "globals.hpp"
 
 using namespace std;
 

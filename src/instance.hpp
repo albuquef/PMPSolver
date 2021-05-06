@@ -10,7 +10,7 @@
 #include <utility>
 #include <random>
 #include "utils.hpp"
-#include "types.hpp"
+#include "globals.hpp"
 
 class Instance {
 private:

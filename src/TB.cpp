@@ -40,7 +40,7 @@ Solution TB::run(bool verbose) {
                     sol_tmp = sol_best;
                     sol_tmp.replaceLocation(p_loc, loc);
 //                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
-                    if (sol_tmp.get_objective() < sol_cand.get_objective()) {
+                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
                         sol_cand = sol_tmp;
                         improved = true;
                     }
