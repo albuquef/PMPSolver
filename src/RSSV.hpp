@@ -6,26 +6,24 @@
 #include "solution.hpp"
 #include "semaphore.hpp"
 
-
 using namespace std;
 
 class RSSV {
 private:
-    Instance *instance;
+    Instance *instance; // original PMP instance
     default_random_engine engine;
-    uint_t N;
-    uint_t M;
-    uint_t n;
+    uint_t N; // original PMP size (no. of locations)
+    uint_t M; // no. of sub-PMPs
+    uint_t n; // sub-PMP size
     Semaphore sem;
     mutex weights_mutex;
-    unordered_map<uint_t, double> weights;
+    unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
 public:
     RSSV(Instance *instance, uint_t seed, uint_t n);
-    Solution run();
-    void solveSubproblem(uint_t seed);
+    Solution run(int thread_cnt);
+    void solveSubproblem(int seed);
     void processSubsolution(Solution *solution);
     vector<uint_t> filterLocations(uint_t cnt);
 };
-
 
 #endif //LARGE_PMP_RSSV_HPP
