@@ -6,17 +6,30 @@
 using namespace std;
 
 int main() {
-    string loc_filename = "./provided/toulon/toulon_destination.txt"; // p = 5
-    string cust_filename = "./provided/toulon/toulon_origin.txt";
-    string dist_filename = "./provided/toulon/toulon_tps.txt";
-    string weights_filename = "./provided/toulon/pts_origines_toulon.txt";
+//    string loc_filename = "./provided/toulon/toulon_destination.txt"; // p = 5
+//    string cust_filename = "./provided/toulon/toulon_origin.txt";
+//    string dist_filename = "./provided/toulon/toulon_tps.txt";
+//    string weights_filename = "./provided/toulon/pts_origines_toulon.txt";
 
-//    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
-//    string cust_filename = "./provided/paca/global_origin.txt";
-//    string dist_filename = "./provided/paca/global_tps.txt";
-//    string weights_filename = "./provided/paca/global_pts_origines.txt";
+//    string dist_filename = "./provided/toulon/toulon_orig_x_tps.txt";
+//    string weights_filename = "./provided/toulon/all_ones_weights.txt";
 
-    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
+
+    string loc_filename = "./provided/paca/global_destination.txt"; // p = 100
+    string cust_filename = "./provided/paca/global_origin.txt";
+    string dist_filename = "./provided/paca/global_tps.txt";
+    string weights_filename = "./provided/paca/global_pts_origines.txt";
+
+//    string dist_filename = "./provided/paca/global_orig_x_tps.txt";
+//    string weights_filename = "./provided/paca/all_ones_weights.txt";
+
+    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 100);
+
+    uint_t cust = 12296;
+    uint_t loc = 29474;
+    cout << "real dist: " << instance.getRealDist(loc, cust) << endl;
+    cout << "weight: " << instance.getCustWeight(cust) << endl;
+    cout << "weighted dist: " << instance.getWeightedDist(loc, cust) << endl;
 
 //    Simple tests
 //    default_random_engine generator;
@@ -26,13 +39,14 @@ int main() {
 //    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // Toulon optimal solution, objective: 1112707.98040259
 
 //    TB heuristic
-    auto start = tick();
-    TB heuristic(&instance, 2);
-    auto sol = heuristic.run(true);
-    sol.print();
-    tock(start);
+//    auto start = tick();
+//    TB heuristic(&instance, 1);
+//    auto sol = heuristic.initRandomSolution();
+//    auto sol = heuristic.run(true);
+//    sol.print();
+//    tock(start);
 
-    sol.printAssignment();
+    //sol.printAssignment();
 
 //  RSSV heuristic
 //    auto start = tick();

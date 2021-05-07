@@ -107,6 +107,11 @@ void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
     dist_matrix[index] = value;
 }
 
+
+dist_t Instance::getCustWeight(uint_t cust) {
+    return cust_weights[cust];
+}
+
 dist_t Instance::getWeightedDist(uint_t loc, uint_t cust) {
     uint_t index = getDistIndex(loc, cust);
     return cust_weights[cust] * dist_matrix[index];
@@ -188,6 +193,8 @@ double Instance::getVotingScore(uint_t loc, uint_t cust) {
 Instance Instance::getReducedSubproblem(const vector<uint_t>& locations_new) {
     return Instance(locations_new, customers, cust_weights, dist_matrix, p, loc_max_id, cust_max_id);
 }
+
+
 
 
 
