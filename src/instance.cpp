@@ -44,8 +44,7 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
         // Preallocate distance matrix and loc, cust flag vectors
         dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());
         for (uint_t i = 0; i < size; i++) {
-//            dist_matrix[i] = numeric_limits<dist_t>::max();
-            dist_matrix[i] = 1000000;
+            dist_matrix[i] = DEFAULT_DISTANCE;
         }
         vector<bool> loc_flags(loc_max_id + 1, false);
         vector<bool> cust_flags(cust_max_id + 1, false);
@@ -83,7 +82,7 @@ Instance::Instance(const string &loc_filename, const string &cust_filename, cons
             if (loc_flags[loc]) locations.push_back(loc);
         }
         for (uint_t cust = 0; cust < cust_flags.size(); cust++) {
-            cust_weights[cust] = 1;
+            cust_weights[cust] = DEFAULT_WEIGHT;
             if (cust_flags[cust]) {
                 customers.push_back(cust);
                 getline(weights_file, weight_str);
@@ -125,6 +124,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         cout << "Scanning input data...\n";
         auto start = tick();
         getline(dist_matrix_file, line); // skip first line
+        cout << "Skipped line: " << line << endl;
         while (getline(dist_matrix_file, line)) {
             auto tokens = tokenize(line, delim);
             cust_max_id = max(cust_max_id, (uint_t) stoi(tokens[0]));
@@ -137,20 +137,28 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         cout << "Distance matrix dimensions: " << loc_max_id + 1 << " x " << cust_max_id + 1 << " = " << size << "\n";
         tock(start);
         // Load weights
+        start = tick();
+        cout << "Loading weights...\n";
         cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
-        for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = 0;
+        for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
         getline(weights_file, line); // skip first line
+        cout << "Skipped line: " << line << endl;
+        uint_t w_cnt = 0;
         while (getline(weights_file, line)) {
             auto tokens = tokenize(line, delim);
             auto cust = stoi(tokens[0]);
             auto weight = stod(tokens[1]);
             cust_weights[cust] = weight;
+            w_cnt++;
         }
+        cout << "Loaded " << w_cnt << " weights\n";
+        tock(start);
+        cout << endl;
         // Preallocate distance matrix and loc, cust flag vectors
         start = tick();
         dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());
         for (uint_t i = 0; i < size; i++) {
-            dist_matrix[i] = 1000000; // todo change for some macro
+            dist_matrix[i] = DEFAULT_DISTANCE;
         }
         vector<bool> loc_flags(loc_max_id + 1, false);
         vector<bool> cust_flags(cust_max_id + 1, false);
@@ -160,6 +168,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         dist_t sum_sq = 0; // sum of squared distances
         uint_t cnt = 0;
         getline(dist_matrix_file, line); // skip first line
+        cout << "Skipped line: " << line << endl;
         while (getline(dist_matrix_file, line)) {
             auto tokens = tokenize(line, delim);
             auto cust = stoi(tokens[0]);
@@ -179,6 +188,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         dist_t a = (4 * pow(stdev, 5)) / (3 * cnt);
         dist_t b = 0.2;
         h = pow(a, b);
+        cout << "Loaded " << cnt << " distances\n";
         cout << "dists stdev: " << stdev << endl;
         cout << "bandwidth h: " << h << endl;
         // Extract unique locations and customers

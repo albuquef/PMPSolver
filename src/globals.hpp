@@ -2,6 +2,8 @@
 #define LARGE_PMP_GLOBALS_HPP
 
 #define TOLERANCE 0.000001
+#define DEFAULT_DISTANCE 1000000
+#define DEFAULT_WEIGHT 0
 
 using namespace std;
 

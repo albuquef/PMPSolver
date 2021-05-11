@@ -38,13 +38,13 @@ int main() {
     //    cout << instance1.getWeightedDist(690, 1) << endl; // Should return 0.226392658 for Toulon
     //    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // Toulon optimal solution, objective: 1112707.98040259
 
-    auto start = tick();
-    TB heuristic(&instance, 2);
-    auto sol = heuristic.run(true);
-    sol.print();
-    tock(start);
-
-    sol.printAssignment();
+//    auto start = tick();
+//    TB heuristic(&instance, 2);
+//    auto sol = heuristic.run(true);
+//    sol.print();
+//    tock(start);
+//
+//    sol.printAssignment();
 
 //  RSSV heuristic
 //    auto start = tick();
