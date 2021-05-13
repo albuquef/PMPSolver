@@ -153,7 +153,6 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         }
         cout << "Loaded " << w_cnt << " weights\n";
         tock(start);
-        cout << endl;
         // Preallocate distance matrix and loc, cust flag vectors
         start = tick();
         dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());

@@ -47,8 +47,9 @@ Solution RSSV::run(int thread_cnt) {
     auto sol = heuristic.run(true);
     cout << "Final solution:\n";
     sol.print();
+    sol.printAssignment();
 
-    return sol;
+    return sol; // todo filtered_instance goes out of scope and cannot be reached after return
 }
 
 /*

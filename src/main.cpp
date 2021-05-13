@@ -14,13 +14,13 @@ int main() {
     //    string weights_filename = "./provided/toulon/weights.txt";
     //    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
     // New parser with my files
-    //    string labeled_weights_filename = "./provided/toulon/weights_labeled.txt";
-    //    string dist_matrix_filename = "./provided/toulon/dist_matrix.txt";
-    //    Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ' ');
+//        string labeled_weights_filename = "./provided/toulon/weights_labeled.txt";
+//        string dist_matrix_filename = "./provided/toulon/dist_matrix.txt";
+//        Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ' ');
     // New parser with provided files
-    string labeled_weights_filename = "./provided/toulon/pts_origines_toulon.csv";
-    string dist_matrix_filename = "./provided/toulon/matrice_dist_toulon.csv";
-    Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ';');
+    //    string labeled_weights_filename = "./provided/toulon/pts_origines_toulon.csv";
+    //    string dist_matrix_filename = "./provided/toulon/matrice_dist_toulon.csv";
+    //    Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ';');
 
     // PACA files
     // Old parser
@@ -29,7 +29,10 @@ int main() {
     //    string dist_filename = "./provided/paca/distances.txt";
     //    string weights_filename = "./provided/paca/weights.txt";
     //    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 100);
-
+    // New PACA files
+        string labeled_weights_filename = "./provided/matdistpaca_600_1500_tps_90/weights_labeled.txt";
+        string dist_matrix_filename = "./provided/matdistpaca_600_1500_tps_90/dist_matrix.txt";
+        Instance instance(dist_matrix_filename, labeled_weights_filename, 100, ' ');
 
     //    Simple tests
     //    default_random_engine generator;
@@ -43,18 +46,14 @@ int main() {
 //    auto sol = heuristic.run(true);
 //    sol.print();
 //    tock(start);
-//
 //    sol.printAssignment();
 
 //  RSSV heuristic
-//    auto start = tick();
-//    RSSV metaheuristic(&instance, 1, 800);
-//    metaheuristic.run(4);
-//    tock(start);
+    auto start = tick();
+    RSSV metaheuristic(&instance, 1, 800);
+    auto sol = metaheuristic.run(4);
+    cout << "RSSV: ";
+    tock(start);
 
-//    auto sol = heuristic.initRandomSolution();
-//    sol.print(); // 1727438.83154983
-//    sol.replaceLocation(1, 2);
-//    sol.print(); // 1715925.48594329
     return 0;
 }
