@@ -14,9 +14,9 @@ int main() {
     //    string weights_filename = "./provided/toulon/weights.txt";
     //    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
     // New parser with my files
-//        string labeled_weights_filename = "./provided/toulon/weights_labeled.txt";
-//        string dist_matrix_filename = "./provided/toulon/dist_matrix.txt";
-//        Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ' ');
+        string labeled_weights_filename = "./provided/toulon/weights_labeled.txt";
+        string dist_matrix_filename = "./provided/toulon/dist_matrix.txt";
+        Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ' ');
     // New parser with provided files
     //    string labeled_weights_filename = "./provided/toulon/pts_origines_toulon.csv";
     //    string dist_matrix_filename = "./provided/toulon/matrice_dist_toulon.csv";
@@ -30,9 +30,9 @@ int main() {
     //    string weights_filename = "./provided/paca/weights.txt";
     //    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 100);
     // New PACA files
-        string labeled_weights_filename = "./provided/matdistpaca_600_1500_tps_90/weights_labeled.txt";
-        string dist_matrix_filename = "./provided/matdistpaca_600_1500_tps_90/dist_matrix.txt";
-        Instance instance(dist_matrix_filename, labeled_weights_filename, 100, ' ');
+    //        string labeled_weights_filename = "./provided/matdistpaca_600_1500_tps_90/weights_labeled.txt";
+    //        string dist_matrix_filename = "./provided/matdistpaca_600_1500_tps_90/dist_matrix.txt";
+    //        Instance instance(dist_matrix_filename, labeled_weights_filename, 100, ' ');
 
     //    Simple tests
     //    default_random_engine generator;

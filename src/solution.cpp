@@ -91,7 +91,7 @@ void Solution::printAssignment() {
         cout << endl;
         for (auto cust:instance->getCustomers()) {
             if (assignment[cust].node == p_loc) {
-                cout << cust << " (" << (int)assignment[cust].dist << ") ";
+                printf("%i (%.2f) ", cust, assignment[cust].dist);
             }
         }
         cout << endl;
