@@ -16,6 +16,7 @@ int main(int argc, char* argv[]) {
     int mode = 0;
     int seed = 1;
 
+    // Parameters parsing
     for (int i = 1; i < argc; ++i) {
         if (argv[i][0] == '-') {
             if (strcmp(argv[i], "-p") == 0) {
@@ -25,7 +26,7 @@ int main(int argc, char* argv[]) {
             } else if (strcmp(argv[i], "-w") == 0) {
                 labeled_weights_filename = argv[i + 1];
             } else if (strcmp(argv[i], "-th") == 0) {
-                threads_cnt = 4;
+                threads_cnt = stoi(argv[i + 1]);
             } else if (strcmp(argv[i], "-mode") == 0) {
                 mode = stoi(argv[i + 1]);
             } else if (strcmp(argv[i], "-seed") == 0) {
@@ -37,6 +38,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Parameters check
     if (p == 0) {
         cerr << "No. of medians -p not given.\n";
         exit(1);
@@ -48,24 +50,28 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    // Load instance
     Instance instance(dist_matrix_filename, labeled_weights_filename, p, ' ');
 
+    // Do something
     auto start = tick();
     switch (mode) {
         case 1:
             cout << "Experimental branch\n";
+
             break;
         case 2: { // TB heuristic
+            cout << "TB heuristic\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             heuristic.run(true);
-            cout << "TB: ";
             break;
         }
         default: // RSSV heuristic
+            cout << "RSSV heuristic\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, 800);
             auto sol = metaheuristic.run(threads_cnt);
-            cout << "RSSV: ";
     }
+    cout << endl;
     tock(start);
 
     return 0;

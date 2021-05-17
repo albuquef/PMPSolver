@@ -1,9 +1,6 @@
-#include <thread>
 #include "RSSV.hpp"
-#include "TB.hpp"
-#include "instance.hpp"
 
-RSSV::RSSV(shared_ptr<Instance> instance, uint_t seed, uint_t n):instance(instance), n(n) {
+RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
     N = instance->getLocations().size();
     M = 5*N/n;

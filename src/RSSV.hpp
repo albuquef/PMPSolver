@@ -2,6 +2,9 @@
 #define LARGE_PMP_RSSV_HPP
 
 #include <unordered_map>
+#include <thread>
+#include "TB.hpp"
+#include "instance.hpp"
 #include "instance.hpp"
 #include "solution.hpp"
 #include "semaphore.hpp"
@@ -19,7 +22,7 @@ private:
     mutex weights_mutex;
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
 public:
-    RSSV(shared_ptr<Instance> instance, uint_t seed, uint_t n);
+    RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
     Solution run(int thread_cnt);
     void solveSubproblem(int seed);
     void processSubsolution(shared_ptr<Solution> solution);
