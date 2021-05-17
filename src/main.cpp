@@ -7,7 +7,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    // Obligatory parameters
+    // Required parameters
     uint_t p = 0;
     string dist_matrix_filename;
     string labeled_weights_filename;

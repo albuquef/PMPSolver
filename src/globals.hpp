@@ -13,4 +13,7 @@ typedef struct {uint_t node;
                 dist_t dist;
                 } my_pair;
 
+extern uint_t LOC_FREQUENCY; // avg. no. of location occurrences in M sub-PMPs (M = LOC_FREQUENCY*N/n)
+extern double BW_CUTOFF; // locations within BW_CUTOFF * h from a selected one obtain nonzero voting score
+
 #endif //LARGE_PMP_GLOBALS_HPP

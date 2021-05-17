@@ -3,10 +3,10 @@
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
     N = instance->getLocations().size();
-    M = 5*N/n;
+    M = LOC_FREQUENCY*N/n;
 
     for (auto loc : instance->getLocations()) {
-        weights[loc] = 0;
+        weights[loc] = DEFAULT_WEIGHT;
     }
 }
 

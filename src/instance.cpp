@@ -295,7 +295,7 @@ uint_t Instance::getClosestCust(uint_t loc) {
 double Instance::getVotingScore(uint_t loc, uint_t cust) {
     auto dist = getRealDist(loc, cust);
     double score = 0;
-    if (dist <= 2 * h) {
+    if (dist <= BW_CUTOFF * h) {
         score = exp(-(dist * dist) / (h * h));
     }
     return score;
