@@ -10,7 +10,7 @@ using namespace std;
 
 class RSSV {
 private:
-    Instance *instance; // original PMP instance
+    shared_ptr<Instance> instance; // original PMP instance
     default_random_engine engine;
     uint_t N; // original PMP size (no. of locations)
     uint_t M; // no. of sub-PMPs
@@ -19,10 +19,10 @@ private:
     mutex weights_mutex;
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
 public:
-    RSSV(Instance *instance, uint_t seed, uint_t n);
+    RSSV(shared_ptr<Instance> instance, uint_t seed, uint_t n);
     Solution run(int thread_cnt);
     void solveSubproblem(int seed);
-    void processSubsolution(Solution *solution);
+    void processSubsolution(shared_ptr<Solution> solution);
     vector<uint_t> filterLocations(uint_t cnt);
 };
 

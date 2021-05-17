@@ -3,7 +3,7 @@
 #include "TB.hpp"
 #include "instance.hpp"
 
-RSSV::RSSV(Instance *instance, uint_t seed, uint_t n):instance(instance), n(n) {
+RSSV::RSSV(shared_ptr<Instance> instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
     N = instance->getLocations().size();
     M = 5*N/n;
@@ -39,17 +39,17 @@ Solution RSSV::run(int thread_cnt) {
     for (auto fl:filtered_locations) cout << fl << " ";
     cout << endl << endl;
 
-    auto filtered_instance = instance->getReducedSubproblem(filtered_locations); // Create filtered instance (n locations, all customers)
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(filtered_locations)); // Create filtered instance (n locations, all customers)
     cout << "Final instance parameters:\n";
-    filtered_instance.print();
+    filtered_instance->print();
 
-    TB heuristic(&filtered_instance, 1); // solve filtered instance by the TB heuristic
+    TB heuristic(filtered_instance, 1); // solve filtered instance by the TB heuristic
     auto sol = heuristic.run(true);
     cout << "Final solution:\n";
     sol.print();
     sol.printAssignment();
 
-    return sol; // todo filtered_instance goes out of scope and cannot be reached after return
+    return sol;
 }
 
 /*
@@ -61,12 +61,12 @@ void RSSV::solveSubproblem(int seed) {
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
-    TB heuristic(&subInstance, seed);
+    TB heuristic(make_shared<Instance>(subInstance), seed);
     auto sol = heuristic.run(false);
 
     cout << "Solution " << seed << ": ";
     sol.print();
-    processSubsolution(&sol);
+    processSubsolution(make_shared<Solution>(sol));
     tock(start);
     sem.notify(seed);
 }
@@ -75,7 +75,7 @@ void RSSV::solveSubproblem(int seed) {
  * Extract voting weights from a subproblem solution.
  * Distance to closest locations is determined from closest customer, NOT from the location in the solution (as it should be).
  */
-void RSSV::processSubsolution(Solution *solution) {
+void RSSV::processSubsolution(shared_ptr<Solution> solution) {
     for (auto loc_sol:solution->get_pLocations()) {
         // get closest customer in orig. instance
         auto cust_cl = instance->getClosestCust(loc_sol);

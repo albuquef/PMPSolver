@@ -15,10 +15,10 @@ private:
     unordered_map<uint_t, my_pair> assignment; // customer -> p location, distance to it
     dist_t objective; // objective value
 public:
-    Instance *instance; // solved instance
+    shared_ptr<Instance> instance; // solved instance
 
     Solution() = default;
-    Solution(Instance *instance, unordered_set<uint_t> p_locations);
+    Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations);
     void naiveEval();
     uint_t getClosestpLoc(uint_t cust);
     const unordered_set<uint_t>& get_pLocations() const;

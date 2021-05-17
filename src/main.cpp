@@ -56,14 +56,14 @@ int main(int argc, char* argv[]) {
             cout << "Experimental branch\n";
             break;
         case 2: { // TB heuristic
-            TB heuristic(&instance, seed);
+            TB heuristic(make_shared<Instance>(instance), seed);
             heuristic.run(true);
             cout << "TB: ";
             break;
         }
         default: // RSSV heuristic
-            RSSV metaheuristic(&instance, seed, 800);
-            metaheuristic.run(threads_cnt);
+            RSSV metaheuristic(make_shared<Instance>(instance), seed, 800);
+            auto sol = metaheuristic.run(threads_cnt);
             cout << "RSSV: ";
     }
     tock(start);

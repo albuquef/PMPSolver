@@ -3,8 +3,8 @@
 #include <utility>
 #include "solution.hpp"
 
-Solution::Solution(Instance *instance, unordered_set<uint_t> p_locations) {
-    this->instance = instance;
+Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
+    this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
     naiveEval();
 }

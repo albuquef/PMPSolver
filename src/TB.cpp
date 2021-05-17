@@ -1,6 +1,8 @@
 #include "TB.hpp"
 
-TB::TB(Instance *instance, uint_t seed):instance(instance) {
+#include <utility>
+
+TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
 //    cout << "TB heuristic initialized\n";
 //    instance->print();
