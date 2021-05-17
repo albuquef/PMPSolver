@@ -1,58 +1,71 @@
 #include <set>
+#include <cstring>
 #include "instance.hpp"
 #include "RSSV.hpp"
 #include "TB.hpp"
 
 using namespace std;
 
-int main() {
-    // Toulon files
-    // Old parser
-    //    string loc_filename = "./provided/toulon/locations.txt"; // p = 5
-    //    string cust_filename = "./provided/toulon/customers.txt";
-    //    string dist_filename = "./provided/toulon/distances.txt";
-    //    string weights_filename = "./provided/toulon/weights.txt";
-    //    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 5);
-    // New parser with my files
-        string labeled_weights_filename = "./provided/toulon/weights_labeled.txt";
-        string dist_matrix_filename = "./provided/toulon/dist_matrix.txt";
-        Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ' ');
-    // New parser with provided files
-    //    string labeled_weights_filename = "./provided/toulon/pts_origines_toulon.csv";
-    //    string dist_matrix_filename = "./provided/toulon/matrice_dist_toulon.csv";
-    //    Instance instance(dist_matrix_filename, labeled_weights_filename, 5, ';');
+int main(int argc, char* argv[]) {
+    // Obligatory parameters
+    uint_t p = 0;
+    string dist_matrix_filename;
+    string labeled_weights_filename;
+    // Optional parameters
+    int threads_cnt = 4;
+    int mode = 0;
+    int seed = 1;
 
-    // PACA files
-    // Old parser
-    //    string loc_filename = "./provided/paca/locations.txt"; // p = 100
-    //    string cust_filename = "./provided/paca/customers.txt";
-    //    string dist_filename = "./provided/paca/distances.txt";
-    //    string weights_filename = "./provided/paca/weights.txt";
-    //    Instance instance(loc_filename, cust_filename, dist_filename, weights_filename, 100);
-    // New PACA files
-    //        string labeled_weights_filename = "./provided/matdistpaca_600_1500_tps_90/weights_labeled.txt";
-    //        string dist_matrix_filename = "./provided/matdistpaca_600_1500_tps_90/dist_matrix.txt";
-    //        Instance instance(dist_matrix_filename, labeled_weights_filename, 100, ' ');
+    for (int i = 1; i < argc; ++i) {
+        if (argv[i][0] == '-') {
+            if (strcmp(argv[i], "-p") == 0) {
+                p = stoi(argv[i + 1]);
+            } else if (strcmp(argv[i], "-dm") == 0) {
+                dist_matrix_filename = argv[i + 1];
+            } else if (strcmp(argv[i], "-w") == 0) {
+                labeled_weights_filename = argv[i + 1];
+            } else if (strcmp(argv[i], "-th") == 0) {
+                threads_cnt = 4;
+            } else if (strcmp(argv[i], "-mode") == 0) {
+                mode = stoi(argv[i + 1]);
+            } else if (strcmp(argv[i], "-seed") == 0) {
+                seed = stoi(argv[i + 1]);
+            } else {
+                cerr << "Unknown parameter: " << argv[i] << endl;
+                exit(1);
+            }
+        }
+    }
 
-    //    Simple tests
-    //    default_random_engine generator;
-    //    Instance instance1 = instance.sampleSubproblem(800, 800, 100, &generator);
-    //    cout << instance.getWeightedDist(690, 1) << endl; // Should return 0.226392658 for Toulon
-    //    cout << instance1.getWeightedDist(690, 1) << endl; // Should return 0.226392658 for Toulon
-    //    unordered_set<uint_t> locations = {534, 529, 298, 580, 355}; // Toulon optimal solution, objective: 1112707.98040259
+    if (p == 0) {
+        cerr << "No. of medians -p not given.\n";
+        exit(1);
+    } else if (dist_matrix_filename.empty()) {
+        cerr << "Distance matrix -dm not given.\n";
+        exit(1);
+    } else if (labeled_weights_filename.empty()) {
+        cerr << "Customer weights -w not given.\n";
+        exit(1);
+    }
 
-//    auto start = tick();
-//    TB heuristic(&instance, 2);
-//    auto sol = heuristic.run(true);
-//    sol.print();
-//    tock(start);
-//    sol.printAssignment();
+    Instance instance(dist_matrix_filename, labeled_weights_filename, p, ' ');
 
-//  RSSV heuristic
     auto start = tick();
-    RSSV metaheuristic(&instance, 1, 800);
-    auto sol = metaheuristic.run(4);
-    cout << "RSSV: ";
+    switch (mode) {
+        case 1:
+            cout << "Experimental branch\n";
+            break;
+        case 2: { // TB heuristic
+            TB heuristic(&instance, seed);
+            heuristic.run(true);
+            cout << "TB: ";
+            break;
+        }
+        default: // RSSV heuristic
+            RSSV metaheuristic(&instance, seed, 800);
+            metaheuristic.run(threads_cnt);
+            cout << "RSSV: ";
+    }
     tock(start);
 
     return 0;
