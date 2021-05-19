@@ -11,6 +11,7 @@ int main(int argc, char* argv[]) {
     uint_t p = 0;
     string dist_matrix_filename;
     string labeled_weights_filename;
+    string capacities_filename;
     // Optional parameters
     int threads_cnt = 4;
     int mode = 0;
@@ -34,6 +35,8 @@ int main(int argc, char* argv[]) {
                 seed = stoi(argv[i + 1]);
             } else if (strcmp(argv[i], "-o") == 0) {
                 output_filename = argv[i + 1];
+            } else if (strcmp(argv[i], "-c") == 0) {
+                capacities_filename = argv[i + 1];
             } else {
                 cerr << "Unknown parameter: " << argv[i] << endl;
                 exit(1);
@@ -51,10 +54,13 @@ int main(int argc, char* argv[]) {
     } else if (labeled_weights_filename.empty()) {
         cerr << "Customer weights -w not given.\n";
         exit(1);
+    } else if (capacities_filename.empty()) {
+        cerr << "Location capacities -c not given.\n";
+        exit(1);
     }
 
     // Load instance
-    Instance instance(dist_matrix_filename, labeled_weights_filename, p, ' ');
+    Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ');
     Solution solution;
 
     // Do something

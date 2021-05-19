@@ -4,6 +4,7 @@
 #define TOLERANCE 0.000001
 #define DEFAULT_DISTANCE 1000000000
 #define DEFAULT_WEIGHT 0
+#define DEFAULT_CAPACITY 0
 
 using namespace std;
 
