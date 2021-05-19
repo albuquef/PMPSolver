@@ -99,5 +99,41 @@ void Solution::printAssignment() {
 
 }
 
+void Solution::exportSolution(const string& output_filename) {
+    ofstream output_file(output_filename);
+    if (output_file.is_open()) {
+        output_file << "p_locations\n";
+        for (auto loc:p_locations) output_file << loc << endl;
+        output_file << endl;
+        output_file << "assignment\n";
+        for (auto loc:p_locations) {
+            output_file << loc << ": ";
+            for (auto cust:instance->getCustomers()) {
+                if (assignment[cust].node == loc) {
+                    output_file << cust << " ";
+                }
+            }
+            output_file << endl;
+        }
+        output_file << endl;
+        output_file << "distances\n";
+        for (auto loc:p_locations) {
+            output_file << loc << ": ";
+            for (auto cust:instance->getCustomers()) {
+                if (assignment[cust].node == loc) {
+                    output_file << cust << " (" << assignment[cust].dist << ") ";
+                }
+            }
+            output_file << endl;
+        }
+    } else {
+        cerr << "Error while opening output file\n";
+    }
+
+}
+
+
+
+
 
 

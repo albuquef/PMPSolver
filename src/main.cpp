@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
     int threads_cnt = 4;
     int mode = 0;
     int seed = 1;
+    string output_filename;
 
     // Parameters parsing
     for (int i = 1; i < argc; ++i) {
@@ -31,6 +32,8 @@ int main(int argc, char* argv[]) {
                 mode = stoi(argv[i + 1]);
             } else if (strcmp(argv[i], "-seed") == 0) {
                 seed = stoi(argv[i + 1]);
+            } else if (strcmp(argv[i], "-o") == 0) {
+                output_filename = argv[i + 1];
             } else {
                 cerr << "Unknown parameter: " << argv[i] << endl;
                 exit(1);
@@ -52,6 +55,7 @@ int main(int argc, char* argv[]) {
 
     // Load instance
     Instance instance(dist_matrix_filename, labeled_weights_filename, p, ' ');
+    Solution solution;
 
     // Do something
     auto start = tick();
@@ -69,10 +73,12 @@ int main(int argc, char* argv[]) {
         default: // RSSV heuristic
             cout << "RSSV heuristic\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, 800);
-            auto sol = metaheuristic.run(threads_cnt);
+            solution = metaheuristic.run(threads_cnt);
     }
     cout << endl;
     tock(start);
+
+    if (!output_filename.empty()) solution.exportSolution(output_filename);
 
     return 0;
 }

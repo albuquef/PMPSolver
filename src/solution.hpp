@@ -26,6 +26,7 @@ public:
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective();
     void printAssignment();
+    void exportSolution(const string& output_filename);
 
 };
 
