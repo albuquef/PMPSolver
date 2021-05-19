@@ -4,11 +4,18 @@
 # w_distances = './provided/toulon/weighted_distances.txt'
 # output = './provided/toulon/dist_matrix.txt'
 
-customers = './provided/paca/customers.txt'
-locations = './provided/paca/locations.txt'
-distances = './provided/paca/distances.txt'
-w_distances = './provided/paca/weighted_distances.txt'
-output = './provided/paca/dist_matrix.txt'
+# customers = './provided/paca/customers.txt'
+# locations = './provided/paca/locations.txt'
+# distances = './provided/paca/distances.txt'
+# w_distances = './provided/paca/weighted_distances.txt'
+# output = './provided/paca/dist_matrix.txt'
+
+# customers = './provided/matdistpaca_600_1500_tps_90/customers.txt'
+# locations = './provided/matdistpaca_600_1500_tps_90/locations.txt'
+# distances = './provided/matdistpaca_600_1500_tps_90/distances.txt'
+# w_distances = './provided/matdistpaca_600_1500_tps_90/weighted_distances.txt'
+# output = './provided/matdistpaca_600_1500_tps_90/dist_matrix.txt'
+
 
 f_cust = open(customers, "r")
 f_loc = open(locations, "r")
