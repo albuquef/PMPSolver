@@ -36,7 +36,15 @@ Solution RSSV::run(int thread_cnt) {
     for (auto fl:filtered_locations) cout << fl << " ";
     cout << endl << endl;
 
-    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(filtered_locations)); // Create filtered instance (n locations, all customers)
+    auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
+    cout << "Extracted " << prioritized_locations.size() << " prioritized locations: ";
+    for (auto pl:prioritized_locations) cout << pl << " ";
+    cout << endl << endl;
+
+    for (auto fl:filtered_locations) prioritized_locations.insert(fl);
+    vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
+
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
     cout << "Final instance parameters:\n";
     filtered_instance->print();
 
@@ -121,6 +129,22 @@ vector<uint_t> RSSV::filterLocations(uint_t cnt) {
     cout << endl;
 
     return filtered_locs;
+}
+
+unordered_set<uint_t> RSSV::extractPrioritizedLocations(uint_t min_cnt) {
+    unordered_set<uint_t> locations;
+    for (auto c:instance->getCustomers()) {
+        uint_t cnt = 0;
+        for (auto l:instance->getLocations()) {
+            if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) cnt++;
+        }
+        if (cnt <= min_cnt) {
+            for (auto l:instance->getLocations()) {
+                if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) locations.insert(l);
+            }
+        }
+    }
+    return locations;
 }
 
 

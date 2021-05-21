@@ -60,9 +60,13 @@ int main(int argc, char* argv[]) {
     // Do something
     auto start = tick();
     switch (mode) {
-        case 1:
-            cout << "Experimental branch\n";
-
+        case 1: {
+            RSSV metaheuristic(make_shared<Instance>(instance), seed, 800);
+            auto locations = metaheuristic.extractPrioritizedLocations(LOC_PRIORITY_CNT);
+            for (auto l:locations) {
+                cout << l << endl;
+            }
+        }
             break;
         case 2: { // TB heuristic
             cout << "TB heuristic\n";

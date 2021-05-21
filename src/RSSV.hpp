@@ -27,6 +27,7 @@ public:
     void solveSubproblem(int seed);
     void processSubsolution(shared_ptr<Solution> solution);
     vector<uint_t> filterLocations(uint_t cnt);
+    unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
 };
 
 #endif //LARGE_PMP_RSSV_HPP
