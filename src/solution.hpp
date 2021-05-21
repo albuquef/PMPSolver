@@ -19,7 +19,8 @@ public:
 
     Solution() = default;
     Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations);
-    void naiveEval();
+    void fullEval();
+    void fullCapEval();
     uint_t getClosestpLoc(uint_t cust);
     const unordered_set<uint_t>& get_pLocations() const;
     void print();

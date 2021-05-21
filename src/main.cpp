@@ -66,10 +66,12 @@ int main(int argc, char* argv[]) {
     // Do something
     auto start = tick();
     switch (mode) {
-        case 1:
+        case 1: {
             cout << "Experimental branch\n";
-
+            TB heuristic(make_shared<Instance>(instance), seed);
+            solution = heuristic.initRandomSolution();
             break;
+        }
         case 2: { // TB heuristic
             cout << "TB heuristic\n";
             TB heuristic(make_shared<Instance>(instance), seed);

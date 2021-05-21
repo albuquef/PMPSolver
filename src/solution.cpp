@@ -6,11 +6,11 @@
 Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
-    naiveEval();
+//    fullEval();
+    fullCapEval();
 }
 
-void Solution::naiveEval() {
-//    assert(p_locations.size() == instance->get_p());
+void Solution::fullEval() {
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
@@ -19,6 +19,15 @@ void Solution::naiveEval() {
         assignment[cust] = my_pair{loc, dist};
 //        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
     }
+}
+
+void Solution::fullCapEval() {
+    objective = 0;
+    // Determine unassigned customer's urgencies
+    // Sort students by decreasing urgencies
+    // Assign students, until some capacity is full
+    // Recompute urgencies and repeat (for unassigned customers and open locations only)
+
 }
 
 uint_t Solution::getClosestpLoc(uint_t cust) {
