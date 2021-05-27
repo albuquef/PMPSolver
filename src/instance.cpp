@@ -236,6 +236,10 @@ Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new) {
     return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id);
 }
 
+uint_t Instance::getLocCapacity(uint_t loc) {
+    return loc_capacities[loc];
+}
+
 
 
 

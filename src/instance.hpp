@@ -42,6 +42,7 @@ public:
     uint_t getDistIndex(uint_t loc, uint_t cust);
     uint_t getClosestCust(uint_t loc);
     double getVotingScore(uint_t loc, uint_t cust);
+    uint_t getLocCapacity(uint_t loc);
 
 };
 

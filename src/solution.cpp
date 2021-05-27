@@ -6,7 +6,16 @@
 Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
-//    fullEval();
+
+    // Initialize all fields
+    for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
+    for (auto cust:this->instance->getCustomers()) {
+        cust_satisfactions[cust] = 0;
+        assignments[cust] = assignment{};
+    }
+    objective = 0;
+
+    // Evaluate them
     fullCapEval();
 }
 
@@ -23,6 +32,7 @@ Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locati
 
 void Solution::fullCapEval() {
     objective = 0;
+//    for (auto cust:instance->getCustomers())
     // Determine unassigned customer's urgencies
     // Sort customers by decreasing urgencies
     // Assign customers, until some capacity is full
@@ -88,24 +98,28 @@ dist_t Solution::get_objective() {
     return objective;
 }
 
-//void Solution::printAssignment() {
-//    for (auto p_loc:p_locations) {
-//        cout << "location: " << p_loc << endl;
-//        cout << "customers: ";
-//        for (auto cust:instance->getCustomers()) {
-//            if (assignment[cust].node == p_loc) {
-//                cout << cust << " ";
-//            }
-//        }
-//        cout << endl;
-//        for (auto cust:instance->getCustomers()) {
-//            if (assignment[cust].node == p_loc) {
-//                printf("%i (%.2f) ", cust, assignment[cust].dist);
-//            }
-//        }
-//        cout << endl;
-//    }
-//}
+void Solution::printAssignment() {
+    cout << "p locations: ";
+    for (auto p_loc:p_locations) cout << p_loc << " ";
+    cout << endl;
+
+    cout << "objective: " << objective << endl;
+
+    cout << "capacities: ";
+    for (auto p_loc:p_locations) cout << p_loc << " (" << instance->getLocCapacity(p_loc) << ") ";
+    cout << endl;
+
+    cout << "usages: ";
+    for (auto p_loc:p_locations) cout << p_loc << " (" << loc_usages[p_loc] << ") ";
+    cout << endl;
+
+    cout << "customer assignments\ncustomer (satisfaction): (location, w. distance, usage)\n";
+    for (auto cust:instance->getCustomers()) {
+        cout << cust << " (" << cust_satisfactions[cust] << "): ";
+        for (auto a:assignments[cust]) printf("(%i, %.2f, %i) ", a.node, a.dist, a.usage);
+        cout << endl;
+    }
+}
 
 //void Solution::exportSolution(const string& output_filename) {
 //    ofstream output_file(output_filename);
