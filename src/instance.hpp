@@ -16,8 +16,8 @@ class Instance {
 private:
     vector<uint_t> locations;
     vector<uint_t> customers;
-    shared_ptr<dist_t[]> cust_weights;
-    shared_ptr<dist_t[]> loc_capacities;
+    shared_ptr<uint_t[]> cust_weights;
+    shared_ptr<uint_t[]> loc_capacities;
     shared_ptr<dist_t[]> dist_matrix;
 
     uint_t p;
@@ -28,7 +28,7 @@ private:
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
     Instance(const string& dist_matrix_filename, const string& weights_filename, const string& capacities_filename, uint_t p, char delim);
-    Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p, uint_t loc_max, uint_t cust_max);
+    Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<uint_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, shared_ptr<uint_t[]> loc_capacities, uint_t p, uint_t loc_max, uint_t cust_max);
 
     dist_t getWeightedDist(uint_t loc, uint_t cust);
     dist_t getRealDist(uint_t loc, uint_t cust);
