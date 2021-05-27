@@ -27,7 +27,7 @@ public:
     const unordered_set<uint_t>& get_pLocations() const;
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);
-    dist_t get_objective();
+    dist_t get_objective() const;
     void printAssignment();
     void exportSolution(const string& output_filename);
 

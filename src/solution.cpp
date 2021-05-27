@@ -1,5 +1,4 @@
 #include <iomanip>
-#include <cassert>
 #include <utility>
 #include "solution.hpp"
 
@@ -32,7 +31,6 @@ Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locati
 
 void Solution::fullCapEval() {
     objective = 0;
-//    for (auto cust:instance->getCustomers())
     // Determine unassigned customer's urgencies
     // Sort customers by decreasing urgencies
     // Assign customers, until some capacity is full
@@ -94,7 +92,7 @@ const unordered_set<uint_t> &Solution::get_pLocations() const {
 //    }
 //}
 
-dist_t Solution::get_objective() {
+dist_t Solution::get_objective() const {
     return objective;
 }
 
