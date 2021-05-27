@@ -12,10 +12,13 @@ using namespace std;
 class Solution {
 private:
     unordered_set<uint_t> p_locations; // p selected locations
-    unordered_map<uint_t, my_pair> assignment; // customer -> p location, distance to it
+    unordered_map<uint_t, uint_t> loc_usages; // p location -> its usage
+
+    unordered_map<uint_t, uint_t> cust_usages; // p location -> its usage
+    unordered_map<uint_t, assignment> assignments; // customer -> its current assignment
     dist_t objective; // objective value
 public:
-    shared_ptr<Instance> instance; // solved instance
+    shared_ptr<Instance> instance; // currently solved instance
 
     Solution() = default;
     Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations);

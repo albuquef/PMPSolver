@@ -24,42 +24,42 @@ Solution TB::initRandomSolution() {
     return sol;
 }
 
-Solution TB::run(bool verbose) {
-    auto sol_best = initRandomSolution();
-    auto locations = instance->getLocations();
-    bool improved = true;
-    Solution sol_tmp;
-    Solution sol_cand;
-
-    while (improved) {
-        improved = false;
-        sol_cand = sol_best;
-        auto start = tick();
-        auto p_locations = sol_best.get_pLocations();
-        for (auto loc:locations) { // First improvement over locations
-            if (!p_locations.contains(loc)) {
-                for (auto p_loc:p_locations) { // Best improvement over p_locations
-                    sol_tmp = sol_best;
-                    sol_tmp.replaceLocation(p_loc, loc);
-//                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
-                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
-                        sol_cand = sol_tmp;
-                        improved = true;
-                    }
-                }
-            }
-            if (improved) {
-                sol_best = sol_cand;
-                break;
-            };
-        }
-        if (verbose) {
-            sol_best.print();
-            cout << "TB loop: ";
-            tock(start);
-            cout << endl;
-        }
-    }
-    return sol_best;
-}
+//Solution TB::run(bool verbose) {
+//    auto sol_best = initRandomSolution();
+//    auto locations = instance->getLocations();
+//    bool improved = true;
+//    Solution sol_tmp;
+//    Solution sol_cand;
+//
+//    while (improved) {
+//        improved = false;
+//        sol_cand = sol_best;
+//        auto start = tick();
+//        auto p_locations = sol_best.get_pLocations();
+//        for (auto loc:locations) { // First improvement over locations
+//            if (!p_locations.contains(loc)) {
+//                for (auto p_loc:p_locations) { // Best improvement over p_locations
+//                    sol_tmp = sol_best;
+//                    sol_tmp.replaceLocation(p_loc, loc);
+////                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
+//                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
+//                        sol_cand = sol_tmp;
+//                        improved = true;
+//                    }
+//                }
+//            }
+//            if (improved) {
+//                sol_best = sol_cand;
+//                break;
+//            };
+//        }
+//        if (verbose) {
+//            sol_best.print();
+//            cout << "TB loop: ";
+//            tock(start);
+//            cout << endl;
+//        }
+//    }
+//    return sol_best;
+//}
 

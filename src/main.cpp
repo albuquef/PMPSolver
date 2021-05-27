@@ -75,18 +75,18 @@ int main(int argc, char* argv[]) {
         case 2: { // TB heuristic
             cout << "TB heuristic\n";
             TB heuristic(make_shared<Instance>(instance), seed);
-            heuristic.run(true);
+//            heuristic.run(true);
             break;
         }
         default: // RSSV heuristic
             cout << "RSSV heuristic\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, 800);
-            solution = metaheuristic.run(threads_cnt);
+//            solution = metaheuristic.run(threads_cnt);
     }
     cout << endl;
     tock(start);
 
-    if (!output_filename.empty()) solution.exportSolution(output_filename);
+//    if (!output_filename.empty()) solution.exportSolution(output_filename);
 
     return 0;
 }
