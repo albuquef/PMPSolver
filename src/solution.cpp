@@ -102,6 +102,9 @@ void Solution::printAssignment() {
 void Solution::exportSolution(const string& output_filename) {
     ofstream output_file(output_filename);
     if (output_file.is_open()) {
+        output_file.precision(2);
+        output_file << "p: " << p_locations.size() << endl;
+        output_file << "objective: " << std::fixed << objective << endl;
         output_file << "p_locations\n";
         for (auto loc:p_locations) output_file << loc << endl;
         output_file << endl;
