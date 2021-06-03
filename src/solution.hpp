@@ -24,7 +24,7 @@ public:
     void fullEval();
     void fullCapEval();
     uint_t getClosestpLoc(uint_t cust);
-    uint_t getClosestOpenpLoc(uint_t cust, uint_t forbidden);
+    uint_t getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc);
     const unordered_set<uint_t>& get_pLocations() const;
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);

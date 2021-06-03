@@ -24,6 +24,7 @@ private:
     uint_t loc_max_id; // kept for addressing the full distance matrix
     uint_t cust_max_id; // kept for addressing the full distance matrix
     dist_t h; // bandwidth
+    uint_t total_demand;
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
@@ -32,7 +33,7 @@ public:
 
     dist_t getWeightedDist(uint_t loc, uint_t cust);
     dist_t getRealDist(uint_t loc, uint_t cust);
-    dist_t getCustWeight(uint_t cust);
+    uint_t getCustWeight(uint_t cust);
     Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator);
     Instance getReducedSubproblem(const vector<uint_t>& locations_new);
     void print();

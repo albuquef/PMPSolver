@@ -31,8 +31,9 @@ Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locati
 
 void Solution::fullCapEval() {
     objective = 0;
+
     // Determine unassigned customer's urgencies
-    unordered_map<uint_t, dist_t> urgencies;
+    vector<pair<uint_t, dist_t>> urgencies_vec;
 
     // get closest and second closest p location with some remaining capacity
     for (auto p:cust_satisfactions) {
@@ -45,18 +46,51 @@ void Solution::fullCapEval() {
             auto dist1 = instance->getRealDist(l1, cust);
             auto dist2 = instance->getRealDist(l2, cust);
             dist_t urgency = fabs(dist1 - dist2);
-            urgencies[cust] = urgency;
-            cout << "cust: " << cust << ", l1: " << l1 << " (" << dist1 << ")" << ", l2: " << l2 << " (" << dist2 << "), ";
-            cout << urgency << endl;
-            cout << dem << endl;
+            urgencies_vec.emplace_back(make_pair(cust, urgency));
         }
     }
 
-    for (auto p:urgencies) {
-        cout << p.first << " " << p.second << endl;
-    }
     // Sort customers by decreasing urgencies
+    sort(urgencies_vec.begin(), urgencies_vec.end(), cmpPair2nd);
+    reverse(urgencies_vec.begin(), urgencies_vec.end()); // high to low now
+
     // Assign customers, until some capacity is full
+    for (auto p:urgencies_vec) {
+        auto cust = p.first;
+//cout << "cust: " << cust << endl;
+        auto dem_rem = instance->getCustWeight(cust); // remaining demand
+//cout << "dem_rem: " << dem_rem << endl;
+        while (dem_rem > 0) {
+            auto loc = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
+            if (loc == numeric_limits<uint_t>::max()) {
+                cerr << "Assignment not possible\n";
+                exit(1);
+            }
+//cout << "loc: " << loc << endl;
+//cout << "loc_usage: " << loc_usages[loc] << endl;
+            auto cap_rem = instance->getLocCapacity(loc) - loc_usages[loc];
+//cout << "cap_rem: " << cap_rem << endl;
+//cout << "dem_rem: " << dem_rem << endl;
+            if (dem_rem > cap_rem) { // assign all remaining location capacity
+                loc_usages[loc] += cap_rem;
+                cust_satisfactions[cust] += cap_rem;
+                auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
+                objective += obj_increment;
+                assignments[cust].emplace_back(my_tuple{loc,cap_rem, obj_increment});
+                dem_rem -= cap_rem;
+            } else { // assign dem_rem
+                loc_usages[loc] += dem_rem;
+                cust_satisfactions[cust] += dem_rem;
+                auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
+                objective += obj_increment;
+                assignments[cust].emplace_back(my_tuple{loc,dem_rem,obj_increment});
+                dem_rem = 0;
+            }
+        }
+
+    }
+
+
     // Recompute urgencies and repeat (for unassigned customers and open locations only)
 
 }
@@ -76,13 +110,13 @@ uint_t Solution::getClosestpLoc(uint_t cust) {
     return loc_closest;
 }
 
-uint_t Solution::getClosestOpenpLoc(uint_t cust, uint_t forbidden) {
+uint_t Solution::getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc) {
     dist_t dist_min = numeric_limits<dist_t>::max();
     dist_t dist;
-    uint_t loc_closest;
+    uint_t loc_closest = numeric_limits<uint_t>::max();
     for (auto loc:p_locations) {
         dist = instance->getRealDist(loc, cust);
-        if (dist <= dist_min && loc_usages[loc] < instance->getLocCapacity(loc) && loc != forbidden) {
+        if (dist <= dist_min && loc_usages[loc] < instance->getLocCapacity(loc) && loc != forbidden_loc) {
             dist_min = dist;
             loc_closest = loc;
         }
@@ -138,7 +172,7 @@ void Solution::printAssignment() {
     for (auto p_loc:p_locations) cout << p_loc << " ";
     cout << endl;
 
-    cout << "objective: " << objective << endl;
+    cout << setprecision(15) << "objective: " << objective << endl;
 
     cout << "capacities: ";
     for (auto p_loc:p_locations) cout << p_loc << " (" << instance->getLocCapacity(p_loc) << ") ";

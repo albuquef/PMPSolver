@@ -52,6 +52,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         // Load weights
         start = tick();
         cout << "Loading weights...\n";
+        total_demand = 0;
         cust_weights = shared_ptr<uint_t[]>(new uint_t[cust_max_id + 1], std::default_delete<uint_t[]>());
         for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
         getline(weights_file, line); // skip first line
@@ -62,9 +63,11 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             auto cust = stoi(tokens[0]);
             auto weight = stoi(tokens[1]);
             cust_weights[cust] = weight;
+            total_demand += weight;
             w_cnt++;
         }
         cout << "Loaded " << w_cnt << " weights\n";
+        cout << "Total customer demand: " << total_demand << endl;
         tock(start);
         // Load capacities
         start = tick();
@@ -150,7 +153,7 @@ void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
 }
 
 
-dist_t Instance::getCustWeight(uint_t cust) {
+uint_t Instance::getCustWeight(uint_t cust) {
     return cust_weights[cust];
 }
 
