@@ -10,5 +10,6 @@ using namespace std;
 chrono::steady_clock::time_point tick();
 void tock(chrono::steady_clock::time_point start);
 vector<uint_t> getRandomSubvector(vector<uint_t> orig_vector, uint_t new_size, default_random_engine *generator);
+bool cmpPair2nd(pair<uint_t, double>& a, pair<uint_t, double>& b);
 
 #endif //LARGE_PMP_UTILS_HPP

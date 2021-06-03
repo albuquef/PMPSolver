@@ -89,12 +89,6 @@ void RSSV::processSubsolution(shared_ptr<Solution> solution) {
     }
 }
 
-bool cmp(pair<uint_t, double>& a,
-         pair<uint_t, double>& b)
-{
-    return a.second < b.second;
-}
-
 /*
  * Filter locations for the final filtered instance.
  * First cnt(=n) locations with the highest weight are extracted.
@@ -104,7 +98,7 @@ vector<uint_t> RSSV::filterLocations(uint_t cnt) {
     for (auto w:weights) { // put pairs loc, weight in a vector
         weights_vec.emplace_back(w);
     }
-    sort(weights_vec.begin(), weights_vec.end(), cmp); // sort by weight
+    sort(weights_vec.begin(), weights_vec.end(), cmpPair2nd); // sort by weight
     reverse(weights_vec.begin(), weights_vec.end()); // reverse (high to low weight now)
 
     cout << "First " << cnt << " voting weights (sorted): ";
