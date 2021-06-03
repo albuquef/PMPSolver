@@ -32,7 +32,9 @@ Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locati
 void Solution::fullCapEval() {
     objective = 0;
     // Determine unassigned customer's urgencies
-    unordered_map<uint_t, uint_t> urgencies;
+    unordered_map<uint_t, dist_t> urgencies;
+
+    // get closest and second closest p location with some remaining capacity
     for (auto p:cust_satisfactions) {
         auto cust = p.first;
         auto sat = p.second;                        // cust satisfaction
@@ -40,10 +42,18 @@ void Solution::fullCapEval() {
         if (sat < dem) { // cust not satisfied yet
             auto l1 = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
             auto l2 = getClosestOpenpLoc(cust, l1);
-            cout << cust << " " << l1 << " " << l2 << endl;
-            // todo get closest and second closest p location with some remaining capacity
-
+            auto dist1 = instance->getRealDist(l1, cust);
+            auto dist2 = instance->getRealDist(l2, cust);
+            dist_t urgency = fabs(dist1 - dist2);
+            urgencies[cust] = urgency;
+            cout << "cust: " << cust << ", l1: " << l1 << " (" << dist1 << ")" << ", l2: " << l2 << " (" << dist2 << "), ";
+            cout << urgency << endl;
+            cout << dem << endl;
         }
+    }
+
+    for (auto p:urgencies) {
+        cout << p.first << " " << p.second << endl;
     }
     // Sort customers by decreasing urgencies
     // Assign customers, until some capacity is full
@@ -77,7 +87,6 @@ uint_t Solution::getClosestOpenpLoc(uint_t cust, uint_t forbidden) {
             loc_closest = loc;
         }
     }
-
     return loc_closest;
 }
 
