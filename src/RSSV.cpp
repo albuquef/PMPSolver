@@ -65,7 +65,7 @@ void RSSV::solveSubproblem(int seed) {
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
-    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     TB heuristic(make_shared<Instance>(subInstance), seed);
     auto sol = heuristic.run(false);
 
