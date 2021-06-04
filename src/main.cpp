@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     auto start = tick();
     switch (mode) {
         case 1: {
-            RSSV metaheuristic(make_shared<Instance>(instance), seed, 800);
+            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             auto locations = metaheuristic.extractPrioritizedLocations(LOC_PRIORITY_CNT);
             for (auto l:locations) {
                 cout << l << endl;
@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
         }
         default: // RSSV heuristic
             cout << "RSSV heuristic\n";
-            RSSV metaheuristic(make_shared<Instance>(instance), seed, 800);
+            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             solution = metaheuristic.run(threads_cnt);
     }
     cout << endl;

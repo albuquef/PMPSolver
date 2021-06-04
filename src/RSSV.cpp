@@ -31,8 +31,9 @@ Solution RSSV::run(int thread_cnt) {
     }
     cout << "All subproblems solved."  << endl << endl;
 
-    auto filtered_locations = filterLocations(n); // Filter n locations according to voting weights
-    cout << "Filtered " << n << " locations: ";
+    auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
+    auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
+    cout << "Filtered " << filtered_cnt << " locations: ";
     for (auto fl:filtered_locations) cout << fl << " ";
     cout << endl << endl;
 
