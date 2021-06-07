@@ -87,7 +87,6 @@ void Solution::fullCapEval() {
                 dem_rem = 0;
             }
         }
-
     }
 
 
@@ -168,24 +167,20 @@ dist_t Solution::get_objective() const {
 }
 
 void Solution::printAssignment() {
-    cout << "p locations: ";
-    for (auto p_loc:p_locations) cout << p_loc << " ";
+    cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
+
+    cout << "P LOCATIONS\n";
+    for (auto p_loc:p_locations) printf("%i\n", p_loc);
     cout << endl;
 
-    cout << setprecision(15) << "objective: " << objective << endl;
-
-    cout << "capacities: ";
-    for (auto p_loc:p_locations) cout << p_loc << " (" << instance->getLocCapacity(p_loc) << ") ";
+    cout << "LOCATION USAGES\nlocation (usage/capacity)\n";
+    for (auto p_loc:p_locations) printf("%i (%i/%i)\n", p_loc, loc_usages[p_loc], instance->getLocCapacity(p_loc));
     cout << endl;
 
-    cout << "usages: ";
-    for (auto p_loc:p_locations) cout << p_loc << " (" << loc_usages[p_loc] << ") ";
-    cout << endl;
-
-    cout << "customer assignments\ncustomer (satisfaction): (location, w. distance, usage)\n";
+    cout << "CUSTOMER ASSIGNMENTS\ncustomer (demand/satisfaction) -> location (usage/capacity)\n";
     for (auto cust:instance->getCustomers()) {
-        cout << cust << " (" << cust_satisfactions[cust] << "): ";
-        for (auto a:assignments[cust]) printf("(%i, %.2f, %i) ", a.node, a.dist, a.usage);
+        cout << cust << " (" << cust_satisfactions[cust] << "/" << instance->getCustWeight(cust) << ") -> ";
+        for (auto a:assignments[cust]) printf("%i (%i/%i) ", a.node, a.usage, instance->getLocCapacity(a.node));
         cout << endl;
     }
 }
