@@ -243,6 +243,10 @@ uint_t Instance::getLocCapacity(uint_t loc) {
     return loc_capacities[loc];
 }
 
+uint_t Instance::getTotalDemand() const {
+    return total_demand;
+}
+
 
 
 

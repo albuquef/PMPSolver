@@ -44,6 +44,7 @@ public:
     uint_t getClosestCust(uint_t loc);
     double getVotingScore(uint_t loc, uint_t cust);
     uint_t getLocCapacity(uint_t loc);
+    uint_t getTotalDemand() const;
 
 };
 

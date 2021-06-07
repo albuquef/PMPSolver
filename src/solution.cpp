@@ -31,6 +31,14 @@ Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locati
 
 void Solution::fullCapEval() {
     objective = 0;
+    // Check if capacity demands can be met
+    uint_t total_capacity = 0;
+    uint_t total_demand = instance->getTotalDemand();
+    for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
+    if (total_capacity < total_demand) {
+        fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
+        exit(1);
+    }
 
     // Determine unassigned customer's urgencies
     vector<pair<uint_t, dist_t>> urgencies_vec;
