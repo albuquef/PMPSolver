@@ -70,13 +70,13 @@ int main(int argc, char* argv[]) {
             cout << "Experimental branch\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             solution = heuristic.initRandomSolution();
-            solution.printAssignment();
+//            heuristic.run(true);
             break;
         }
         case 2: { // TB heuristic
             cout << "TB heuristic\n";
             TB heuristic(make_shared<Instance>(instance), seed);
-//            heuristic.run(true);
+            solution = heuristic.run(true);
             break;
         }
         default: // RSSV heuristic
@@ -87,6 +87,7 @@ int main(int argc, char* argv[]) {
     cout << endl;
     tock(start);
 
+    solution.printAssignment();
 //    if (!output_filename.empty()) solution.exportSolution(output_filename);
 
     return 0;

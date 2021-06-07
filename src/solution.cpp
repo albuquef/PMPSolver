@@ -5,32 +5,18 @@
 Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
+    fullCapEval();
+}
 
+void Solution::fullCapEval() {
     // Initialize all fields
+    objective = 0;
     for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
     for (auto cust:this->instance->getCustomers()) {
         cust_satisfactions[cust] = 0;
         assignments[cust] = assignment{};
     }
-    objective = 0;
 
-    // Evaluate them
-    fullCapEval();
-}
-
-//void Solution::fullEval() {
-//    objective = 0;
-//    for (auto cust:instance->getCustomers()) {
-//        auto loc = getClosestpLoc(cust);
-//        auto dist = instance->getWeightedDist(loc, cust);
-//        objective += dist;
-//        assignment[cust] = my_pair{loc, dist};
-////        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
-//    }
-//}
-
-void Solution::fullCapEval() {
-    objective = 0;
     // Check if capacity demands can be met
     uint_t total_capacity = 0;
     uint_t total_demand = instance->getTotalDemand();
@@ -147,28 +133,13 @@ const unordered_set<uint_t> &Solution::get_pLocations() const {
     return this->p_locations;
 }
 
-//void Solution::replaceLocation(uint_t loc_old, uint_t loc_new) {
-//    // Update p_locations
-//    p_locations.erase(loc_old);
-//    p_locations.insert(loc_new);
-//    // Update assignment and objective
-//    for (auto cust:instance->getCustomers()) {
-//        auto dist_old = assignment[cust].dist;
-//        auto dist_new = instance->getWeightedDist(loc_new, cust);
-//        if (assignment[cust].node == loc_old) { // cust must be reassigned to some other p location
-//            auto loc_closest = getClosestpLoc(cust);
-//            auto dist_closest = instance->getWeightedDist(loc_closest, cust);
-//            assignment[cust] = my_pair {loc_closest, dist_closest};
-//            objective -= dist_old;
-//            objective += dist_closest;
-//        } else if (dist_old - dist_new > TOLERANCE) { // cust may be reassigned to loc_new
-//            assignment[cust] = my_pair {loc_new, dist_new};
-//            objective -= dist_old;
-//            objective += dist_new;
-//        }
-////        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
-//    }
-//}
+void Solution::replaceLocation(uint_t loc_old, uint_t loc_new) {
+    // Update p_locations
+    p_locations.erase(loc_old);
+    p_locations.insert(loc_new);
+    // Update assignment and objective
+    fullCapEval();
+}
 
 dist_t Solution::get_objective() const {
     return objective;
