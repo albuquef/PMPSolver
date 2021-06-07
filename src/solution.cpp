@@ -26,15 +26,16 @@ void Solution::fullCapEval() {
         exit(1);
     }
 
+
     // Determine unassigned customer's urgencies
     vector<pair<uint_t, dist_t>> urgencies_vec;
 
     // get closest and second closest p location with some remaining capacity
     for (auto p:cust_satisfactions) {
         auto cust = p.first;
-        auto sat = p.second;                        // cust satisfaction
-        auto dem = instance->getCustWeight(cust);   // cust demand
-        if (sat < dem) { // cust not satisfied yet
+        auto sat = p.second;                                // cust satisfaction
+        auto dem = instance->getCustWeight(cust) - sat;     // cust remaining demand
+        if (sat < dem) { // cust not fully satisfied yet
             auto l1 = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
             auto l2 = getClosestOpenpLoc(cust, l1);
             auto dist1 = instance->getRealDist(l1, cust);
@@ -52,7 +53,7 @@ void Solution::fullCapEval() {
     for (auto p:urgencies_vec) {
         auto cust = p.first;
 //cout << "cust: " << cust << endl;
-        auto dem_rem = instance->getCustWeight(cust); // remaining demand
+        auto dem_rem = instance->getCustWeight(cust) - cust_satisfactions[cust]; // remaining demand
 //cout << "dem_rem: " << dem_rem << endl;
         while (dem_rem > 0) {
             auto loc = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
@@ -70,19 +71,18 @@ void Solution::fullCapEval() {
                 cust_satisfactions[cust] += cap_rem;
                 auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
                 objective += obj_increment;
-                assignments[cust].emplace_back(my_tuple{loc,cap_rem, obj_increment});
+                assignments[cust].emplace_back(my_tuple{loc, cap_rem, obj_increment});
                 dem_rem -= cap_rem;
             } else { // assign dem_rem
                 loc_usages[loc] += dem_rem;
                 cust_satisfactions[cust] += dem_rem;
                 auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
                 objective += obj_increment;
-                assignments[cust].emplace_back(my_tuple{loc,dem_rem,obj_increment});
+                assignments[cust].emplace_back(my_tuple{loc, dem_rem, obj_increment});
                 dem_rem = 0;
             }
         }
     }
-
 
     // Recompute urgencies and repeat (for unassigned customers and open locations only)
 
