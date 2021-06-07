@@ -31,6 +31,7 @@ public:
     dist_t get_objective() const;
     void printAssignment();
     void exportSolution(const string& output_filename);
+    vector<pair<uint_t, dist_t>> getUrgencies();
 
 };
 

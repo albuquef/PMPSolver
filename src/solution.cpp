@@ -8,26 +8,7 @@ Solution::Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locati
     fullCapEval();
 }
 
-void Solution::fullCapEval() {
-    // Initialize all fields
-    objective = 0;
-    for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
-    for (auto cust:this->instance->getCustomers()) {
-        cust_satisfactions[cust] = 0;
-        assignments[cust] = assignment{};
-    }
-
-    // Check if capacity demands can be met
-    uint_t total_capacity = 0;
-    uint_t total_demand = instance->getTotalDemand();
-    for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
-    if (total_capacity < total_demand) {
-        fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
-        exit(1);
-    }
-
-
-    // Determine unassigned customer's urgencies
+vector<pair<uint_t, dist_t>> Solution::getUrgencies() {
     vector<pair<uint_t, dist_t>> urgencies_vec;
 
     // get closest and second closest p location with some remaining capacity
@@ -49,42 +30,72 @@ void Solution::fullCapEval() {
     sort(urgencies_vec.begin(), urgencies_vec.end(), cmpPair2nd);
     reverse(urgencies_vec.begin(), urgencies_vec.end()); // high to low now
 
-    // Assign customers, until some capacity is full
-    for (auto p:urgencies_vec) {
-        auto cust = p.first;
-//cout << "cust: " << cust << endl;
-        auto dem_rem = instance->getCustWeight(cust) - cust_satisfactions[cust]; // remaining demand
-//cout << "dem_rem: " << dem_rem << endl;
-        while (dem_rem > 0) {
-            auto loc = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
-            if (loc == numeric_limits<uint_t>::max()) {
-                cerr << "Assignment not possible\n";
-                exit(1);
-            }
-//cout << "loc: " << loc << endl;
-//cout << "loc_usage: " << loc_usages[loc] << endl;
-            auto cap_rem = instance->getLocCapacity(loc) - loc_usages[loc];
-//cout << "cap_rem: " << cap_rem << endl;
-//cout << "dem_rem: " << dem_rem << endl;
-            if (dem_rem > cap_rem) { // assign all remaining location capacity
-                loc_usages[loc] += cap_rem;
-                cust_satisfactions[cust] += cap_rem;
-                auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
-                objective += obj_increment;
-                assignments[cust].emplace_back(my_tuple{loc, cap_rem, obj_increment});
-                dem_rem -= cap_rem;
-            } else { // assign dem_rem
-                loc_usages[loc] += dem_rem;
-                cust_satisfactions[cust] += dem_rem;
-                auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
-                objective += obj_increment;
-                assignments[cust].emplace_back(my_tuple{loc, dem_rem, obj_increment});
-                dem_rem = 0;
-            }
-        }
+    return urgencies_vec;
+}
+
+void Solution::fullCapEval() {
+    // Initialize all fields
+    objective = 0;
+    for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
+    for (auto cust:this->instance->getCustomers()) {
+        cust_satisfactions[cust] = 0;
+        assignments[cust] = assignment{};
     }
 
-    // Recompute urgencies and repeat (for unassigned customers and open locations only)
+    // Check if capacity demands can be met
+    uint_t total_capacity = 0;
+    uint_t total_demand = instance->getTotalDemand();
+    for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
+    if (total_capacity < total_demand) {
+        fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
+        exit(1);
+    }
+
+
+    // Determine unassigned customer's urgencies
+    auto urgencies_vec = getUrgencies();
+    bool location_full = false;
+
+    while (!urgencies_vec.empty()) {
+        // Assign customers, until some capacity is full
+        for (auto p:urgencies_vec) {
+            auto cust = p.first;
+            auto dem_rem = instance->getCustWeight(cust) - cust_satisfactions[cust]; // remaining demand
+            while (dem_rem > 0) {
+                auto loc = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
+                if (loc == numeric_limits<uint_t>::max()) {
+                    cerr << "Assignment not possible\n";
+                    exit(1);
+                }
+                auto cap_rem = instance->getLocCapacity(loc) - loc_usages[loc];
+                if (dem_rem > cap_rem) { // assign all remaining location capacity
+                    loc_usages[loc] += cap_rem;
+                    cust_satisfactions[cust] += cap_rem;
+                    auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
+                    objective += obj_increment;
+                    assignments[cust].emplace_back(my_tuple{loc, cap_rem, obj_increment});
+                    dem_rem -= cap_rem;
+                    location_full = true;
+                    break;
+                } else { // assign dem_rem
+                    loc_usages[loc] += dem_rem;
+                    cust_satisfactions[cust] += dem_rem;
+                    auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
+                    objective += obj_increment;
+                    assignments[cust].emplace_back(my_tuple{loc, dem_rem, obj_increment});
+                    dem_rem = 0;
+                }
+            }
+            if (location_full) break;
+        }
+
+        // Recompute urgencies and repeat (for unassigned customers and open locations only)
+        location_full = false;
+        urgencies_vec = getUrgencies();
+//        for (auto u:urgencies_vec) cout << u.first << " " << loc_usages[u.first] << "; ";
+//        cout << endl;
+    }
+
 
 }
 

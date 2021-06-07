@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
     cout << endl;
     tock(start);
 
-    solution.printAssignment();
+//    solution.printAssignment();
 //    if (!output_filename.empty()) solution.exportSolution(output_filename);
 
     return 0;
