@@ -70,6 +70,10 @@ int main(int argc, char* argv[]) {
             cout << "Experimental branch\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             solution = heuristic.initRandomSolution();
+            solution.print();
+
+            auto solution_2 = heuristic.initRandomCapSolution();
+            solution_2.print();
         }
             break;
         case 2: { // TB heuristic

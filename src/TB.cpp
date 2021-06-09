@@ -24,6 +24,22 @@ Solution_std TB::initRandomSolution() {
     return sol;
 }
 
+Solution_cap TB::initRandomCapSolution() {
+    // Sample p distinct locations
+    unordered_set<uint_t> p_locations;
+    auto p = instance->get_p();
+    auto locations = instance->getLocations();
+
+    uniform_int_distribution<uint_t> distribution (0, locations.size() - 1);
+    while (p_locations.size() < p) {
+        auto loc_id = distribution(engine);
+        auto loc = locations[loc_id];
+        p_locations.insert(loc);
+    }
+    Solution_cap sol(instance, p_locations);
+    return sol;
+}
+
 Solution_std TB::run(bool verbose) {
     auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();

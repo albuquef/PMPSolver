@@ -3,6 +3,7 @@
 
 #include "instance.hpp"
 #include "solution_std.hpp"
+#include "solution_cap.hpp"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ private:
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
+    Solution_cap initRandomCapSolution();
     Solution_std run(bool verbose);
 
 };
