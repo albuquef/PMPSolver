@@ -15,7 +15,9 @@ public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
     Solution_cap initRandomCapSolution();
+
     Solution_std run(bool verbose);
+    Solution_cap run_cap(bool verbose);
 
 };
 
