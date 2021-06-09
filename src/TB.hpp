@@ -1,6 +1,7 @@
 #ifndef LARGE_PMP_TB_HPP
 #define LARGE_PMP_TB_HPP
 
+#include <omp.h>
 #include "instance.hpp"
 #include "solution_std.hpp"
 #include "solution_cap.hpp"

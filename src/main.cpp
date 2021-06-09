@@ -61,6 +61,7 @@ int main(int argc, char *argv[]) {
 
     // Load instance
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ');
+//    omp_set_num_threads(1);
 
     // Do something
     auto start = tick();
