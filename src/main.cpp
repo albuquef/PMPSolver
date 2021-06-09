@@ -76,7 +76,8 @@ int main(int argc, char *argv[]) {
             cout << "TB heuristic - cPMP\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run_cap(true);
-//            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            solution.print();
+            solution.printAssignment(output_filename);
             break;
         }
         case 3: {
@@ -103,8 +104,7 @@ int main(int argc, char *argv[]) {
             auto solution = heuristic.run_cap(true);
             cout << "Final solution:\n";
             solution.print();
-            solution.printAssignment();
-//            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            solution.printAssignment(output_filename);
             break;
         }
         default: {
@@ -114,6 +114,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    cout << endl;
     tock(start);
 
     return 0;

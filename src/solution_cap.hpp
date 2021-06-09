@@ -24,15 +24,13 @@ public:
 
     Solution_cap() = default;
     Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations);
-    void fullEval();
     void fullCapEval();
     uint_t getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc);
     const unordered_set<uint_t>& get_pLocations() const;
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective() const;
-    void printAssignment();
-    void exportSolution(const string& output_filename);
+    void printAssignment(string output_filename);
     vector<pair<uint_t, dist_t>> getUrgencies();
 
 };

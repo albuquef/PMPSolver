@@ -120,9 +120,6 @@ void Solution_cap::print() {
     for (auto p:p_locations) {
         cout << p << " ";
     }
-//    for (auto cust:instance->getCustomers()) {
-//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
-//    }
     cout << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
 }
@@ -143,23 +140,35 @@ dist_t Solution_cap::get_objective() const {
     return objective;
 }
 
-void Solution_cap::printAssignment() {
+void Solution_cap::printAssignment(string output_filename) {
+    fstream file;
+    streambuf *stream_buffer_cout = cout.rdbuf();
+    if (!output_filename.empty()) {
+        file.open(output_filename, ios::out);
+        streambuf *stream_buffer_file = file.rdbuf();
+        cout.rdbuf(stream_buffer_file);
+    }
+
     cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
 
     cout << "P LOCATIONS\n";
-    for (auto p_loc:p_locations) printf("%i\n", p_loc);
+    for (auto p_loc:p_locations) cout << p_loc << endl;
     cout << endl;
 
     cout << "LOCATION USAGES\nlocation (usage/capacity)\n";
-    for (auto p_loc:p_locations) printf("%i (%i/%i)\n", p_loc, loc_usages[p_loc], instance->getLocCapacity(p_loc));
+    for (auto p_loc:p_locations)
+        cout << p_loc << " (" << loc_usages[p_loc] << "/" << instance->getLocCapacity(p_loc) << ")\n";
     cout << endl;
 
-    cout << "CUSTOMER ASSIGNMENTS\ncustomer (demand/satisfaction) -> location (assigned demand)\n";
+    cout << "CUSTOMER ASSIGNMENTS\ncustomer (demand) -> location (assigned demand)\n";
     for (auto cust:instance->getCustomers()) {
-        cout << cust << " (" << cust_satisfactions[cust] << "/" << instance->getCustWeight(cust) << ") -> ";
-        for (auto a:assignments[cust]) printf("%i (%i) ", a.node, a.usage);
+        cout << cust << " (" << instance->getCustWeight(cust) << ") -> ";
+        for (auto a:assignments[cust]) cout << a.node << " (" << a.usage << ") ";
         cout << endl;
     }
+
+    cout.rdbuf(stream_buffer_cout);
+    file.close();
 }
 
 
