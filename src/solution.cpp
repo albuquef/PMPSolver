@@ -92,8 +92,6 @@ void Solution::fullCapEval() {
         // Recompute urgencies and repeat (for unassigned customers and open locations only)
         location_full = false;
         urgencies_vec = getUrgencies();
-//        for (auto u:urgencies_vec) cout << u.first << " " << loc_usages[u.first] << "; ";
-//        cout << endl;
     }
 
 
