@@ -69,7 +69,7 @@ int main(int argc, char *argv[]) {
             cout << "TB heuristic - standard PMP\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run(true);
-            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            solution.printAssignment(output_filename);
             break;
         }
         case 2: {
@@ -90,8 +90,7 @@ int main(int argc, char *argv[]) {
             auto solution = heuristic.run(true);
             cout << "Final solution:\n";
             solution.print();
-            solution.printAssignment();
-            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            solution.printAssignment(output_filename);
             break;
         }
         case 4: {

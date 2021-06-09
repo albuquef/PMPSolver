@@ -1,5 +1,4 @@
 #include <iomanip>
-#include <cassert>
 #include <utility>
 #include "solution_std.hpp"
 
@@ -79,64 +78,32 @@ dist_t Solution_std::get_objective() {
     return objective;
 }
 
-void Solution_std::printAssignment() {
-    for (auto p_loc:p_locations) {
-        cout << "location: " << p_loc << endl;
-        cout << "customers: ";
+void Solution_std::printAssignment(const string& output_filename) {
+    fstream file;
+    streambuf *stream_buffer_cout = cout.rdbuf();
+    if (!output_filename.empty()) {
+        file.open(output_filename, ios::out);
+        streambuf *stream_buffer_file = file.rdbuf();
+        cout.rdbuf(stream_buffer_file);
+    }
+
+    cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
+
+    cout << "P LOCATIONS\n";
+    for (auto p_loc:p_locations) cout << p_loc << endl;
+    cout << endl;
+
+    cout << "LOCATION ASSIGNMENTS\nlocation: customers\n";
+    for (auto loc:p_locations) {
+        cout << loc << ": ";
         for (auto cust:instance->getCustomers()) {
-            if (assignment[cust].node == p_loc) {
+            if (assignment[cust].node == loc) {
                 cout << cust << " ";
             }
         }
         cout << endl;
-        for (auto cust:instance->getCustomers()) {
-            if (assignment[cust].node == p_loc) {
-                printf("%i (%.2f) ", cust, assignment[cust].dist);
-            }
-        }
-        cout << endl;
     }
 
+    cout.rdbuf(stream_buffer_cout);
+    file.close();
 }
-
-void Solution_std::exportSolution(const string& output_filename) {
-    ofstream output_file(output_filename);
-    if (output_file.is_open()) {
-        output_file.precision(2);
-        output_file << "p: " << p_locations.size() << endl;
-        output_file << "objective: " << std::fixed << objective << endl;
-        output_file << "p_locations\n";
-        for (auto loc:p_locations) output_file << loc << endl;
-        output_file << endl;
-        output_file << "assignment\n";
-        for (auto loc:p_locations) {
-            output_file << loc << ": ";
-            for (auto cust:instance->getCustomers()) {
-                if (assignment[cust].node == loc) {
-                    output_file << cust << " ";
-                }
-            }
-            output_file << endl;
-        }
-        output_file << endl;
-        output_file << "distances\n";
-        for (auto loc:p_locations) {
-            output_file << loc << ": ";
-            for (auto cust:instance->getCustomers()) {
-                if (assignment[cust].node == loc) {
-                    output_file << cust << " (" << assignment[cust].dist << ") ";
-                }
-            }
-            output_file << endl;
-        }
-    } else {
-        cerr << "Error while opening output file\n";
-    }
-
-}
-
-
-
-
-
-
