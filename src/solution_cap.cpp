@@ -154,10 +154,10 @@ void Solution_cap::printAssignment() {
     for (auto p_loc:p_locations) printf("%i (%i/%i)\n", p_loc, loc_usages[p_loc], instance->getLocCapacity(p_loc));
     cout << endl;
 
-    cout << "CUSTOMER ASSIGNMENTS\ncustomer (demand/satisfaction) -> location (usage/capacity)\n";
+    cout << "CUSTOMER ASSIGNMENTS\ncustomer (demand/satisfaction) -> location (assigned demand)\n";
     for (auto cust:instance->getCustomers()) {
         cout << cust << " (" << cust_satisfactions[cust] << "/" << instance->getCustWeight(cust) << ") -> ";
-        for (auto a:assignments[cust]) printf("%i (%i/%i) ", a.node, a.usage, instance->getLocCapacity(a.node));
+        for (auto a:assignments[cust]) printf("%i (%i) ", a.node, a.usage);
         cout << endl;
     }
 }

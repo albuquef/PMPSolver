@@ -23,7 +23,7 @@ private:
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
-    Solution_std run(int thread_cnt);
+    shared_ptr<Instance> run(int thread_cnt);
     void solveSubproblem(int seed);
     void processSubsolution(shared_ptr<Solution_std> solution);
     vector<uint_t> filterLocations(uint_t cnt);

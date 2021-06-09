@@ -13,7 +13,7 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
 /*
  * RSSV metaheuristic implementation.
  */
-Solution_std RSSV::run(int thread_cnt) {
+shared_ptr<Instance> RSSV::run(int thread_cnt) {
     cout << "RSSV running...\n";
     cout << "PMP size (N): " << N << endl;
     cout << "sub-PMP size (n): " << n << endl;
@@ -49,13 +49,7 @@ Solution_std RSSV::run(int thread_cnt) {
     cout << "Final instance parameters:\n";
     filtered_instance->print();
 
-    TB heuristic(filtered_instance, 1); // solve filtered instance by the TB heuristic
-    auto sol = heuristic.run(true);
-    cout << "Final solution:\n";
-    sol.print();
-    sol.printAssignment();
-
-    return sol;
+    return filtered_instance;
 }
 
 /*

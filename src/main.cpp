@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     // Required parameters
     uint_t p = 0;
     string dist_matrix_filename;
@@ -61,36 +61,60 @@ int main(int argc, char* argv[]) {
 
     // Load instance
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ');
-    Solution_std solution;
 
     // Do something
     auto start = tick();
     switch (mode) {
         case 1: {
+            cout << "TB heuristic - standard PMP\n";
+            TB heuristic(make_shared<Instance>(instance), seed);
+            auto solution = heuristic.run(true);
+            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            break;
+        }
+        case 2: {
+            cout << "TB heuristic - cPMP\n";
+            TB heuristic(make_shared<Instance>(instance), seed);
+            auto solution = heuristic.run_cap(true);
+//            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            break;
+        }
+        case 3: {
+            // Extract filtered instance
+            cout << "RSSV heuristic - standard PMP\n";
+            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+            auto filtered_instance = metaheuristic.run(threads_cnt);
+            // solve filtered instance by the TB heuristic
+            TB heuristic(filtered_instance, 1);
+            auto solution = heuristic.run(true);
+            cout << "Final solution:\n";
+            solution.print();
+            solution.printAssignment();
+            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            break;
+        }
+        case 4: {
+            // Extract filtered instance
+            cout << "RSSV heuristic - standard PMP\n";
+            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+            auto filtered_instance = metaheuristic.run(threads_cnt);
+            // solve filtered instance by the TB heuristic
+            TB heuristic(filtered_instance, 1);
+            auto solution = heuristic.run_cap(true);
+            cout << "Final solution:\n";
+            solution.print();
+            solution.printAssignment();
+//            if (!output_filename.empty()) solution.exportSolution(output_filename);
+            break;
+        }
+        default: {
             cout << "Experimental branch\n";
             TB heuristic(make_shared<Instance>(instance), seed);
-            solution = heuristic.initRandomSolution();
-            solution.print();
-
-            auto solution_2 = heuristic.initRandomCapSolution();
-            solution_2.print();
+            auto solution = heuristic.initRandomSolution();
         }
-            break;
-        case 2: { // TB heuristic
-            cout << "TB heuristic\n";
-            TB heuristic(make_shared<Instance>(instance), seed);
-            heuristic.run(true);
-            break;
-        }
-        default: // RSSV heuristic
-            cout << "RSSV heuristic\n";
-            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            solution = metaheuristic.run(threads_cnt);
     }
-    cout << endl;
-    tock(start);
 
-    if (!output_filename.empty()) solution.exportSolution(output_filename);
+    tock(start);
 
     return 0;
 }

@@ -10,6 +10,10 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
           dist_matrix(std::move(dist_matrix)),
           loc_capacities(std::move(loc_capacities)), p(p),
           loc_max_id(loc_max), cust_max_id(cust_max) {
+    total_demand = 0;
+    for (auto cust:customers) {
+        total_demand += this->getCustWeight(cust);
+    }
 }
 
 vector<string> tokenize(const string& input, char delim) {
