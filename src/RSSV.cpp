@@ -31,8 +31,9 @@ Solution RSSV::run(int thread_cnt) {
     }
     cout << "All subproblems solved."  << endl << endl;
 
-    auto filtered_locations = filterLocations(n); // Filter n locations according to voting weights
-    cout << "Filtered " << n << " locations: ";
+    auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
+    auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
+    cout << "Filtered " << filtered_cnt << " locations: ";
     for (auto fl:filtered_locations) cout << fl << " ";
     cout << endl << endl;
 
@@ -65,7 +66,7 @@ void RSSV::solveSubproblem(int seed) {
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
-    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     TB heuristic(make_shared<Instance>(subInstance), seed);
     auto sol = heuristic.run(false);
 
