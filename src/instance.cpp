@@ -3,15 +3,16 @@
 #include <utility>
 #include <sstream>
 
-Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
-                   shared_ptr<dist_t[]> dist_matrix, uint_t p,
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<uint_t[]> cust_weights,
+                   shared_ptr<dist_t[]> dist_matrix, shared_ptr<uint_t[]> loc_capacities, uint_t p,
                    uint_t loc_max, uint_t cust_max)
         : locations(std::move(locations)), customers(std::move(customers)), cust_weights(std::move(cust_weights)),
-          dist_matrix(std::move(dist_matrix)), p(p),
+          dist_matrix(std::move(dist_matrix)),
+          loc_capacities(std::move(loc_capacities)), p(p),
           loc_max_id(loc_max), cust_max_id(cust_max) {
 }
 
-vector<string> tokenize(string input, char delim) {
+vector<string> tokenize(const string& input, char delim) {
     vector <string> tokens;
     stringstream check1(input);
     string intermediate;
@@ -22,12 +23,13 @@ vector<string> tokenize(string input, char delim) {
     return tokens;
 }
 
-Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, uint_t p, char delim) : p(p) {
+Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim) : p(p) {
     // Open streams
     fstream dist_matrix_file(dist_matrix_filename);
     fstream weights_file(weights_filename);
+    fstream capacities_file(capacities_filename);
     //
-    if (dist_matrix_file.is_open() && weights_file.is_open()) {
+    if (dist_matrix_file.is_open() && weights_file.is_open() && capacities_file.is_open()) {
         loc_max_id = 0;
         cust_max_id = 0;
         string line;
@@ -50,7 +52,8 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         // Load weights
         start = tick();
         cout << "Loading weights...\n";
-        cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
+        total_demand = 0;
+        cust_weights = shared_ptr<uint_t[]>(new uint_t[cust_max_id + 1], std::default_delete<uint_t[]>());
         for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
         getline(weights_file, line); // skip first line
         cout << "Skipped line: " << line << endl;
@@ -58,12 +61,32 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         while (getline(weights_file, line)) {
             auto tokens = tokenize(line, delim);
             auto cust = stoi(tokens[0]);
-            auto weight = stod(tokens[1]);
+            auto weight = stoi(tokens[1]);
             cust_weights[cust] = weight;
+            total_demand += weight;
             w_cnt++;
         }
         cout << "Loaded " << w_cnt << " weights\n";
+        cout << "Total customer demand: " << total_demand << endl;
         tock(start);
+        // Load capacities
+        start = tick();
+        cout << "Loading capacities...\n";
+        loc_capacities = shared_ptr<uint_t[]>(new uint_t[loc_max_id + 1], std::default_delete<uint_t[]>());
+        for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_capacities[loc] = DEFAULT_CAPACITY;
+        getline(capacities_file, line); // skip first line
+        cout << "Skipped line: " << line << endl;
+        uint_t cap_cnt = 0;
+        while (getline(capacities_file, line)) {
+            auto tokens = tokenize(line, delim);
+            auto loc = stoi(tokens[0]);
+            auto cap = stoi(tokens[1]);
+            loc_capacities[loc] = cap;
+            cap_cnt++;
+        }
+        cout << "Loaded " << cap_cnt << " capacities\n";
+        tock(start);
+
         // Preallocate distance matrix and loc, cust flag vectors
         start = tick();
         dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());
@@ -130,7 +153,7 @@ void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
 }
 
 
-dist_t Instance::getCustWeight(uint_t cust) {
+uint_t Instance::getCustWeight(uint_t cust) {
     return cust_weights[cust];
 }
 
@@ -159,7 +182,7 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
         customers_new = customers;
     }
 
-    return Instance(locations_new, customers_new, cust_weights, dist_matrix, p_new, loc_max_id, cust_max_id);
+    return Instance(locations_new, customers_new, cust_weights, dist_matrix, loc_capacities, p_new, loc_max_id, cust_max_id);
 }
 
 void Instance::print() {
@@ -213,9 +236,16 @@ double Instance::getVotingScore(uint_t loc, uint_t cust) {
 }
 
 Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new) {
-    return Instance(locations_new, customers, cust_weights, dist_matrix, p, loc_max_id, cust_max_id);
+    return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id);
 }
 
+uint_t Instance::getLocCapacity(uint_t loc) {
+    return loc_capacities[loc];
+}
+
+uint_t Instance::getTotalDemand() const {
+    return total_demand;
+}
 
 
 
