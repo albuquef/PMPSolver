@@ -101,21 +101,6 @@ void Solution_cap::fullCapEval() {
 
 }
 
-uint_t Solution_cap::getClosestpLoc(uint_t cust) {
-    dist_t dist_min = numeric_limits<dist_t>::max();
-    dist_t dist;
-    uint_t loc_closest;
-    for (auto loc:p_locations) {
-        dist = instance->getWeightedDist(loc, cust);
-        if (dist <= dist_min) {
-            dist_min = dist;
-            loc_closest = loc;
-        }
-    }
-
-    return loc_closest;
-}
-
 uint_t Solution_cap::getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc) {
     dist_t dist_min = numeric_limits<dist_t>::max();
     dist_t dist;

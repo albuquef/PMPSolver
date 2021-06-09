@@ -2,7 +2,7 @@
 #define LARGE_PMP_TB_HPP
 
 #include "instance.hpp"
-#include "solution.hpp"
+#include "solution_std.hpp"
 
 using namespace std;
 
@@ -12,8 +12,8 @@ private:
     default_random_engine engine;
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
-    Solution initRandomSolution();
-    Solution run(bool verbose);
+    Solution_std initRandomSolution();
+    Solution_std run(bool verbose);
 
 };
 

@@ -61,17 +61,15 @@ int main(int argc, char* argv[]) {
 
     // Load instance
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ');
-    Solution solution;
+    Solution_std solution;
 
     // Do something
     auto start = tick();
     switch (mode) {
         case 1: {
-            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            auto locations = metaheuristic.extractPrioritizedLocations(LOC_PRIORITY_CNT);
-            for (auto l:locations) {
-                cout << l << endl;
-            }
+            cout << "Experimental branch\n";
+            TB heuristic(make_shared<Instance>(instance), seed);
+            solution = heuristic.initRandomSolution();
         }
             break;
         case 2: { // TB heuristic

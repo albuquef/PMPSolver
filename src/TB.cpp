@@ -8,7 +8,7 @@ TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance))
 //    instance->print();
 }
 
-Solution TB::initRandomSolution() {
+Solution_std TB::initRandomSolution() {
     // Sample p distinct locations
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
@@ -20,16 +20,16 @@ Solution TB::initRandomSolution() {
         auto loc = locations[loc_id];
         p_locations.insert(loc);
     }
-    Solution sol(instance, p_locations);
+    Solution_std sol(instance, p_locations);
     return sol;
 }
 
-Solution TB::run(bool verbose) {
+Solution_std TB::run(bool verbose) {
     auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();
     bool improved = true;
-    Solution sol_tmp;
-    Solution sol_cand;
+    Solution_std sol_tmp;
+    Solution_std sol_cand;
 
     while (improved) {
         improved = false;

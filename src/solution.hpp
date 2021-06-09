@@ -1,5 +1,9 @@
-#ifndef LARGE_PMP_SOLUTION_HPP
-#define LARGE_PMP_SOLUTION_HPP
+//
+// Created by david on 09/06/2021.
+//
+
+#ifndef LARGE_PMP_SOLUTION_BASE_H
+#define LARGE_PMP_SOLUTION_BASE_H
 
 #include <utility>
 #include <unordered_set>
@@ -7,28 +11,13 @@
 #include "globals.hpp"
 #include "instance.hpp"
 
-using namespace std;
-
 class Solution {
 private:
     unordered_set<uint_t> p_locations; // p selected locations
-    unordered_map<uint_t, my_pair> assignment; // customer -> p location, distance to it
-    dist_t objective; // objective value
-public:
-    shared_ptr<Instance> instance; // solved instance
 
-    Solution() = default;
-    Solution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations);
-    void naiveEval();
-    uint_t getClosestpLoc(uint_t cust);
-    const unordered_set<uint_t>& get_pLocations() const;
-    void print();
-    void replaceLocation(uint_t loc_old, uint_t loc_new);
-    dist_t get_objective();
-    void printAssignment();
-    void exportSolution(const string& output_filename);
+public:
 
 };
 
 
-#endif //LARGE_PMP_SOLUTION_HPP
+#endif //LARGE_PMP_SOLUTION_BASE_H

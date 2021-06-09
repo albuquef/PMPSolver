@@ -13,7 +13,7 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
 /*
  * RSSV metaheuristic implementation.
  */
-Solution RSSV::run(int thread_cnt) {
+Solution_std RSSV::run(int thread_cnt) {
     cout << "RSSV running...\n";
     cout << "PMP size (N): " << N << endl;
     cout << "sub-PMP size (n): " << n << endl;
@@ -70,9 +70,9 @@ void RSSV::solveSubproblem(int seed) {
     TB heuristic(make_shared<Instance>(subInstance), seed);
     auto sol = heuristic.run(false);
 
-    cout << "Solution " << seed << ": ";
+    cout << "Solution_std " << seed << ": ";
     sol.print();
-    processSubsolution(make_shared<Solution>(sol));
+    processSubsolution(make_shared<Solution_std>(sol));
     tock(start);
     sem.notify(seed);
 }
@@ -81,7 +81,7 @@ void RSSV::solveSubproblem(int seed) {
  * Extract voting weights from a subproblem solution.
  * Distance to closest locations is determined from closest customer, NOT from the location in the solution (as it should be).
  */
-void RSSV::processSubsolution(shared_ptr<Solution> solution) {
+void RSSV::processSubsolution(shared_ptr<Solution_std> solution) {
     for (auto loc_sol:solution->get_pLocations()) {
         // get closest customer in orig. instance
         auto cust_cl = instance->getClosestCust(loc_sol);

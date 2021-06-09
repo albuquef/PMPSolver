@@ -6,7 +6,7 @@
 #include "TB.hpp"
 #include "instance.hpp"
 #include "instance.hpp"
-#include "solution.hpp"
+#include "solution_std.hpp"
 #include "semaphore.hpp"
 
 using namespace std;
@@ -23,9 +23,9 @@ private:
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
-    Solution run(int thread_cnt);
+    Solution_std run(int thread_cnt);
     void solveSubproblem(int seed);
-    void processSubsolution(shared_ptr<Solution> solution);
+    void processSubsolution(shared_ptr<Solution_std> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
 };
