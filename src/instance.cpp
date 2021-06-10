@@ -141,6 +141,9 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         tock(start);
     } else {
         cerr << "Error while opening some of the input files\n";
+        cerr << "dm: "<< dist_matrix_file.is_open() << endl;
+        cerr << "w: " << weights_file.is_open() << endl;
+        cerr << "c: " << capacities_file.is_open() << endl;
         exit(-1);
     }
 }
