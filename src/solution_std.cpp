@@ -103,6 +103,20 @@ void Solution_std::printAssignment(const string& output_filename) {
         }
         cout << endl;
     }
+    cout << endl;
+
+    cout << "DISTANCES\nlocation: customers (distance)\n";
+    for (auto loc:p_locations) {
+        cout << loc << ": ";
+        for (auto cust:instance->getCustomers()) {
+            if (assignment[cust].node == loc) {
+                cout << cust << " ";
+                cout << "(" << instance->getWeightedDist(loc, cust) << ") ";
+            }
+        }
+        cout << endl;
+    }
+
 
     cout.rdbuf(stream_buffer_cout);
     file.close();
