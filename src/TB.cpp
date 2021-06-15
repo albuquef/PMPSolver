@@ -102,7 +102,7 @@ Solution_std TB::run(bool verbose) {
 }
 
 Solution_cap TB::run_cap(bool verbose) {
-    auto sol_best = initRandomCapSolution();
+    auto sol_best = initHighestCapSolution();
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_cap sol_cand;
@@ -122,11 +122,14 @@ Solution_cap TB::run_cap(bool verbose) {
                 #pragma omp parallel for
                 for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
                     Solution_cap sol_tmp = sol_best;
-                    sol_tmp.replaceLocation(p_loc, loc);
-                    #pragma omp critical
-                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
-                        sol_cand = sol_tmp;
-                        improved = true;
+                    if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(p_loc) + instance->getLocCapacity(loc) >= instance->getTotalDemand()) {
+                        sol_tmp.replaceLocation(p_loc, loc);
+                        #pragma omp critical
+                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
+                            sol_cand = sol_tmp;
+                            improved = true;
+                        }
+
                     }
                 }
             }
