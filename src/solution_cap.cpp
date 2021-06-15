@@ -122,6 +122,7 @@ void Solution_cap::print() {
     }
     cout << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
+    cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
 }
 
 const unordered_set<uint_t> &Solution_cap::get_pLocations() const {
@@ -171,6 +172,8 @@ void Solution_cap::printAssignment(string output_filename) {
     file.close();
 }
 
-
-
-
+uint_t Solution_cap::getTotalCapacity() {
+    uint_t total_cap = 0;
+    for (auto p_loc:p_locations) total_cap += instance->getLocCapacity(p_loc);
+    return total_cap;
+}

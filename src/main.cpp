@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
         }
         case 4: {
             // Extract filtered instance
-            cout << "RSSV heuristic - standard PMP\n";
+            cout << "RSSV heuristic - cPMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             auto filtered_instance = metaheuristic.run(threads_cnt);
             // solve filtered instance by the TB heuristic
@@ -110,7 +110,9 @@ int main(int argc, char *argv[]) {
         default: {
             cout << "Experimental branch\n";
             TB heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.initRandomSolution();
+            auto solution = heuristic.initHighestCapSolution();
+
+            solution.print();
         }
     }
 

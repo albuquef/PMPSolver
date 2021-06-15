@@ -40,6 +40,28 @@ Solution_cap TB::initRandomCapSolution() {
     return sol;
 }
 
+Solution_cap TB::initHighestCapSolution() {
+    unordered_set<uint_t> p_locations;
+    auto p = instance->get_p();
+
+    auto locations = instance->getLocations();
+
+    vector<pair<uint_t, uint_t>> sorted_locations;
+    for (auto loc:locations) {
+        auto cap = instance->getLocCapacity(loc);
+        sorted_locations.emplace_back(cap, loc);
+    }
+    sort(sorted_locations.begin(), sorted_locations.end());
+    reverse(sorted_locations.begin(), sorted_locations.end());
+
+    for (int i = 0; i < p; i++) {
+        p_locations.insert(sorted_locations[i].second);
+    }
+    Solution_cap sol(instance, p_locations);
+
+    return sol;
+}
+
 Solution_std TB::run(bool verbose) {
     auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();

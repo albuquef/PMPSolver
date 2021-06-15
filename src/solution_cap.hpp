@@ -32,6 +32,7 @@ public:
     dist_t get_objective() const;
     void printAssignment(string output_filename);
     vector<pair<uint_t, dist_t>> getUrgencies();
+    uint_t getTotalCapacity();
 
 };
 
