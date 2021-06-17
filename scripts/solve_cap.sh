@@ -4,9 +4,6 @@ CMD=./cmake-build-debug/large_PMP
 D_MATRIX=./data/paca_v3/dist_matrix.txt
 WEIGHTS=./data/paca_v3/cust_weights.txt
 
-
-for p in 37 60 174 335 352 478 681 1924
-
 p=37
 CAPACITIES=./data/paca_v3/capacities_mat.txt
 $CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -mode 4 -o ./solutions/paca_v3_cap_p=${p}.txt | tee console_cap_${p}.txt
