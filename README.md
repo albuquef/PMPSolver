@@ -39,7 +39,7 @@ The program takes the following compulsory parameters:
 
 -w . . . path to the file with customer weights (=no. of people living at a idividual customer locations)
 
--c . . . path to the file with location capacities
+-c . . . path to the file with location capacities (needed even for solving standard PMP)
 
 -mode . . . mode of operation (1 - TB heuristic, PMP; 2 - TB heuristic, cPMP; 3 - full RSSV heuristic, PMP; 4 - full RSSV heuristic, cPMP)
 
