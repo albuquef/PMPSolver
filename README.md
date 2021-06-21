@@ -2,13 +2,13 @@
 
 The following instructions should be usable for most modern Linux systems.
 
-They are tested on Ubuntu 20.04. The project was built with Cmake version 3.16.3, using gcc 10.2.0. Older versions might work as well.
+They are tested on Ubuntu 20.04. The project was built with Cmake version 3.16.3, using gcc 10.2.0. Older versions might work as well. The code uses the OpenMP library for parallelization, which is included in newer gcc versions.
 
 ---
 
 ## 1) Downloading the project
 
-Clone the project from Github [(instructions)](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository). E.g., run in a directory of your choice
+Clone the project from Github ([instructions](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository)). E.g., run in a directory of your choice
 
 ```git clone https://github.com/wolledav/large-PMP.git```
 
@@ -39,7 +39,7 @@ The program takes the following compulsory parameters:
 
 -w . . . path to the file with customer weights (=no. of people living at a idividual customer locations)
 
--c . . . path to the file with location capacities
+-c . . . path to the file with location capacities (needed even for solving standard PMP)
 
 -mode . . . mode of operation (1 - TB heuristic, PMP; 2 - TB heuristic, cPMP; 3 - full RSSV heuristic, PMP; 4 - full RSSV heuristic, cPMP)
 
