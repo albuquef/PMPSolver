@@ -56,6 +56,8 @@ int main(int argc, char *argv[]) {
                     "\tpath to an output file, for ewporting a solution\n\n"
                     "-th : \n"
                     "\tno. of subproblems solved by the RSSV in parallel (default = 4)\n\n"
+                    "-t || --time\n"
+                    "\tTakes the CPU time in second after which the program quits automatically.\n\n"
                     "--seed : \n"
                     "\tseed of the random generator (default = 1)\n\n"
                     "--mode\n"
