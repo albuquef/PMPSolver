@@ -1,4 +1,5 @@
 #include "TB.hpp"
+#include "utils.hpp"
 
 #include <utility>
 
@@ -98,6 +99,8 @@ Solution_std TB::run(bool verbose) {
             cout << endl;
         }
     }
+
+    checkClock();
     return sol_best;
 }
 

@@ -28,10 +28,15 @@ bool cmpPair2nd(pair<uint_t, double>& a,
     return a.second < b.second;
 }
 
-void checkClock(void) {
-    std::clock_t clock_state = std::clock();
+void setClockLimit(uint_t limit) {
+    CLOCK_LIMIT = limit;
+}
 
-    if (clock_state - CLOCK_START >= CLOCK_LIMIT) {
+void checkClock(void) {
+    clock_t clock_current = clock();
+
+    if ((clock_current / CLOCKS_PER_SEC) - CLOCK_START >= CLOCK_LIMIT) {
+        std::cout << "Time limit exceeded. Aborting." << std::endl;
         exit(1);
     }
 }
