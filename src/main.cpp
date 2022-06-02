@@ -3,10 +3,12 @@
 #include "instance.hpp"
 #include "RSSV.hpp"
 #include "TB.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
+
     // Required parameters
     uint_t p = 0;
     string dist_matrix_filename;
@@ -33,6 +35,9 @@ int main(int argc, char *argv[]) {
                 mode = stoi(argv[i + 1]);
             } else if (strcmp(argv[i], "--seed") == 0) {
                 seed = stoi(argv[i + 1]);
+            } else if (strcmp(argv[i], "-t") == 0 || 
+                       strcmp(argv[i], "-time") == 0) {
+                setClockLimit(stoi(argv[i + 1]));
             } else if (strcmp(argv[i], "-o") == 0) {
                 output_filename = argv[i + 1];
             } else if (strcmp(argv[i], "-c") == 0) {

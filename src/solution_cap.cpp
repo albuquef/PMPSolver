@@ -3,6 +3,7 @@
 //
 
 #include "solution_cap.hpp"
+#include "utils.hpp"
 #include <iomanip>
 #include <utility>
 
@@ -135,6 +136,8 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new) {
     p_locations.insert(loc_new);
     // Update assignment and objective
     fullCapEval();
+
+    checkClock();
 }
 
 dist_t Solution_cap::get_objective() const {

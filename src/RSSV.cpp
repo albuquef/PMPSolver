@@ -1,4 +1,5 @@
 #include "RSSV.hpp"
+#include "utils.hpp"
 
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
@@ -69,6 +70,8 @@ void RSSV::solveSubproblem(int seed) {
     processSubsolution(make_shared<Solution_std>(sol));
     tock(start);
     sem.notify(seed);
+
+    checkClock();
 }
 
 /*
