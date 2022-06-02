@@ -1,4 +1,7 @@
+#include <cstdlib>
+#include <ctime>  // clock
 #include <iostream>
+#include "globals.hpp"
 #include "utils.hpp"
 
 chrono::steady_clock::time_point tick() {
@@ -23,4 +26,12 @@ bool cmpPair2nd(pair<uint_t, double>& a,
                 pair<uint_t, double>& b)
 {
     return a.second < b.second;
+}
+
+void checkClock(void) {
+    std::clock_t clock_state = std::clock();
+
+    if (clock_state - CLOCK_START >= CLOCK_LIMIT) {
+        exit(1);
+    }
 }
