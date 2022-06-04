@@ -1,4 +1,7 @@
+#include <cstdlib>
+#include <ctime>  // clock
 #include <iostream>
+#include "globals.hpp"
 #include "utils.hpp"
 
 chrono::steady_clock::time_point tick() {
@@ -23,4 +26,17 @@ bool cmpPair2nd(pair<uint_t, double>& a,
                 pair<uint_t, double>& b)
 {
     return a.second < b.second;
+}
+
+void setClockLimit(uint_t limit) {
+    CLOCK_LIMIT = limit;
+}
+
+void checkClock(void) {
+    clock_t clock_current = clock();
+
+    if ((clock_current / CLOCKS_PER_SEC) - CLOCK_START >= CLOCK_LIMIT) {
+        std::cout << "Time limit exceeded. Aborting." << std::endl;
+        exit(1);
+    }
 }
