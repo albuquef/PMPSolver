@@ -36,7 +36,7 @@ void checkClock(void) {
     clock_t clock_current = clock();
 
     if ((clock_current / CLOCKS_PER_SEC) - CLOCK_START >= CLOCK_LIMIT) {
-        std::cout << "Time limit exceeded. Aborting." << std::endl;
+        std::cout << "Time limit exceeded. It took more than " << clock_current / CLOCKS_PER_SEC << "s to finish. You should allocate more time using \"-t <time.s>\" option." << std::endl;
         exit(1);
     }
 }
