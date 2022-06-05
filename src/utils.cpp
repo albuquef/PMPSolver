@@ -28,6 +28,16 @@ bool cmpPair2nd(pair<uint_t, double>& a,
     return a.second < b.second;
 }
 
+unsigned int getAvailableThreads(void) {
+    unsigned int availableThreads =  std::thread::hardware_concurrency();
+
+    if (availableThreads <= 0) {
+        return 1;
+    }
+
+    return availableThreads;
+}
+
 void setThreadNumber(const int number) {
     if (number < 0) {
         std::cerr << "Invalid number of threads." << std::endl;

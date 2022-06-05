@@ -17,15 +17,7 @@ bool cmpPair2nd(pair<uint_t, double>& a, pair<uint_t, double>& b);
 /**
  * Returns the number of available threads
  */
-unsigned int getAvailableThreads(void) {
-    unsigned int availableThreads =  std::thread::hardware_concurrency();
-
-    if (availableThreads <= 0) {
-        return 1;
-    }
-
-    return availableThreads;
-}
+unsigned int getAvailableThreads(void);
 
 /**
  * Sets the amount of threds used by the program
