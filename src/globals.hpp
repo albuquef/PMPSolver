@@ -27,6 +27,7 @@ extern uint_t LOC_PRIORITY_CNT;
 extern uint_t MAX_SUB_P; // maximum value of p allowed in sub-PMPs
 extern uint_t FILTERING_SIZE; // when creating the final sub-PMP, max(n, FILTERING_SIZE * p locations) are considered
 extern uint_t SUB_PMP_SIZE;
+extern int THREAD_NUMBER;
 extern uint_t CLOCK_START;
 extern uint_t CLOCK_LIMIT;  // time expressed in seconds
 

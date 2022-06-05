@@ -1,5 +1,6 @@
 #include <set>
 #include <cstring>
+#include "globals.hpp"
 #include "instance.hpp"
 #include "RSSV.hpp"
 #include "TB.hpp"
@@ -15,7 +16,7 @@ int main(int argc, char *argv[]) {
     string labeled_weights_filename;
     string capacities_filename;
     // Optional parameters
-    int threads_cnt = 4;
+    int threads_cnt = (int) getAvailableThreads();
     int mode = 0;
     int seed = 1;
     string output_filename;
@@ -93,6 +94,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    setThreadNumber(threads_cnt);
+
     // Parameters check
     if (p == 0) {
         cerr << "No. of medians -p not given.\n";
@@ -138,7 +141,7 @@ int main(int argc, char *argv[]) {
             // Extract filtered instance
             cout << "RSSV heuristic - standard PMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            auto filtered_instance = metaheuristic.run(threads_cnt);
+            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, 1);
             auto solution = heuristic.run(true);
@@ -151,7 +154,7 @@ int main(int argc, char *argv[]) {
             // Extract filtered instance
             cout << "RSSV heuristic - cPMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            auto filtered_instance = metaheuristic.run(threads_cnt);
+            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, 1);
             auto solution = heuristic.run_cap(true);
