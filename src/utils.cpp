@@ -28,7 +28,11 @@ bool cmpPair2nd(pair<uint_t, double>& a,
     return a.second < b.second;
 }
 
-void setClockLimit(uint_t limit) {
+void setThreadNumber(const int number) {
+    THREAD_NUMBER = number;
+}
+
+void setClockLimit(const uint_t limit) {
     CLOCK_LIMIT = limit;
 }
 
