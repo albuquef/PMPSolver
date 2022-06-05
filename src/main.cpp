@@ -1,10 +1,12 @@
 #include <set>
 #include <cstring>
+#include <string>
 #include "globals.hpp"
 #include "instance.hpp"
 #include "RSSV.hpp"
 #include "TB.hpp"
 #include "utils.hpp"
+#include "config_parser.hpp"
 
 using namespace std;
 
@@ -21,6 +23,8 @@ int main(int argc, char *argv[]) {
     int seed = 1;
     string output_filename;
 
+    std::string configPath = "config.toml";
+
     // Parameters parsing
     for (int i = 1; i < argc; ++i) {
         if (argv[i][0] == '-' || argv[i][0] == '?') {
@@ -29,6 +33,8 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "-v") == 0 ||
                        strcmp(argv[i], "-verbose") == 0) {
                 VERBOSE = true;
+            } else if (strcmp(argv[i], "-config") == 0) {
+                configPath = argv[i + 1];
             } else if (strcmp(argv[i], "-dm") == 0) {
                 dist_matrix_filename = argv[i + 1];
             } else if (strcmp(argv[i], "-w") == 0) {
@@ -97,6 +103,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    ConfigParser config(configPath);
     setThreadNumber(threads_cnt);
 
     // Parameters check
