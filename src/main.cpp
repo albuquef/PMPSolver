@@ -144,6 +144,7 @@ int main(int argc, char *argv[]) {
             // Extract filtered instance
             cout << "RSSV heuristic - standard PMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+            CLOCK_THREADED = true;
             auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, 1);
@@ -157,6 +158,7 @@ int main(int argc, char *argv[]) {
             // Extract filtered instance
             cout << "RSSV heuristic - cPMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+            CLOCK_THREADED = true;
             auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, 1);
