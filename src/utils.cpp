@@ -29,6 +29,14 @@ bool cmpPair2nd(pair<uint_t, double>& a,
 }
 
 void setThreadNumber(const int number) {
+    if (number < 0) {
+        std::cerr << "Invalid number of threads." << std::endl;
+        exit(1);
+    } else if (number == 0) {
+        THREAD_NUMBER = 1;
+        return;
+    }
+
     THREAD_NUMBER = number;
 }
 
@@ -40,7 +48,7 @@ void checkClock(void) {
     clock_t clock_current = clock();
 
     if ((clock_current / CLOCKS_PER_SEC) - CLOCK_START >= CLOCK_LIMIT) {
-        std::cout << "Time limit exceeded. It took more than " << clock_current / CLOCKS_PER_SEC << "s to finish. You should allocate more time using \"-t <time.s>\" option." << std::endl;
+        std::cerr << "Time limit exceeded. It took more than " << clock_current / CLOCKS_PER_SEC << "s to finish. You should allocate more time using \"-t <time.s>\" option." << std::endl;
         exit(1);
     }
 }
