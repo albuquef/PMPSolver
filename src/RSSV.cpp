@@ -1,4 +1,5 @@
 #include "RSSV.hpp"
+#include "globals.hpp"
 #include "utils.hpp"
 
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
@@ -68,10 +69,10 @@ void RSSV::solveSubproblem(int seed) {
     TB heuristic(make_shared<Instance>(subInstance), seed);
     auto sol = heuristic.run(false);
 
-    cout << "Solution_std " << seed << ": ";
+    if (VERBOSE) cout << "Solution_std " << seed << ": ";
     sol.print();
     processSubsolution(make_shared<Solution_std>(sol));
-    tock(start);
+    if (VERBOSE) tock(start);
     sem.notify(seed);
 
     checkClock();

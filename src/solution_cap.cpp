@@ -3,6 +3,7 @@
 //
 
 #include "solution_cap.hpp"
+#include "globals.hpp"
 #include "utils.hpp"
 #include <iomanip>
 #include <utility>
@@ -117,6 +118,8 @@ uint_t Solution_cap::getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc) {
 }
 
 void Solution_cap::print() {
+    if (!VERBOSE) return;
+    
     cout << "p locations: ";
     for (auto p:p_locations) {
         cout << p << " ";
