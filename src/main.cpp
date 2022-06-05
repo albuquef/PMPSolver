@@ -26,6 +26,9 @@ int main(int argc, char *argv[]) {
         if (argv[i][0] == '-' || argv[i][0] == '?') {
             if (strcmp(argv[i], "-p") == 0) {
                 p = stoi(argv[i + 1]);
+            } else if (strcmp(argv[i], "-v") == 0 ||
+                       strcmp(argv[i], "-verbose") == 0) {
+                VERBOSE = true;
             } else if (strcmp(argv[i], "-dm") == 0) {
                 dist_matrix_filename = argv[i + 1];
             } else if (strcmp(argv[i], "-w") == 0) {

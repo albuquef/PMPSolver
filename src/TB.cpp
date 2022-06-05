@@ -1,4 +1,5 @@
 #include "TB.hpp"
+#include "globals.hpp"
 #include "utils.hpp"
 
 #include <utility>
@@ -65,6 +66,7 @@ Solution_cap TB::initHighestCapSolution() {
 
 Solution_std TB::run(bool verbose) {
     checkClock();
+    verbose = VERBOSE;
 
     auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();
@@ -109,6 +111,8 @@ Solution_std TB::run(bool verbose) {
 }
 
 Solution_cap TB::run_cap(bool verbose) {
+    verbose = VERBOSE;
+    
     auto sol_best = initHighestCapSolution();
     auto locations = instance->getLocations();
     bool improved = true;
