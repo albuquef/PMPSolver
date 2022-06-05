@@ -8,7 +8,7 @@ class ConfigParser {
 
     private:
         std::string configPath;
-        toml::parse_result configFile;
+        toml::table configFile;
 
     public:
         /**
