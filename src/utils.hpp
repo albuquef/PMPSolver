@@ -4,6 +4,7 @@
 #include <chrono>
 #include <random>
 #include "globals.hpp"
+#include <thread>
 
 using namespace std;
 
@@ -12,6 +13,19 @@ void tock(chrono::steady_clock::time_point start);
 vector<uint_t> getRandomSubvector(vector<uint_t> orig_vector, uint_t new_size, default_random_engine *generator);
 bool sortbysec(const pair<int,int> &a, const pair<int,int> &b);
 bool cmpPair2nd(pair<uint_t, double>& a, pair<uint_t, double>& b);
+
+/**
+ * Returns the number of available threads
+ */
+unsigned int getAvailableThreads(void) {
+    unsigned int availableThreads =  std::thread::hardware_concurrency();
+
+    if (availableThreads <= 0) {
+        return 1;
+    }
+
+    return availableThreads;
+}
 
 /**
  * Sets the amount of threds used by the program
