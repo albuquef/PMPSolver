@@ -9,4 +9,6 @@ uint_t SUB_PMP_SIZE = 800;
 int THREAD_NUMBER = 1;
 uint_t CLOCK_START = 0;
 uint_t CLOCK_LIMIT = 7200;
+uint_t CLOCK_ELAPSED = 0;
+bool CLOCK_THREADED = false;
 bool VERBOSE = false;
