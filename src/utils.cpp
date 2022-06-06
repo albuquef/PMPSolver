@@ -28,15 +28,43 @@ bool cmpPair2nd(pair<uint_t, double>& a,
     return a.second < b.second;
 }
 
-void setClockLimit(uint_t limit) {
+unsigned int getAvailableThreads(void) {
+    unsigned int availableThreads =  std::thread::hardware_concurrency();
+
+    if (availableThreads <= 0) {
+        return 1;
+    }
+
+    return availableThreads;
+}
+
+void setThreadNumber(const int number) {
+    if (number < 0) {
+        std::cerr << "Invalid number of threads." << std::endl;
+        exit(1);
+    } else if (number == 0) {
+        THREAD_NUMBER = 1;
+        return;
+    }
+
+    THREAD_NUMBER = number;
+}
+
+void setClockLimit(const uint_t limit) {
     CLOCK_LIMIT = limit;
 }
 
 void checkClock(void) {
     clock_t clock_current = clock();
 
-    if ((clock_current / CLOCKS_PER_SEC) - CLOCK_START >= CLOCK_LIMIT) {
-        std::cout << "Time limit exceeded. Aborting." << std::endl;
+    if (CLOCK_THREADED) {
+        CLOCK_ELAPSED += ((clock_current / CLOCKS_PER_SEC) - CLOCK_ELAPSED) / THREAD_NUMBER;
+    } else {
+        CLOCK_ELAPSED = (clock_current / CLOCKS_PER_SEC - CLOCK_START);
+    }
+
+    if (CLOCK_ELAPSED >= CLOCK_LIMIT) {
+        std::cerr << "Time limit exceeded. It took more than " << clock_current / CLOCKS_PER_SEC << "s to finish. You should allocate more time using \"-t <time.s>\" option." << std::endl;
         exit(1);
     }
 }

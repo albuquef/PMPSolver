@@ -4,6 +4,7 @@
 #include <chrono>
 #include <random>
 #include "globals.hpp"
+#include <thread>
 
 using namespace std;
 
@@ -14,11 +15,23 @@ bool sortbysec(const pair<int,int> &a, const pair<int,int> &b);
 bool cmpPair2nd(pair<uint_t, double>& a, pair<uint_t, double>& b);
 
 /**
+ * Returns the number of available threads
+ */
+unsigned int getAvailableThreads(void);
+
+/**
+ * Sets the amount of threds used by the program
+ *
+ * @param number
+ */
+void setThreadNumber(const int);
+
+/**
  * Sets the clock limit
  *
  * @param limit
  */
-void setClockLimit(uint_t);
+void setClockLimit(const uint_t);
 
 /**
  * Checks if the clock limit (CPU time) had been reached at each call. 
