@@ -110,7 +110,7 @@ build/large_PMP -t 3600
 
 In the example above, the configuration `time` parameter is ignored and replaced by the value of `-t` option you just passed. Note that all the other parameters in `config.toml` are considered.
 
-If you want to work with multiple configuration file, just pass the config file you want to use in the command like:
+If you want to work with multiple configuration files, just pass the config file you want to use in the command like:
 ```
 build/large_PMP -config path_to_config_file.toml
 ```
