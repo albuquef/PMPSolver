@@ -32,6 +32,19 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
     fstream dist_matrix_file(dist_matrix_filename);
     fstream weights_file(weights_filename);
     fstream capacities_file(capacities_filename);
+
+    if(dist_matrix_file){
+        cerr << "Error while trying to open the following input files :\n";
+
+        if(dist_matrix_file) cerr << "- Distance matrix" << endl;
+        if(weights_file) cerr << "- Weights file" << endl;
+        if(capacities_file) cerr << "- Capacities file" << endl;
+        
+        cerr << "Check if the path is correct and/or the correct name was given for the concerned files." << endl;
+        exit(-1);
+    }
+
+
     //
     if (dist_matrix_file.is_open() && weights_file.is_open() && capacities_file.is_open()) {
         loc_max_id = 0;
@@ -145,6 +158,17 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         cerr << "w: " << weights_file.is_open() << endl;
         cerr << "c: " << capacities_file.is_open() << endl;
         exit(-1);
+
+
+        cerr << "Error while trying to open the following input files :\n";
+
+        if(!dist_matrix_file) cerr << "- Distance matrix" << endl;
+        if(!weights_file) cerr << "- Weights file" << endl;
+        if(!capacities_file) cerr << "- Capacities file" << endl;
+        
+        cerr << "Check if the path is correct and/or the correct name was given for the concerned files." << endl;
+        exit(-1);
+
     }
 }
 
