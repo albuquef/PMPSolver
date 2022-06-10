@@ -1,0 +1,66 @@
+.TH "LARGE_PMP" "1" "June 2022" "large_PMP 1.0" ""
+.hy
+.SH NAME
+.PP
+large_PMP \- p\-means algorithm for geographic application
+.SH SYNOPSIS
+.PP
+\f[B]large_PMP\f[R] \f[I]coming soon\f[R]
+.PD 0 
+.P
+.PD
+\f[B]large_PMP\f[R] [\f[I]OPTIONS\f[R]]... -p <number of locations> -dm <path to matrix distance>
+.SH DESCRIPTION
+large_PMP is designed to get best placement of public location on a field gived
+.PD 0
+.P
+.PD
+Faire un truc que je sais pas trop de que ça fait
+.PD 0
+.P
+.PD
+.SH OPTIONS
+.TP
+.B \f[B]\-\-help\f[R], ?
+Display helper information
+.TP
+.B \f[B]\-p\f[R]
+Set number of location which you want
+.TP
+.B \f[B]\-v\f[R]
+Set verbose mode (Advanced)
+.TP
+.B \f[B]\-config\f[R]
+Set path to config file
+.TP
+.B \f[B]\-dm\f[R]
+Set path to matrix of distance. This one is used to represent distance between each point in your map (people etc...)
+.TP
+.B \f[B]\-w\f[R]
+Set path to weights. This one is used to...
+.TP
+.B \f[B]\-th\f[R]
+Set the number of thread you want to allocate to the program. Default is maximum of your system.
+.TP
+.B \f[B]\-\-mode\f[R]
+Set the mode what you want to use. There is detail of each mode :
+.SS MODES
+.B \f[B]Mode 1\f[R]
+\- To try a basic TB Heuristic.
+.PD 0
+.P
+.PD
+.B \f[B]Mode 2\f[R]
+\- To try a basic TB Heuristic.
+.PD 0
+.P
+.PD
+.B \f[B]Mode 3\f[R]
+\- To try a basic TB Heuristic.
+.PD 0
+.P
+.PD
+.B \f[B]Mode 4\f[R]
+\- To try a basic TB Heuristic.
+.SH AUTHORS
+Gabriel D.
