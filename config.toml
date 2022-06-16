@@ -1,4 +1,4 @@
-verbose = false
+verbose = true
 p = 5
 capacities = "./data/toulon/loc_capacities.txt"
 distance_matrix = "./data/toulon/dist_matrix.txt"
