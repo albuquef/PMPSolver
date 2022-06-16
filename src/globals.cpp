@@ -12,3 +12,4 @@ uint_t CLOCK_LIMIT = 7200;
 uint_t CLOCK_ELAPSED = 0;
 bool CLOCK_THREADED = false;
 bool VERBOSE = false;
+uint_t TOLERANCE_CPT = 10;

@@ -76,7 +76,7 @@ Solution_std TB::run(bool verbose) {
 
     while (improved) {
         checkClock();
-        
+        int objectiveCpt = 0;
         improved = false;
         sol_cand = sol_best;
         auto start = tick();
@@ -90,6 +90,9 @@ Solution_std TB::run(bool verbose) {
                     if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
                         sol_cand = sol_tmp;
                         improved = true;
+                    }
+                    else{
+
                     }
                 }
             }
