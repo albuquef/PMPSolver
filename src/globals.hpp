@@ -1,6 +1,6 @@
 #ifndef LARGE_PMP_GLOBALS_HPP
 #define LARGE_PMP_GLOBALS_HPP
-#define TOLERANCE 0.000001
+#define TOLERANCE 0.0001
 #define DEFAULT_DISTANCE 1000000000
 #define DEFAULT_WEIGHT 0
 #define DEFAULT_CAPACITY 0
@@ -33,5 +33,6 @@ extern uint_t CLOCK_LIMIT;  // time expressed in seconds
 extern uint_t CLOCK_ELAPSED;  // elapsed time since the beginning in seconds
 extern bool CLOCK_THREADED;
 extern bool VERBOSE;
+extern uint_t TOLERANCE_CPT;
 
 #endif //LARGE_PMP_GLOBALS_HPP
