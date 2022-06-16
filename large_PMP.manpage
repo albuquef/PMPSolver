@@ -15,10 +15,6 @@ large_PMP is designed to get best placement of public location on a field gived
 .PD 0
 .P
 .PD
-Faire un truc que je sais pas trop de que ça fait
-.PD 0
-.P
-.PD
 .SH OPTIONS
 .TP
 .B \f[B]\-\-help\f[R], ?
@@ -46,21 +42,34 @@ Set the number of thread you want to allocate to the program. Default is maximum
 Set the mode what you want to use. There is detail of each mode :
 .SS MODES
 .B \f[B]Mode 1\f[R]
-\- To try a basic TB Heuristic.
+\- To try a basic TB Heuristic. (Advanced)
 .PD 0
 .P
 .PD
 .B \f[B]Mode 2\f[R]
-\- To try a basic TB Heuristic.
+\- TB heuristic - cPMP.
 .PD 0
 .P
 .PD
 .B \f[B]Mode 3\f[R]
-\- To try a basic TB Heuristic.
+\- RSSV heuristic - standard PMP.
 .PD 0
 .P
 .PD
 .B \f[B]Mode 4\f[R]
-\- To try a basic TB Heuristic.
+\- RSSV heuristic - cPMP.
+.P
+.B \f[B]\-\-seed\f[R]
+Set a seed for the random initial solution.
+.TP
+.B \f[B]\-t\f[R], \f[B]\-\-time\f[R]
+Set the CPU\-time beyon which the program stops. It could be stopped at diferent step, depending the mode run.
+.TP
+.B \f[B]\-o\f[R]
+Defines the path to the output file. If the file doesn\'t exist, it will be created.
+.TP
+.B \f[B]\-c\f[R]
+Set the path to the capacities matrix.
+.P
 .SH AUTHORS
-Gabriel D.
+Gabriel D. <desbouis.lgabriel@gmail.com>
