@@ -66,6 +66,7 @@ Solution_cap TB::initHighestCapSolution() {
 
 Solution_std TB::run(bool verbose) {
     checkClock();
+
     verbose = VERBOSE;
 
     auto sol_best = initRandomSolution();
