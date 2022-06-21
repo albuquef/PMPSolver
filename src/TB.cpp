@@ -74,7 +74,7 @@ Solution_std TB::run(bool verbose) {
     Solution_std sol_tmp;
     Solution_std sol_cand;
     int objectiveCpt = 0;
-    
+
     while (improved) {
         checkClock();
         improved = false;
@@ -96,6 +96,7 @@ Solution_std TB::run(bool verbose) {
                         objectiveCpt++;
 
                         if(objectiveCpt == TOLERANCE_CPT){
+                            std::cout << "oh mon reuf !" << std::endl;
                             break;
                         }
                     }
