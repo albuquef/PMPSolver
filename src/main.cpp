@@ -142,6 +142,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    if (is_gui_mode) {
+        configPath = gui_path + configPath;
+    }
+
     // setup config
     ConfigParser config(configPath, configOverride);
     config.setFromConfig(&VERBOSE, "verbose");
