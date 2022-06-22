@@ -27,11 +27,17 @@ int main(int argc, char *argv[]) {
     // default config path
     std::string configPath = "config.toml";
     std::set<const char*> configOverride;
+    bool is_gui_mode = false;
+    std::string gui_path = "include/";
 
     // Parameters parsing
     for (int i = 1; i < argc; ++i) {
         if (argv[i][0] == '-' || argv[i][0] == '?') {
-            if (strcmp(argv[i], "-p") == 0) {
+            if (strcmp(argv[i], "-gui") == 0) {
+                // gui mode
+                is_gui_mode = true;
+
+            } else if (strcmp(argv[i], "-p") == 0) {
 
                 p = stoi(argv[i + 1]);
                 configOverride.insert("p");
@@ -168,6 +174,13 @@ int main(int argc, char *argv[]) {
         cerr << "Location capacities -c not given.\n";
         cerr << "If you need help to use, add --help or a '?' after name of program.\n" ;
         exit(1);
+    }
+
+    // set path for gui
+    if (is_gui_mode) {
+        dist_matrix_filename = gui_path + dist_matrix_filename;
+        labeled_weights_filename = gui_path + labeled_weights_filename;
+        capacities_filename = gui_path + labeled_weights_filename;
     }
 
     // Load instance
