@@ -90,8 +90,17 @@ int main(int argc, char *argv[]) {
                 capacities_filename = argv[i + 1];
                 configOverride.insert("toleranceCpt");
                 
-            } else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
-            
+            } else if (strcmp(argv[i], "-k") == 0){
+                
+                capacities_filename = argv[i + 1];
+                configOverride.insert("k");
+                
+            } else if (strcmp(argv[i], "-percentage") == 0){
+                
+                capacities_filename = argv[i + 1];
+                configOverride.insert("percentage");
+                
+            }  else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
             
                 cout << 
                     "\nTo run the program, you have to specify some options : \n\n"
@@ -156,6 +165,8 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&seed, "seed");
     config.setFromConfig(&CLOCK_LIMIT, "time");
     config.setFromConfig(&TOLERANCE_CPT, "toleranceCpt");
+    config.setFromConfig(&K, "k");
+    config.setFromConfig(&PERCENTAGE, "percentage");
 
     setThreadNumber(threads_cnt);
 

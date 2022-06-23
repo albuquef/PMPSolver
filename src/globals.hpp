@@ -34,5 +34,7 @@ extern uint_t CLOCK_ELAPSED;  // elapsed time since the beginning in seconds
 extern bool CLOCK_THREADED;
 extern bool VERBOSE;
 extern uint_t TOLERANCE_CPT;
+extern uint_t K;
+extern uint_t PERCENTAGE;
 
 #endif //LARGE_PMP_GLOBALS_HPP
