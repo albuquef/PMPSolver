@@ -82,6 +82,7 @@ Solution_std TB::run(bool verbose) {
         sol_cand = sol_best;
         auto start = tick();
         auto p_locations = sol_best.get_pLocations();
+
         for (auto loc:locations) { // First improvement over locations
             if (!p_locations.contains(loc)) {
                 for (auto p_loc:p_locations) { // Best improvement over p_locations

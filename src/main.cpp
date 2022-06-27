@@ -6,6 +6,7 @@
 #include "instance.hpp"
 #include "RSSV.hpp"
 #include "TB.hpp"
+#include "TBPercentage.hpp"
 #include "utils.hpp"
 #include "config_parser.cpp"
 
@@ -136,6 +137,10 @@ int main(int argc, char *argv[]) {
                     "\tThird mode use full RSSV Heuristic with PMP\n\n"
                     "Mode 4 : \n"
                     "\tFourth mode use full RSSV Heuristic with cPMP\n\n"
+                    "Mode 5 : \n"
+                    "\tFifth mode use TB Heuristic with a fixed percentage parameter and with standard PMP\n\n"
+                    "Mode 6 : \n"
+                    "\tSixth mode use TB Heuristic with a fixed percentage parameter and with cPMP\n\n"
 
                     "Generic example : \n"
                     "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --mode <no_of_mode>\n\n"
@@ -235,6 +240,21 @@ int main(int argc, char *argv[]) {
             TB heuristic(filtered_instance, 1);
             auto solution = heuristic.run_cap(true);
             cout << "Final solution:\n";
+            solution.print();
+            solution.printAssignment(output_filename);
+            break;
+        }
+        case 5: {
+            cout << "TBPercentage heuristic - standard PMP\n";
+            TBPercentage heuristic(make_shared<Instance>(instance), seed);
+            auto solution = heuristic.run(true);
+            solution.printAssignment(output_filename);
+            break;
+        }
+        case 6: {
+            cout << "TBPercentage heuristic - cPMP\n";
+            TBPercentage heuristic(make_shared<Instance>(instance), seed);
+            auto solution = heuristic.run_cap(true);
             solution.print();
             solution.printAssignment(output_filename);
             break;
