@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     std::string configPath = "config.toml";
     std::set<const char*> configOverride;
     bool is_gui_mode = false;
-    std::string gui_path = "include/";
+    std::string gui_path = "res/include/";
 
     // Parameters parsing
     for (int i = 1; i < argc; ++i) {
@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
     if (is_gui_mode) {
         dist_matrix_filename = gui_path + dist_matrix_filename;
         labeled_weights_filename = gui_path + labeled_weights_filename;
-        capacities_filename = gui_path + labeled_weights_filename;
+        capacities_filename = gui_path + capacities_filename;
     }
 
     // Load instance
