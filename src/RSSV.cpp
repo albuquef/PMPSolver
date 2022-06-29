@@ -1,6 +1,4 @@
 #include "RSSV.hpp"
-#include "globals.hpp"
-#include "utils.hpp"
 
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
@@ -63,19 +61,14 @@ void RSSV::solveSubproblem(int seed) {
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
     Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-
-    checkClock();
-    
     TB heuristic(make_shared<Instance>(subInstance), seed);
     auto sol = heuristic.run(false);
 
-    if (VERBOSE) cout << "Solution_std " << seed << ": ";
+    cout << "Solution_std " << seed << ": ";
     sol.print();
     processSubsolution(make_shared<Solution_std>(sol));
-    if (VERBOSE) tock(start);
+    tock(start);
     sem.notify(seed);
-
-    checkClock();
 }
 
 /*
