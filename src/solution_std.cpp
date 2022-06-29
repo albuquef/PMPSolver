@@ -36,8 +36,6 @@ uint_t Solution_std::getClosestpLoc(uint_t cust) {
 }
 
 void Solution_std::print() {
-    if (!VERBOSE) return;
-    
     cout << "p locations: ";
     for (auto p:p_locations) {
         cout << p << " ";
