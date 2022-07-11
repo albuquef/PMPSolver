@@ -1,12 +1,12 @@
 verbose = true
-p = 37
-capacities = "./data/paca_v3/capacities_mat.txt"
-distance_matrix = "./data/paca_v3/dist_matrix.txt"
+p = 5
+capacities = "./data/toulon/loc_capacities.txt"
+distance_matrix = "./data/toulon/dist_matrix.txt"
 output = "./results/test_paca_tbpercentage.txt"
 weights = "./data/toulon/cust_weights.txt"
 threads = 8
 mode = 5
-seed = 1
+seed = 48456
 time = 25000
 toleranceCpt = 10
 k = 500

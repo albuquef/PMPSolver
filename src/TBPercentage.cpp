@@ -4,6 +4,9 @@
 
 #include <utility>
 
+#include<chrono>
+#include<thread>
+
 TBPercentage::TBPercentage(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
 //    cout << "TB heuristic initialized\n";
@@ -25,6 +28,9 @@ Solution_std TBPercentage::initRandomSolution() {
     Solution_std sol(instance, p_locations);
     return sol;
 }
+
+//Solution_cap TBPercentage::initSetSolution();
+
 
 Solution_cap TBPercentage::initRandomCapSolution() {
     // Sample p distinct locations
@@ -65,6 +71,7 @@ Solution_cap TBPercentage::initHighestCapSolution() {
 }
 
 
+
 /**
  * @brief Splits the p locations into a stationary and a mobile part
  * 
@@ -72,21 +79,17 @@ Solution_cap TBPercentage::initHighestCapSolution() {
  * @param pLocations 
  * @return unordered_set<uint_t>* 
  */
-unordered_set<uint_t>* TBPercentage::splitLocationsByPercentage(int movingAmount, unordered_set<uint_t> pLocations){
+unordered_set<uint_t>* TBPercentage::randomSplitLocationsByPercentage(int movingAmount, unordered_set<uint_t> pLocations){
     unordered_set<uint_t>* splitLocations = new unordered_set<uint_t>[2];
     unordered_set<uint_t> tempPLocations = pLocations;
     
     while(splitLocations[0].size() < movingAmount){
-        uniform_int_distribution<uint_t> distribution (0, tempPLocations.size() - 1);
-        auto loc_id = distribution(engine);
-        auto test = *std::next(tempPLocations.begin(), loc_id);
-        tempPLocations.erase(test);
-        splitLocations[0].insert(test);
+        int loc_id = rand() % tempPLocations.size();
+        auto sample = *std::next(tempPLocations.begin(), loc_id);
+        tempPLocations.erase(sample);
+        splitLocations[0].insert(sample);
     }
-
     splitLocations[1] = tempPLocations; // remaining locations are the stationary ones
-
-
     
     return splitLocations;
 }
@@ -98,7 +101,7 @@ Solution_std TBPercentage::run(bool verbose) {
     auto sol_best = initRandomSolution();
     auto p_locations = sol_best.get_pLocations();
     auto locations = instance->getLocations();
-    bool improved = true;
+    bool improved = false;
     Solution_std sol_tmp;
     Solution_std sol_cand;
     int cpt = 0;
@@ -110,50 +113,109 @@ Solution_std TBPercentage::run(bool verbose) {
     unordered_set<uint_t> keptLocations;
     unordered_set<uint_t> movingLocations;
 
-    while(improved){
-        checkClock();
-        improved = false;
-        sol_cand = sol_best;
-        auto start = tick();
-        //Splits the p locations into a stationary and a mobile part
-        splitLocations = splitLocationsByPercentage(pToMove, sol_best.get_pLocations());
-        keptLocations = splitLocations[0];
-        movingLocations = splitLocations[1];
-        
-        for(auto loc:locations){
-            if(!movingLocations.contains(loc)){
-                for(auto loc_m:movingLocations){
-                    sol_tmp = sol_best;
-                    sol_tmp.replaceLocation(loc_m, loc);
-                    if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
-                        sol_cand = sol_tmp;
-                        improved = true;
-                        cpt = 0;
+    //First Iteration
+    checkClock();
+    improved = false;
+    sol_cand = sol_best;
+    auto start = tick();
+    //Splits the p locations into a stationary and a mobile part
+    splitLocations = randomSplitLocationsByPercentage(pToMove, p_locations);
+    keptLocations = splitLocations[0];
+    movingLocations = splitLocations[1];
+    
+    for(auto loc:locations){
+        if(!movingLocations.contains(loc)){
+            for(auto loc_m:movingLocations){
+                sol_tmp = sol_best;
+                sol_tmp.replaceLocation(loc_m, loc);
+                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+                    movingLocations.erase(loc_m);
+                    movingLocations.insert(loc);
+                    sol_cand = sol_tmp;
+                    improved = true;
+                    //cpt = 0;
+                }
+                else{
+                    cpt++;
+                    if(cpt == int(K/2)){
+                        break;
                     }
-                    else{
-                        cpt++;
-                        if(cpt == K/2){
-                            //Mettre un gros cout qui liste toute les locations, pour vérif si on a bien les immobiles qui ont pas bougées
-                            break;
-                        }
-                    }
-                    
                 }
             }
-            if(improved){
-                sol_best = sol_cand;
-                break;
-            }
         }
-        if (verbose) {
-            sol_best.print();
-            cout << "TBPercentage loop: ";
-            tock(start);
-            cout << endl;
+        if(improved){
+            sol_best = sol_cand;
+            //break;
         }
     }
-    checkClock();
+    if (verbose) {
+        sol_best.print();
+        cout << "TBPercentage loop: ";
+        tock(start);
+        cout << endl;
+    }
 
+    //Second Iteration
+    checkClock();
+    improved = false;
+    sol_cand = sol_best;
+    start = tick();
+    //Splits the p locations into a stationary and a mobile part
+    splitLocations = randomSplitLocationsByPercentage(pToMove, p_locations);
+    keptLocations = splitLocations[0];
+    movingLocations = splitLocations[1];
+    
+    for(auto loc:locations){
+        if(!movingLocations.contains(loc)){
+            for(auto loc_m:movingLocations){
+                sol_tmp = sol_best;
+                sol_tmp.replaceLocation(loc_m, loc);
+                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+                    movingLocations.erase(loc_m);
+                    movingLocations.insert(loc);
+                    sol_cand = sol_tmp;
+                    improved = true;
+                    //cpt = 0;
+                }
+                else{
+                    cpt++;
+                    
+                    if(cpt == K){
+                        break;
+                    }
+                }
+                
+            }
+        }
+        if(improved){
+            sol_best = sol_cand;
+            //break;
+        }
+    }
+    if (verbose) {
+        sol_best.print();
+        cout << "TBPercentage loop: ";
+        tock(start);
+        cout << endl;
+    }
+
+    
+    std::cout << "p to move: " << pToMove << std::endl;
+
+    std::cout << "original p locations: " << std::endl;
+    for(auto loc:p_locations){
+        std::cout << loc << " ";
+    }
+
+    std::cout << std::endl;
+
+    std::cout << "new p locations: " << std::endl;
+    for(auto loc:sol_best.get_pLocations()){
+        std::cout << loc << " ";
+    }
+
+    
+    checkClock();
     return sol_best;
 }
 
@@ -171,7 +233,7 @@ Solution_cap TBPercentage::run_cap(bool verbose) {
 
     int p = sol_best.get_pLocations().size();
     int pToMove = p * movingPercentage / 100;
-    unordered_set<uint_t>* splitLocations = splitLocationsByPercentage(pToMove, sol_best.get_pLocations());
+    unordered_set<uint_t>* splitLocations = randomSplitLocationsByPercentage(pToMove, sol_best.get_pLocations());
     unordered_set<uint_t> keptLocations = splitLocations[0];
     unordered_set<uint_t> movingLocations = splitLocations[1];
 
@@ -188,7 +250,7 @@ Solution_cap TBPercentage::run_cap(bool verbose) {
         sol_cand = sol_best;
         auto start = tick();
         //Splits the p locations into a stationary and a mobile part
-        splitLocations = splitLocationsByPercentage(pToMove, sol_best.get_pLocations());
+        splitLocations = randomSplitLocationsByPercentage(pToMove, sol_best.get_pLocations());
         keptLocations = splitLocations[0];
         movingLocations = splitLocations[1];
         

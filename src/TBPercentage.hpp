@@ -15,9 +15,10 @@ private:
 public:
     explicit TBPercentage(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
+    Solution_std initSetSolution();
     Solution_cap initRandomCapSolution();
     Solution_cap initHighestCapSolution();
-    unordered_set<uint_t>* splitLocationsByPercentage(int movingAmount, unordered_set<uint_t> pLocations);
+    unordered_set<uint_t>* randomSplitLocationsByPercentage(int movingAmount, unordered_set<uint_t> pLocations);
 
     Solution_std run(bool verbose);
     Solution_cap run_cap(bool verbose);
