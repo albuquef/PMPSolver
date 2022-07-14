@@ -128,7 +128,6 @@ Solution_std TBPercentage::run(bool verbose) {
     splitLocations = randomSplitLocationsByPercentage(pToMove, p_locations);
     keptLocations = splitLocations[0];
     movingLocations = splitLocations[1];
-    
     for(auto loc:locations){
         if(!movingLocations.contains(loc)){
             for(auto loc_m:movingLocations){
@@ -143,9 +142,7 @@ Solution_std TBPercentage::run(bool verbose) {
                 }
                 else{
                     cpt++;
-                    //std::cout << "cpt : " << cpt << std::endl;
                     if(cpt == int(K/2)){
-                        std::cout << "break1" << std::endl;
                         cptBool = true;
                         break;
                     }
@@ -155,7 +152,6 @@ Solution_std TBPercentage::run(bool verbose) {
         if(improved){
             sol_best = sol_cand;
             improved = false;
-            std::cout << "improved1" << std::endl;
             
             if(cptBool){
                 cptBool = false;
@@ -195,12 +191,11 @@ Solution_std TBPercentage::run(bool verbose) {
                     sol_cand = sol_tmp;
                     improved = true;
                     cpt = 0;
+                    break;
                 }
                 else{
                     cpt++;
-                    std::cout << "cpt : " << cpt << std::endl;
                     if(cpt == K){
-                        std::cout << "break2" << std::endl;
                         cptBool = true;
                         break;
                     }
@@ -210,15 +205,12 @@ Solution_std TBPercentage::run(bool verbose) {
         }
         if(improved){
             sol_best = sol_cand;
-            std::cout << "improved2" << std::endl;
-            sol_best.print();
             improved = false;
+        }
 
-            if(cptBool){
-                std ::cout << "cptBool" << std::endl;
+        if(cptBool){
                 break;
             }
-        }
     }
     if (verbose) {
         sol_best.print();
@@ -237,12 +229,12 @@ Solution_std TBPercentage::run(bool verbose) {
     std::cout << "new p locations: " << std::endl;
     sol_best.print();
 
-
+    
 
     if(sol_best.get_objective() < sol_best_first.get_objective()){
-        checkClock();
-        return sol_best;
-    }
+    checkClock();
+    return sol_best;
+}
 
     checkClock();
     return sol_best_first;
