@@ -64,9 +64,9 @@ Solution_cap TB::initHighestCapSolution() {
     return sol;
 }
 
+
 Solution_std TB::run(bool verbose) {
     checkClock();
-
     verbose = VERBOSE;
 
     auto sol_best = initRandomSolution();
@@ -82,13 +82,14 @@ Solution_std TB::run(bool verbose) {
         sol_cand = sol_best;
         auto start = tick();
         auto p_locations = sol_best.get_pLocations();
+
         for (auto loc:locations) { // First improvement over locations
             if (!p_locations.contains(loc)) {
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     sol_tmp = sol_best;
                     sol_tmp.replaceLocation(p_loc, loc);
 //                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
-                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
+                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) { 
                         sol_cand = sol_tmp;
                         improved = true;
                         objectiveCpt = 0;
@@ -97,7 +98,6 @@ Solution_std TB::run(bool verbose) {
                         objectiveCpt++;
 
                         if(objectiveCpt == TOLERANCE_CPT){
-                            std::cout << "oh mon reuf !" << std::endl;
                             break;
                         }
                     }
