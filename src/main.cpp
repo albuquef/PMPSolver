@@ -1,88 +1,47 @@
 #include <set>
 #include <cstring>
-#include <string>
-
-#include "globals.hpp"
 #include "instance.hpp"
 #include "RSSV.hpp"
 #include "TB.hpp"
+<<<<<<< HEAD
 #include "TBPercentage.hpp"
 #include "utils.hpp"
 #include "config_parser.cpp"
+=======
+>>>>>>> main
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
-
     // Required parameters
     uint_t p = 0;
     string dist_matrix_filename;
     string labeled_weights_filename;
     string capacities_filename;
     // Optional parameters
-    int threads_cnt = (int) getAvailableThreads();
+    int threads_cnt = 4;
     int mode = 0;
     int seed = 1;
     string output_filename;
 
-    // default config path
-    std::string configPath = "config.toml";
-    std::set<const char*> configOverride;
-
     // Parameters parsing
     for (int i = 1; i < argc; ++i) {
-        if (argv[i][0] == '-' || argv[i][0] == '?') {
+        if (argv[i][0] == '-') {
             if (strcmp(argv[i], "-p") == 0) {
-
                 p = stoi(argv[i + 1]);
-                configOverride.insert("p");
-
-            } else if (strcmp(argv[i], "-v") == 0 ||
-                       strcmp(argv[i], "-verbose") == 0) {
-
-                VERBOSE = true;
-                configOverride.insert("verbose");
-
-            } else if (strcmp(argv[i], "-config") == 0) {
-                configPath = argv[i + 1];
             } else if (strcmp(argv[i], "-dm") == 0) {
-
                 dist_matrix_filename = argv[i + 1];
-                configOverride.insert("distance_matrix");
-
             } else if (strcmp(argv[i], "-w") == 0) {
-
                 labeled_weights_filename = argv[i + 1];
-                configOverride.insert("weights");
-
             } else if (strcmp(argv[i], "-th") == 0) {
-
                 threads_cnt = stoi(argv[i + 1]);
-                configOverride.insert("threads");
-
-            } else if (strcmp(argv[i], "--mode") == 0) {
-
+            } else if (strcmp(argv[i], "-mode") == 0) {
                 mode = stoi(argv[i + 1]);
-                configOverride.insert("mode");
-
-            } else if (strcmp(argv[i], "--seed") == 0) {
-
+            } else if (strcmp(argv[i], "-seed") == 0) {
                 seed = stoi(argv[i + 1]);
-                configOverride.insert("seed");
-
-            } else if (strcmp(argv[i], "-t") == 0 || 
-                       strcmp(argv[i], "-time") == 0) {
-
-                setClockLimit(stoi(argv[i + 1]));
-                configOverride.insert("time");
-
             } else if (strcmp(argv[i], "-o") == 0) {
-
                 output_filename = argv[i + 1];
-                configOverride.insert("output");
-
             } else if (strcmp(argv[i], "-c") == 0) {
-
                 capacities_filename = argv[i + 1];
                 configOverride.insert("capacities");
 
@@ -178,19 +137,15 @@ int main(int argc, char *argv[]) {
     // Parameters check
     if (p == 0) {
         cerr << "No. of medians -p not given.\n";
-        cerr << "If you need help to use, add --help or a '?' after name of program.\n" ;
         exit(1);
     } else if (dist_matrix_filename.empty()) {
         cerr << "Distance matrix -dm not given.\n";
-        cerr << "If you need help to use, add --help or a '?' after name of program.\n" ;
         exit(1);
     } else if (labeled_weights_filename.empty()) {
         cerr << "Customer weights -w not given.\n";
-        cerr << "If you need help to use, add --help or a '?' after name of program.\n" ;
         exit(1);
     } else if (capacities_filename.empty()) {
         cerr << "Location capacities -c not given.\n";
-        cerr << "If you need help to use, add --help or a '?' after name of program.\n" ;
         exit(1);
     }
 
@@ -220,8 +175,7 @@ int main(int argc, char *argv[]) {
             // Extract filtered instance
             cout << "RSSV heuristic - standard PMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            CLOCK_THREADED = true;
-            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+            auto filtered_instance = metaheuristic.run(threads_cnt);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, 1);
             auto solution = heuristic.run(true);
@@ -234,8 +188,7 @@ int main(int argc, char *argv[]) {
             // Extract filtered instance
             cout << "RSSV heuristic - cPMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            CLOCK_THREADED = true;
-            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+            auto filtered_instance = metaheuristic.run(threads_cnt);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, 1);
             auto solution = heuristic.run_cap(true);
