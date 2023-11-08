@@ -1,4 +1,7 @@
+#include <cstdlib>
+#include <ctime>  // clock
 #include <iostream>
+#include "globals.hpp"
 #include "utils.hpp"
 
 chrono::steady_clock::time_point tick() {
@@ -23,4 +26,46 @@ bool cmpPair2nd(pair<uint_t, double>& a,
                 pair<uint_t, double>& b)
 {
     return a.second < b.second;
+}
+
+unsigned int getAvailableThreads(void) {
+    unsigned int availableThreads =  std::thread::hardware_concurrency();
+
+    if (availableThreads <= 0) {
+        return 1;
+    }
+
+    return availableThreads;
+}
+
+void setThreadNumber(const int number) {
+    if (number < 0) {
+        std::cerr << "Invalid number of threads." << std::endl;
+        exit(1);
+    } else if (number == 0) {
+        THREAD_NUMBER = 1;
+        return;
+    }
+
+    THREAD_NUMBER = number;
+}
+
+void setClockLimit(const uint_t limit) {
+    CLOCK_LIMIT = limit;
+}
+
+void checkClock(void) {
+    clock_t clock_current = clock();
+
+    if (CLOCK_THREADED) {
+        CLOCK_ELAPSED += ((clock_current / CLOCKS_PER_SEC) - CLOCK_ELAPSED) / THREAD_NUMBER;
+    } else {
+        CLOCK_ELAPSED = (clock_current / CLOCKS_PER_SEC - CLOCK_START);
+    }
+
+    if (CLOCK_ELAPSED >= CLOCK_LIMIT) {
+        std::cerr << "Time limit exceeded. It took more than " << clock_current / CLOCKS_PER_SEC << "s to finish. You should allocate more time using \"-t <time.s>\" option." << std::endl;
+
+        exit(1);
+    }
 }

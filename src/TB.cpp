@@ -1,4 +1,6 @@
 #include "TB.hpp"
+#include "globals.hpp"
+#include "utils.hpp"
 
 #include <utility>
 
@@ -62,27 +64,42 @@ Solution_cap TB::initHighestCapSolution() {
     return sol;
 }
 
+
 Solution_std TB::run(bool verbose) {
+    checkClock();
+    verbose = VERBOSE;
+
     auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_std sol_tmp;
     Solution_std sol_cand;
+    int objectiveCpt = 0;
 
     while (improved) {
+        checkClock();
         improved = false;
         sol_cand = sol_best;
         auto start = tick();
         auto p_locations = sol_best.get_pLocations();
+
         for (auto loc:locations) { // First improvement over locations
             if (!p_locations.contains(loc)) {
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     sol_tmp = sol_best;
                     sol_tmp.replaceLocation(p_loc, loc);
 //                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
-                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
+                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) { 
                         sol_cand = sol_tmp;
                         improved = true;
+                        objectiveCpt = 0;
+                    }
+                    else{
+                        objectiveCpt++;
+
+                        if(objectiveCpt == TOLERANCE_CPT){
+                            break;
+                        }
                     }
                 }
             }
@@ -98,10 +115,14 @@ Solution_std TB::run(bool verbose) {
             cout << endl;
         }
     }
+
+    checkClock();
     return sol_best;
 }
 
 Solution_cap TB::run_cap(bool verbose) {
+    verbose = VERBOSE;
+    
     auto sol_best = initHighestCapSolution();
     auto locations = instance->getLocations();
     bool improved = true;
@@ -149,4 +170,3 @@ Solution_cap TB::run_cap(bool verbose) {
     }
     return sol_best;
 }
-
