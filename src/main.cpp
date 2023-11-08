@@ -88,17 +88,17 @@ int main(int argc, char *argv[]) {
 
             } else if (strcmp(argv[i], "-toleranceCpt") == 0){
                 
-                capacities_filename = argv[i + 1];
+                TOLERANCE_CPT = stoi(argv[i + 1]);
                 configOverride.insert("toleranceCpt");
                 
             } else if (strcmp(argv[i], "-k") == 0){
                 
-                capacities_filename = argv[i + 1];
+                K = stoi(argv[i + 1]);
                 configOverride.insert("k");
                 
             } else if (strcmp(argv[i], "-percentage") == 0){
                 
-                capacities_filename = argv[i + 1];
+                PERCENTAGE = stoi(argv[i + 1]);
                 configOverride.insert("percentage");
                 
             }  else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
