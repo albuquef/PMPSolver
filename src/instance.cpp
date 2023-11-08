@@ -140,11 +140,15 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         cout << "p: " << p << endl;
         tock(start);
     } else {
-        cerr << "Error while opening some of the input files\n";
-        cerr << "dm: "<< dist_matrix_file.is_open() << endl;
-        cerr << "w: " << weights_file.is_open() << endl;
-        cerr << "c: " << capacities_file.is_open() << endl;
+        cerr << "Error while trying to open the following input files :\n";
+
+        if(!dist_matrix_file) cerr << "- Distance matrix" << endl;
+        if(!weights_file) cerr << "- Weights file" << endl;
+        if(!capacities_file) cerr << "- Capacities file" << endl;
+        
+        cerr << "Check if the path is correct and/or the correct name was given for the concerned files." << endl;
         exit(-1);
+
     }
 }
 

@@ -10,7 +10,7 @@ They are tested on Ubuntu 20.04. The project was built with Cmake version 3.16.3
 
 Clone the project from Github ([instructions](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository)). E.g., run in a directory of your choice
 
-```git clone https://github.com/wolledav/large-PMP.git```
+```git clone https://github.com/albuquef/large-PMP.git```
 
 to clone via https.
 
