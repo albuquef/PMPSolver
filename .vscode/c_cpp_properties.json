@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP/**", 
+                "/opt/ibm/ILOG/CPLEX_Studio2211/cplex/**",
+                "/opt/ibm/ILOG/CPLEX_Studio2211/concert/**",  
+                "/opt/ibm/ILOG/CPLEX_Studio2211/cpoptimizer/**",
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}

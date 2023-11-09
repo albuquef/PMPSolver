@@ -1,13 +1,75 @@
-verbose = true
-p = 5
-capacities = "./data/toulon/loc_capacities.txt"
-distance_matrix = "./data/toulon/dist_matrix.txt"
-output = "./results/test_paca_tbpercentage.txt"
-weights = "./data/toulon/cust_weights.txt"
-threads = 4
-mode = 3
-seed = 48456
-time = 3600
-toleranceCpt = 10
-k = 1
-percentage = 80
+.TH "LARGE_PMP" "1" "June 2022" "large_PMP 1.0" ""
+.hy
+.SH NAME
+.PP
+large_PMP \- p\-means algorithm for geographic application
+.SH SYNOPSIS
+.PP
+\f[B]large_PMP\f[R] \f[I]coming soon\f[R]
+.PD 0 
+.P
+.PD
+\f[B]large_PMP\f[R] [\f[I]OPTIONS\f[R]]... -p <number of locations> -dm <path to matrix distance>
+.SH DESCRIPTION
+large_PMP is designed to get best placement of public location on a field gived
+.PD 0
+.P
+.PD
+.SH OPTIONS
+.TP
+.B \f[B]\-\-help\f[R], ?
+Display helper information
+.TP
+.B \f[B]\-p\f[R]
+Set number of location which you want
+.TP
+.B \f[B]\-v\f[R]
+Set verbose mode (Advanced)
+.TP
+.B \f[B]\-config\f[R]
+Set path to config file
+.TP
+.B \f[B]\-dm\f[R]
+Set path to matrix of distance. This one is used to represent distance between each point in your map (people etc...)
+.TP
+.B \f[B]\-w\f[R]
+Set path to weights. This one is used to...
+.TP
+.B \f[B]\-th\f[R]
+Set the number of thread you want to allocate to the program. Default is maximum of your system.
+.TP
+.B \f[B]\-\-mode\f[R]
+Set the mode what you want to use. There is detail of each mode :
+.SS MODES
+.B \f[B]Mode 1\f[R]
+\- To try a basic TB Heuristic. (Advanced)
+.PD 0
+.P
+.PD
+.B \f[B]Mode 2\f[R]
+\- TB heuristic - cPMP.
+.PD 0
+.P
+.PD
+.B \f[B]Mode 3\f[R]
+\- RSSV heuristic - standard PMP.
+.PD 0
+.P
+.PD
+.B \f[B]Mode 4\f[R]
+\- RSSV heuristic - cPMP.
+.P
+.B \f[B]\-\-seed\f[R]
+Set a seed for the random initial solution.
+.TP
+.B \f[B]\-t\f[R], \f[B]\-\-time\f[R]
+Set the CPU\-time beyon which the program stops. It could be stopped at diferent step, depending the mode run.
+.TP
+.B \f[B]\-o\f[R]
+Defines the path to the output file. If the file doesn\'t exist, it will be created.
+.TP
+.B \f[B]\-c\f[R]
+Set the path to the capacities matrix.
+.P
+.SH AUTHORS
+Gabriel D. <desbouis.lgabriel@gmail.com>
