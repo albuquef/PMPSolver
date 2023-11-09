@@ -9,6 +9,7 @@
 #include "TBPercentage.hpp"
 #include "utils.hpp"
 #include "config_parser.cpp"
+#include "PMP.hpp"
 
 using namespace std;
 
@@ -257,6 +258,11 @@ int main(int argc, char *argv[]) {
             auto solution = heuristic.run_cap(true);
             solution.print();
             solution.printAssignment(output_filename);
+            break;
+        }
+        case 7: {
+            cout << "Exact method PMP\n";
+            PMP pmp(make_shared<Instance>(instance));
             break;
         }
         default: {

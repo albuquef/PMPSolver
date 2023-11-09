@@ -1,5 +1,5 @@
-#ifndef TFP_SCP_H
-#define TFP_SCP_H
+#ifndef PMP_HPP
+#define PMP_HPP
 #include <iostream>
 #include <filesystem>
 #include <sys/time.h>
@@ -27,27 +27,28 @@ typedef IloArray<IloNumVarArray> NumVarMatrix;
 typedef IloArray<NumVarMatrix> NumVar3Matrix;
 
 
-class TFP_SCP
+class PMP
 {
 
     public: 
-        // TFP_SCP(Reader *r, const char* typeSEC):rd(r){rd->show();};
-        TFP_SCP(const shared_ptr<Instance>& instance);
-        ~TFP_SCP();
+        // PMP(Reader *r, const char* typeSEC):rd(r){rd->show();};
+        PMP(const shared_ptr<Instance>& instance);
+        ~PMP();
         void exportILP      (IloCplex& cplex);
         void solveILP       (void);
-        void printSolution  (IloCplex& cplex,
-                            BoolVarMatrix x,
-                            IloBoolVarArray y);
-        void saveSolution   (IloCplex& cplex,
-                            BoolVarMatrix x,
-                            IloBoolVarArray y);
-        // void saveResults    (IloCplex& cplex=this->cplex,
-        //                     double timeF=0.0);
-        void saveResults    (double timeF=0.0);
-        void printInstance  (void);
-        int current_day, current_month, current_year;
-        void saveNumConstraints();
+        // void printSolution  (IloCplex& cplex,
+        //                     BoolVarMatrix x,
+        //                     IloBoolVarArray y);
+        // void saveSolution   (IloCplex& cplex,
+        //                     BoolVarMatrix x,
+        //                     IloBoolVarArray y);
+        // // void saveResults    (IloCplex& cplex=this->cplex,
+        // //                     double timeF=0.0);
+        // void saveResults    (double timeF=0.0);
+        // void printInstance  (void);
+        // int current_day, current_month, current_year;
+        // void saveNumConstraints();
+        float timePMP;
 
     private:
         shared_ptr<Instance> instance; // original PMP instance
@@ -59,33 +60,28 @@ class TFP_SCP
 
         // void allocVars(env, x, y);
 
-        void initILP        (const char* typeProb);
-        void initVariables  (void);
-        void createModel    (IloModel model,
-                            BoolVarMatrix x,
-                            IloBoolVarArray y);
+        // void initILP        (const char* typeProb);
+        // void initVariables  (void);
+        // void createModel    (IloModel model,
+        //                     BoolVarMatrix x,
+        //                     IloBoolVarArray y);
         
-        NumVar3Matrix pi; // var mtz
-        void createModel_MTZ(IloModel model, 
-                            BoolVarMatrix x,
-                            IloBoolVarArray y);
-
-        BoolVar3Matrix mu; // var sign
-        void createModel_SIGN(IloModel model, 
-                            BoolVarMatrix x,
-                            IloBoolVarArray y);
+        // void createModel(const char* typeProb,
+        //                 IloModel model, 
+        //                 BoolVarMatrix x,
+        //                 IloBoolVarArray y);
         
-        void
-        objFunction (IloModel model, BoolVarMatrix x);
+        // void
+        // objFunction (IloModel model, BoolVarMatrix x);
 
-        void
-        constr_DemandSatif (IloModel model, BoolVarMatrix x);
+        // void
+        // constr_DemandSatif (IloModel model, BoolVarMatrix x);
 
-        void
-        constr_pLocations (IloModel model, IloBoolVarArray y);
+        // void
+        // constr_pLocations (IloModel model, IloBoolVarArray y);
 
-        void
-        constr_maxCapacity (IloModel model, BoolVarMatrix x, IloBoolVarArray y);
+        // void
+        // constr_maxCapacity (IloModel model, BoolVarMatrix x, IloBoolVarArray y);
 
         
 
@@ -93,4 +89,4 @@ class TFP_SCP
 
 
 
-#endif // TFP_SCP_H
+#endif // PMP_H
