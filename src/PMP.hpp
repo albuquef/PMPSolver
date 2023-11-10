@@ -63,7 +63,7 @@ class PMP
         uint_t num_facilities;
         uint_t num_customers;
 
-        void allocVars(IloEnv env, BoolVarMatrix x, IloBoolVarArray y);
+        void initVars();
 
         void initILP        (void);
         void initVariables  (void);        
