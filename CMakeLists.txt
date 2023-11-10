@@ -1,50 +1,48 @@
 cmake_minimum_required(VERSION 3.16)
 project(large_PMP)
 
+
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -pthread -fopenmp -lconcert -lilocplex -lcplex -lm -lpthread -ldl")
+# CPLEX_ROOT_DIR - path to CPLEX installation
+set(CPLEX_ROOT_DIR "/opt/ibm/ILOG/CPLEX_Studio2211")
 
-add_executable(${PROJECT_NAME}
-                src/main.cpp 
-                src/globals.hpp src/globals.cpp 
-                src/instance.cpp src/instance.hpp 
-                src/utils.cpp src/utils.hpp 
-                src/solution_std.cpp src/solution_std.hpp 
-                src/TB.cpp src/TB.hpp 
-                src/RSSV.cpp src/RSSV.hpp 
-                src/semaphore.hpp 
-                src/solution_cap.cpp src/solution_cap.hpp 
-                src/solution.cpp src/solution.hpp 
-                src/config_parser.cpp 
-                src/toml.hpp 
-                src/TBPercentage.hpp src/TBPercentage.cpp
-                src/PMP.hpp src/PMP.cpp)
+# CXX_FLAGS - compiler flags for C++ and cple
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O3 -pthread -fopenmp -Wall -Wextra -std=c++11 -m64 -g -O -fPIC -fexceptions -DNDEBUG -DIL_STD")
 
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-CPLEXDIR      = /opt/ibm/ILOG/CPLEX_Studio2211/cplex
-CONCERTDIR    = /opt/ibm/ILOG/CPLEX_Studio2211/concert
-CPCPLEXDIR    = /opt/ibm/ILOG/CPLEX_Studio2211/cpoptimizer
-
-CPLEXBINDIR = $(CPLEXDIR)/bin/$(BINDIST)
-
-CPLEXLIBDIR = $(CPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
-CONCERTLIBDIR = $(CONCERTDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
-
-CCLNDIRS  = -L$(CPLEXLIBDIR) -L$(CONCERTLIBDIR) 
-CCLNFLAGS = -lconcert -lilocplex -lcplex -lm -lpthread -ldl  #-framework CoreFoundation -framework IOKit 
+# search CPLEX library
+find_package(Cplex REQUIRED)
 
 
-CPCPLEXBINDIR = $(CPCPLEXDIR)/bin/$(BINDIST)
-CPCPLEXLIBDIR = $(CPCPLEXDIR)/lib/$(SYSTEM)/$(LIBFORMAT)
-CPCCLNDIRS  = -L$(CPCPLEXLIBDIR) -L$(CPCONCERTLIBDIR) 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPLEX_COMPILER_FLAGS}")
+MESSAGE ("${CPLEX_COMPILER_FLAGS}")
 
-# ------------------------------------------------------------
-CONCERTINCDIR = $(CONCERTDIR)/include
-CPLEXINCDIR = $(CPLEXDIR)/include
+INCLUDE_DIRECTORIES( ${CPLEX_INCLUDE_DIRS})
 
-CPCPLEXINCDIR = $(CPCPLEXDIR)/includerun_SPC
 
-CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR) 
+MESSAGE ("LOG")
+MESSAGE ("${SRCS}")
 
+
+set(SOURCE_FILES
+    src/main.cpp 
+    src/globals.hpp src/globals.cpp 
+    src/instance.cpp src/instance.hpp 
+    src/utils.cpp src/utils.hpp 
+    src/solution_std.cpp src/solution_std.hpp 
+    src/TB.cpp src/TB.hpp 
+    src/RSSV.cpp src/RSSV.hpp 
+    src/semaphore.hpp 
+    src/solution_cap.cpp src/solution_cap.hpp 
+    src/solution.cpp src/solution.hpp 
+    src/config_parser.cpp 
+    src/toml.hpp 
+    src/TBPercentage.hpp src/TBPercentage.cpp
+    src/PMP.hpp src/PMP.cpp)
+
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${CPLEX_LIBRARIES})

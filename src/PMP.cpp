@@ -1,31 +1,166 @@
 #include "PMP.hpp"
 
+double get_wall_time(){
+    struct timeval time;
+    if(gettimeofday(&time,nullptr)){
+        // HANDLE ERROR
+        return 0;
+    }else{
+        return static_cast<double>(time.tv_sec) + static_cast<double>(time.tv_usec*0.000001); //microsegundos
+    }
+}
 
 
-
-PMP::PMP(const shared_ptr<Instance>& instance):instance(instance)
+PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb):instance(instance)
 {
     this->instance = instance;
-    this->instance->show();
+    this->typeProb = typeProb;
+    this->instance->print();
+    this->p = this->instance->get_p();
+    this->num_facilities = this->instance->getLocations().size();
+    this->num_customers = this->instance->getCustomers().size();
 
+    cout << "value of p: " << this->p << endl;
+    cout << "Number of facilities: " << num_facilities << endl;
+    cout << "Number of customers: " << num_customers << endl;
+
+    initILP();
+    solveILP();
 }
 PMP::~PMP()
 {
-    // this->instance.reset();
-    this->env.end();
+    env.end();
+}
+
+void PMP::allocVars(IloEnv env, BoolVarMatrix x, IloBoolVarArray y){
+
+    // alloc memory for vars x_ij and y_j
+    x = BoolVarMatrix(env, num_customers);
+    for (int i = 0; i < num_customers; i++)
+        x[i] = IloBoolVarArray(env, num_facilities);
+
+    y = IloBoolVarArray(env, num_facilities);
+
+}
+
+void PMP::initILP(){
+
+     try{
+
+        model = IloModel(env);
+        allocVars(env,x,y);        
+        createModel(model,x,y);
+
+        cplex = IloCplex(model);
+        cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
+        // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
+
+        // exportILP(cplex);
+
+    } catch (IloException& e) {
+        cerr << "ERROR: " << e.getMessage()  << endl;
+        cout << "\nError ilocplex" << endl;
+        return;
+    }catch (int e) {
+            cerr << endl << "\nException occurred = " << e << endl;
+    }
+
+
 }
 
 
 
+void PMP::createModel(IloModel model, BoolVarMatrix x, IloBoolVarArray y){
+
+    objFunction(model,x);
+    constr_DemandSatif(model,x);
+    constr_pLocations(model,y);
+    if(strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0  ){constr_maxCapacity(model,x,y);}
+
+}
 
 
+void PMP::objFunction(IloModel model, BoolVarMatrix x){
+
+    cout << "[INFO] Adding Objective Function "<< endl;
+    
+    IloEnv env = model.getEnv();
+    IloExpr obj(env);
+    for (uint_t i = 0; i < num_customers; i++)
+        for (uint_t j = 0; j < num_facilities; j++)
+            obj += double(instance->getWeightedDist(j,i)) * x[i][j];
+    model.add(IloMinimize(env, obj));
+    obj.end();
+
+}
+
+void PMP::constr_DemandSatif(IloModel model, BoolVarMatrix x){
+
+    cout << "[INFO] Adding Demand Satisfied Constraints "<< endl;
+
+    IloEnv env = model.getEnv();
+    for (uint_t i = 0; i < num_customers; i++){
+        IloExpr expr(env);
+        for (uint_t j = 0; j < num_facilities; j++)
+            expr += x[i][j];
+        model.add(expr == 1);
+        expr.end();
+    }
+
+}
 
 
+void PMP::constr_pLocations(IloModel model, IloBoolVarArray y){
+
+    cout << "[INFO] Adding p Locations Constraints "<< endl;
+
+    IloEnv env = model.getEnv();
+    IloExpr expr(env);
+    for (uint_t j = 0; j < num_facilities; j++)
+        expr += y[j];
+    model.add(expr == p);
+    expr.end();
+
+}
 
 
+void  PMP::constr_maxCapacity(IloModel model, BoolVarMatrix x, IloBoolVarArray y){
+
+    cout << "[INFO] Adding Max Capacity Constraints "<< endl;
+
+    IloEnv env = model.getEnv();
+    for (uint_t j = 0; j < num_facilities; j++){
+        IloExpr expr(env);
+        for (uint_t i = 0; i < num_customers; i++)
+            expr += int(instance->getCustWeight(i)) * x[i][j];
+        model.add(expr <= int(instance->getLocCapacity(j)) * y[j]);
+        expr.end();
+    }
+
+}
 
 
+void PMP::printSolution(IloCplex& cplex, BoolVarMatrix x, IloBoolVarArray y){
+    
+        cout << "Solution status = " << cplex.getStatus()   << endl;
+        cout << "Solution value  = " << cplex.getObjValue() << endl;
+        cout << "Time: " << timePMP << endl;
+    
+        for (uint_t i = 0; i < num_customers; i++){
+            for (uint_t j = 0; j < num_facilities; j++){
+                if (cplex.getValue(x[i][j]) > 0.5)
+                    cout << "x[" << i << "][" << j << "] = " << cplex.getValue(x[i][j]) << endl;
+            }
+        }
+    
+        for (uint_t j = 0; j < num_facilities; j++){
+            if (cplex.getValue(y[j]) > 0.5)
+                cout << "y[" << j << "] = " << cplex.getValue(y[j]) << endl;
+        }
 
+
+        cout << "Time: " << cplex.getTime() << endl;
+}
 
 
 void PMP::exportILP(IloCplex& cplex)
@@ -33,7 +168,7 @@ void PMP::exportILP(IloCplex& cplex)
     cplex.exportModel("model.lp");
 }
 
-void TFP_SCP_SIMP::solveILP(){
+void PMP::solveILP(){
     
     double cpu0, cpu1;
     cpu0 = get_wall_time(); 

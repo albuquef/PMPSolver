@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
         }
         case 7: {
             cout << "Exact method PMP\n";
-            PMP pmp(make_shared<Instance>(instance));
+            PMP pmp(make_shared<Instance>(instance), "cPMP");
             break;
         }
         default: {

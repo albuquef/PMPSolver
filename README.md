@@ -88,7 +88,7 @@ distance_matrix = "./data/toulon/dist_matrix.txt"
 output = ""
 weights = "./data/toulon/cust_weights.txt"
 threads = 4
-mode = 3
+mode = 7
 seed = 1
 time = 7200
 ```
