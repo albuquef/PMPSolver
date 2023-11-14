@@ -80,13 +80,11 @@ void PMP::initILP(){
     try{
 
         model = IloModel(env);
-        cout << "[INFO] Creating ILP "<< endl;
-        initVars(); 
-        cout << "[INFO] Creating ILP 2"<< endl;       
+        initVars();     
         createModel(model,this->x,this->y);
 
         this->cplex = IloCplex(this->model);
-        exportILP(cplex);
+        // exportILP(cplex);
    
         cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
@@ -130,9 +128,7 @@ void PMP::objFunction(IloModel model, BoolVarMatrix x){
     IloExpr objExpr(env);
     for (IloInt i = 0; i < num_customers; i++)
         for (IloInt j = 0; j < num_facilities; j++){
-            // objExpr += IloNum(instance->getWeightedDist(j,i)) * x[i][j];
-            objExpr += j*i * x[i][j];
-            // cout << instance->getWeightedDist(j,i) << endl;
+            objExpr += instance->getWeightedDist(j,i) * x[i][j];
         }
     model.add(IloMinimize(env, objExpr));
     objExpr.end();
