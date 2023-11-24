@@ -110,7 +110,7 @@ Solution_std TB::run(bool verbose) {
         }
         if (verbose) {
             sol_best.print();
-            cout << "TB loop: ";
+            cout << "uncapacitated TB loop: ";
             tock(start);
             cout << endl;
         }
@@ -163,7 +163,7 @@ Solution_cap TB::run_cap(bool verbose) {
 
         if (verbose) {
             sol_best.print();
-            cout << "TB loop: ";
+            cout << "capacitated TB loop: ";
             tock(start);
             cout << endl;
         }

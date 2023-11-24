@@ -116,3 +116,7 @@ build/large_PMP -config path_to_config_file.toml
 ```
 
 This lets you change configuration on the fly.
+
+
+compile> cd  build && make && cd ..
+

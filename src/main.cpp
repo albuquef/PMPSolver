@@ -143,6 +143,14 @@ int main(int argc, char *argv[]) {
                     "Mode 6 : \n"
                     "\tSixth mode use TB Heuristic with a fixed percentage parameter and with cPMP\n\n"
 
+                    "Mode 7 : \n"
+                    "\tSeventh mode use Exact Method for PMP\n\n"
+                    "Mode 8 : \n"
+                    "\tEighth mode use Exact Method for a continuos cPMP\n\n"
+                    "Mode 9 : \n"
+                    "\tNinth mode use Exact Method for a binary cPMP\n\n"
+
+
                     "Generic example : \n"
                     "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --mode <no_of_mode>\n\n"
 
@@ -236,7 +244,9 @@ int main(int argc, char *argv[]) {
             cout << "RSSV heuristic - cPMP\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             CLOCK_THREADED = true;
-            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+            // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+            // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+            auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, 1);
             auto solution = heuristic.run_cap(true);
@@ -255,14 +265,24 @@ int main(int argc, char *argv[]) {
         case 6: {
             cout << "TBPercentage heuristic - cPMP\n";
             TBPercentage heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run_cap(true);
+            auto solution = heuristic.run(true);
             solution.print();
             solution.printAssignment(output_filename);
             break;
         }
         case 7: {
             cout << "Exact method PMP\n";
+            PMP pmp(make_shared<Instance>(instance), "PMP");
+            break;
+        }
+        case 8: {
+            cout << "Exact method cPMP continuos\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP");
+            break;
+        }
+        case 9: {
+            cout << "Exact method cPMP binary\n";
+            PMP pmp(make_shared<Instance>(instance), "CPMP", true);
             break;
         }
         default: {

@@ -24,8 +24,11 @@ private:
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
     shared_ptr<Instance> run(int thread_cnt);
+    shared_ptr<Instance> run_CAP(int thread_cnt);
     void solveSubproblem(int seed);
+    void solveSubproblem_CAP(int seed);
     void processSubsolution(shared_ptr<Solution_std> solution);
+    void processSubsolution_CAP(shared_ptr<Solution_cap> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
 };

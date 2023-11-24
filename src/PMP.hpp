@@ -33,12 +33,13 @@ class PMP
 
     public: 
         // PMP(Reader *r, const char* typeSEC):rd(r){rd->show();};
-        PMP(const shared_ptr<Instance>& instance, const char* typeProb);
+        PMP(const shared_ptr<Instance>& instance, const char* typeProb, bool is_BinModel=false);
         ~PMP();
         void exportILP      (IloCplex& cplex);
         void solveILP       (void);
+        template <typename VarType>  
         void printSolution  (IloCplex& cplex,
-                            BoolVarMatrix x,
+                            VarType x,
                             IloBoolVarArray y);
         // void saveSolution   (IloCplex& cplex,
         //                     BoolVarMatrix x,
@@ -50,6 +51,7 @@ class PMP
         int current_day, current_month, current_year;
         // void saveNumConstraints();
         double timePMP;
+        bool is_BinModel;
 
     private:
         shared_ptr<Instance> instance; // original PMP instance
@@ -57,8 +59,10 @@ class PMP
         IloEnv env;
         IloModel model;
         IloCplex cplex;
-        BoolVarMatrix x;
+        BoolVarMatrix x_bin;
         IloBoolVarArray y;
+        NumVarMatrix x_cont;
+        // IloNumVarArray y_cont;
         uint_t p;
         uint_t num_facilities;
         uint_t num_customers;
@@ -66,24 +70,27 @@ class PMP
         void initVars();
 
         void initILP        (void);
-        void initVariables  (void);        
+        void initVariables  (void);
+
+        template <typename VarType>        
         void createModel(IloModel model, 
-                        BoolVarMatrix x,
+                        VarType x,
                         IloBoolVarArray y);
         
-        void
-        objFunction (IloModel model, BoolVarMatrix x);
-
-        void
-        constr_DemandSatif (IloModel model, BoolVarMatrix x);
-
-        void
-        constr_pLocations (IloModel model, IloBoolVarArray y);
-
-        void
-        constr_maxCapacity (IloModel model, BoolVarMatrix x, IloBoolVarArray y);
-
+        template <typename VarType>
+        void objFunction (IloModel model, VarType x);
+        // void objFunction (IloModel model, BoolVarMatrix x);
         
+        
+        // void constr_DemandSatif (IloModel model, BoolVarMatrix x);
+        template <typename VarType>
+        void constr_DemandSatif (IloModel model, VarType x);
+        
+        void constr_pLocations (IloModel model, IloBoolVarArray y);
+        
+        // void constr_maxCapacity (IloModel model, BoolVarMatrix x, IloBoolVarArray y);
+        template <typename VarType>
+        void constr_maxCapacity (IloModel model, VarType x, IloBoolVarArray y);
 
 };
 

@@ -197,13 +197,13 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
 }
 
 void Instance::print() {
-//    cout << "Locations: ";
-//    for (auto l:locations) cout << l << " ";
-//    cout << endl;
-//
-//    cout << "Customers: ";
-//    for (auto c:customers) cout << c << " ";
-//    cout << endl;
+   cout << "Locations: ";
+   for (auto l:locations) cout << l << " ";
+   cout << endl;
+
+   cout << "Customers: ";
+   for (auto c:customers) cout << c << " ";
+   cout << endl;
 
     cout << "loc_max_id: " << loc_max_id << endl;
     cout << "loc_cnt: " << locations.size() << endl;
