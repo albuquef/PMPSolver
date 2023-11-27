@@ -2,6 +2,11 @@
 #include "globals.hpp"
 #include "utils.hpp"
 
+
+void printDDE(void){
+    cout << "RSSV finished." << endl;
+}
+
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
     N = instance->getLocations().size();
@@ -22,6 +27,9 @@ shared_ptr<Instance> RSSV::run(int thread_cnt) {
     cout << "Subproblems cnt (M): " << M << endl << endl;
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
+
+    cout << "thread cnt:  " << thread_cnt << endl;
+    cout << "\n\n\n\n" << endl;
 
     vector<thread> threads; // spawn M threads
     for (uint_t i = 1; i <= M; i++) {
@@ -62,14 +70,52 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
 
-    vector<thread> threads; // spawn M threads
-    for (uint_t i = 1; i <= M; i++) {
-        threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i);
-    }
+    cout << "thread cnt:  " << thread_cnt << endl;
+    cout << "\n\n\n\n" << endl;
 
-    for (auto &th:threads) { // wait for all threads
-        th.join();
+    vector<thread> threads; // spawn M threads
+    // for (uint_t i = 1; i <= M; i++) {
+    //     threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i);
+    // }
+
+    for (uint_t i = 1; i <= M; i += thread_cnt) {
+        for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
+            threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j);
+        }
+    
+        // Wait for the current batch of threads to finish before starting the next batch
+        for (auto &th : threads) {
+            th.join();
+        }
+
+        // Clear the threads vector for the next batch
+        threads.clear();
+    
+    
+    
     }
+    
+    // for (auto &th:threads) { // wait for all threads
+    //     th.join();
+    // }
+
+    // RSSV solver(instance, 1, n);
+    // // Divide the work among the threads
+    // for (int i = 0; i < thread_cnt; ++i) {
+    //     threads.emplace_back([&solver, this, thread_cnt, i]() {
+    //         // Each thread handles 1/thread_cnt of the subproblems
+    //         for (int j = i; j < M; j += thread_cnt) {
+    //             solver.solveSubproblem_CAP(j);
+    //         }
+    //     });
+    // }
+
+    // // Wait for all threads to finish
+    // for (auto& th : threads) {
+    //     th.join();
+    // }
+
+
     cout << "All subproblems solved."  << endl << endl;
 
 
@@ -91,9 +137,11 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
     cout << "Final instance parameters:\n";
     filtered_instance->print();
 
+    atexit(printDDE);
+
+
     return filtered_instance;
 }
-
 
 
 /*
@@ -106,19 +154,23 @@ void RSSV::solveSubproblem(int seed) {
     auto start = tick();
     Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
 
-    checkClock();
+    // checkClock();
     
-    TB heuristic(make_shared<Instance>(subInstance), seed);
-    // auto sol = heuristic.run(false);
-    auto sol = heuristic.run(false);
 
-    if (VERBOSE) cout << "Solution_std " << seed << ": ";
-    sol.print();
-    processSubsolution(make_shared<Solution_std>(sol));
-    if (VERBOSE) tock(start);
-    sem.notify(seed);
+    if(checkClock()){
+        TB heuristic(make_shared<Instance>(subInstance), seed);
+        // auto sol = heuristic.run(false);
+        auto sol = heuristic.run(false);
 
-    checkClock();
+        if (VERBOSE) cout << "Solution_std " << seed << ": ";
+        sol.print();
+        processSubsolution(make_shared<Solution_std>(sol));
+        if (VERBOSE) tock(start);
+        sem.notify(seed);
+    }else{
+        cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
+    }
+    // checkClock();
 }
 
 
@@ -134,18 +186,25 @@ void RSSV::solveSubproblem_CAP(int seed) {
     auto start = tick();
     Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
 
-    checkClock();
-    
-    TB heuristic(make_shared<Instance>(subInstance), seed);
-    auto sol = heuristic.run_cap(false);
+    // checkClock();
+    if(checkClock()){
+        TB heuristic(make_shared<Instance>(subInstance), seed);
+        int MAX_ITE = 1000;
+        auto sol = heuristic.run_cap(false, MAX_ITE);
 
-    if (VERBOSE) cout << "Solution_cap " << seed << ": ";
-    sol.print();
-    processSubsolution_CAP(make_shared<Solution_cap>(sol));
-    if (VERBOSE) tock(start);
-    sem.notify(seed);
+        if (VERBOSE) cout << "Solution_cap " << seed << ": ";
+        sol.print();
+        processSubsolution_CAP(make_shared<Solution_cap>(sol));
+        if (VERBOSE) tock(start);
+        sem.notify(seed);
+    }else{
+        cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
+    }
 
-    checkClock();
+
+
+
+    // checkClock();
 }
 
 /*

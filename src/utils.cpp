@@ -54,10 +54,10 @@ void setClockLimit(const uint_t limit) {
     CLOCK_LIMIT = limit;
 }
 
-void checkClock(void) {
+bool checkClock(void) {
     clock_t clock_current = clock();
 
-    if (CLOCK_THREADED) {
+    if (CLOCK_THREADED) { // If the clock is threaded, each thread has its own clock    
         CLOCK_ELAPSED += ((clock_current / CLOCKS_PER_SEC) - CLOCK_ELAPSED) / THREAD_NUMBER;
     } else {
         CLOCK_ELAPSED = (clock_current / CLOCKS_PER_SEC - CLOCK_START);
@@ -65,10 +65,14 @@ void checkClock(void) {
 
     if (CLOCK_ELAPSED >= CLOCK_LIMIT) {
 
-        cout << "[TO-DO]  Need to save the best solution " << endl;
-
+        // cout << "[TO-DO]  Need to save the best solution " << endl;
         std::cerr << "Time limit exceeded. It took more than " << clock_current / CLOCKS_PER_SEC << "s to finish. You should allocate more time using \"-t <time.s>\" option." << std::endl;
-
         exit(1);
+
+        // return false;
+
     }
+
+    return true;
+
 }

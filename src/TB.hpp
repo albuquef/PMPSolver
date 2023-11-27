@@ -19,7 +19,7 @@ public:
     Solution_cap initHighestCapSolution();
 
     Solution_std run(bool verbose);
-    Solution_cap run_cap(bool verbose);
+    Solution_cap run_cap(bool verbose, int MAX_ITE);
 
 };
 

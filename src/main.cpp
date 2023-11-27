@@ -25,6 +25,8 @@ int main(int argc, char *argv[]) {
     int mode = 0;
     int seed = 1;
     string output_filename;
+    int MAX_ITE_TB = 1000;
+
 
     // default config path
     std::string configPath = "config.toml";
@@ -220,7 +222,7 @@ int main(int argc, char *argv[]) {
         case 2: {
             cout << "TB heuristic - cPMP\n";
             TB heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run_cap(true);
+            auto solution = heuristic.run_cap(true,MAX_ITE_TB);
             solution.print();
             solution.printAssignment(output_filename);
             break;
@@ -248,8 +250,8 @@ int main(int argc, char *argv[]) {
             // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
-            TB heuristic(filtered_instance, 1);
-            auto solution = heuristic.run_cap(true);
+            TB heuristic(filtered_instance, seed);
+            auto solution = heuristic.run_cap(true,MAX_ITE_TB);
             cout << "Final solution:\n";
             solution.print();
             solution.printAssignment(output_filename);

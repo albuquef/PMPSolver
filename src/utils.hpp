@@ -37,7 +37,7 @@ void setClockLimit(const uint_t);
  * Checks if the clock limit (CPU time) had been reached at each call. 
  * If the limit had been reached, exits the program.
  */
-void checkClock(void);
+bool checkClock(void);
 
 
 #endif //LARGE_PMP_UTILS_HPP

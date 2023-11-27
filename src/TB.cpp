@@ -120,15 +120,21 @@ Solution_std TB::run(bool verbose) {
     return sol_best;
 }
 
-Solution_cap TB::run_cap(bool verbose) {
+Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
     verbose = VERBOSE;
     
     auto sol_best = initHighestCapSolution();
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_cap sol_cand;
+    // int max_ite = 3;
+    int ite = 0;
 
-    while (improved) {
+
+    while (improved && ite < MAX_ITE) {
+        
+        ite++;
+        
         improved = false;
         sol_cand = sol_best;
         auto start = tick();
