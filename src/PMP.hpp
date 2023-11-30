@@ -6,8 +6,10 @@
 #include <string.h>
 
 #include "instance.hpp"
-#include "instance.hpp"
 #include "solution_std.hpp"
+#include "solution_cap.hpp"
+#include "utils.hpp"
+#include "TB.hpp"
 
 #include <ilcplex/ilocplex.h>
 
@@ -41,6 +43,11 @@ class PMP
         void printSolution  (IloCplex& cplex,
                             VarType x,
                             IloBoolVarArray y);
+        // Solution_std getSolution_std();
+        Solution_cap getSolution_cap();
+        // void saveSolution   (IloCplex& cplex,
+        //                     BoolVarMatrix x,
+        //                     IloBoolVarArray y);
         // void saveSolution   (IloCplex& cplex,
         //                     BoolVarMatrix x,
         //                     IloBoolVarArray y);
@@ -68,9 +75,8 @@ class PMP
         uint_t num_customers;
 
         void initVars();
-
         void initILP        (void);
-        void initVariables  (void);
+
 
         template <typename VarType>        
         void createModel(IloModel model, 

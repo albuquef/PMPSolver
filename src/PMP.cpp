@@ -16,26 +16,31 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
     // this->instance = instance;
     this->typeProb = typeProb;
     this->is_BinModel = is_BinModel;
-    this->instance->print();
     this->p = this->instance->get_p();
     this->num_facilities = this->instance->getLocations().size();
     this->num_customers = this->instance->getCustomers().size();
 
-    cout << "value of p: " << this->p << endl;
+    cout << "Value of p: " << this->p << endl;
     cout << "Number of facilities: " << num_facilities << endl;
     cout << "Number of customers: " << num_customers << endl;
-    cout << "Type of problem: " << typeProb << endl;
-    cout << "Binary Model: " << is_BinModel << endl;
-
+    // cout << "Type of problem: " << typeProb << endl;
+    if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0  )
+        cout << "Capacity Model: true" << endl;
+    else 
+        cout << "Capacity Model: false" << endl;
+    if (is_BinModel == true) 
+        cout << "Binary Model: true" << endl;
+    else 
+        cout << "Binary Model: false" << endl;
 
     initILP();
     solveILP();
     
-    if (cplex.getStatus() == IloAlgorithm::Optimal)
-        if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
-        else {printSolution(cplex,x_cont,y);}
-    else
-        cout << "Solution status = " << cplex.getStatus()   << endl;
+    // if (cplex.getStatus() == IloAlgorithm::Optimal)
+    //     if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
+    //     else {printSolution(cplex,x_cont,y);}
+    // else
+    //     cout << "Solution status = " << cplex.getStatus()   << endl;
 
 }
 PMP::~PMP()
@@ -46,7 +51,6 @@ PMP::~PMP()
 void PMP::initVars(){
 
     IloEnv env = model.getEnv();
-
 
     // alloc memory and add to model for vars y_j
     y = IloBoolVarArray(env, static_cast<IloInt>(num_facilities));
@@ -102,14 +106,12 @@ void PMP::initILP(){
         else
             createModel(this->model,this->x_cont,this->y);     
 
-
         this->cplex = IloCplex(this->model);
-        exportILP(cplex);
+        // exportILP(cplex);
    
         cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
-
-        // exportILP(cplex);
+        // cplex.setParam(IloCplex::Threads, 1); // use 1 thread
 
     } catch (IloException& e) {
         cerr << "ERROR: " << e.getMessage()  << endl;
@@ -258,3 +260,28 @@ void PMP::solveILP(){
     cpu1 = get_wall_time();
     this->timePMP = cpu1 - cpu0; 
 }
+
+
+// Solution_std PMP::getSolution_std(){
+
+
+// }
+
+
+Solution_cap PMP::getSolution_cap(){
+    unordered_set<uint_t> p_locations;
+    auto p = instance->get_p();
+    auto locations = instance->getLocations();
+
+    for (IloInt j = 0; j < num_facilities; j++){
+        if (cplex.getValue(y[j]) > 0.5)
+            p_locations.insert(locations[j]);
+    }
+
+    Solution_cap sol(instance, p_locations);
+
+    return sol;
+}
+
+
+

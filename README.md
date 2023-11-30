@@ -115,6 +115,13 @@ If you want to work with multiple configuration files, just pass the config file
 build/large_PMP -config path_to_config_file.toml
 ```
 
+ex
+```
+build/large_PMP -config ./parameters/config_toulon.toml --mode 8
+```
+
+
+
 This lets you change configuration on the fly.
 
 

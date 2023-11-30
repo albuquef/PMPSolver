@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.16)
 project(large_PMP)
 
 
-set(CMAKE_CXX_STANDARD 20)
+if(NOT "${CMAKE_CXX_STANDARD}")
+  set(CMAKE_CXX_STANDARD 20)
+endif()
 
 # CPLEX_ROOT_DIR - path to CPLEX installation
 set(CPLEX_ROOT_DIR "/opt/ibm/ILOG/CPLEX_Studio2211")

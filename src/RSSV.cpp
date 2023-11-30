@@ -95,27 +95,6 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
     
     }
     
-    // for (auto &th:threads) { // wait for all threads
-    //     th.join();
-    // }
-
-    // RSSV solver(instance, 1, n);
-    // // Divide the work among the threads
-    // for (int i = 0; i < thread_cnt; ++i) {
-    //     threads.emplace_back([&solver, this, thread_cnt, i]() {
-    //         // Each thread handles 1/thread_cnt of the subproblems
-    //         for (int j = i; j < M; j += thread_cnt) {
-    //             solver.solveSubproblem_CAP(j);
-    //         }
-    //     });
-    // }
-
-    // // Wait for all threads to finish
-    // for (auto& th : threads) {
-    //     th.join();
-    // }
-
-
     cout << "All subproblems solved."  << endl << endl;
 
 
@@ -153,6 +132,8 @@ void RSSV::solveSubproblem(int seed) {
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
     Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
+    int MAX_ITE = 1000;
+
 
     // checkClock();
     
@@ -160,7 +141,7 @@ void RSSV::solveSubproblem(int seed) {
     if(checkClock()){
         TB heuristic(make_shared<Instance>(subInstance), seed);
         // auto sol = heuristic.run(false);
-        auto sol = heuristic.run(false);
+        auto sol = heuristic.run(false, MAX_ITE);
 
         if (VERBOSE) cout << "Solution_std " << seed << ": ";
         sol.print();

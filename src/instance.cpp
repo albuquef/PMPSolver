@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <sstream>
+#include <string.h>
 
 Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<uint_t[]> cust_weights,
                    shared_ptr<dist_t[]> dist_matrix, shared_ptr<uint_t[]> loc_capacities, uint_t p,
@@ -28,6 +29,7 @@ vector<string> tokenize(const string& input, char delim) {
 }
 
 Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim) : p(p) {
+
     // Open streams
     fstream dist_matrix_file(dist_matrix_filename);
     fstream weights_file(weights_filename);
@@ -197,13 +199,13 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
 }
 
 void Instance::print() {
-   cout << "Locations: ";
-   for (auto l:locations) cout << l << " ";
-   cout << endl;
+//    cout << "Locations: ";
+//    for (auto l:locations) cout << l << " ";
+//    cout << endl;
 
-   cout << "Customers: ";
-   for (auto c:customers) cout << c << " ";
-   cout << endl;
+//    cout << "Customers: ";
+//    for (auto c:customers) cout << c << " ";
+//    cout << endl;
 
     cout << "loc_max_id: " << loc_max_id << endl;
     cout << "loc_cnt: " << locations.size() << endl;
@@ -258,3 +260,8 @@ uint_t Instance::getLocCapacity(uint_t loc) {
 uint_t Instance::getTotalDemand() const {
     return total_demand;
 }
+
+
+
+
+

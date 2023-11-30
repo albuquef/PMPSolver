@@ -4,10 +4,11 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP/**", 
+                "/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP/**",
                 "/opt/ibm/ILOG/CPLEX_Studio2211/cplex/**",
-                "/opt/ibm/ILOG/CPLEX_Studio2211/concert/**",  
-                "/opt/ibm/ILOG/CPLEX_Studio2211/cpoptimizer/**"
+                "/opt/ibm/ILOG/CPLEX_Studio2211/concert/**",
+                "/opt/ibm/ILOG/CPLEX_Studio2211/cpoptimizer/**",
+                "/usr/lib/llvm-10/lib/clang/10.0.0/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

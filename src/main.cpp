@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {
     int seed = 1;
     string output_filename;
     int MAX_ITE_TB = 1000;
+    bool isBin_CPMP = false;
 
 
     // default config path
@@ -213,37 +214,45 @@ int main(int argc, char *argv[]) {
     auto start = tick();
     switch (mode) {
         case 1: {
+            cout << "-------------------------------------------------\n";
             cout << "TB heuristic - standard PMP\n";
+            cout << "-------------------------------------------------\n";
             TB heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run(true);
+            auto solution = heuristic.run(true,MAX_ITE_TB);
             solution.printAssignment(output_filename);
             break;
         }
         case 2: {
+            cout << "-------------------------------------------------\n";
             cout << "TB heuristic - cPMP\n";
+            cout << "-------------------------------------------------\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
-            solution.print();
+            // solution.print();
             solution.printAssignment(output_filename);
             break;
         }
         case 3: {
             // Extract filtered instance
+            cout << "-------------------------------------------------\n";
             cout << "RSSV heuristic - standard PMP\n";
+            cout << "-------------------------------------------------\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             CLOCK_THREADED = true;
             auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
-            TB heuristic(filtered_instance, 1);
-            auto solution = heuristic.run(true);
-            cout << "Final solution:\n";
-            solution.print();
+            TB heuristic(filtered_instance, seed);
+            auto solution = heuristic.run(true,MAX_ITE_TB);
+            // cout << "Final solution:\n";
+            // solution.print();
             solution.printAssignment(output_filename);
             break;
         }
         case 4: {
             // Extract filtered instance
+            cout << "-------------------------------------------------\n";
             cout << "RSSV heuristic - cPMP\n";
+            cout << "-------------------------------------------------\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             CLOCK_THREADED = true;
             // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
@@ -258,14 +267,18 @@ int main(int argc, char *argv[]) {
             break;
         }
         case 5: {
+            cout << "-------------------------------------------------\n";
             cout << "TBPercentage heuristic - standard PMP\n";
+            cout << "-------------------------------------------------\n";
             TBPercentage heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run(true);
             solution.printAssignment(output_filename);
             break;
         }
         case 6: {
+            cout << "-------------------------------------------------\n";
             cout << "TBPercentage heuristic - cPMP\n";
+            cout << "-------------------------------------------------\n";
             TBPercentage heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run(true);
             solution.print();
@@ -273,25 +286,34 @@ int main(int argc, char *argv[]) {
             break;
         }
         case 7: {
+            cout << "-------------------------------------------------\n";
             cout << "Exact method PMP\n";
+            cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "PMP");
             break;
         }
         case 8: {
+            cout << "-------------------------------------------------\n";
             cout << "Exact method cPMP continuos\n";
+            cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP");
+            auto solution = pmp.getSolution_cap();
+            solution.printAssignment(output_filename);
             break;
         }
         case 9: {
+            cout << "-------------------------------------------------\n";
             cout << "Exact method cPMP binary\n";
+            cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP", true);
+            auto solution = pmp.getSolution_cap();
+            solution.printAssignment(output_filename);
             break;
         }
         default: {
             cout << "Experimental branch\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.initHighestCapSolution();
-
             solution.print();
         }
     }

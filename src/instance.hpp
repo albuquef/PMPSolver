@@ -46,6 +46,7 @@ public:
     uint_t getLocCapacity(uint_t loc);
     uint_t getTotalDemand() const;
 
+
 };
 
 

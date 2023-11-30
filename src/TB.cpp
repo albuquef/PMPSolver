@@ -65,7 +65,7 @@ Solution_cap TB::initHighestCapSolution() {
 }
 
 
-Solution_std TB::run(bool verbose) {
+Solution_std TB::run(bool verbose, int MAX_ITE) {
     checkClock();
     verbose = VERBOSE;
 
@@ -75,8 +75,13 @@ Solution_std TB::run(bool verbose) {
     Solution_std sol_tmp;
     Solution_std sol_cand;
     int objectiveCpt = 0;
+    int ite=0;
 
-    while (improved) {
+
+    while (improved && ite < MAX_ITE) {
+
+        ite++;
+
         checkClock();
         improved = false;
         sol_cand = sol_best;
