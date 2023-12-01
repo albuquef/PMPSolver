@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     int mode = 0;
     int seed = 1;
     string output_filename;
-    int MAX_ITE_TB = 1000;
+    int MAX_ITE_TB = 10;
     bool isBin_CPMP = false;
 
 
@@ -229,7 +229,7 @@ int main(int argc, char *argv[]) {
             TB heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
             // solution.print();
-            solution.printAssignment(output_filename);
+            solution.printAssignment(output_filename,mode);
             break;
         }
         case 3: {
@@ -263,7 +263,7 @@ int main(int argc, char *argv[]) {
             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
             cout << "Final solution:\n";
             solution.print();
-            solution.printAssignment(output_filename);
+            solution.printAssignment(output_filename,mode);
             break;
         }
         case 5: {
@@ -298,7 +298,7 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP");
             auto solution = pmp.getSolution_cap();
-            solution.printAssignment(output_filename);
+            solution.printAssignment(output_filename,mode);
             break;
         }
         case 9: {
@@ -307,7 +307,7 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP", true);
             auto solution = pmp.getSolution_cap();
-            solution.printAssignment(output_filename);
+            solution.printAssignment(output_filename,mode);
             break;
         }
         default: {

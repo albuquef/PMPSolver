@@ -30,7 +30,7 @@ public:
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective() const;
-    void printAssignment(string output_filename);
+    void printAssignment(string output_filename,int mode);
     vector<pair<uint_t, dist_t>> getUrgencies();
     uint_t getTotalCapacity();
 

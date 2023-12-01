@@ -39,7 +39,6 @@ set(SOURCE_FILES
     src/RSSV.cpp src/RSSV.hpp 
     src/semaphore.hpp 
     src/solution_cap.cpp src/solution_cap.hpp 
-    src/solution.cpp src/solution.hpp 
     src/config_parser.cpp 
     src/toml.hpp 
     src/TBPercentage.hpp src/TBPercentage.cpp
