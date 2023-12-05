@@ -1,0 +1,16 @@
+verbose = true
+p = 5
+capacities = "./data/Random/random_144_216/loc_capacities_6x6_rand.txt"
+distance_matrix = "./data/Random/random_144_216/dist_matrix.txt"
+weights = "./data/Random/random_144_216/cust_weights_3.txt"
+output = "./results/test_random_144"
+output_loc = "./results/outputLOC_random_144"
+output_vars = "./results/outputVARS_random_144"
+output_table = "./results/outputTABLE_random_144"
+threads = 4
+mode = 3
+seed = 48456
+time = 3600
+toleranceCpt = 10
+k = 1
+percentage = 80

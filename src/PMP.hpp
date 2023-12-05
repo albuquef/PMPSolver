@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "instance.hpp"
+#include "globals.hpp"
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
 #include "utils.hpp"
@@ -45,6 +46,7 @@ class PMP
                             IloBoolVarArray y);
         // Solution_std getSolution_std();
         Solution_cap getSolution_cap();
+        Solution_std getSolution_std();
         // void saveSolution   (IloCplex& cplex,
         //                     BoolVarMatrix x,
         //                     IloBoolVarArray y);
@@ -93,6 +95,10 @@ class PMP
         void constr_DemandSatif (IloModel model, VarType x);
         
         void constr_pLocations (IloModel model, IloBoolVarArray y);
+
+        // for pmp model 
+        template <typename VarType>
+        void constr_UBpmp (IloModel model, VarType x, IloBoolVarArray y);
         
         // void constr_maxCapacity (IloModel model, BoolVarMatrix x, IloBoolVarArray y);
         template <typename VarType>

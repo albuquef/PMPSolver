@@ -14,6 +14,21 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     fullCapEval();
 }
 
+Solution_cap::Solution_cap(shared_ptr<Instance> instance,
+                 unordered_set<uint_t> p_locations,
+                 unordered_map<uint_t, dist_t> loc_usages, 
+                 unordered_map<uint_t, dist_t> cust_satisfactions, 
+                 unordered_map<uint_t, assignment> assignments) {
+    this->instance = std::move(instance);
+    this->p_locations = std::move(p_locations);
+    this->loc_usages = std::move(loc_usages);
+    this->cust_satisfactions = std::move(cust_satisfactions);
+    this->assignments = std::move(assignments);
+    objEval();
+}
+
+
+
 vector<pair<uint_t, dist_t>> Solution_cap::getUrgencies() {
     vector<pair<uint_t, dist_t>> urgencies_vec;
 
@@ -61,38 +76,45 @@ void Solution_cap::fullCapEval() {
     // Determine unassigned customer's urgencies
     auto urgencies_vec = getUrgencies();
     bool location_full = false;
-
-    while (!urgencies_vec.empty()) {
+    bool infeasible = false;
+    int cont = 0;
+    while (!urgencies_vec.empty() && !infeasible) {
         // Assign customers, until some capacity is full
         for (auto p:urgencies_vec) {
             auto cust = p.first;
             auto dem_rem = instance->getCustWeight(cust) - cust_satisfactions[cust]; // remaining demand
-            while (dem_rem > 0) {
+            while (dem_rem > 0  && !infeasible) {
                 auto loc = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
                 if (loc == numeric_limits<uint_t>::max()) {
                     cerr << "Assignment not possible\n";
-                    exit(1);
-                }
-                auto cap_rem = instance->getLocCapacity(loc) - loc_usages[loc];
-                if (dem_rem > cap_rem) { // assign all remaining location capacity
-                    loc_usages[loc] += cap_rem;
-                    cust_satisfactions[cust] += cap_rem;
-                    auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
-                    objective += obj_increment;
-                    assignments[cust].emplace_back(my_tuple{loc, cap_rem, obj_increment});
-                    dem_rem -= cap_rem;
-                    location_full = true;
-                    break;
-                } else { // assign dem_rem
-                    loc_usages[loc] += dem_rem;
-                    cust_satisfactions[cust] += dem_rem;
-                    auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
-                    objective += obj_increment;
-                    assignments[cust].emplace_back(my_tuple{loc, dem_rem, obj_increment});
-                    dem_rem = 0;
+                    infeasible = true;
+                    cont++; 
+                    cout << "cont: " << cont << endl;
+                    // exit(1);
+                    // break;
+                }else{
+                    auto cap_rem = instance->getLocCapacity(loc) - loc_usages[loc];
+                    if (dem_rem > cap_rem) { // assign all remaining location capacity
+                        loc_usages[loc] += cap_rem;
+                        cust_satisfactions[cust] += cap_rem;
+                        auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
+                        objective += obj_increment;
+                        assignments[cust].emplace_back(my_tuple{loc, cap_rem, obj_increment});
+                        dem_rem -= cap_rem;
+                        location_full = true;
+                        break;
+                    } else { // assign dem_rem
+                        loc_usages[loc] += dem_rem;
+                        cust_satisfactions[cust] += dem_rem;
+                        auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
+                        objective += obj_increment;
+                        assignments[cust].emplace_back(my_tuple{loc, dem_rem, obj_increment});
+                        dem_rem = 0;
+                    }
                 }
             }
             if (location_full) break;
+            if (infeasible) break;
         }
 
         // Recompute urgencies and repeat (for unassigned customers and open locations only)
@@ -100,6 +122,8 @@ void Solution_cap::fullCapEval() {
         urgencies_vec = getUrgencies();
     }
 
+    cout << "fullCapEval: " << objective << endl;
+    objEval();
 
 }
 
@@ -147,7 +171,7 @@ dist_t Solution_cap::get_objective() const {
     return objective;
 }
 
-void Solution_cap::printAssignment(string output_filename,int mode) {
+void Solution_cap::saveAssignment(string output_filename,int mode) {
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
 
@@ -190,3 +214,54 @@ uint_t Solution_cap::getTotalCapacity() {
     for (auto p_loc:p_locations) total_cap += instance->getLocCapacity(p_loc);
     return total_cap;
 }
+
+
+void Solution_cap::setLocUsage(uint_t loc, dist_t usage){
+
+    if (usage > instance->getLocCapacity(loc)){
+        cerr << "ERROR: usage > capacity" << endl;
+        exit(1);
+    }   
+
+    loc_usages[loc] = usage;
+    objEval();
+}
+
+void Solution_cap::setCustSatisfaction(uint_t cust, dist_t satisfaction){
+
+    if (satisfaction > instance->getCustWeight(cust)){
+        cerr << "ERROR: satisfaction > weight" << endl;
+        exit(1);
+    }   
+    cust_satisfactions[cust] = satisfaction;
+    objEval();
+}
+
+void Solution_cap::setAssigment(uint_t cust, assignment assigment){
+    assignments[cust] = assigment;
+    objEval();
+}
+
+// void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations
+//                     ,unordered_map<uint_t, uint_t> loc_usages, unordered_map<uint_t, uint_t> cust_satisfactions
+//                     ,unordered_map<uint_t, assignment> assignments){
+//     this->instance = instance;
+//     this->p_locations = p_locations;
+//     this->loc_usages = loc_usages;
+//     this->cust_satisfactions = cust_satisfactions;
+//     this->assignments = assignments;
+//     objEval();
+// }
+
+
+
+void Solution_cap::objEval(){
+    objective = 0;
+    for (auto cust:instance->getCustomers()) {
+        for (auto a:assignments[cust]) objective += a.usage * instance->getRealDist(a.node, cust);
+    }
+
+    cout << "objective Eval: " << objective << endl;
+
+}
+

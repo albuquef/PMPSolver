@@ -3,8 +3,14 @@
 #include "solution_std.hpp"
 
 Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
+    
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
+
+    cout << "p locations: "; 
+    for (auto loc:this->p_locations)
+        cout << loc << " ";
+
     naiveEval();
 }
 
@@ -80,16 +86,22 @@ dist_t Solution_std::get_objective() {
     return objective;
 }
 
-void Solution_std::printAssignment(const string& output_filename) {
+void Solution_std::saveAssignment(const string& output_filename, int mode) {
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
-    if (!output_filename.empty()) {
-        file.open(output_filename, ios::out);
+    string output_filename_final = output_filename + 
+        "_p_" + to_string(p_locations.size()) + 
+        "_mode_" + to_string(mode) +
+        ".txt";
+
+    // Open file if output_filename is not empty
+    if (!output_filename_final.empty()) {
+        file.open(output_filename_final, ios::out);
         streambuf *stream_buffer_file = file.rdbuf();
-        cout.rdbuf(stream_buffer_file);
+        cout.rdbuf(stream_buffer_file); // redirect cout to file
     }
 
-    cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
+    cout << setprecision(5) << "OBJECTIVE\n" << objective << endl << endl;
 
     cout << "P LOCATIONS\n";
     for (auto p_loc:p_locations) cout << p_loc << endl;

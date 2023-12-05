@@ -7,6 +7,7 @@
 /provided/Matrice_cplt/
 /data/paca_v4/
 /provided/
+model.lp
 build
 build/Makefile
 build/CMakeFiles/cmake.check_cache

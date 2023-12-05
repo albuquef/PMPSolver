@@ -36,11 +36,11 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
     initILP();
     solveILP();
     
-    // if (cplex.getStatus() == IloAlgorithm::Optimal)
-    //     if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
-    //     else {printSolution(cplex,x_cont,y);}
-    // else
-    //     cout << "Solution status = " << cplex.getStatus()   << endl;
+    if (cplex.getStatus() == IloAlgorithm::Optimal)
+        if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
+        else {printSolution(cplex,x_cont,y);}
+    else
+        cout << "Solution status = " << cplex.getStatus()   << endl;
 
 }
 PMP::~PMP()
@@ -107,11 +107,11 @@ void PMP::initILP(){
             createModel(this->model,this->x_cont,this->y);     
 
         this->cplex = IloCplex(this->model);
-        // exportILP(cplex);
+        exportILP(cplex);
    
         cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
-        // cplex.setParam(IloCplex::Threads, 1); // use 1 thread
+        cplex.setParam(IloCplex::Threads, 8); // use 8 threads
 
     } catch (IloException& e) {
         cerr << "ERROR: " << e.getMessage()  << endl;
@@ -133,17 +133,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     constr_DemandSatif(model,x);
     constr_pLocations(model,y);
     if(strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0  ){constr_maxCapacity(model,x,y);}
-
-
-
-
-
-    // model.add(y[355] == 1);
-    // model.add(y[529] == 1);
-    // model.add(y[580] == 1);
-    // model.add(y[268] == 1);
-    // model.add(y[622] == 1);
-    
+    if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){constr_UBpmp(model,x,y);}
 
 }
 
@@ -158,8 +148,11 @@ void PMP::objFunction(IloModel model, VarType x){
     IloExpr objExpr(env);
     for (IloInt i = 0; i < num_customers; i++)
         for (IloInt j = 0; j < num_facilities; j++){
-            if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){objExpr += instance->getRealDist(j,i) * x[i][j];}
-            else{objExpr += instance->getWeightedDist(j+1,i+1) * x[i][j];}
+            // if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){objExpr += instance->getRealDist(j+1,i+1) * x[i][j];}
+            // else{objExpr += instance->getWeightedDist(j+1,i+1) * x[i][j];}
+            auto loc = instance->getLocations()[j];
+            auto cust = instance->getCustomers()[i];
+            objExpr += instance->getWeightedDist(loc,cust) * x[i][j];
         }
     model.add(IloMinimize(env, objExpr));
     objExpr.end();
@@ -197,6 +190,18 @@ void PMP::constr_pLocations(IloModel model, IloBoolVarArray y){
 
 }
 
+template <typename VarType>
+void PMP::constr_UBpmp(IloModel model, VarType x, IloBoolVarArray y){
+
+    cout << "[INFO] Adding UB Constraints "<< endl;
+
+    IloEnv env = model.getEnv();
+    for (IloInt i = 0; i < num_customers; i++)
+        for (IloInt j = 0; j < num_facilities; j++)
+            model.add(x[i][j] <= y[j]);
+
+}
+
 
 // void  PMP::constr_maxCapacity(IloModel model, BoolVarMatrix x, IloBoolVarArray y){
 template <typename VarType>
@@ -208,9 +213,12 @@ void  PMP::constr_maxCapacity(IloModel model, VarType x, IloBoolVarArray y){
     IloEnv env = model.getEnv();
     for (IloInt j = 0; j < num_facilities; j++){
         IloExpr expr(env);
-        for (IloInt i = 0; i < num_customers; i++)
-            expr += IloNum(instance->getCustWeight(i+1)) * x[i][j];
-        model.add(expr <= IloNum(instance->getLocCapacity(j+1)) * y[j]);
+        auto loc = instance->getLocations()[j];
+        for (IloInt i = 0; i < num_customers; i++){
+            auto cust = instance->getCustomers()[i];
+            expr += IloNum(instance->getCustWeight(cust)) * x[i][j];
+        }
+        model.add(expr <= IloNum(instance->getLocCapacity(loc)) * y[j]);
         expr.end();
     }
 
@@ -225,18 +233,21 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
         double objectiveValue = cplex.getObjValue();
         cout << "Objective Value: " << fixed << setprecision(3) << objectiveValue << endl;
         cout << "Time to solve: " << timePMP << endl;
+
+        // for (IloInt j = 0; j < num_facilities; j++){
+        //     auto loc = instance->getLocations()[j];
+        //     for (IloInt i = 0; i < num_customers; i++){
+        //         auto cust = instance->getCustomers()[i];
+        //         if (cplex.getValue(x[i][j]) > 0.001)
+        //             cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x[i][j]) << endl;
+        //     }
+        // }
     
-        for (IloInt i = 0; i < num_customers; i++){
-            for (IloInt j = 0; j < num_facilities; j++){
-                if (cplex.getValue(x[i][j]) > 0.001)
-                    cout << "x[" << i+1 << "][" << j+1 << "] = " << cplex.getValue(x[i][j]) << endl;
-            }
-        }
-    
-        for (IloInt j = 0; j < num_facilities; j++){
-            if (cplex.getValue(y[j]) > 0.5)
-                cout << "y[" << j+1 << "] = " << cplex.getValue(y[j]) << endl;
-        }
+        // for (IloInt j = 0; j < num_facilities; j++){
+        //     auto loc = instance->getLocations()[j];
+        //     if (cplex.getValue(y[j]) > 0.5)
+        //         cout << "y[" << loc << "] = " << cplex.getValue(y[j]) << endl;
+        // }
 
 
         cout << "Time total: " << cplex.getTime() << endl;
@@ -267,21 +278,119 @@ void PMP::solveILP(){
 
 // }
 
-
 Solution_cap PMP::getSolution_cap(){
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
     auto locations = instance->getLocations();
 
     for (IloInt j = 0; j < num_facilities; j++){
+        auto loc = instance->getLocations()[j];
         if (cplex.getValue(y[j]) > 0.5)
-            p_locations.insert(locations[j]);
+            p_locations.insert(loc);
     }
 
-    Solution_cap sol(instance, p_locations);
+    unordered_map<uint_t, dist_t> loc_usages; // p location -> usage from <0, capacity>
+    unordered_map<uint_t, dist_t> cust_satisfactions; // customer -> satisfaction from <0, weight>
+    unordered_map<uint_t, assignment> assignments; // customer -> assignment (p location, usage, weighted distance)
+
+    for (auto p_loc:p_locations) loc_usages[p_loc] = 0;
+    for (auto cust:instance->getCustomers()) {
+        cust_satisfactions[cust] = 0;
+        assignments[cust] = assignment{};
+    }
+
+    cout << "p_loc = ";
+    for (auto p_loc:p_locations)
+        cout << p_loc << ", ";
+    cout << endl;   
+
+    IloNum objtest = 0;
+
+    for (IloInt j = 0; j < num_facilities; j++)
+        if (cplex.getValue(y[j]) > 0.5){
+            auto loc = instance->getLocations()[j];
+            // cout << "loc = " << loc << endl;
+            for (IloInt i = 0; i < num_customers; i++){
+                auto cust = instance->getCustomers()[i];
+                // cout << "cust = " << cust << endl;
+                if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.001){
+                    auto dem_used = cplex.getValue(x_bin[i][j])* instance->getCustWeight(cust);//instance->getWeightedDist(loc,cust);
+                    loc_usages[loc] += dem_used;
+                    cust_satisfactions[cust] += dem_used;
+                    auto obj_increment = dem_used * instance->getRealDist(loc, cust);
+                    assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
+                }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0.001){
+                    auto dem_used = cplex.getValue(x_cont[i][j])* instance->getCustWeight(cust);
+                    loc_usages[loc] += dem_used;
+                    cust_satisfactions[cust] += dem_used;
+                    auto obj_increment = dem_used * instance->getRealDist(loc, cust);
+                    assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
+                    objtest += obj_increment;
+                }
+
+
+                if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.001){
+                        
+                        // cout << "loc = " << loc << endl;
+                        // cout  << "loc_usages[loc] = " << loc_usages[loc] << endl;
+                        // cout << "getLocCapacity(loc) = " << instance->getLocCapacity(loc) << endl;
+                        cerr << "ERROR: usage > capacity" << endl;
+                        
+                        exit(1);
+                }
+                if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){
+
+                    // cout << "cust = " << cust << endl;
+                    // cout  << "cust_satisfactions[cust] = " << cust_satisfactions[cust] << endl;
+                    // cout << "getCustWeight(cust) = " << instance->getCustWeight(cust) << endl;
+                    cerr << "ERROR: satisfaction > weight" << endl;
+                    exit(1);
+                }
+
+                
+            }
+        }
+    cout << "test objetive value: " <<  objtest << endl;
+
+    Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments);
 
     return sol;
 }
+
+
+
+Solution_std PMP::getSolution_std(){
+
+    unordered_set<uint_t> p_locations;
+    auto p = instance->get_p();
+    auto locations = instance->getLocations();
+
+    for (IloInt j = 0; j < num_facilities; j++){
+        if (cplex.getValue(y[j]) > 0.5){
+            p_locations.insert(locations[j+1]);
+            // cout << "test y[" << j+1 << "] = " << cplex.getValue(y[j]) << endl;
+            // cout << "test locations[" << j+1 << "] = " << locations[j+1] << endl;
+        }
+    }
+
+    // cout << "locations[0] = " << locations[0] << endl;
+    // cout << "locations[1] = " << locations[1] << endl;
+    // cout << "locations[2] = " << locations[2] << endl;
+
+
+    // cout << "get real dist 1 e 690: " << instance->getRealDist(690,1) << endl;
+    // cout << "get real dist 534 e 580: " << instance->getRealDist(534,580) << endl;
+    // cout << "get real dist 536 e 583: " << instance->getRealDist(536,583) << endl;
+
+
+
+    Solution_std sol(instance, p_locations);
+
+    return sol;
+}
+
+
+
 
 
 

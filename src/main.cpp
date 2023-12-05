@@ -25,6 +25,9 @@ int main(int argc, char *argv[]) {
     int mode = 0;
     int seed = 1;
     string output_filename;
+    string output_loc_filename;
+    string output_vars_filename;
+    string output_table_filename;
     int MAX_ITE_TB = 10;
     bool isBin_CPMP = false;
 
@@ -32,6 +35,7 @@ int main(int argc, char *argv[]) {
     // default config path
     std::string configPath = "config.toml";
     std::set<const char*> configOverride;
+
 
     // Parameters parsing
     for (int i = 1; i < argc; ++i) {
@@ -146,13 +150,13 @@ int main(int argc, char *argv[]) {
                     "Mode 6 : \n"
                     "\tSixth mode use TB Heuristic with a fixed percentage parameter and with cPMP\n\n"
 
+
                     "Mode 7 : \n"
                     "\tSeventh mode use Exact Method for PMP\n\n"
                     "Mode 8 : \n"
                     "\tEighth mode use Exact Method for a continuos cPMP\n\n"
                     "Mode 9 : \n"
                     "\tNinth mode use Exact Method for a binary cPMP\n\n"
-
 
                     "Generic example : \n"
                     "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --mode <no_of_mode>\n\n"
@@ -219,7 +223,7 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             TB heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run(true,MAX_ITE_TB);
-            solution.printAssignment(output_filename);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 2: {
@@ -229,7 +233,7 @@ int main(int argc, char *argv[]) {
             TB heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
             // solution.print();
-            solution.printAssignment(output_filename,mode);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 3: {
@@ -245,7 +249,7 @@ int main(int argc, char *argv[]) {
             auto solution = heuristic.run(true,MAX_ITE_TB);
             // cout << "Final solution:\n";
             // solution.print();
-            solution.printAssignment(output_filename);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 4: {
@@ -255,15 +259,16 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             CLOCK_THREADED = true;
-            // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
-            // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+
             auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
+            // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, seed);
             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
             cout << "Final solution:\n";
             solution.print();
-            solution.printAssignment(output_filename,mode);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 5: {
@@ -272,7 +277,7 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             TBPercentage heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run(true);
-            solution.printAssignment(output_filename);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 6: {
@@ -280,9 +285,9 @@ int main(int argc, char *argv[]) {
             cout << "TBPercentage heuristic - cPMP\n";
             cout << "-------------------------------------------------\n";
             TBPercentage heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run(true);
+            auto solution = heuristic.run_cap(true);
             solution.print();
-            solution.printAssignment(output_filename);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 7: {
@@ -290,6 +295,8 @@ int main(int argc, char *argv[]) {
             cout << "Exact method PMP\n";
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "PMP");
+            auto solution = pmp.getSolution_std();
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 8: {
@@ -298,7 +305,7 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP");
             auto solution = pmp.getSolution_cap();
-            solution.printAssignment(output_filename,mode);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 9: {
@@ -307,7 +314,7 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP", true);
             auto solution = pmp.getSolution_cap();
-            solution.printAssignment(output_filename,mode);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         default: {

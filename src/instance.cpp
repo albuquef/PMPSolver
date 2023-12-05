@@ -4,8 +4,8 @@
 #include <sstream>
 #include <string.h>
 
-Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<uint_t[]> cust_weights,
-                   shared_ptr<dist_t[]> dist_matrix, shared_ptr<uint_t[]> loc_capacities, uint_t p,
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
+                   shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p,
                    uint_t loc_max, uint_t cust_max)
         : locations(std::move(locations)), customers(std::move(customers)), cust_weights(std::move(cust_weights)),
           dist_matrix(std::move(dist_matrix)),
@@ -59,7 +59,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         start = tick();
         cout << "Loading weights...\n";
         total_demand = 0;
-        cust_weights = shared_ptr<uint_t[]>(new uint_t[cust_max_id + 1], std::default_delete<uint_t[]>());
+        cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
         for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
         getline(weights_file, line); // skip first line
         cout << "Skipped line: " << line << endl;
@@ -67,7 +67,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         while (getline(weights_file, line)) {
             auto tokens = tokenize(line, delim);
             auto cust = stoi(tokens[0]);
-            auto weight = stoi(tokens[1]);
+            auto weight = stod(tokens[1]);
             cust_weights[cust] = weight;
             total_demand += weight;
             w_cnt++;
@@ -78,7 +78,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         // Load capacities
         start = tick();
         cout << "Loading capacities...\n";
-        loc_capacities = shared_ptr<uint_t[]>(new uint_t[loc_max_id + 1], std::default_delete<uint_t[]>());
+        loc_capacities = shared_ptr<dist_t[]>(new dist_t[loc_max_id + 1], std::default_delete<dist_t[]>());
         for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_capacities[loc] = DEFAULT_CAPACITY;
         getline(capacities_file, line); // skip first line
         cout << "Skipped line: " << line << endl;
@@ -86,7 +86,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         while (getline(capacities_file, line)) {
             auto tokens = tokenize(line, delim);
             auto loc = stoi(tokens[0]);
-            auto cap = stoi(tokens[1]);
+            auto cap = stod(tokens[1]);
             loc_capacities[loc] = cap;
             cap_cnt++;
         }
@@ -166,7 +166,7 @@ void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
 }
 
 
-uint_t Instance::getCustWeight(uint_t cust) {
+dist_t Instance::getCustWeight(uint_t cust) {
     return cust_weights[cust];
 }
 
@@ -253,13 +253,15 @@ Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new) {
     return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id);
 }
 
-uint_t Instance::getLocCapacity(uint_t loc) {
+dist_t Instance::getLocCapacity(uint_t loc) {
     return loc_capacities[loc];
 }
 
-uint_t Instance::getTotalDemand() const {
+dist_t Instance::getTotalDemand() const {
     return total_demand;
 }
+
+
 
 
 
