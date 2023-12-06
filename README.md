@@ -118,6 +118,7 @@ build/large_PMP -config path_to_config_file.toml
 ex
 ```
 build/large_PMP -config ./parameters/config_toulon.toml --mode 8
+build/large_PMP -config ./parameters/config_random_144.toml --mode 8
 ```
 
 

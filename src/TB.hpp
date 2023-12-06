@@ -20,6 +20,8 @@ public:
 
     Solution_std run(bool verbose, int MAX_ITE);
     Solution_cap run_cap(bool verbose, int MAX_ITE);
+    Solution_std localSearch_std(bool verbose, int MAX_ITE);
+    Solution_cap localSearch_cap(bool verbose, int MAX_ITE);
 
 };
 

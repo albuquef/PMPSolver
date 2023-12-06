@@ -295,6 +295,7 @@ int main(int argc, char *argv[]) {
             cout << "Exact method PMP\n";
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "PMP");
+            pmp.saveVars(output_filename,mode);
             auto solution = pmp.getSolution_std();
             solution.saveAssignment(output_filename,mode);
             break;
@@ -304,6 +305,7 @@ int main(int argc, char *argv[]) {
             cout << "Exact method cPMP continuos\n";
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP");
+            pmp.saveVars(output_filename,mode);
             auto solution = pmp.getSolution_cap();
             solution.saveAssignment(output_filename,mode);
             break;
@@ -313,6 +315,7 @@ int main(int argc, char *argv[]) {
             cout << "Exact method cPMP binary\n";
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP", true);
+            pmp.saveVars(output_filename,mode);
             auto solution = pmp.getSolution_cap();
             solution.saveAssignment(output_filename,mode);
             break;

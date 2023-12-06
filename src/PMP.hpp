@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <sys/time.h>
 #include <string.h>
+#include <utility>
 
 #include "instance.hpp"
 #include "globals.hpp"
@@ -44,19 +45,10 @@ class PMP
         void printSolution  (IloCplex& cplex,
                             VarType x,
                             IloBoolVarArray y);
-        // Solution_std getSolution_std();
-        Solution_cap getSolution_cap();
-        Solution_std getSolution_std();
-        // void saveSolution   (IloCplex& cplex,
-        //                     BoolVarMatrix x,
-        //                     IloBoolVarArray y);
-        // void saveSolution   (IloCplex& cplex,
-        //                     BoolVarMatrix x,
-        //                     IloBoolVarArray y);
-        // void saveResults    (IloCplex& cplex=this->cplex,
-        //                     double timeF=0.0);
-        // void saveResults    (double timeF=0.0);
-        // void printInstance  (void);
+        Solution_cap getSolution_cap(void);
+        Solution_std getSolution_std(void);
+        void saveVars   (string output_filename,int mode);
+        void saveResults(string output_filename,int mode);
         int current_day, current_month, current_year;
         // void saveNumConstraints();
         double timePMP;

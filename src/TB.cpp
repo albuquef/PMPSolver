@@ -181,3 +181,123 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
     }
     return sol_best;
 }
+
+
+Solution_std TB::localSearch_std(bool verbose, int MAX_ITE) {
+    checkClock();
+    verbose = VERBOSE;
+
+    auto sol_best = initRandomSolution();
+    auto locations = instance->getLocations();
+    bool improved = true;
+    Solution_std sol_tmp;
+    Solution_std sol_cand;
+    int objectiveCpt = 0;
+    int ite=0;
+
+
+    while (ite < MAX_ITE) {
+
+        ite++;
+
+        checkClock();
+        improved = false;
+        sol_cand = sol_best;
+        auto start = tick();
+        auto p_locations = sol_best.get_pLocations();
+
+        for (auto loc:locations) { // First improvement over locations
+            if (!p_locations.contains(loc)) {
+                for (auto p_loc:p_locations) { // Best improvement over p_locations
+                    sol_tmp = sol_best;
+                    sol_tmp.replaceLocation(p_loc, loc);
+//                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
+                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) { 
+                        sol_cand = sol_tmp;
+                        improved = true;
+                        objectiveCpt = 0;
+                    }
+                    else{
+                        objectiveCpt++;
+
+                        if(objectiveCpt == TOLERANCE_CPT){
+                            break;
+                        }
+                    }
+                }
+            }
+            if (improved) {
+                sol_best = sol_cand;
+                break;
+            };
+        }
+        if (verbose) {
+            sol_best.print();
+            cout << "uncapacitated TB loop: ";
+            tock(start);
+            cout << endl;
+        }
+    }
+
+    checkClock();
+    return sol_best;
+}
+
+
+
+
+Solution_cap TB::localSearch_cap(bool verbose, int MAX_ITE) {
+    verbose = VERBOSE;
+    
+    auto sol_best = initHighestCapSolution();
+    auto locations = instance->getLocations();
+    Solution_cap sol_cand;
+    // int max_ite = 3;
+    int ite = 0;
+
+
+    while (ite < MAX_ITE) {
+        
+        ite++;
+        
+        bool improved = false;
+        sol_cand = sol_best;
+        auto start = tick();
+        auto p_locations = sol_best.get_pLocations();
+
+        vector<uint_t> p_locations_vec;
+        p_locations_vec.reserve(p_locations.size());
+        for (auto p_loc:p_locations) p_locations_vec.push_back(p_loc);
+
+        for (auto loc:locations) { // First improvement over locations
+            if (!p_locations.contains(loc)) { // loc is not a p location
+                #pragma omp parallel for
+                for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
+                    Solution_cap sol_tmp = sol_best;
+                    if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(p_loc) + instance->getLocCapacity(loc) >= instance->getTotalDemand()) {
+                        sol_tmp.replaceLocation(p_loc, loc);
+                        #pragma omp critical
+                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
+                            sol_cand = sol_tmp;
+                            improved = true;
+                        }
+
+                    }
+                }
+            }
+
+            if (improved) {
+                sol_best = sol_cand;
+                break;
+            };
+        }
+
+        if (verbose) {
+            sol_best.print();
+            cout << "capacitated TB loop: ";
+            tock(start);
+            cout << endl;
+        }
+    }
+    return sol_best;
+}

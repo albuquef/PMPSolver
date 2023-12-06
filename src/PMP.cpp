@@ -107,7 +107,7 @@ void PMP::initILP(){
             createModel(this->model,this->x_cont,this->y);     
 
         this->cplex = IloCplex(this->model);
-        exportILP(cplex);
+        // exportILP(cplex);
    
         cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
@@ -350,7 +350,6 @@ Solution_cap PMP::getSolution_cap(){
                 
             }
         }
-    cout << "test objetive value: " <<  objtest << endl;
 
     Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments);
 
@@ -368,28 +367,71 @@ Solution_std PMP::getSolution_std(){
     for (IloInt j = 0; j < num_facilities; j++){
         if (cplex.getValue(y[j]) > 0.5){
             p_locations.insert(locations[j+1]);
-            // cout << "test y[" << j+1 << "] = " << cplex.getValue(y[j]) << endl;
-            // cout << "test locations[" << j+1 << "] = " << locations[j+1] << endl;
         }
     }
-
-    // cout << "locations[0] = " << locations[0] << endl;
-    // cout << "locations[1] = " << locations[1] << endl;
-    // cout << "locations[2] = " << locations[2] << endl;
-
-
-    // cout << "get real dist 1 e 690: " << instance->getRealDist(690,1) << endl;
-    // cout << "get real dist 534 e 580: " << instance->getRealDist(534,580) << endl;
-    // cout << "get real dist 536 e 583: " << instance->getRealDist(536,583) << endl;
-
-
 
     Solution_std sol(instance, p_locations);
 
     return sol;
 }
 
+void PMP::saveVars(string output_filename,int mode){
 
+    fstream file;
+    streambuf *stream_buffer_cout = cout.rdbuf();
+
+    string output_filename_final = "TEST.txt";
+    if (!is_BinModel){
+        output_filename_final = output_filename + "_" + typeProb +
+            "_Cont_VarsValues_p_" + to_string(p) + 
+            "_mode_" + to_string(mode) +
+            ".txt";
+    }else{
+        output_filename_final = output_filename + "_" + typeProb +
+            "_Bin_VarsValues_p_" + to_string(p) + 
+            "_mode_" + to_string(mode) +
+            ".txt";
+    }
+
+    // Open file if output_filename is not empty
+    if (!output_filename_final.empty()) {
+        file.open(output_filename_final, ios::out);
+        streambuf *stream_buffer_file = file.rdbuf();
+        cout.rdbuf(stream_buffer_file); // redirect cout to file
+    }
+
+    for (IloInt j = 0; j < num_facilities; j++){
+        auto loc = instance->getLocations()[j];
+        if (cplex.getValue(this->y[j]) > 0.5)
+            cout << "y[" << loc << "] = " << cplex.getValue(this->y[j]) << endl;
+    }
+
+
+
+    if (!is_BinModel){
+        for (IloInt j = 0; j < num_facilities; j++){
+            auto loc = instance->getLocations()[j];
+            for (IloInt i = 0; i < num_customers; i++){
+                auto cust = instance->getCustomers()[i];
+                if (cplex.getValue(x_cont[i][j]) > 0.001)
+                    cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x_cont[i][j]) << endl;
+            }
+        }
+    }else{
+        for (IloInt j = 0; j < num_facilities; j++){
+        auto loc = instance->getLocations()[j];
+            for (IloInt i = 0; i < num_customers; i++){
+                auto cust = instance->getCustomers()[i];
+                if (cplex.getValue(x_bin[i][j]) > 0.001)
+                    cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x_bin[i][j]) << endl;
+            }
+        }
+    }
+
+    cout.rdbuf(stream_buffer_cout);
+    file.close();
+
+}
 
 
 
