@@ -1,7 +1,7 @@
 verbose = true
 p = 41
 capacities = "./data/filterData_PACA_may23/loc_capacities_cap_mat.txt"
-distance_matrix = "./data/filterData_PACA_may23/dist_matrix_metres.txt"
+distance_matrix = "./data/filterData_PACA_may23/dist_matrix_minutes.txt"
 output = "./results/test_paca_mat"
 output_loc = "./results/outputLOC_paca_mat"
 output_vars = "./results/outputVARS_paca_mat"

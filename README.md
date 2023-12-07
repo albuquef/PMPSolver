@@ -41,7 +41,7 @@ The program takes the following compulsory parameters:
 
 -c . . . path to the file with location capacities (needed even for solving standard PMP)
 
--mode . . . mode of operation (1 - TB heuristic, PMP; 2 - TB heuristic, cPMP; 3 - full RSSV heuristic, PMP; 4 - full RSSV heuristic, cPMP)
+-mode . . . mode of operation ([1-3] Exact Methods, [4-9] Heuristics Methods)
 
 Then, there are the following optional parameters:
 
@@ -88,7 +88,7 @@ distance_matrix = "./data/toulon/dist_matrix.txt"
 output = ""
 weights = "./data/toulon/cust_weights.txt"
 threads = 4
-mode = 7
+mode = 1
 seed = 1
 time = 7200
 ```
@@ -115,16 +115,11 @@ If you want to work with multiple configuration files, just pass the config file
 build/large_PMP -config path_to_config_file.toml
 ```
 
-ex
+choose the mode (different types of problems and methods)
 ```
-build/large_PMP -config ./parameters/config_toulon.toml --mode 8
-build/large_PMP -config ./parameters/config_random_144.toml --mode 8
+build/large_PMP -config ./parameters/config_toulon.toml --mode 2
 ```
-
-
 
 This lets you change configuration on the fly.
 
-
-compile> cd  build && make && cd ..
 

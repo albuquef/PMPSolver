@@ -61,8 +61,6 @@ void PMP::initVars(){
         model.add(this->y[j]);
     }
 
-
-
     // alloc memory for vars x_ij and add to model
     if(is_BinModel == true){
         this->x_bin = BoolVarMatrix(env, static_cast<IloInt>(num_customers));
@@ -93,8 +91,6 @@ void PMP::initVars(){
 }
 
 void PMP::initILP(){
-
-
 
     try{
 
@@ -269,14 +265,8 @@ void PMP::solveILP(){
         // throw(-1);
     }
     cpu1 = get_wall_time();
-    this->timePMP = cpu1 - cpu0; 
+    this->timeSolver = cpu1 - cpu0; 
 }
-
-
-// Solution_std PMP::getSolution_std(){
-
-
-// }
 
 Solution_cap PMP::getSolution_cap(){
     unordered_set<uint_t> p_locations;
@@ -330,19 +320,12 @@ Solution_cap PMP::getSolution_cap(){
 
 
                 if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.001){
-                        
-                        // cout << "loc = " << loc << endl;
-                        // cout  << "loc_usages[loc] = " << loc_usages[loc] << endl;
-                        // cout << "getLocCapacity(loc) = " << instance->getLocCapacity(loc) << endl;
-                        cerr << "ERROR: usage > capacity" << endl;
-                        
+                    
+                        cerr << "ERROR: usage > capacity" << endl;    
                         exit(1);
                 }
                 if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){
 
-                    // cout << "cust = " << cust << endl;
-                    // cout  << "cust_satisfactions[cust] = " << cust_satisfactions[cust] << endl;
-                    // cout << "getCustWeight(cust) = " << instance->getCustWeight(cust) << endl;
                     cerr << "ERROR: satisfaction > weight" << endl;
                     exit(1);
                 }
@@ -375,27 +358,27 @@ Solution_std PMP::getSolution_std(){
     return sol;
 }
 
-void PMP::saveVars(string output_filename,int mode){
+void PMP::saveVars(const std::string& filename,int mode){
 
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
 
-    string output_filename_final = "TEST.txt";
+    string output_filename = "TEST.txt";
     if (!is_BinModel){
-        output_filename_final = output_filename + "_" + typeProb +
-            "_Cont_VarsValues_p_" + to_string(p) + 
+        output_filename = filename + "_" + typeProb +
+            "_Cont_p_" + to_string(p) + 
             "_mode_" + to_string(mode) +
             ".txt";
     }else{
-        output_filename_final = output_filename + "_" + typeProb +
-            "_Bin_VarsValues_p_" + to_string(p) + 
+        output_filename = filename + "_" + typeProb +
+            "_Bin_p_" + to_string(p) + 
             "_mode_" + to_string(mode) +
             ".txt";
     }
 
     // Open file if output_filename is not empty
-    if (!output_filename_final.empty()) {
-        file.open(output_filename_final, ios::out);
+    if (!output_filename.empty()) {
+        file.open(output_filename, ios::out);
         streambuf *stream_buffer_file = file.rdbuf();
         cout.rdbuf(stream_buffer_file); // redirect cout to file
     }
@@ -405,8 +388,6 @@ void PMP::saveVars(string output_filename,int mode){
         if (cplex.getValue(this->y[j]) > 0.5)
             cout << "y[" << loc << "] = " << cplex.getValue(this->y[j]) << endl;
     }
-
-
 
     if (!is_BinModel){
         for (IloInt j = 0; j < num_facilities; j++){
@@ -433,6 +414,46 @@ void PMP::saveVars(string output_filename,int mode){
 
 }
 
+void PMP::saveResults(const string& filename, int mode){
 
+    string output_filename = "TEST.txt";
+    if (!is_BinModel){
+        output_filename = filename +
+            "_Cont" + 
+            "_mode_" + to_string(mode) +
+            ".csv";
+    }else{
+        output_filename = filename +
+            "_Bin" + 
+            "_mode_" + to_string(mode) +
+            ".csv";
+    }
+
+    ofstream outputTable;
+    outputTable.open(output_filename,ios:: app);
+
+    if (!outputTable.is_open()) {
+        cerr << "Error opening file: " << output_filename << endl;
+        // return;
+    }else{
+        outputTable << typeProb << ";"; 
+        if(is_BinModel == true)
+            outputTable << "Bin" << ";";
+        else
+            outputTable << "Cont" << ";"; 
+        outputTable << num_customers << ";";
+        outputTable << num_facilities << ";";
+        outputTable << p << ";";
+        outputTable << mode << ";";
+        outputTable << cplex.getStatus() << ";"; // Status cplex
+        outputTable << cplex.getObjValue() << ";"; // obj value
+        outputTable << cplex.getNnodes() << ";"; // num nodes
+        outputTable << cplex.getMIPRelativeGap() <<";"; // relative gap
+        outputTable << cplex.getTime() <<  ";"; // time cplex
+        outputTable << this->timeSolver <<  ";"; // solver local time
+        outputTable << "\n";
+    }
+    outputTable.close();
+}
 
 

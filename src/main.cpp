@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     int mode = 0;
     int seed = 1;
     string output_filename;
-    string output_loc_filename;
+    string output_loc_filename; // not created yet
     string output_vars_filename;
     string output_table_filename;
     int MAX_ITE_TB = 10;
@@ -135,28 +135,28 @@ int main(int argc, char *argv[]) {
                     "\tseed of the random generator (default = 1)\n\n"
                     "--mode\n"
                     "\tmode of operation\n\n"
-                    "There are 4 mods :\n\n"
+                    "There are 9 mods :\n\n"
 
+                    
                     "Mode 1 : \n"
-                    "\tFirst mode use TB Heuristic with standard PMP\n\n"
+                    "\tFirst mode use Exact Method for PMP\n\n"
                     "Mode 2 : \n"
-                    "\tSecond mode use TB Heuristic with cPMP\n\n"
+                    "\tSecond mode use Exact Method for a continuos cPMP\n\n"
                     "Mode 3 : \n"
-                    "\tThird mode use full RSSV Heuristic with PMP\n\n"
+                    "\tThird mode use Exact Method for a binary cPMP\n\n"
+
                     "Mode 4 : \n"
-                    "\tFourth mode use full RSSV Heuristic with cPMP\n\n"
+                    "\tFourth mode use TB Heuristic with standard PMP\n\n"
                     "Mode 5 : \n"
-                    "\tFifth mode use TB Heuristic with a fixed percentage parameter and with standard PMP\n\n"
+                    "\tFifth mode use TB Heuristic with cPMP\n\n"
                     "Mode 6 : \n"
-                    "\tSixth mode use TB Heuristic with a fixed percentage parameter and with cPMP\n\n"
-
-
+                    "\tSixth mode use full RSSV Heuristic with PMP\n\n"
                     "Mode 7 : \n"
-                    "\tSeventh mode use Exact Method for PMP\n\n"
+                    "\tSeventh mode use full RSSV Heuristic with cPMP\n\n"
                     "Mode 8 : \n"
-                    "\tEighth mode use Exact Method for a continuos cPMP\n\n"
+                    "\tEighth mode use TB Heuristic with a fixed percentage parameter and with standard PMP\n\n"
                     "Mode 9 : \n"
-                    "\tNinth mode use Exact Method for a binary cPMP\n\n"
+                    "\tNinth mode use TB Heuristic with a fixed percentage parameter and with cPMP\n\n"
 
                     "Generic example : \n"
                     "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --mode <no_of_mode>\n\n"
@@ -180,6 +180,8 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&capacities_filename, "capacities");
     config.setFromConfig(&dist_matrix_filename, "distance_matrix");
     config.setFromConfig(&output_filename, "output");
+    // config.setFromConfig(&output_vars_filename, "output_vars");
+    // config.setFromConfig(&output_table_filename, "output_table");
     config.setFromConfig(&labeled_weights_filename, "weights");
     config.setFromConfig(&threads_cnt, "threads");
     config.setFromConfig(&mode, "mode");
@@ -219,6 +221,39 @@ int main(int argc, char *argv[]) {
     switch (mode) {
         case 1: {
             cout << "-------------------------------------------------\n";
+            cout << "Exact method PMP\n";
+            cout << "-------------------------------------------------\n";
+            PMP pmp(make_shared<Instance>(instance), "PMP");
+            pmp.saveVars(output_filename,mode);
+            pmp.saveResults(output_filename,mode);
+            auto solution = pmp.getSolution_std();
+            solution.saveAssignment(output_filename,mode);
+            break;
+        }
+        case 2: {
+            cout << "-------------------------------------------------\n";
+            cout << "Exact method cPMP continuos\n";
+            cout << "-------------------------------------------------\n";
+            PMP pmp(make_shared<Instance>(instance), "CPMP");
+            pmp.saveVars(output_filename,mode);
+            pmp.saveResults(output_filename,mode);
+            auto solution = pmp.getSolution_cap();
+            solution.saveAssignment(output_filename,mode);
+            break;
+        }
+        case 3: {
+            cout << "-------------------------------------------------\n";
+            cout << "Exact method cPMP binary\n";
+            cout << "-------------------------------------------------\n";
+            PMP pmp(make_shared<Instance>(instance), "CPMP", true);
+            pmp.saveVars(output_vars_filename,mode);
+            pmp.saveResults(output_table_filename,mode);
+            auto solution = pmp.getSolution_cap();
+            solution.saveAssignment(output_filename,mode);
+            break;
+        }
+        case 4: {
+            cout << "-------------------------------------------------\n";
             cout << "TB heuristic - standard PMP\n";
             cout << "-------------------------------------------------\n";
             TB heuristic(make_shared<Instance>(instance), seed);
@@ -226,7 +261,7 @@ int main(int argc, char *argv[]) {
             solution.saveAssignment(output_filename,mode);
             break;
         }
-        case 2: {
+        case 5: {
             cout << "-------------------------------------------------\n";
             cout << "TB heuristic - cPMP\n";
             cout << "-------------------------------------------------\n";
@@ -236,7 +271,7 @@ int main(int argc, char *argv[]) {
             solution.saveAssignment(output_filename,mode);
             break;
         }
-        case 3: {
+        case 6: {
             // Extract filtered instance
             cout << "-------------------------------------------------\n";
             cout << "RSSV heuristic - standard PMP\n";
@@ -252,7 +287,7 @@ int main(int argc, char *argv[]) {
             solution.saveAssignment(output_filename,mode);
             break;
         }
-        case 4: {
+        case 7: {
             // Extract filtered instance
             cout << "-------------------------------------------------\n";
             cout << "RSSV heuristic - cPMP\n";
@@ -271,7 +306,7 @@ int main(int argc, char *argv[]) {
             solution.saveAssignment(output_filename,mode);
             break;
         }
-        case 5: {
+        case 8: {
             cout << "-------------------------------------------------\n";
             cout << "TBPercentage heuristic - standard PMP\n";
             cout << "-------------------------------------------------\n";
@@ -280,43 +315,13 @@ int main(int argc, char *argv[]) {
             solution.saveAssignment(output_filename,mode);
             break;
         }
-        case 6: {
+        case 9: {
             cout << "-------------------------------------------------\n";
             cout << "TBPercentage heuristic - cPMP\n";
             cout << "-------------------------------------------------\n";
             TBPercentage heuristic(make_shared<Instance>(instance), seed);
             auto solution = heuristic.run_cap(true);
             solution.print();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 7: {
-            cout << "-------------------------------------------------\n";
-            cout << "Exact method PMP\n";
-            cout << "-------------------------------------------------\n";
-            PMP pmp(make_shared<Instance>(instance), "PMP");
-            pmp.saveVars(output_filename,mode);
-            auto solution = pmp.getSolution_std();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 8: {
-            cout << "-------------------------------------------------\n";
-            cout << "Exact method cPMP continuos\n";
-            cout << "-------------------------------------------------\n";
-            PMP pmp(make_shared<Instance>(instance), "CPMP");
-            pmp.saveVars(output_filename,mode);
-            auto solution = pmp.getSolution_cap();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 9: {
-            cout << "-------------------------------------------------\n";
-            cout << "Exact method cPMP binary\n";
-            cout << "-------------------------------------------------\n";
-            PMP pmp(make_shared<Instance>(instance), "CPMP", true);
-            pmp.saveVars(output_filename,mode);
-            auto solution = pmp.getSolution_cap();
             solution.saveAssignment(output_filename,mode);
             break;
         }

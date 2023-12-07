@@ -47,10 +47,11 @@ class PMP
                             IloBoolVarArray y);
         Solution_cap getSolution_cap(void);
         Solution_std getSolution_std(void);
-        void saveVars   (string output_filename,int mode);
-        void saveResults(string output_filename,int mode);
+        void saveVars   (const string& filename, int mode);
+        void saveResults(const string& filename, int mode);
         int current_day, current_month, current_year;
         // void saveNumConstraints();
+        double timeSolver;
         double timePMP;
         bool is_BinModel;
 
