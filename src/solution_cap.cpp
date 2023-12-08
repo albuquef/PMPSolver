@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <utility>
 
+
 Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
@@ -122,7 +123,7 @@ void Solution_cap::fullCapEval() {
         urgencies_vec = getUrgencies();
     }
 
-    cout << "fullCapEval: " << objective << endl;
+    // cout << "fullCapEval: " << objective << endl;
     objEval();
 
 }
@@ -261,7 +262,7 @@ void Solution_cap::objEval(){
         for (auto a:assignments[cust]) objective += a.usage * instance->getRealDist(a.node, cust);
     }
 
-    cout << "objective Eval: " << objective << endl;
+    // cout << "objective Eval: " << objective << endl;
 
 }
 

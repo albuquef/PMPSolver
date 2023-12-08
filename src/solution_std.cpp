@@ -59,6 +59,10 @@ const unordered_set<uint_t> &Solution_std::get_pLocations() const {
     return this->p_locations;
 }
 
+const vector<uint_t> &Solution_std::get_Locations() const {
+    return this->instance->getLocations();
+}
+
 void Solution_std::replaceLocation(uint_t loc_old, uint_t loc_new) {
     // Update p_locations
     p_locations.erase(loc_old);
@@ -135,3 +139,72 @@ void Solution_std::saveAssignment(const string& output_filename, int mode) {
     cout.rdbuf(stream_buffer_cout);
     file.close();
 }
+
+
+// Solution_std Solution_std::rand_swap2_Locations(Solution_std sol_current){
+
+//     if (sol_current.get_pLocations().size() < 2) return sol_current;
+
+
+//     // swap 2 locations
+//     auto locations = sol_current.get_Locations();
+//     auto p_locations = sol_current.get_pLocations();
+
+//     vector<uint_t> p_locations_vec;
+//     p_locations_vec.reserve(p_locations.size());
+//     for (auto p_loc:p_locations) p_locations_vec.push_back(p_loc);
+
+//     vector<uint_t> out_locations_vec;
+//     out_locations_vec.reserve(locations.size() - p_locations.size());
+//     for (auto loc:locations) {
+//         if (!p_locations.contains(loc)) {
+//             out_locations_vec.push_back(loc);
+//         }
+//     }
+
+//     if (out_locations_vec.size() < 2) return sol_current;
+
+//     // Use a random_device to seed the random number generator
+//     std::random_device rd;
+    
+//     // Use mt19937 as the random number generator engine
+//     std::mt19937 gen(rd());
+
+//     std::uniform_int_distribution<uint_t> distribution(0, out_locations_vec.size() - 1);
+//     uint_t index1 = distribution(gen);
+//     uint_t index2 = distribution(gen);
+//     // Ensure the two indices are distinct
+//     while (index2 == index1) {
+//         index2 = distribution(gen);
+//     }
+//     uint_t loc1 = out_locations_vec[index1];
+//     uint_t loc2 = out_locations_vec[index2];
+
+//     // Use mt19937 as the random number generator engine
+//     std::mt19937 gen2(rd());
+
+//     std::uniform_int_distribution<uint_t> distribution2(0, out_locations_vec.size() - 1);
+//     index1 = distribution2(gen2);
+//     index2 = distribution2(gen2);
+//     // Ensure the two indices are distinct
+//     while (index2 == index1) {
+//         index2 = distribution2(gen2);
+//     }
+
+//     uint_t p_loc1 = p_locations_vec[index1];
+//     uint_t p_loc2 = p_locations_vec[index2];
+
+//     Solution_std sol_tmp = sol_current;
+//     sol_tmp.replaceLocation(p_loc1, loc1);
+//     sol_tmp.replaceLocation(p_loc2, loc2);
+
+//     if (sol_tmp.get_objective() < sol_current.get_objective()) {
+//         sol_tmp.naiveEval();
+//         return sol_tmp;
+//     } else {
+//         return sol_current;
+//     }
+
+//     return sol_current;
+// }
+

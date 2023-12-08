@@ -4,6 +4,8 @@
 #include <utility>
 #include <unordered_set>
 #include <unordered_map>
+#include <random>
+#include <vector>
 #include "globals.hpp"
 #include "instance.hpp"
 
@@ -23,10 +25,13 @@ public:
     void naiveEval();
     uint_t getClosestpLoc(uint_t cust);
     const unordered_set<uint_t>& get_pLocations() const;
+    const vector<uint_t> & get_Locations() const;
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective();
     void saveAssignment(const string& output_filename,int mode);
+    // Solution_std rand_swap2_Locations(Solution_std sol_current);
+    // Solution_std rand_swap3_Locations(unordered_set<uint_t> p_locations);
 };
 
 

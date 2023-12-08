@@ -1,8 +1,4 @@
 #include "TB.hpp"
-#include "globals.hpp"
-#include "utils.hpp"
-
-#include <utility>
 
 TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
@@ -183,11 +179,10 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 }
 
 
-Solution_std TB::localSearch_std(bool verbose, int MAX_ITE) {
+Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE) {
     checkClock();
     verbose = VERBOSE;
 
-    auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_std sol_tmp;
@@ -246,13 +241,11 @@ Solution_std TB::localSearch_std(bool verbose, int MAX_ITE) {
 
 
 
-Solution_cap TB::localSearch_cap(bool verbose, int MAX_ITE) {
+Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
     verbose = VERBOSE;
     
-    auto sol_best = initHighestCapSolution();
     auto locations = instance->getLocations();
     Solution_cap sol_cand;
-    // int max_ite = 3;
     int ite = 0;
 
 

@@ -2,9 +2,14 @@
 #define LARGE_PMP_TB_HPP
 
 #include <omp.h>
+#include <utility>
+
 #include "instance.hpp"
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
+#include "globals.hpp"
+#include "utils.hpp"
+
 
 using namespace std;
 
@@ -20,8 +25,8 @@ public:
 
     Solution_std run(bool verbose, int MAX_ITE);
     Solution_cap run_cap(bool verbose, int MAX_ITE);
-    Solution_std localSearch_std(bool verbose, int MAX_ITE);
-    Solution_cap localSearch_cap(bool verbose, int MAX_ITE);
+    Solution_std localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE);
+    Solution_cap localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE);
 
 };
 

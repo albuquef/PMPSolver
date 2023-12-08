@@ -10,6 +10,7 @@
 #include "utils.hpp"
 #include "config_parser.cpp"
 #include "PMP.hpp"
+#include "VNS.hpp"
 
 using namespace std;
 
@@ -158,6 +159,13 @@ int main(int argc, char *argv[]) {
                     "Mode 9 : \n"
                     "\tNinth mode use TB Heuristic with a fixed percentage parameter and with cPMP\n\n"
 
+                    "Mode 10 : \n"
+                    "\tTenth mode use basic VNS Heuristic with PMP\n\n"
+                    "Mode 11 : \n"
+                    "\tTenth mode use basic VNS Heuristic with cPMP\n\n"
+
+
+
                     "Generic example : \n"
                     "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --mode <no_of_mode>\n\n"
 
@@ -297,7 +305,6 @@ int main(int argc, char *argv[]) {
 
             auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
             // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
-
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, seed);
             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
@@ -323,6 +330,26 @@ int main(int argc, char *argv[]) {
             auto solution = heuristic.run_cap(true);
             solution.print();
             solution.saveAssignment(output_filename,mode);
+            break;
+        }
+        case 10: {
+            cout << "-------------------------------------------------\n";
+            cout << "VNS heuristic - PMP\n";
+            cout << "-------------------------------------------------\n";
+            VNS heuristic(make_shared<Instance>(instance), seed);
+            auto solution = heuristic.runVNS_std(true,MAX_ITE_TB);
+            // solution.print();
+            // solution.saveAssignment(output_filename,mode);
+            break;
+        }
+        case 11: {
+            cout << "-------------------------------------------------\n";
+            cout << "VNS heuristic - cPMP\n";
+            cout << "-------------------------------------------------\n";
+            VNS heuristic(make_shared<Instance>(instance), seed);
+            auto solution = heuristic.runVNS_cap(true,MAX_ITE_TB);
+            // solution.print();
+            // solution.saveAssignment(output_filename,mode);
             break;
         }
         default: {
