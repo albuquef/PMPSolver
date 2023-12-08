@@ -24,5 +24,18 @@ typedef vector<my_tuple> assignment;
 
 extern uint_t LOC_FREQUENCY; // avg. no. of location occurrences in M sub-PMPs (M = LOC_FREQUENCY*N/n)
 extern double BW_CUTOFF; // locations within BW_CUTOFF * h from a selected one obtain nonzero voting score
+extern uint_t LOC_PRIORITY_CNT;
+extern uint_t MAX_SUB_P; // maximum value of p allowed in sub-PMPs
+extern uint_t FILTERING_SIZE; // when creating the final sub-PMP, max(n, FILTERING_SIZE * p locations) are considered
+extern uint_t SUB_PMP_SIZE;
+extern int THREAD_NUMBER;
+extern uint_t CLOCK_START;
+extern uint_t CLOCK_LIMIT;  // time expressed in seconds
+extern uint_t CLOCK_ELAPSED;  // elapsed time since the beginning in seconds
+extern bool CLOCK_THREADED;
+extern bool VERBOSE;
+extern uint_t TOLERANCE_CPT;
+extern uint_t K;
+extern uint_t PERCENTAGE;
 
 #endif //LARGE_PMP_GLOBALS_HPP

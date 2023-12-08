@@ -10,6 +10,10 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
           dist_matrix(std::move(dist_matrix)),
           loc_capacities(std::move(loc_capacities)), p(p),
           loc_max_id(loc_max), cust_max_id(cust_max) {
+    total_demand = 0;
+    for (auto cust:this->customers) {
+        total_demand += this->getCustWeight(cust);
+    }
 }
 
 vector<string> tokenize(const string& input, char delim) {
@@ -136,8 +140,15 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         cout << "p: " << p << endl;
         tock(start);
     } else {
-        cerr << "Error while opening some of the input files\n";
+        cerr << "Error while trying to open the following input files :\n";
+
+        if(!dist_matrix_file) cerr << "- Distance matrix" << endl;
+        if(!weights_file) cerr << "- Weights file" << endl;
+        if(!capacities_file) cerr << "- Capacities file" << endl;
+        
+        cerr << "Check if the path is correct and/or the correct name was given for the concerned files." << endl;
         exit(-1);
+
     }
 }
 
@@ -198,7 +209,8 @@ void Instance::print() {
     cout << "loc_cnt: " << locations.size() << endl;
     cout << "cust_max_id: " << cust_max_id << endl;
     cout << "cust_cnt: " << customers.size() << endl;
-    cout << "p: " << p << endl << endl;
+    cout << "p: " << p << endl;
+    cout << "total_demand: " << total_demand << endl << endl;
 }
 
 const vector<uint_t> &Instance::getCustomers() const {
@@ -247,10 +259,10 @@ uint_t Instance::getTotalDemand() const {
     return total_demand;
 }
 
+uint_t Instance::getLocCapacity(uint_t loc) {
+    return loc_capacities[loc];
+}
 
-
-
-
-
-
-
+uint_t Instance::getTotalDemand() const {
+    return total_demand;
+}

@@ -1,4 +1,6 @@
 #include "RSSV.hpp"
+#include "globals.hpp"
+#include "utils.hpp"
 
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
@@ -13,66 +15,74 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
 /*
  * RSSV metaheuristic implementation.
  */
-//Solution RSSV::run(int thread_cnt) {
-//    cout << "RSSV running...\n";
-//    cout << "PMP size (N): " << N << endl;
-//    cout << "sub-PMP size (n): " << n << endl;
-//    cout << "Subproblems cnt (M): " << M << endl << endl;
-//
-//    sem.setCount(thread_cnt); // limit max no. of threads run in parallel
-//
-//    vector<thread> threads; // spawn M threads
-//    for (uint_t i = 1; i <= M; i++) {
-//        threads.emplace_back(&RSSV::solveSubproblem, this, i);
-//    }
-//
-//    for (auto &th:threads) { // wait for all threads
-//        th.join();
-//    }
-//    cout << "All subproblems solved."  << endl << endl;
-//
-//    auto filtered_locations = filterLocations(n); // Filter n locations according to voting weights
-//    cout << "Filtered " << n << " locations: ";
-//    for (auto fl:filtered_locations) cout << fl << " ";
-//    cout << endl << endl;
-//
-//    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(filtered_locations)); // Create filtered instance (n locations, all customers)
-//    cout << "Final instance parameters:\n";
-//    filtered_instance->print();
-//
-//    TB heuristic(filtered_instance, 1); // solve filtered instance by the TB heuristic
-//    auto sol = heuristic.run(true);
-//    cout << "Final solution:\n";
-//    sol.print();
-//    sol.printAssignment();
-//
-//    return sol;
-//}
+shared_ptr<Instance> RSSV::run(int thread_cnt) {
+    cout << "RSSV running...\n";
+    cout << "PMP size (N): " << N << endl;
+    cout << "sub-PMP size (n): " << n << endl;
+    cout << "Subproblems cnt (M): " << M << endl << endl;
+
+    sem.setCount(thread_cnt); // limit max no. of threads run in parallel
+
+    vector<thread> threads; // spawn M threads
+    for (uint_t i = 1; i <= M; i++) {
+        threads.emplace_back(&RSSV::solveSubproblem, this, i);
+    }
+
+    for (auto &th:threads) { // wait for all threads
+        th.join();
+    }
+    cout << "All subproblems solved."  << endl << endl;
+
+    auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
+    auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
+    cout << "Filtered " << filtered_cnt << " locations: ";
+    for (auto fl:filtered_locations) cout << fl << " ";
+    cout << endl << endl;
+
+    auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
+    cout << "Extracted " << prioritized_locations.size() << " prioritized locations: ";
+    for (auto pl:prioritized_locations) cout << pl << " ";
+    cout << endl << endl;
+
+    for (auto fl:filtered_locations) prioritized_locations.insert(fl);
+    vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
+
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
+    cout << "Final instance parameters:\n";
+    filtered_instance->print();
+
+    return filtered_instance;
+}
 
 /*
  * Solve sub-PMP of the original problem by the TB heuristic.
  * sub-PMP considers only n locations and customers.
  */
-//void RSSV::solveSubproblem(int seed) {
-//    sem.wait(seed);
-//    cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
-//    auto start = tick();
-//    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
-//    TB heuristic(make_shared<Instance>(subInstance), seed);
-//    auto sol = heuristic.run(false);
-//
-//    cout << "Solution " << seed << ": ";
-//    sol.print();
-//    processSubsolution(make_shared<Solution>(sol));
-//    tock(start);
-//    sem.notify(seed);
-//}
+void RSSV::solveSubproblem(int seed) {
+    sem.wait(seed);
+    cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
+    auto start = tick();
+    Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
+
+    checkClock();
+    
+    TB heuristic(make_shared<Instance>(subInstance), seed);
+    auto sol = heuristic.run(false);
+
+    if (VERBOSE) cout << "Solution_std " << seed << ": ";
+    sol.print();
+    processSubsolution(make_shared<Solution_std>(sol));
+    if (VERBOSE) tock(start);
+    sem.notify(seed);
+
+    checkClock();
+}
 
 /*
  * Extract voting weights from a subproblem solution.
  * Distance to closest locations is determined from closest customer, NOT from the location in the solution (as it should be).
  */
-void RSSV::processSubsolution(shared_ptr<Solution> solution) {
+void RSSV::processSubsolution(shared_ptr<Solution_std> solution) {
     for (auto loc_sol:solution->get_pLocations()) {
         // get closest customer in orig. instance
         auto cust_cl = instance->getClosestCust(loc_sol);
@@ -117,6 +127,18 @@ vector<uint_t> RSSV::filterLocations(uint_t cnt) {
     return filtered_locs;
 }
 
-
-
-
+unordered_set<uint_t> RSSV::extractPrioritizedLocations(uint_t min_cnt) {
+    unordered_set<uint_t> locations;
+    for (auto c:instance->getCustomers()) {
+        uint_t cnt = 0;
+        for (auto l:instance->getLocations()) {
+            if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) cnt++;
+        }
+        if (cnt <= min_cnt) {
+            for (auto l:instance->getLocations()) {
+                if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) locations.insert(l);
+            }
+        }
+    }
+    return locations;
+}

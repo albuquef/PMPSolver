@@ -1,34 +1,22 @@
-# customers = './provided/toulon/customers.txt'
-# locations = './provided/toulon/locations.txt'
-# distances = './provided/toulon/distances.txt'
-# w_distances = './provided/toulon/weighted_distances.txt'
-# output = './provided/toulon/dist_matrix.txt'
-
-# customers = './provided/paca/customers.txt'
-# locations = './provided/paca/locations.txt'
-# distances = './provided/paca/distances.txt'
-# w_distances = './provided/paca/weighted_distances.txt'
-# output = './provided/paca/dist_matrix.txt'
-
-# customers = './provided/matdistpaca_600_1500_tps_90/customers.txt'
-# locations = './provided/matdistpaca_600_1500_tps_90/locations.txt'
-# distances = './provided/matdistpaca_600_1500_tps_90/distances.txt'
-# w_distances = './provided/matdistpaca_600_1500_tps_90/weighted_distances.txt'
-# output = './provided/matdistpaca_600_1500_tps_90/dist_matrix.txt'
+# customers = './provided/Matrice_cplt/matdistpaca_600_1500_cplt_origin.txt'
+# locations = './provided/Matrice_cplt/matdistpaca_600_1500_cplt_destination.txt'
+# distances = './provided/Matrice_cplt/matdistpaca_600_1500_cplt_tps.txt'
+# output = './data/paca_v4/dist_matrix.txt'
 
 
+# Create distance matrix
 f_cust = open(customers, "r")
 f_loc = open(locations, "r")
 f_dist = open(distances, "r")
-f_w_dist = open(w_distances, "r")
 f_out = open(output, "w")
 
+f_out.write("customer location distance\n")
+
 while True:
-    cust = f_cust.readline()
     loc = f_loc.readline()
-    dist = f_dist.readline()
-    w_dist = f_w_dist.readline()
-    if not cust:
+    if not loc:
         break
-    string = cust.rstrip() + " " + loc.rstrip() + " " + dist.rstrip() + " " + w_dist.rstrip() + "\n"
+    cust = int(f_cust.readline())
+    dist = float(f_dist.readline())
+    string = str(cust) + " " + loc.rstrip() + " " + str("%.2f" % round(dist, 2)) + "\n"
     f_out.write(string)
