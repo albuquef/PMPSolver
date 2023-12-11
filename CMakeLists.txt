@@ -8,6 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 # CPLEX_ROOT_DIR - path to CPLEX installation
 set(CPLEX_ROOT_DIR "/opt/ibm/ILOG/CPLEX_Studio2211")
+# set(CPLEX_ROOT_DIR "/usr/local/ibm/ILOG/CPLEX_Studio1210")
 
 # CXX_FLAGS - compiler flags for C++ and cple
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O3 -pthread -fopenmp -Wall -Wextra -std=c++11 -m64 -g -O -fPIC -fexceptions -DNDEBUG -DIL_STD")
