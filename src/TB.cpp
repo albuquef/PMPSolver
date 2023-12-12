@@ -1,4 +1,8 @@
 #include "TB.hpp"
+#include "globals.hpp"
+#include "utils.hpp"
+
+#include <utility>
 
 TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
@@ -85,7 +89,8 @@ Solution_std TB::run(bool verbose, int MAX_ITE) {
         auto p_locations = sol_best.get_pLocations();
 
         for (auto loc:locations) { // First improvement over locations
-            if (!p_locations.contains(loc)) {
+            // if (!p_locations.contains(loc)) {
+            if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     sol_tmp = sol_best;
                     sol_tmp.replaceLocation(p_loc, loc);
@@ -146,7 +151,8 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
         for (auto p_loc:p_locations) p_locations_vec.push_back(p_loc);
 
         for (auto loc:locations) { // First improvement over locations
-            if (!p_locations.contains(loc)) {
+            // if (!p_locations.contains(loc)) {
+            if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){    
                 #pragma omp parallel for
                 for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
                     Solution_cap sol_tmp = sol_best;
@@ -179,10 +185,11 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 }
 
 
-Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE) {
+Solution_std TB::localSearch_std(bool verbose, int MAX_ITE) {
     checkClock();
     verbose = VERBOSE;
 
+    auto sol_best = initRandomSolution();
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_std sol_tmp;
@@ -202,7 +209,8 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
         auto p_locations = sol_best.get_pLocations();
 
         for (auto loc:locations) { // First improvement over locations
-            if (!p_locations.contains(loc)) {
+            // if (!p_locations.contains(loc)) {
+            if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     sol_tmp = sol_best;
                     sol_tmp.replaceLocation(p_loc, loc);
@@ -241,11 +249,13 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
 
 
 
-Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
+Solution_cap TB::localSearch_cap(bool verbose, int MAX_ITE) {
     verbose = VERBOSE;
     
+    auto sol_best = initHighestCapSolution();
     auto locations = instance->getLocations();
     Solution_cap sol_cand;
+    // int max_ite = 3;
     int ite = 0;
 
 
@@ -263,7 +273,8 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
         for (auto p_loc:p_locations) p_locations_vec.push_back(p_loc);
 
         for (auto loc:locations) { // First improvement over locations
-            if (!p_locations.contains(loc)) { // loc is not a p location
+            // if (!p_locations.contains(loc)) { // loc is not a p location
+            if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
                 #pragma omp parallel for
                 for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
                     Solution_cap sol_tmp = sol_best;

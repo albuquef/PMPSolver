@@ -1,34 +1,45 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.10)
 project(large_PMP)
 
-
-# if(NOT "${CMAKE_CXX_STANDARD}")
-set(CMAKE_CXX_STANDARD 20)
-# endif()
+# Set default value for USE_CLUSTER if not provided by the user
+if (NOT DEFINED USE_CLUSTER)
+    set(USE_CLUSTER OFF CACHE BOOL "Use cluster" FORCE)
+endif()
 
 # CPLEX_ROOT_DIR - path to CPLEX installation
-set(CPLEX_ROOT_DIR "/opt/ibm/ILOG/CPLEX_Studio2211")
-# set(CPLEX_ROOT_DIR "/usr/local/ibm/ILOG/CPLEX_Studio1210")
+if (USE_CLUSTER)
+    set(CPLEX_ROOT_DIR "/usr/local/ibm/ILOG/CPLEX_Studio1210")
+else()
+    set(CPLEX_ROOT_DIR "/opt/ibm/ILOG/CPLEX_Studio2211")
+endif(USE_CLUSTER)
 
-# CXX_FLAGS - compiler flags for C++ and cple
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -O3 -pthread -fopenmp -Wall -Wextra -std=c++11 -m64 -g -O -fPIC -fexceptions -DNDEBUG -DIL_STD")
-
+# CXX_FLAGS - compiler flags for C++ and cplex
+set(CMAKE_CXX_STANDARD 17) # C++17 same as cluster
+set(CMAKE_CXX_FLAGS "-O3 -pthread -fopenmp -Wall -Wextra -std=c++17")
+# Uncomment the following line if you want to set CMAKE_CXX_STANDARD globally
+# set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# Include directories and search CPLEX library
 include_directories("${CPLEX_ROOT_DIR}/include")
-# search CPLEX library
+# find_package(Cplex REQUIRED)
+message("USE_CLUSTER: ${USE_CLUSTER}")
+
 find_package(Cplex REQUIRED)
-
-
+# message("CPLEX_FOUND: ${CPLEX_FOUND}")
+# message("CPLEX_ROOT_DIR: ${CPLEX_ROOT_DIR}")
+# message("CPLEX_INCLUDE_DIR: ${CPLEX_INCLUDE_DIR}")
+# message("CPLEX_LIBRARY: ${CPLEX_LIBRARY}")
+# message("CPLEX_ILOCPLEX_LIBRARY: ${CPLEX_ILOCPLEX_LIBRARY}")
+# message("CPLEX_CONCERT_LIBRARY: ${CPLEX_CONCERT_LIBRARY}")
+# CPLEX_COMPILER_FLAGS is assumed to be set by the find_package(Cplex REQUIRED) command
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPLEX_COMPILER_FLAGS}")
-MESSAGE ("${CPLEX_COMPILER_FLAGS}")
 
-INCLUDE_DIRECTORIES( ${CPLEX_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CPLEX_INCLUDE_DIRS})
 
-
-MESSAGE ("LOG")
-MESSAGE ("${SRCS}")
-
+MESSAGE("LOG")
+MESSAGE("${SRCS}")
 
 set(SOURCE_FILES
     src/main.cpp 
@@ -43,9 +54,29 @@ set(SOURCE_FILES
     src/config_parser.cpp 
     src/toml.hpp 
     src/TBPercentage.hpp src/TBPercentage.cpp
-    src/PMP.hpp src/PMP.cpp
-    src/VNS.hpp src/VNS.cpp)
+    src/PMP.hpp src/PMP.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${CPLEX_LIBRARIES})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${CPLEX_LIBRARIES})
+
+if (USE_CLUSTER)
+    # Set the path to CPLEX libraries
+    set(CPLEX_LIB_DIR "/usr/local/ibm/ILOG/CPLEX_Studio1210/cplex/lib/x86-64_linux/static_pic")
+    # Add CPLEX flags
+    target_link_libraries(${PROJECT_NAME}
+        ${CPLEX_LIB_DIR}/libcplexdistmip.a
+        ${CPLEX_LIB_DIR}/libilocplex.a
+        ${CPLEX_LIB_DIR}/libcplex.a
+        -ldl
+    )
+else()
+    # Set the path to CPLEX libraries
+    set(CPLEX_LIB_DIR "/opt/ibm/ILOG/CPLEX_Studio2211/cplex/lib/x86-64_linux/static_pic")
+    # Add CPLEX flags
+    target_link_libraries(${PROJECT_NAME}
+        ${CPLEX_LIB_DIR}/libilocplex.a
+        ${CPLEX_LIB_DIR}/libcplex.a
+        -ldl
+    )
+endif(USE_CLUSTER)
