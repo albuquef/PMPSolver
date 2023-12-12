@@ -9,6 +9,6 @@ OUTPUT=./solutions/test_paca_lycee
 p_values=(246 281 316 351 386)
 for p in "${p_values[@]}"
 do
-  $CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES --mode 2 -o $OUTPUT | tee ./console/console_lycee_p_${p}.txt
+  $CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES --mode 5 -o $OUTPUT | tee ./console/console_lycee_p_${p}.txt
 done
 

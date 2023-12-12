@@ -129,7 +129,8 @@ Solution_std TBPercentage::run(bool verbose) {
     keptLocations = splitLocations[0];
     movingLocations = splitLocations[1];
     for(auto loc:locations){
-        if(!movingLocations.contains(loc)){
+        // if(!movingLocations.contains(loc)){
+        if (movingLocations.find(loc) == movingLocations.end()) {
             for(auto loc_m:movingLocations){
                 sol_tmp = sol_best;
                 sol_tmp.replaceLocation(loc_m, loc);
@@ -181,7 +182,8 @@ Solution_std TBPercentage::run(bool verbose) {
     movingLocations = splitLocations[1];
     
     for(auto loc:locations){
-        if(!movingLocations.contains(loc)){
+        // if(!movingLocations.contains(loc)){
+        if (movingLocations.find(loc) == movingLocations.end()) {
             for(auto loc_m:movingLocations){
                 sol_tmp = sol_best;
                 sol_tmp.replaceLocation(loc_m, loc);
@@ -276,14 +278,15 @@ Solution_cap TBPercentage::run_cap(bool verbose) {
         movingLocations = splitLocations[1];
         
         for(auto loc:locations){
-            if(!movingLocations.contains(loc)){
-                #pragma omp parallel for shared(flag)
+            // if(!movingLocations.contains(loc)){
+            if (movingLocations.find(loc) == movingLocations.end()) {
+                // #pragma omp parallel for shared(flag)
                 for(auto loc_m:movingLocationsVector){
                     if(flag) continue;
                     sol_tmp = sol_best;
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(loc_m) + instance->getLocCapacity(loc) >= instance->getTotalDemand()){
                         sol_cand.replaceLocation(loc_m, loc);
-                        #pragma omp critical
+                        // #pragma omp critical
                         if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
                             sol_cand = sol_tmp;
                             improved = true;
