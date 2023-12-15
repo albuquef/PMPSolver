@@ -1,10 +1,7 @@
-//
-// Created by david on 09/06/2021.
-//
 
 #include "solution_cap.hpp"
 #include "globals.hpp"
-#include "utils.hpp"
+#include "PMP.hpp"
 #include <iomanip>
 #include <utility>
 
@@ -216,6 +213,15 @@ uint_t Solution_cap::getTotalCapacity() {
     return total_cap;
 }
 
+unordered_map<uint_t, dist_t>  Solution_cap::getLocUsages(){
+    return loc_usages;
+}
+unordered_map<uint_t, dist_t> Solution_cap::getCustSatisfactions(){
+    return cust_satisfactions;
+}
+unordered_map<uint_t, assignment> Solution_cap::getAssignments(){
+    return assignments;
+}
 
 void Solution_cap::setLocUsage(uint_t loc, dist_t usage){
 
@@ -243,26 +249,55 @@ void Solution_cap::setAssigment(uint_t cust, assignment assigment){
     objEval();
 }
 
-// void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations
-//                     ,unordered_map<uint_t, uint_t> loc_usages, unordered_map<uint_t, uint_t> cust_satisfactions
-//                     ,unordered_map<uint_t, assignment> assignments){
-//     this->instance = instance;
-//     this->p_locations = p_locations;
-//     this->loc_usages = loc_usages;
-//     this->cust_satisfactions = cust_satisfactions;
-//     this->assignments = assignments;
-//     objEval();
-// }
+void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations
+                    ,unordered_map<uint_t, dist_t> loc_usages, unordered_map<uint_t, dist_t> cust_satisfactions
+                    ,unordered_map<uint_t, assignment> assignments){
+    this->instance = instance;
+    this->p_locations = p_locations;
+    this->loc_usages = loc_usages;
+    this->cust_satisfactions = cust_satisfactions;
+    this->assignments = assignments;
+    objEval();
+}
+
+// NOT WORKING
+void Solution_cap::GAP_eval(){
+    // Initialize all fields
 
 
-
-void Solution_cap::objEval(){
     objective = 0;
-    for (auto cust:instance->getCustomers()) {
-        for (auto a:assignments[cust]) objective += a.usage * instance->getRealDist(a.node, cust);
+    for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
+    for (auto cust:this->instance->getCustomers()) {
+        cust_satisfactions[cust] = 0;
+        assignments[cust] = assignment{};
     }
 
-    // cout << "objective Eval: " << objective << endl;
+    PMP pmp(instance, "GAP");
+    pmp.run_GAP(p_locations);
+    auto sol_gap = pmp.getSolution_cap();
+    
+
+    setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(), sol_gap.getCustSatisfactions(), sol_gap.getAssignments());
+
+    // cout << "GAP_eval: " << objective << endl;
+
+    // // Check if capacity demands can be met
+    // uint_t total_capacity = 0;
+    // uint_t total_demand = instance->getTotalDemand();
+    // for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
+    // if (total_capacity < total_demand) {
+    //     fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
+    //     exit(1);
+    // }        
+}
+
+void Solution_cap::objEval(){
+    this->objective = 0;
+    for (auto cust:instance->getCustomers()) {
+        for (auto a:assignments[cust]) this->objective += a.usage * instance->getRealDist(a.node, cust);
+    }
+
+    cout << "objective Eval: " << objective << endl;
 
 }
 

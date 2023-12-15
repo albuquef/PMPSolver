@@ -185,29 +185,43 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
 
     cout << "VNS heuristic capacitated started\n";
 
-    TB tb(instance, engine());
-    auto locations = instance->getLocations();
-    auto sol_best = tb.initHighestCapSolution();
-    int ite = 0;
+    // TB tb(instance, engine());
+    // // auto locations = instance->getLocations();
+    // auto sol_best = tb.initHighestCapSolution();
+    // int ite = 0;
 
-    cout << "Initial solution: \n";
-    sol_best.print();
-    cout << "\n";
 
-    auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
-    int k = 1;
-    while (ite <= MAX_ITE) {
-        auto new_sol = rand_swap_Locations_cap(sol_best,k);
-        new_sol = tb.localSearch_cap(new_sol,verbose,DEFAULT_MAX_ITE);
-        if (new_sol.get_objective() < sol_best.get_objective()) {
-            sol_best = new_sol;
-            cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
-            k = 1;
-        }else if(k < Kmax){
-            k++;
-        }
-        ite++;
-    }
+
+    // cout << "Initial solution: \n";
+    // sol_best.print();
+    // cout << "\n";
+
+    // auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
+    // int k = 1;
+    // while (ite <= MAX_ITE) {
+    //     auto new_sol = rand_swap_Locations_cap(sol_best,k);
+    //     new_sol = tb.localSearch_cap(new_sol,verbose,DEFAULT_MAX_ITE);
+    //     if (new_sol.get_objective() < sol_best.get_objective()) {
+    //         sol_best = new_sol;
+    //         cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
+    //         k = 1;
+    //     }else if(k < Kmax){
+    //         k++;
+    //     }
+    //     ite++;
+    // }
+
+    unordered_set<uint_t> p_locations;
+    p_locations.insert(622);
+    p_locations.insert(580);
+    p_locations.insert(529);
+    p_locations.insert(488);
+    p_locations.insert(355);
+
+    auto sol_best = Solution_cap(instance,p_locations);
+
+    sol_best.GAP_eval();
+
 
     cout << "Final solution: \n";
     sol_best.print();

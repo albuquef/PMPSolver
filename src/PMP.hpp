@@ -41,12 +41,14 @@ class PMP
         ~PMP();
         void exportILP      (IloCplex& cplex);
         void solveILP       (void);
+        void run           (void);
+        void run_GAP       (unordered_set<uint_t> p_locations);
         template <typename VarType>  
         void printSolution  (IloCplex& cplex,
                             VarType x,
                             IloBoolVarArray y);
-        Solution_cap getSolution_cap(void);
         Solution_std getSolution_std(void);
+        Solution_cap getSolution_cap(void);
         void saveVars   (const string& filename, int mode);
         void saveResults(const string& filename, int mode);
         int current_day, current_month, current_year;
@@ -96,6 +98,9 @@ class PMP
         // void constr_maxCapacity (IloModel model, BoolVarMatrix x, IloBoolVarArray y);
         template <typename VarType>
         void constr_maxCapacity (IloModel model, VarType x, IloBoolVarArray y);
+
+        unordered_set<uint_t> p_locations; // p selected locations
+        void constr_GAP (IloModel model, IloBoolVarArray y);
 
 };
 

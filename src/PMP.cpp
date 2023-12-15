@@ -20,11 +20,12 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
     this->num_facilities = this->instance->getLocations().size();
     this->num_customers = this->instance->getCustomers().size();
 
+    cout << "Problem type: " << typeProb << endl;
     cout << "Value of p: " << this->p << endl;
     cout << "Number of facilities: " << num_facilities << endl;
     cout << "Number of customers: " << num_customers << endl;
     // cout << "Type of problem: " << typeProb << endl;
-    if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0  )
+    if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0)
         cout << "Capacity Model: true" << endl;
     else 
         cout << "Capacity Model: false" << endl;
@@ -32,10 +33,18 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
         cout << "Binary Model: true" << endl;
     else 
         cout << "Binary Model: false" << endl;
+    
+}
+PMP::~PMP()
+{
+    // env.end();
+}
+
+void PMP::run(){
 
     initILP();
     solveILP();
-    
+
     if (cplex.getStatus() == IloAlgorithm::Optimal)
         if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
         else {printSolution(cplex,x_cont,y);}
@@ -43,9 +52,22 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
         cout << "Solution status = " << cplex.getStatus()   << endl;
 
 }
-PMP::~PMP()
-{
-    // env.end();
+
+void PMP:: run_GAP(unordered_set<uint_t> p_locations){
+
+    this->p_locations = p_locations;
+
+    initILP();
+    // Set the output to a non-verbose mode
+    // this->cplex.setOut(env.getNullStream());
+    solveILP();
+
+    if (cplex.getStatus() == IloAlgorithm::Optimal)
+        if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
+        else {printSolution(cplex,x_cont,y);}
+    else
+        cout << "Solution status = " << cplex.getStatus()   << endl;
+
 }
 
 void PMP::initVars(){
@@ -105,9 +127,9 @@ void PMP::initILP(){
         this->cplex = IloCplex(this->model);
         // exportILP(cplex);
    
-        cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
+        // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
-        cplex.setParam(IloCplex::Threads, 8); // use 8 threads
+        // cplex.setParam(IloCplex::Threads, 8); // use 8 threads
 
     } catch (IloException& e) {
         cerr << "ERROR: " << e.getMessage()  << endl;
@@ -127,8 +149,9 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
 
     objFunction(model,x);
     constr_DemandSatif(model,x);
-    constr_pLocations(model,y);
-    if(strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0  ){constr_maxCapacity(model,x,y);}
+    if(strcmp(typeProb,"GAP") == 0) {constr_GAP(model,y);}
+    if(strcmp(typeProb,"GAP") != 0) {constr_pLocations(model,y);}
+    if(strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0){constr_maxCapacity(model,x,y);}
     if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){constr_UBpmp(model,x,y);}
 
 }
@@ -219,6 +242,24 @@ void  PMP::constr_maxCapacity(IloModel model, VarType x, IloBoolVarArray y){
     }
 
 }
+
+void PMP::constr_GAP(IloModel model, IloBoolVarArray y){
+
+    cout << "[INFO] Adding GAP fixed p Constraints "<< endl;
+
+    IloEnv env = model.getEnv();
+    for (IloInt j = 0; j < num_facilities; j++){
+        auto loc = instance->getLocations()[j];
+        if (p_locations.find(loc) == p_locations.end()){
+            model.add(y[j] == 0);
+        }else{
+            model.add(y[j] == 1);
+        }
+    }
+
+}
+
+
 
 // void PMP::printSolution(IloCplex& cplex, BoolVarMatrix x, IloBoolVarArray y){
 template <typename VarType>  

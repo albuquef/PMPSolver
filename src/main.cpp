@@ -9,6 +9,8 @@
 #include "TBPercentage.hpp"
 #include "utils.hpp"
 #include "config_parser.cpp"
+#include "solution_std.hpp"
+#include "solution_cap.hpp"
 #include "PMP.hpp"
 #include "VNS.hpp"
 
@@ -233,6 +235,7 @@ int main(int argc, char *argv[]) {
             cout << "Exact method PMP\n";
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "PMP");
+            pmp.run();
             pmp.saveVars(output_filename,mode);
             pmp.saveResults(output_filename,mode);
             auto solution = pmp.getSolution_std();
@@ -244,6 +247,7 @@ int main(int argc, char *argv[]) {
             cout << "Exact method cPMP continuos\n";
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP");
+            pmp.run();
             pmp.saveVars(output_filename,mode);
             pmp.saveResults(output_filename,mode);
             auto solution = pmp.getSolution_cap();
@@ -255,6 +259,7 @@ int main(int argc, char *argv[]) {
             cout << "Exact method cPMP binary\n";
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP", true);
+            pmp.run();
             pmp.saveVars(output_vars_filename,mode);
             pmp.saveResults(output_table_filename,mode);
             auto solution = pmp.getSolution_cap();
