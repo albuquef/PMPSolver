@@ -134,7 +134,7 @@ Solution_std TBPercentage::run(bool verbose) {
             for(auto loc_m:movingLocations){
                 sol_tmp = sol_best;
                 sol_tmp.replaceLocation(loc_m, loc);
-                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ){
                     movingLocations.erase(loc_m);
                     movingLocations.insert(loc);
                     sol_cand = sol_tmp;
@@ -187,7 +187,7 @@ Solution_std TBPercentage::run(bool verbose) {
             for(auto loc_m:movingLocations){
                 sol_tmp = sol_best;
                 sol_tmp.replaceLocation(loc_m, loc);
-                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ){
                     movingLocations.erase(loc_m);
                     movingLocations.insert(loc);
                     sol_cand = sol_tmp;
@@ -287,7 +287,7 @@ Solution_cap TBPercentage::run_cap(bool verbose) {
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(loc_m) + instance->getLocCapacity(loc) >= instance->getTotalDemand()){
                         sol_cand.replaceLocation(loc_m, loc);
                         // #pragma omp critical
-                        if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+                        if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ){
                             sol_cand = sol_tmp;
                             improved = true;
                             cpt = 0;

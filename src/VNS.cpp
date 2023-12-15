@@ -3,26 +3,7 @@
 
 VNS::VNS(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
-    cout << "VNS heuristic initialized\n";
 }
-
-// vector<uint_t> getDistinctIndices(size_t maxIndex, size_t numIndices) {
-//     std::random_device rd;
-//     std::mt19937 gen(rd());
-    
-//     std::vector<uint_t> result;
-
-//     while (result.size() < numIndices) {
-//         std::uniform_int_distribution<uint_t> distribution(0, maxIndex - 1);
-//         size_t index = distribution(gen);
-
-//         if (std::find(result.begin(), result.end(), index) == result.end()) {
-//             result.push_back(index);
-//         }
-//     }
-
-//     return result;
-// }
 
 vector<uint_t> getDistinctIndices(size_t vec_size, size_t k) {
     if (k > vec_size) {
@@ -63,8 +44,10 @@ Solution_std VNS::rand_swap_Locations(Solution_std sol_current, int num_swaps){
     std::copy_if(locations.begin(), locations.end(), std::back_inserter(out_locations_vec),
              [&p_locations](uint_t loc) { return p_locations.find(loc) == p_locations.end(); });
 
+    // check if there are enough locations to swap
     if (out_locations_vec.size() < num_swaps || p_locations_vec.size() < num_swaps) return sol_current;
 
+ 
     vector<uint_t> out_swap_loc;
     vector<uint_t> p_swap_loc;
     out_swap_loc.reserve(num_swaps); 
@@ -79,7 +62,7 @@ Solution_std VNS::rand_swap_Locations(Solution_std sol_current, int num_swaps){
 
     for (int i = 0; i < num_swaps; i++) {
         sol_current.replaceLocation(p_swap_loc[i], out_swap_loc[i]);
-        cout << "p_swap_loc: " << p_swap_loc[i] << " out_swap_loc: " << out_swap_loc[i] << "\n";
+        // cout << "p_swap_loc: " << p_swap_loc[i] << " out_swap_loc: " << out_swap_loc[i] << "\n";
     }
 
     if (sol_current.get_pLocations().size() > p) return sol_current;
@@ -117,7 +100,6 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, int num_swap
     for (auto i:indices_p) p_swap_loc.push_back(p_locations_vec[i]);
 
 
-
     dist_t add_Capacity = 0.0;
     dist_t lost_Capacity = 0.0;
     for (int i = 0; i < num_swaps; i++) {
@@ -128,7 +110,7 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, int num_swap
     if (sol_current.getTotalCapacity() - lost_Capacity + add_Capacity >= instance->getTotalDemand()){
         for (int i = 0; i < num_swaps; i++) {
             sol_current.replaceLocation(p_swap_loc[i], out_swap_loc[i]);
-            cout << "p_swap_loc: " << p_swap_loc[i] << " out_swap_loc: " << out_swap_loc[i] << "\n";
+            // cout << "p_swap_loc: " << p_swap_loc[i] << " out_swap_loc: " << out_swap_loc[i] << "\n";
         }
     }else{
         cout << "Not enough capacity\n";
@@ -141,25 +123,40 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, int num_swap
 
 Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
 
+    cout << "VNS heuristic started\n";
+
     TB tb(instance, engine());
-    auto locations = instance->getLocations();
+    // auto locations = instance->getLocations();
     auto sol_best = tb.initRandomSolution();
-    auto best_value = sol_best.get_objective();
     int ite = 0;
-    auto p_locations = sol_best.get_pLocations();
 
-    cout <<"\n";
+    cout << "Initial solution: \n";
     sol_best.print();
-    cout <<"\n";
-    auto sol_tmp = rand_swap_Locations(sol_best,2);
-    cout <<"\n";
-    sol_tmp.print();
-    // cout <<"\n";
-    // auto sol_tmp2 = rand_swap_Locations(sol_tmp,3);
-    // sol_tmp2.print();
-    cout <<"\n";
+    cout << "\n";
+    // cout << "p_locations: " << p_locations.size() << "\n";
+    // int MAX_ITE_LS = 5;
+    int MAX_ITE_LS = DEFAULT_MAX_ITE;
+    int k = 1;
+    auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
 
-    cout << "p_locations: " << p_locations.size() << "\n";
+    while(ite <= MAX_ITE){
+        auto sol_tmp = rand_swap_Locations(sol_best,k);
+        sol_tmp = tb.localSearch_std(sol_tmp,verbose,DEFAULT_MAX_ITE);
+        if (sol_tmp.get_objective() < sol_best.get_objective()){
+            sol_best = sol_tmp;
+            // cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
+            // ite = 0;
+            k = 1;
+        }else if(k < Kmax){
+            k++;
+        }
+        ite++;
+    }
+
+    cout << "Final solution: \n";
+    sol_best.print();
+    cout << "\n";
+
 
     // while (ite <= MAX_ITE) {
     //     int ite++;
@@ -181,32 +178,42 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
 
     // TB tb(instance, engine());
     // auto sol = tb.initRandomSolution();
-    return sol_tmp;
+    return sol_best;
 }
 
 Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
 
+    cout << "VNS heuristic capacitated started\n";
+
     TB tb(instance, engine());
     auto locations = instance->getLocations();
     auto sol_best = tb.initHighestCapSolution();
-    auto best_value = sol_best.get_objective();
     int ite = 0;
-    auto p_locations = sol_best.get_pLocations();
 
-    cout <<"\n";
+    cout << "Initial solution: \n";
     sol_best.print();
-    cout <<"\n";
-    auto sol_tmp = rand_swap_Locations_cap(sol_best,2);
-    cout <<"\n";
-    sol_tmp.print();
-    cout <<"\n";
-    auto sol_tmp2 = rand_swap_Locations_cap(sol_tmp,3);
-    sol_tmp2.print();
-    cout <<"\n";
+    cout << "\n";
 
+    auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
+    int k = 1;
+    while (ite <= MAX_ITE) {
+        auto new_sol = rand_swap_Locations_cap(sol_best,k);
+        new_sol = tb.localSearch_cap(new_sol,verbose,DEFAULT_MAX_ITE);
+        if (new_sol.get_objective() < sol_best.get_objective()) {
+            sol_best = new_sol;
+            cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
+            k = 1;
+        }else if(k < Kmax){
+            k++;
+        }
+        ite++;
+    }
 
+    cout << "Final solution: \n";
+    sol_best.print();
+    cout << "\n";
 
-    return sol_tmp2;
+    return sol_best;
 
 }
 

@@ -30,8 +30,7 @@ public:
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective();
     void saveAssignment(const string& output_filename,int mode);
-    // Solution_std rand_swap2_Locations(Solution_std sol_current);
-    // Solution_std rand_swap3_Locations(unordered_set<uint_t> p_locations);
+   
 };
 
 

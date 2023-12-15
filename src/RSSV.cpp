@@ -266,11 +266,11 @@ unordered_set<uint_t> RSSV::extractPrioritizedLocations(uint_t min_cnt) {
     for (auto c:instance->getCustomers()) {
         uint_t cnt = 0;
         for (auto l:instance->getLocations()) {
-            if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) cnt++;
+            if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE_OBJ) cnt++;
         }
         if (cnt <= min_cnt) {
             for (auto l:instance->getLocations()) {
-                if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) locations.insert(l);
+                if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE_OBJ) locations.insert(l);
             }
         }
     }

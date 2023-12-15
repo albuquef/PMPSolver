@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
     string output_vars_filename;
     string output_table_filename;
     int MAX_ITE_TB = 10;
+    int MAX_ITE_VNS = 100;
     bool isBin_CPMP = false;
 
 
@@ -337,9 +338,9 @@ int main(int argc, char *argv[]) {
             cout << "VNS heuristic - PMP\n";
             cout << "-------------------------------------------------\n";
             VNS heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.runVNS_std(true,MAX_ITE_TB);
+            auto solution = heuristic.runVNS_std(true,MAX_ITE_VNS);
             // solution.print();
-            // solution.saveAssignment(output_filename,mode);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         case 11: {
@@ -347,9 +348,9 @@ int main(int argc, char *argv[]) {
             cout << "VNS heuristic - cPMP\n";
             cout << "-------------------------------------------------\n";
             VNS heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.runVNS_cap(true,MAX_ITE_TB);
+            auto solution = heuristic.runVNS_cap(true,MAX_ITE_VNS);
             // solution.print();
-            // solution.saveAssignment(output_filename,mode);
+            solution.saveAssignment(output_filename,mode);
             break;
         }
         default: {
