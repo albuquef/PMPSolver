@@ -13,6 +13,9 @@ double get_wall_time(){
 
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
+
+    VERBOSE = false;    
+
     // this->instance = instance;
     this->typeProb = typeProb;
     this->is_BinModel = is_BinModel;
@@ -20,24 +23,25 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
     this->num_facilities = this->instance->getLocations().size();
     this->num_customers = this->instance->getCustomers().size();
 
-    cout << "Problem type: " << typeProb << endl;
-    cout << "Value of p: " << this->p << endl;
-    cout << "Number of facilities: " << num_facilities << endl;
-    cout << "Number of customers: " << num_customers << endl;
-    // cout << "Type of problem: " << typeProb << endl;
-    if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0)
-        cout << "Capacity Model: true" << endl;
-    else 
-        cout << "Capacity Model: false" << endl;
-    if (is_BinModel == true) 
-        cout << "Binary Model: true" << endl;
-    else 
-        cout << "Binary Model: false" << endl;
-    
+    if (VERBOSE) {
+        cout << "Problem type: " << typeProb << endl;
+        cout << "Value of p: " << this->p << endl;
+        cout << "Number of facilities: " << num_facilities << endl;
+        cout << "Number of customers: " << num_customers << endl;
+        // cout << "Type of problem: " << typeProb << endl;
+        if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0)
+            cout << "Capacity Model: true" << endl;
+        else 
+            cout << "Capacity Model: false" << endl;
+        if (is_BinModel == true) 
+            cout << "Binary Model: true" << endl;
+        else 
+            cout << "Binary Model: false" << endl;
+    }
 }
 PMP::~PMP()
 {
-    // env.end();
+    env.end();
 }
 
 void PMP::run(){
@@ -45,11 +49,15 @@ void PMP::run(){
     initILP();
     solveILP();
 
-    if (cplex.getStatus() == IloAlgorithm::Optimal)
-        if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
-        else {printSolution(cplex,x_cont,y);}
-    else
-        cout << "Solution status = " << cplex.getStatus()   << endl;
+    if (VERBOSE){
+        if (cplex.getStatus() == IloAlgorithm::Optimal)
+            if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
+            else {printSolution(cplex,x_cont,y);}
+        else
+            cout << "Solution status = " << cplex.getStatus()   << endl;
+    }
+    cplex.end();
+    env.end();
 
 }
 
@@ -60,14 +68,18 @@ void PMP:: run_GAP(unordered_set<uint_t> p_locations){
     initILP();
     // Set the output to a non-verbose mode
     // this->cplex.setOut(env.getNullStream());
+    cplex.setParam(IloCplex::Param::MIP::Display, 0);
+    cplex.setOut(env.getNullStream());  // Disable console output
+    // cplex.setLogStream(fileStream);     // Redirect log to a file stream
     solveILP();
 
-    if (cplex.getStatus() == IloAlgorithm::Optimal)
-        if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
-        else {printSolution(cplex,x_cont,y);}
-    else
-        cout << "Solution status = " << cplex.getStatus()   << endl;
-
+    if (VERBOSE){
+        if (cplex.getStatus() == IloAlgorithm::Optimal)
+            if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
+            else {printSolution(cplex,x_cont,y);}
+        else
+            cout << "Solution status = " << cplex.getStatus()   << endl;
+    }
 }
 
 void PMP::initVars(){
@@ -161,7 +173,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
 template <typename VarType>
 void PMP::objFunction(IloModel model, VarType x){   
 
-    cout << "[INFO] Adding Objective Function "<< endl;
+    if (VERBOSE){cout << "[INFO] Adding Objective Function "<< endl;}
     
     IloEnv env = model.getEnv();
     IloExpr objExpr(env);
@@ -181,7 +193,7 @@ void PMP::objFunction(IloModel model, VarType x){
 template <typename VarType>
 void PMP::constr_DemandSatif(IloModel model, VarType x){
 
-    cout << "[INFO] Adding Demand Satisfied Constraints "<< endl;
+    if (VERBOSE){cout << "[INFO] Adding Demand Satisfied Constraints "<< endl;}
 
     IloEnv env = model.getEnv();
     for (IloInt i = 0; i < num_customers; i++){
@@ -198,7 +210,7 @@ void PMP::constr_DemandSatif(IloModel model, VarType x){
 
 void PMP::constr_pLocations(IloModel model, IloBoolVarArray y){
 
-    cout << "[INFO] Adding p Locations Constraints "<< endl;
+    if (VERBOSE){cout << "[INFO] Adding p Locations Constraints "<< endl;}
 
     IloEnv env = model.getEnv();
     IloExpr expr(env);
@@ -212,7 +224,7 @@ void PMP::constr_pLocations(IloModel model, IloBoolVarArray y){
 template <typename VarType>
 void PMP::constr_UBpmp(IloModel model, VarType x, IloBoolVarArray y){
 
-    cout << "[INFO] Adding UB Constraints "<< endl;
+    if (VERBOSE){cout << "[INFO] Adding UB Constraints "<< endl;}
 
     IloEnv env = model.getEnv();
     for (IloInt i = 0; i < num_customers; i++)
@@ -227,7 +239,7 @@ template <typename VarType>
 void  PMP::constr_maxCapacity(IloModel model, VarType x, IloBoolVarArray y){
 
 
-    cout << "[INFO] Adding Max Capacity Constraints "<< endl;
+    if (VERBOSE){cout << "[INFO] Adding Max Capacity Constraints "<< endl;}
 
     IloEnv env = model.getEnv();
     for (IloInt j = 0; j < num_facilities; j++){
@@ -245,7 +257,7 @@ void  PMP::constr_maxCapacity(IloModel model, VarType x, IloBoolVarArray y){
 
 void PMP::constr_GAP(IloModel model, IloBoolVarArray y){
 
-    cout << "[INFO] Adding GAP fixed p Constraints "<< endl;
+    if (VERBOSE){cout << "[INFO] Adding GAP fixed p Constraints "<< endl;}
 
     IloEnv env = model.getEnv();
     for (IloInt j = 0; j < num_facilities; j++){
@@ -330,12 +342,12 @@ Solution_cap PMP::getSolution_cap(){
         assignments[cust] = assignment{};
     }
 
-    cout << "p_loc = ";
-    for (auto p_loc:p_locations)
-        cout << p_loc << ", ";
-    cout << endl;   
+    // cout << "p_loc = ";
+    // for (auto p_loc:p_locations)
+    //     cout << p_loc << ", ";
+    // cout << endl;   
 
-    IloNum objtest = 0;
+    dist_t objtest = 0;
 
     for (IloInt j = 0; j < num_facilities; j++)
         if (cplex.getValue(y[j]) > 0.5){
@@ -375,12 +387,12 @@ Solution_cap PMP::getSolution_cap(){
             }
         }
 
-    Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments);
+    // cout << "obj: " << objtest << endl;
+
+    Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments, objtest);
 
     return sol;
 }
-
-
 
 Solution_std PMP::getSolution_std(){
 
@@ -407,12 +419,12 @@ void PMP::saveVars(const std::string& filename,int mode){
     string output_filename = "TEST.txt";
     if (!is_BinModel){
         output_filename = filename + "_" + typeProb +
-            "_Cont_p_" + to_string(p) + 
+            "_Vars_Cont_p_" + to_string(p) + 
             "_mode_" + to_string(mode) +
             ".txt";
     }else{
         output_filename = filename + "_" + typeProb +
-            "_Bin_p_" + to_string(p) + 
+            "_Vars_Bin_p_" + to_string(p) + 
             "_mode_" + to_string(mode) +
             ".txt";
     }

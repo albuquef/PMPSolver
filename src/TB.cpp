@@ -83,7 +83,7 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 
 Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE) {
 
-    cout << "TB local search uncapacitated started\n";
+    // cout << "TB local search uncapacitated started\n";
 
     auto locations = instance->getLocations();
     bool improved = true;
@@ -143,7 +143,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
 
 Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
 
-    cout << "TB local search capacitated started\n";
+    // cout << "TB local search capacitated started\n";
     
     verbose = VERBOSE;
 

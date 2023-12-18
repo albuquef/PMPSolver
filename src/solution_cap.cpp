@@ -9,20 +9,25 @@
 Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
-    fullCapEval();
+    
+    // Initialize all fields
+    // fullCapEval();
+    GAP_eval();
 }
 
 Solution_cap::Solution_cap(shared_ptr<Instance> instance,
                  unordered_set<uint_t> p_locations,
                  unordered_map<uint_t, dist_t> loc_usages, 
                  unordered_map<uint_t, dist_t> cust_satisfactions, 
-                 unordered_map<uint_t, assignment> assignments) {
+                 unordered_map<uint_t, assignment> assignments, dist_t objective) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
     this->loc_usages = std::move(loc_usages);
     this->cust_satisfactions = std::move(cust_satisfactions);
     this->assignments = std::move(assignments);
-    objEval();
+    this->objective = objective;
+    // objEval();
+    // GAP_eval();
 }
 
 
@@ -160,9 +165,11 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new) {
     p_locations.erase(loc_old);
     p_locations.insert(loc_new);
     // Update assignment and objective
-    fullCapEval();
+    // fullCapEval();
 
-    checkClock();
+    GAP_eval();
+
+    // checkClock();
 }
 
 dist_t Solution_cap::get_objective() const {
@@ -251,13 +258,14 @@ void Solution_cap::setAssigment(uint_t cust, assignment assigment){
 
 void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations
                     ,unordered_map<uint_t, dist_t> loc_usages, unordered_map<uint_t, dist_t> cust_satisfactions
-                    ,unordered_map<uint_t, assignment> assignments){
+                    ,unordered_map<uint_t, assignment> assignments, dist_t objective){
     this->instance = instance;
     this->p_locations = p_locations;
     this->loc_usages = loc_usages;
     this->cust_satisfactions = cust_satisfactions;
     this->assignments = assignments;
-    objEval();
+    this->objective = objective;    
+    // objEval();
 }
 
 // NOT WORKING
@@ -277,7 +285,8 @@ void Solution_cap::GAP_eval(){
     auto sol_gap = pmp.getSolution_cap();
     
 
-    setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(), sol_gap.getCustSatisfactions(), sol_gap.getAssignments());
+    setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
+                sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
 
     // cout << "GAP_eval: " << objective << endl;
 
@@ -297,7 +306,7 @@ void Solution_cap::objEval(){
         for (auto a:assignments[cust]) this->objective += a.usage * instance->getRealDist(a.node, cust);
     }
 
-    cout << "objective Eval: " << objective << endl;
+    // cout << "objective Eval: " << objective << endl;
 
 }
 

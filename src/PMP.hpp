@@ -56,6 +56,7 @@ class PMP
         double timeSolver;
         double timePMP;
         bool is_BinModel;
+        bool VERBOSE;
 
     private:
         shared_ptr<Instance> instance; // original PMP instance

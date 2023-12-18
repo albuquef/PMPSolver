@@ -23,7 +23,7 @@ private:
     unordered_map<uint_t, assignment> assignments; // customer -> its current assignment (p location, usage, weighted distance)
     void setSolution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations
                     ,unordered_map<uint_t, dist_t>  loc_usages,unordered_map<uint_t, dist_t> cust_satisfactions
-                    ,unordered_map<uint_t, assignment> assignments);
+                    ,unordered_map<uint_t, assignment> assignments, dist_t objective);
 public:
 
     Solution_cap() = default;
@@ -33,7 +33,8 @@ public:
                  unordered_set<uint_t> p_locations,
                  unordered_map<uint_t, dist_t> loc_usages, 
                  unordered_map<uint_t, dist_t> cust_satisfactions, 
-                 unordered_map<uint_t, assignment> assignments);
+                 unordered_map<uint_t, assignment> assignments,
+                 dist_t objective);
     void fullCapEval();
     void GAP_eval();
     uint_t getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc);
