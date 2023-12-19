@@ -173,12 +173,26 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
                     Solution_cap sol_tmp = sol_best;
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(p_loc) + instance->getLocCapacity(loc) >= instance->getTotalDemand()) {
-                        sol_tmp.replaceLocation(p_loc, loc);
+                        sol_tmp.replaceLocation(p_loc, loc, false);
+
+                        // evaluate solution with PMP assignment
+                        sol_tmp.naiveEval();
                         #pragma omp critical
-                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) {
-                            sol_cand = sol_tmp;
-                            improved = true;
+                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB1
+                            // evaluate solution with GAP assignment
+                            sol_tmp.GAP_eval();
+                            if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB2
+                                sol_cand = sol_tmp;
+                                improved = true;
+                            }
                         }
+
+                        // replace location checking LB2
+                        // #pragma omp critical
+                        // if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) {
+                        //     sol_cand = sol_tmp;
+                        //     improved = true;
+                        // }
 
                     }
                 }

@@ -11,13 +11,14 @@ vector<uint_t> getDistinctIndices(size_t vec_size, size_t k) {
         throw std::invalid_argument("k should be less than or equal to the vector size");
     }
 
+    
     // Create a vector with the original indices
     std::vector<uint_t> original_indices(vec_size);
     std::iota(original_indices.begin(), original_indices.end(), 0);
 
     // Shuffle the vector of indices
-    std::random_device rd;
-    std::default_random_engine rng(rd());
+    int seed_dist_ind = 42;
+    std::default_random_engine rng(seed_dist_ind);
     std::shuffle(original_indices.begin(), original_indices.end(), rng);
 
     // Extract the first k elements (which are now shuffled)
@@ -138,6 +139,8 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     int MAX_ITE_LS = DEFAULT_MAX_ITE;
     int k = 1;
     auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
+    // auto Kmax = 10;  // max number of locations to swap
+
 
     while(ite <= MAX_ITE){
         auto sol_tmp = rand_swap_Locations(sol_best,k);
@@ -157,29 +160,17 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     sol_best.print();
     cout << "\n";
 
-
-    // while (ite <= MAX_ITE) {
-    //     int ite++;
-    //     while (k <= 3) {
-    //         auto new_sol = sol.shake(k);
-    //         new_sol = new_sol.localSearch_std();
-    //         if (new_sol.getCost() < best_cost) {
-    //             best_sol = new_sol;
-    //             best_cost = new_sol.getCost();
-    //             k = 1;
-    //         } else {
-    //             k++;
-    //         }
-    //     }
-    //     sol = best_sol;
-    //     ite++;
-    // }
-    // return best_sol;
-
     // TB tb(instance, engine());
     // auto sol = tb.initRandomSolution();
     return sol_best;
 }
+
+bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
+    if (sol_cand.get_objective() < sol_best.get_objective()) return true;
+    return false;
+}
+
+
 
 Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
 
@@ -209,16 +200,6 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
         }
         ite++;
     }
-
-    // unordered_set<uint_t> p_locations;
-    // p_locations.insert(622);
-    // p_locations.insert(580);
-    // p_locations.insert(529);
-    // p_locations.insert(488);
-    // p_locations.insert(355);
-    // auto sol_best = Solution_cap(instance,p_locations);
-    // sol_best.objEval();
-
 
     cout << "Final solution: \n";
     sol_best.print();

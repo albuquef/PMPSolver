@@ -6,13 +6,21 @@
 #include <utility>
 
 
-Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
+Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
     
     // Initialize all fields
-    // fullCapEval();
-    GAP_eval();
+    this->typeEval = typeEval;
+    cout << "typeEval: " << typeEval << endl;
+    if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
+        GAP_eval(); 
+    }else if(strcmp(typeEval, "heuristic") == 0){
+        fullCapEval(); // urgency priority heuristic
+    }else{
+        cerr << "ERROR: typeEval not recognized" << endl;
+        // exit(1);
+    }
 }
 
 Solution_cap::Solution_cap(shared_ptr<Instance> instance,
@@ -30,6 +38,35 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance,
     // GAP_eval();
 }
 
+
+
+void Solution_cap::naiveEval() {
+//    assert(p_locations.size() == instance->get_p());
+    objective = 0;
+    for (auto cust:instance->getCustomers()) {
+        auto loc = getClosestpLoc(cust);
+        auto dist = instance->getWeightedDist(loc, cust);
+        objective += dist;
+        assignments[cust].emplace_back(my_tuple{loc, 0, dist});
+        // assignment[cust] = my_pair{loc, dist};
+//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
+    }
+}
+
+uint_t Solution_cap::getClosestpLoc(uint_t cust) {
+    dist_t dist_min = numeric_limits<dist_t>::max();
+    dist_t dist;
+    uint_t loc_closest;
+    for (auto loc:p_locations) {
+        dist = instance->getWeightedDist(loc, cust);
+        if (dist <= dist_min) {
+            dist_min = dist;
+            loc_closest = loc;
+        }
+    }
+
+    return loc_closest;
+}
 
 
 vector<pair<uint_t, dist_t>> Solution_cap::getUrgencies() {
@@ -160,16 +197,19 @@ const unordered_set<uint_t> &Solution_cap::get_pLocations() const {
     return this->p_locations;
 }
 
-void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new) {
+void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, bool eval) {
     // Update p_locations
     p_locations.erase(loc_old);
     p_locations.insert(loc_new);
+
+    if (eval){
     // Update assignment and objective
-    // fullCapEval();
-
-    GAP_eval();
-
-    // checkClock();
+        if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
+            GAP_eval(); 
+        }else if(strcmp(typeEval, "heuristic") == 0){
+            fullCapEval(); // urgency priority heuristic
+        }
+    }
 }
 
 dist_t Solution_cap::get_objective() const {
@@ -236,7 +276,6 @@ void Solution_cap::setLocUsage(uint_t loc, dist_t usage){
         cerr << "ERROR: usage > capacity" << endl;
         exit(1);
     }   
-
     loc_usages[loc] = usage;
     objEval();
 }
@@ -265,7 +304,7 @@ void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint
     this->cust_satisfactions = cust_satisfactions;
     this->assignments = assignments;
     this->objective = objective;    
-    // objEval();
+    objEval();
 }
 
 // NOT WORKING
@@ -280,13 +319,20 @@ void Solution_cap::GAP_eval(){
         assignments[cust] = assignment{};
     }
 
-    PMP pmp(instance, "GAP");
-    pmp.run_GAP(p_locations);
-    auto sol_gap = pmp.getSolution_cap();
-    
-
-    setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
+    if (strcmp(typeEval, "GAP") == 0){
+        PMP pmp(instance, "GAP", true);
+        pmp.run_GAP(p_locations);
+        auto sol_gap = pmp.getSolution_cap();
+        setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
+    }
+    if (strcmp(typeEval, "GAPrelax") == 0){
+        PMP pmp(instance, "GAP", false);
+        pmp.run_GAP(p_locations);
+        auto sol_gap = pmp.getSolution_cap();
+        setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
+                sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
+    }
 
     // cout << "GAP_eval: " << objective << endl;
 
