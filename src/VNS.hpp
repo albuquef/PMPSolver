@@ -3,6 +3,7 @@
 
 #include <omp.h>
 #include <utility>
+#include <string>
 
 #include "instance.hpp"
 #include "solution_std.hpp"

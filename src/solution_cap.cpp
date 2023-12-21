@@ -197,18 +197,20 @@ const unordered_set<uint_t> &Solution_cap::get_pLocations() const {
     return this->p_locations;
 }
 
-void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, bool eval) {
+void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* typeEVAL) {
     // Update p_locations
     p_locations.erase(loc_old);
     p_locations.insert(loc_new);
 
-    if (eval){
-    // Update assignment and objective
-        if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
-            GAP_eval(); 
-        }else if(strcmp(typeEval, "heuristic") == 0){
-            fullCapEval(); // urgency priority heuristic
-        }
+    if (strcmp(typeEVAL, "GAP") == 0 || strcmp(typeEVAL, "GAPrelax") == 0){
+        GAP_eval(); 
+    }else if(strcmp(typeEVAL, "heuristic") == 0){
+        fullCapEval(); // urgency priority heuristic
+    }else if (strcmp(typeEVAL, "naive") == 0 || strcmp(typeEVAL, "PMP") == 0){
+        naiveEval();
+    }else{
+        cerr << "ERROR: typeEVAL not recognized" << endl;
+        // exit(1);
     }
 }
 

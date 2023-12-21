@@ -1,5 +1,6 @@
 #include "VNS.hpp"
-
+#include <chrono> // for time-related functions
+using namespace std::chrono;
 
 VNS::VNS(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
@@ -175,7 +176,7 @@ bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
 Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
 
     cout << "VNS heuristic capacitated started\n";
-
+    
     TB tb(instance, engine());
     // auto locations = instance->getLocations();
     auto sol_best = tb.initHighestCapSolution();
@@ -185,8 +186,13 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
     sol_best.print();
     cout << "\n";
 
+    int p = sol_best.get_pLocations().size();
+
+
     auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
     int k = 1;
+    auto time_limit_seconds = 60;
+    auto start_time = high_resolution_clock::now();
     while (ite <= MAX_ITE) {
         auto new_sol = rand_swap_Locations_cap(sol_best,k);
         new_sol = tb.localSearch_cap(new_sol,verbose,DEFAULT_MAX_ITE);
@@ -198,7 +204,18 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
         }else if(k < Kmax){
             k++;
         }
-        ite++;
+        ite++;  
+
+        auto current_time = high_resolution_clock::now();
+        auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+        if (elapsed_time >= time_limit_seconds) {
+            cout << "Time limit reached. Stopping the algorithm.\n";
+            // sol_best.print();
+            sol_best.saveAssignment("./solution/output", 0);
+            break;
+        }
+
+
     }
 
     cout << "Final solution: \n";
