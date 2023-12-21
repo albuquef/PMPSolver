@@ -187,11 +187,10 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
     cout << "\n";
 
     int p = sol_best.get_pLocations().size();
-
-
+    
     auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
     int k = 1;
-    auto time_limit_seconds = 60;
+    auto time_limit_seconds = 500;
     auto start_time = high_resolution_clock::now();
     while (ite <= MAX_ITE) {
         auto new_sol = rand_swap_Locations_cap(sol_best,k);
@@ -218,9 +217,9 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
 
     }
 
-    cout << "Final solution: \n";
-    sol_best.print();
-    cout << "\n";
+    // cout << "Final solution: \n";
+    // sol_best.print();
+    // cout << "\n";
 
     return sol_best;
 

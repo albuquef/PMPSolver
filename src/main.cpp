@@ -357,6 +357,23 @@ int main(int argc, char *argv[]) {
             // solution.print();
             solution.saveAssignment(output_filename,mode);
             break;
+        }case 12: {
+            // Extract filtered instance
+            cout << "-------------------------------------------------\n";
+            cout << "RSSV heuristic with VNS - cPMP\n";
+            cout << "-------------------------------------------------\n";
+            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+            CLOCK_THREADED = true;
+
+            // auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
+            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+            // solve filtered instance by the TB heuristic
+            VNS heuristic(make_shared<Instance>(instance), seed);
+            auto solution = heuristic.runVNS_cap(true,MAX_ITE_VNS);
+            cout << "Final solution:\n";
+            solution.print();
+            solution.saveAssignment(output_filename,mode);
+            break;
         }
         default: {
             cout << "Experimental branch\n";
