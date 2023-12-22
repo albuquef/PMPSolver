@@ -12,7 +12,7 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     
     // Initialize all fields
     this->typeEval = typeEval;
-    cout << "typeEval: " << typeEval << endl;
+    // cout << "typeEval: " << typeEval << endl;
     if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
         GAP_eval(); 
     }else if(strcmp(typeEval, "heuristic") == 0){
@@ -255,6 +255,43 @@ void Solution_cap::saveAssignment(string output_filename,int mode) {
     cout.rdbuf(stream_buffer_cout);
     file.close();
 }
+
+void Solution_cap::saveResults(string output_filename,int mode, double timeFinal, int numIter){
+
+
+    string output_filename_final = output_filename + 
+    "_results" 
+    "_mode_" + to_string(mode) +
+    ".csv";
+
+    ofstream outputTable;
+    outputTable.open(output_filename_final,ios:: app);
+
+    if (!outputTable.is_open()) {
+        cerr << "Error opening file: " << output_filename << endl;
+        // return;
+    }else{
+        outputTable << instance->getCustomers().size() << ";";
+        outputTable << instance->getLocations().size() << ";";
+        outputTable << instance->get_p() << ";";
+        outputTable << mode << ";";
+        outputTable << typeEval << ";"; 
+        outputTable << get_objective() << ";"; // obj value
+        outputTable << numIter << ";"; // 
+        outputTable << timeFinal <<  ";"; // time cplex
+        outputTable << "\n";
+    }
+    outputTable.close();
+
+
+
+
+
+
+
+}
+
+
 
 uint_t Solution_cap::getTotalCapacity() {
     uint_t total_cap = 0;

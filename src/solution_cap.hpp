@@ -40,13 +40,13 @@ public:
     void fullCapEval();
     void GAP_eval();
     void naiveEval();
+    void objEval();
     uint_t getClosestpLoc(uint_t cust);
     uint_t getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc);
     const unordered_set<uint_t>& get_pLocations() const;
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new, const char* typeEval="GAPrelax");
     dist_t get_objective() const;
-    void saveAssignment(string output_filename,int mode);
     vector<pair<uint_t, dist_t>> getUrgencies();
     uint_t getTotalCapacity();
     void setLocUsage(uint_t loc, dist_t usage);
@@ -55,7 +55,8 @@ public:
     unordered_map<uint_t, dist_t> getLocUsages();
     unordered_map<uint_t, dist_t> getCustSatisfactions();
     unordered_map<uint_t, assignment> getAssignments();
-    void objEval();
+    void saveAssignment(string output_filename,int mode);
+    void saveResults(string output_filename,int mode, double timeFinal, int numIter);
 
 };
 

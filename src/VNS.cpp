@@ -173,13 +173,14 @@ bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
 
 
 
-Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
+Solution_cap VNS::runVNS_cap(string output_filename, int mode, bool verbose, int MAX_ITE) {
 
     cout << "VNS heuristic capacitated started\n";
     
     TB tb(instance, engine());
     // auto locations = instance->getLocations();
     auto sol_best = tb.initHighestCapSolution();
+    // auto sol_best = tb.initRandomCapSolution();
     int ite = 0;
 
     cout << "Initial solution: \n";
@@ -188,9 +189,12 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
 
     int p = sol_best.get_pLocations().size();
     
-    auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
+    auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
     int k = 1;
-    auto time_limit_seconds = 500;
+    
+    auto time_limit_seconds = 3600;
+    // int MAX_ITE_LOCAL = int(p/5);
+
     auto start_time = high_resolution_clock::now();
     while (ite <= MAX_ITE) {
         auto new_sol = rand_swap_Locations_cap(sol_best,k);
@@ -203,23 +207,29 @@ Solution_cap VNS::runVNS_cap(bool verbose, int MAX_ITE) {
         }else if(k < Kmax){
             k++;
         }
-        ite++;  
 
         auto current_time = high_resolution_clock::now();
         auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
         if (elapsed_time >= time_limit_seconds) {
             cout << "Time limit reached. Stopping the algorithm.\n";
             // sol_best.print();
-            sol_best.saveAssignment("./solution/output", 0);
-            break;
+            // sol_best.saveAssignment(output_filename, 0);
+            // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
+            // break;
+            return sol_best;
         }
 
-
+        ite++;
     }
 
     // cout << "Final solution: \n";
     // sol_best.print();
     // cout << "\n";
+
+    auto current_time = high_resolution_clock::now();
+    auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+    cout << "Elapsed time: " << elapsed_time << " seconds\n";
+    cout << "Num ite VNS: " << ite << "\n";
 
     return sol_best;
 

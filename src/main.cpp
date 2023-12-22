@@ -1,6 +1,8 @@
 #include <set>
 #include <cstring>
 #include <string>
+#include <chrono> // for time-related functions
+using namespace std::chrono;
 
 #include "globals.hpp"
 #include "instance.hpp"
@@ -353,9 +355,13 @@ int main(int argc, char *argv[]) {
             cout << "VNS heuristic - cPMP\n";
             cout << "-------------------------------------------------\n";
             VNS heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.runVNS_cap(true,MAX_ITE_VNS);
+            auto start_time = high_resolution_clock::now();
+            auto solution = heuristic.runVNS_cap(output_filename,mode,false,MAX_ITE_VNS);
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
             // solution.print();
             solution.saveAssignment(output_filename,mode);
+            solution.saveResults(output_filename, mode, elapsed_time,0);
             break;
         }case 12: {
             // Extract filtered instance
@@ -369,7 +375,7 @@ int main(int argc, char *argv[]) {
             auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
             VNS heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.runVNS_cap(true,MAX_ITE_VNS);
+            auto solution = heuristic.runVNS_cap(output_filename,mode,false,MAX_ITE_VNS);
             cout << "Final solution:\n";
             solution.print();
             solution.saveAssignment(output_filename,mode);
