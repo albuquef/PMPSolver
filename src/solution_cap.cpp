@@ -219,6 +219,9 @@ dist_t Solution_cap::get_objective() const {
 }
 
 void Solution_cap::saveAssignment(string output_filename,int mode) {
+    
+    cout << "[INFO] Saving assignment" << endl;
+    
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
 

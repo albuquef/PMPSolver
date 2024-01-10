@@ -43,12 +43,12 @@ shared_ptr<Instance> RSSV::run(int thread_cnt) {
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
-    cout << "Filtered " << filtered_cnt << " locations: ";
+    cout << "\n\nFiltered " << filtered_cnt << " locations: ";
     for (auto fl:filtered_locations) cout << fl << " ";
     cout << endl << endl;
 
     auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
-    cout << "Extracted " << prioritized_locations.size() << " prioritized locations: ";
+    cout << "\n\nExtracted " << prioritized_locations.size() << " prioritized locations: ";
     for (auto pl:prioritized_locations) cout << pl << " ";
     cout << endl << endl;
 
@@ -56,7 +56,7 @@ shared_ptr<Instance> RSSV::run(int thread_cnt) {
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
-    cout << "Final instance parameters:\n";
+    cout << "\n\nFinal instance parameters:\n";
     filtered_instance->print();
 
     return filtered_instance;
@@ -131,7 +131,8 @@ void RSSV::solveSubproblem(int seed) {
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
-    Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
+    // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
     int MAX_ITE = 1000;
 
 
@@ -165,8 +166,8 @@ void RSSV::solveSubproblem_CAP(int seed) {
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
-    Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-
+    // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
     // checkClock();
     if(checkClock()){
         TB heuristic(make_shared<Instance>(subInstance), seed);

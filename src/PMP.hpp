@@ -37,7 +37,7 @@ class PMP
 
     public: 
         // PMP(Reader *r, const char* typeSEC):rd(r){rd->show();};
-        PMP(const shared_ptr<Instance>& instance, const char* typeProb, bool is_BinModel=false);
+        PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel=false);
         ~PMP();
         void exportILP      (IloCplex& cplex);
         void solveILP       (void);
@@ -57,6 +57,9 @@ class PMP
         double timePMP;
         bool is_BinModel;
         bool VERBOSE;
+        string typeServ;
+        
+
 
     private:
         shared_ptr<Instance> instance; // original PMP instance

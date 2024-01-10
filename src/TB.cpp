@@ -175,12 +175,12 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
         for (auto loc:locations) { // First improvement over locations
             // if (!p_locations.contains(loc)) {
             if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){    
-                #pragma omp parallel for
+                // #pragma omp parallel for
                 for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
                     Solution_cap sol_tmp = sol_best;
                     Solution_cap sol_tmp2 = sol_best;
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(p_loc) + instance->getLocCapacity(loc) >= instance->getTotalDemand()) {
-                        #pragma omp critical
+                        // #pragma omp critical
                         sol_tmp.replaceLocation(p_loc, loc, "PMP");
                         if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB1
                             // evaluate solution with GAP assignment

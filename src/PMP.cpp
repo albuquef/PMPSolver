@@ -11,12 +11,54 @@ double get_wall_time(){
 }
 
 
+ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum, lastPrintTime, IloNum, lastBestBound) {
+    try {
+        if (cplex.getCplexTime() - lastPrintTime >= 60.0) {
+            IloNum gap = cplex.getMIPRelativeGap();
+            IloNum bestBound = cplex.getBestObjValue();
+
+            ofstream outputTable;
+            outputTable.open("gap.csv",ios:: app);
+
+            if (!outputTable.is_open()) {
+                // cerr << "Error opening file: " << output_filename << endl;
+                cerr << "Error opening file: " << endl;
+                // return;
+            }else{
+                outputTable << getBestObjValue() << ";"; // obj value
+                outputTable << getNnodes() << ";"; // num nodes
+                outputTable << getMIPRelativeGap() <<";"; // relative gap
+                outputTable << cplex.getCplexTime() - startTime <<  ";"; // time cplex
+                outputTable << "\n";
+            }
+            outputTable.close();
+
+            std::cout << "Time: " << cplex.getCplexTime() - startTime << " seconds" << std::endl;
+            std::cout << "MIP Gap: " << getMIPRelativeGap() << std::endl;
+            std::cout << "Best Bound: " << getBestObjValue() << std::endl;
+            // std::cout << "Obj value: " << getObjValue() << std::endl;
+            std::cout << "Nodes: " << getNnodes() << std::endl;
+            std::cout << "incumbent: " << getIncumbentObjValue() << std::endl;
+
+            lastPrintTime = cplex.getCplexTime();
+            lastBestBound = bestBound;
+        }
+    } catch (IloException &ex) {
+        std::cerr << "Error in callback function: " << ex.getMessage() << std::endl;
+        throw; // Rethrow the exception to terminate the program
+    }
+}
+
+
+
+
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
     VERBOSE = false;    
 
     // this->instance = instance;
+    this->typeServ = typeServ;
     this->typeProb = typeProb;
     this->is_BinModel = is_BinModel;
     this->p = this->instance->get_p();
@@ -45,40 +87,72 @@ PMP::~PMP()
 }
 
 void PMP::run(){
+    try{
+        initILP();
 
-    initILP();
-    solveILP();
 
-    if (VERBOSE){
-        if (cplex.getStatus() == IloAlgorithm::Optimal)
-            if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
-            else {printSolution(cplex,x_cont,y);}
-        else
-            cout << "Solution status = " << cplex.getStatus()   << endl;
+        // string output_filename = "gap.txt";
+        // if (!is_BinModel){
+        // output_filename = filename + "_" + typeProb +
+        //     "_GAP_Cont_p_" + to_string(p) + 
+        //     "_mode_" + to_string(mode) +
+        //     ".txt";
+        // }else{
+        //     output_filename = filename + "_" + typeProb +
+        //         "_GAP_Bin_p_" + to_string(p) + 
+        //         "_mode_" + to_string(mode) +
+        //         ".txt";
+        // }
+
+
+        // Set up the MIP callback
+        IloNum startTime = cplex.getCplexTime();
+        IloNum lastPrintTime = startTime;
+        IloNum lastBestBound = cplex.getBestObjValue();
+        cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
+
+        solveILP();
+        if (VERBOSE){
+            if (cplex.getStatus() == IloAlgorithm::Optimal)
+                if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
+                else {printSolution(cplex,x_cont,y);}
+            else
+                cout << "Solution status = " << cplex.getStatus()   << endl;
+        }
+        // cplex.end();
+        // env.end();
+    } catch (IloException& e) {
+        cerr << "ERROR: " << e.getMessage()  << endl;
+        cout << "\nError ilocplex" << endl;
+        return;
     }
-    cplex.end();
-    env.end();
-
 }
 
 void PMP:: run_GAP(unordered_set<uint_t> p_locations){
+    try{
+        this->p_locations = p_locations;
 
-    this->p_locations = p_locations;
+        initILP();
+        // Set the output to a non-verbose mode
+        // this->cplex.setOut(env.getNullStream());
+        cplex.setParam(IloCplex::Param::MIP::Display, 0);
+        cplex.setOut(env.getNullStream());  // Disable console output
+        // cplex.setLogStream(fileStream);     // Redirect log to a file stream
+        solveILP();
 
-    initILP();
-    // Set the output to a non-verbose mode
-    // this->cplex.setOut(env.getNullStream());
-    cplex.setParam(IloCplex::Param::MIP::Display, 0);
-    cplex.setOut(env.getNullStream());  // Disable console output
-    // cplex.setLogStream(fileStream);     // Redirect log to a file stream
-    solveILP();
-
-    if (VERBOSE){
-        if (cplex.getStatus() == IloAlgorithm::Optimal)
-            if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
-            else {printSolution(cplex,x_cont,y);}
-        else
-            cout << "Solution status = " << cplex.getStatus()   << endl;
+        if (VERBOSE){
+            if (cplex.getStatus() == IloAlgorithm::Optimal)
+                if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
+                else {printSolution(cplex,x_cont,y);}
+            else
+                cout << "Solution status = " << cplex.getStatus()   << endl;
+        }
+        // cplex.end();
+        env.end();
+    } catch (IloException& e) {
+        cerr << "ERROR: " << e.getMessage()  << endl;
+        cout << "\nError ilocplex" << endl;
+        return;
     }
 }
 
@@ -139,7 +213,9 @@ void PMP::initILP(){
         this->cplex = IloCplex(this->model);
         // exportILP(cplex);
    
-        // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
+
+        // cplex.setParam(IloCplex::TiLim, 60);
+        cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
         // cplex.setParam(IloCplex::Threads, 8); // use 8 threads
 
@@ -309,7 +385,6 @@ void PMP::exportILP(IloCplex& cplex)
 }
 
 void PMP::solveILP(){
-    
     double cpu0, cpu1;
     cpu0 = get_wall_time(); 
     if (!cplex.solve()){
@@ -322,79 +397,90 @@ void PMP::solveILP(){
 }
 
 Solution_cap PMP::getSolution_cap(){
-    unordered_set<uint_t> p_locations;
-    auto p = instance->get_p();
-    auto locations = instance->getLocations();
 
-    for (IloInt j = 0; j < num_facilities; j++){
-        auto loc = instance->getLocations()[j];
-        if (cplex.getValue(y[j]) > 0.5)
-            p_locations.insert(loc);
-    }
+    // cout << "[INFO] Getting solution capacitated" << endl;
 
-    unordered_map<uint_t, dist_t> loc_usages; // p location -> usage from <0, capacity>
-    unordered_map<uint_t, dist_t> cust_satisfactions; // customer -> satisfaction from <0, weight>
-    unordered_map<uint_t, assignment> assignments; // customer -> assignment (p location, usage, weighted distance)
+    try{
+        unordered_set<uint_t> p_locations;
+        auto p = instance->get_p();
+        auto locations = instance->getLocations();
 
-    for (auto p_loc:p_locations) loc_usages[p_loc] = 0;
-    for (auto cust:instance->getCustomers()) {
-        cust_satisfactions[cust] = 0;
-        assignments[cust] = assignment{};
-    }
-
-    // cout << "p_loc = ";
-    // for (auto p_loc:p_locations)
-    //     cout << p_loc << ", ";
-    // cout << endl;   
-
-    dist_t objtest = 0;
-
-    for (IloInt j = 0; j < num_facilities; j++)
-        if (cplex.getValue(y[j]) > 0.5){
+        for (IloInt j = 0; j < num_facilities; j++){
             auto loc = instance->getLocations()[j];
-            // cout << "loc = " << loc << endl;
-            for (IloInt i = 0; i < num_customers; i++){
-                auto cust = instance->getCustomers()[i];
-                // cout << "cust = " << cust << endl;
-                if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.001){
-                    auto dem_used = cplex.getValue(x_bin[i][j])* instance->getCustWeight(cust);//instance->getWeightedDist(loc,cust);
-                    loc_usages[loc] += dem_used;
-                    cust_satisfactions[cust] += dem_used;
-                    auto obj_increment = dem_used * instance->getRealDist(loc, cust);
-                    assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
-                }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0.001){
-                    auto dem_used = cplex.getValue(x_cont[i][j])* instance->getCustWeight(cust);
-                    loc_usages[loc] += dem_used;
-                    cust_satisfactions[cust] += dem_used;
-                    auto obj_increment = dem_used * instance->getRealDist(loc, cust);
-                    assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
-                    objtest += obj_increment;
-                }
-
-
-                if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.001){
-                    
-                        cerr << "ERROR: usage > capacity" << endl;    
-                        exit(1);
-                }
-                if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){
-
-                    cerr << "ERROR: satisfaction > weight" << endl;
-                    exit(1);
-                }
-
-                
-            }
+            if (cplex.getValue(y[j]) > 0.5)
+                p_locations.insert(loc);
         }
 
-    // cout << "obj: " << objtest << endl;
+        unordered_map<uint_t, dist_t> loc_usages; // p location -> usage from <0, capacity>
+        unordered_map<uint_t, dist_t> cust_satisfactions; // customer -> satisfaction from <0, weight>
+        unordered_map<uint_t, assignment> assignments; // customer -> assignment (p location, usage, weighted distance)
 
-    Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments, objtest);
+        for (auto p_loc:p_locations) loc_usages[p_loc] = 0;
+        for (auto cust:instance->getCustomers()) {
+            cust_satisfactions[cust] = 0;
+            assignments[cust] = assignment{};
+        }
 
-    return sol;
+        // cout << "p_loc = ";
+        // for (auto p_loc:p_locations)
+        //     cout << p_loc << ", ";
+        // cout << endl;   
+
+        dist_t objtest = 0;
+
+        for (IloInt j = 0; j < num_facilities; j++)
+            if (cplex.getValue(y[j]) > 0.5){
+                auto loc = instance->getLocations()[j];
+                // cout << "loc = " << loc << endl;
+                for (IloInt i = 0; i < num_customers; i++){
+                    auto cust = instance->getCustomers()[i];
+                    // cout << "cust = " << cust << endl;
+                    if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.001){
+                        auto dem_used = cplex.getValue(x_bin[i][j])* instance->getCustWeight(cust);//instance->getWeightedDist(loc,cust);
+                        loc_usages[loc] += dem_used;
+                        cust_satisfactions[cust] += dem_used;
+                        auto obj_increment = dem_used * instance->getRealDist(loc, cust);
+                        assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
+                    }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0.001){
+                        auto dem_used = cplex.getValue(x_cont[i][j])* instance->getCustWeight(cust);
+                        loc_usages[loc] += dem_used;
+                        cust_satisfactions[cust] += dem_used;
+                        auto obj_increment = dem_used * instance->getRealDist(loc, cust);
+                        assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
+                        objtest += obj_increment;
+                    }
+
+
+                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.001){
+                        
+                            cerr << "ERROR: usage > capacity" << endl;    
+                            exit(1);
+                    }
+                    if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){
+
+                        cerr << "ERROR: satisfaction > weight" << endl;
+                        exit(1);
+                    }
+
+                    
+                }
+            }
+
+        // cout << "obj: " << objtest << endl;
+
+        Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments, objtest);
+
+        return sol;
+    } catch (IloException& e) {
+        cerr << "ERROR: " << e.getMessage()  << endl;
+        cout << "\nError get solution cap" << endl;
+        return Solution_cap();
+    }
 }
 
 Solution_std PMP::getSolution_std(){
+
+    // cout << "[INFO] Getting solution standard" << endl;
 
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
@@ -412,6 +498,8 @@ Solution_std PMP::getSolution_std(){
 }
 
 void PMP::saveVars(const std::string& filename,int mode){
+
+    cout << "[INFO] Saving variables" << endl;
 
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
@@ -468,6 +556,8 @@ void PMP::saveVars(const std::string& filename,int mode){
 }
 
 void PMP::saveResults(const string& filename, int mode){
+
+    cout << "[INFO] Saving results" << endl;
 
     string output_filename = "TEST.txt";
     if (!is_BinModel){

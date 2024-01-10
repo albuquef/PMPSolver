@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
     int MAX_ITE_TB = 10;
     int MAX_ITE_VNS = 100;
     bool isBin_CPMP = false;
+    string typeService;
 
 
     // default config path
@@ -114,6 +115,11 @@ int main(int argc, char *argv[]) {
                 
                 PERCENTAGE = stoi(argv[i + 1]);
                 configOverride.insert("percentage");
+            } else if (strcmp(argv[i], "-service") == 0){
+                
+                typeService = argv[i + 1];
+                configOverride.insert("service");
+                
                 
             }  else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
             
@@ -141,7 +147,7 @@ int main(int argc, char *argv[]) {
                     "\tseed of the random generator (default = 1)\n\n"
                     "--mode\n"
                     "\tmode of operation\n\n"
-                    "There are 9 mods :\n\n"
+                    "There are 12 mods :\n\n"
 
                     
                     "Mode 1 : \n"
@@ -168,6 +174,8 @@ int main(int argc, char *argv[]) {
                     "\tTenth mode use basic VNS Heuristic with PMP\n\n"
                     "Mode 11 : \n"
                     "\tTenth mode use basic VNS Heuristic with cPMP\n\n"
+                    "Mode 11 : \n"
+                    "\tTwelfth mode use basic RSSV (using VNS) Heuristic with cPMP\n\n"
 
 
 
@@ -311,8 +319,8 @@ int main(int argc, char *argv[]) {
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             CLOCK_THREADED = true;
 
-            auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
-            // auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+            // auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
+            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
             // solve filtered instance by the TB heuristic
             TB heuristic(filtered_instance, seed);
             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
@@ -366,7 +374,7 @@ int main(int argc, char *argv[]) {
         }case 12: {
             // Extract filtered instance
             cout << "-------------------------------------------------\n";
-            cout << "RSSV heuristic with VNS - cPMP\n";
+            cout << "RSSV using VNS heuristic - cPMP\n";
             cout << "-------------------------------------------------\n";
             RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
             CLOCK_THREADED = true;
