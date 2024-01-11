@@ -55,7 +55,8 @@ shared_ptr<Instance> RSSV::run(int thread_cnt) {
     for (auto fl:filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
-    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
+    // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     cout << "\n\nFinal instance parameters:\n";
     filtered_instance->print();
 
@@ -112,7 +113,7 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
     for (auto fl:filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
-    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     cout << "Final instance parameters:\n";
     filtered_instance->print();
 

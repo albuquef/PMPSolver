@@ -6,11 +6,11 @@
 
 Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
                    shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p,
-                   uint_t loc_max, uint_t cust_max)
+                   uint_t loc_max, uint_t cust_max, string type_service)
         : locations(std::move(locations)), customers(std::move(customers)), cust_weights(std::move(cust_weights)),
           dist_matrix(std::move(dist_matrix)),
           loc_capacities(std::move(loc_capacities)), p(p),
-          loc_max_id(loc_max), cust_max_id(cust_max) {
+          loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service){
     total_demand = 0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
@@ -28,7 +28,7 @@ vector<string> tokenize(const string& input, char delim) {
     return tokens;
 }
 
-Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim) : p(p) {
+Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service) : p(p), type_service(type_service) {
 
     // Open streams
     fstream dist_matrix_file(dist_matrix_filename);
@@ -249,8 +249,8 @@ double Instance::getVotingScore(uint_t loc, uint_t cust) {
     return score;
 }
 
-Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new) {
-    return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id);
+Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new, string type_service) {
+    return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id, type_service);
 }
 
 dist_t Instance::getLocCapacity(uint_t loc) {
@@ -261,7 +261,9 @@ dist_t Instance::getTotalDemand() const {
     return total_demand;
 }
 
-
+string Instance::getTypeService() const {
+    return type_service;
+}
 
 
 

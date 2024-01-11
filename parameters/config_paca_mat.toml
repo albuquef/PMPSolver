@@ -1,5 +1,5 @@
 verbose = true
-p = 41
+p = 42
 capacities = "./data/filterData_PACA_may23/loc_capacities_cap_mat.txt"
 distance_matrix = "./data/filterData_PACA_may23/dist_matrix_minutes.txt"
 output = "./results/test_paca_mat"
@@ -14,3 +14,4 @@ time = 3600
 toleranceCpt = 10
 k = 1
 percentage = 80
+service = "mat"

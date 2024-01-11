@@ -30,13 +30,12 @@ int main(int argc, char *argv[]) {
     int mode = 0;
     int seed = 1;
     string output_filename;
-    string output_loc_filename; // not created yet
-    string output_vars_filename;
-    string output_table_filename;
     int MAX_ITE_TB = 10;
     int MAX_ITE_VNS = 100;
     bool isBin_CPMP = false;
-    string typeService;
+    // string typeProblem;
+    // string typeHeuristic;
+    string TypeService;
 
 
     // default config path
@@ -117,10 +116,8 @@ int main(int argc, char *argv[]) {
                 configOverride.insert("percentage");
             } else if (strcmp(argv[i], "-service") == 0){
                 
-                typeService = argv[i + 1];
-                configOverride.insert("service");
-                
-                
+                TypeService = argv[i + 1];
+                configOverride.insert("service");                
             }  else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
             
                 cout << 
@@ -194,6 +191,14 @@ int main(int argc, char *argv[]) {
         }
     }
 
+        // Debugging: Print the contents of configOverride
+    std::cout << "Debug: configOverride contents: ";
+    for (const auto& key : configOverride) {
+        std::cout << key << " ";
+    }
+    std::cout << std::endl;
+
+
     // setup config
     ConfigParser config(configPath, configOverride);
     config.setFromConfig(&VERBOSE, "verbose");
@@ -211,6 +216,7 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&TOLERANCE_CPT, "toleranceCpt");
     config.setFromConfig(&K, "k");
     config.setFromConfig(&PERCENTAGE, "percentage");
+    config.setFromConfig(&TypeService, "service");
 
     setThreadNumber(threads_cnt);
 
@@ -232,9 +238,9 @@ int main(int argc, char *argv[]) {
         cerr << "If you need help to use, add --help or a '?' after name of program.\n" ;
         exit(1);
     }
-
+    cout << "Loading instance...\n";
     // Load instance
-    Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ');
+    Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
 
     // Do something
@@ -270,8 +276,8 @@ int main(int argc, char *argv[]) {
             cout << "-------------------------------------------------\n";
             PMP pmp(make_shared<Instance>(instance), "CPMP", true);
             pmp.run();
-            pmp.saveVars(output_vars_filename,mode);
-            pmp.saveResults(output_table_filename,mode);
+            pmp.saveVars(output_filename,mode);
+            pmp.saveResults(output_filename,mode);
             auto solution = pmp.getSolution_cap();
             solution.saveAssignment(output_filename,mode);
             break;

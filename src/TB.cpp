@@ -79,6 +79,10 @@ Solution_std TB::run(bool verbose, int MAX_ITE) {
 
 Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 
+
+    cout << "\n\ntype service: " << instance->getTypeService() << endl;
+    exit(0);
+
     auto sol_best = initHighestCapSolution();
     sol_best = localSearch_cap(sol_best, verbose, MAX_ITE);
     return sol_best;
