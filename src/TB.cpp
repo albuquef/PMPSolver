@@ -12,6 +12,11 @@ TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance))
     engine.seed(seed);
 //    cout << "TB heuristic initialized\n";
 //    instance->print();
+
+    // type_eval_solution = "GAPrelax";
+    // this->type_eval_solution = "Heuristic";
+
+
 }
 
 Solution_std TB::initRandomSolution() {
@@ -47,9 +52,9 @@ Solution_cap TB::initRandomCapSolution() {
 }
 
 Solution_cap TB::initHighestCapSolution() {
+
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
-
     auto locations = instance->getLocations();
 
     vector<pair<uint_t, uint_t>> sorted_locations;
@@ -63,9 +68,10 @@ Solution_cap TB::initHighestCapSolution() {
     for (int i = 0; i < p; i++) {
         p_locations.insert(sorted_locations[i].second);
     }
-    Solution_cap sol(instance, p_locations);
 
-    return sol;
+    Solution_cap solut(instance, p_locations);
+
+    return solut;
 }
 
 
@@ -79,11 +85,8 @@ Solution_std TB::run(bool verbose, int MAX_ITE) {
 
 Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 
-
-    cout << "\n\ntype service: " << instance->getTypeService() << endl;
-    exit(0);
-
     auto sol_best = initHighestCapSolution();
+    // auto sol_best = initRandomCapSolution();
     sol_best = localSearch_cap(sol_best, verbose, MAX_ITE);
     return sol_best;
 }
@@ -154,8 +157,12 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
 
 Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
 
-    cout << "TB local search capacitated started\n";
+    // cout << "TB local search capacitated started\n";
     
+    //// time limit ////
+    auto time_limit_seconds = 3600;
+    ///
+
     verbose = VERBOSE;
 
     auto locations = instance->getLocations();
@@ -188,7 +195,8 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                         sol_tmp.replaceLocation(p_loc, loc, "PMP");
                         if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB1
                             // evaluate solution with GAP assignment
-                            sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
+                            // sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
+                            sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
                             // sol_tmp.GAP_eval();
                             if (sol_cand.get_objective() - sol_tmp2.get_objective() > TOLERANCE_OBJ) { // LB2
                                 sol_cand = sol_tmp2;
@@ -208,8 +216,39 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 }
             }
             if (improved) {
+
+
                 sol_best = sol_cand;
+
+                auto current_time = high_resolution_clock::now();
+                auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+                if (elapsed_time >= time_limit_seconds) {
+                    cout << "Time limit reached. Stopping the algorithm.\n";
+                    // sol_best.print();
+                    // sol_best.saveAssignment(output_filename, 0);
+                    // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
+                    // break;
+                    cout << "capacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
+                    cout << "Num ite TB: " << ite << "\n";
+                    return sol_best;
+                }
+
                 break;
+            }else{
+                auto current_time = high_resolution_clock::now();
+                auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+                if (elapsed_time >= time_limit_seconds) {
+                    cout << "Time limit reached. Stopping the algorithm.\n";
+                    // sol_best.print();
+                    // sol_best.saveAssignment(output_filename, 0);
+                    // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
+                    // break;
+                    cout << "capacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
+                    cout << "Num ite TB: " << ite << "\n";
+                    return sol_best;
+                }
+
+
             };
         }
 

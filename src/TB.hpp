@@ -17,6 +17,7 @@ class TB {
 private:
     shared_ptr<Instance> instance;
     default_random_engine engine;
+    string type_eval_solution;
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();

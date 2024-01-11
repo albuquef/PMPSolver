@@ -140,7 +140,7 @@ void PMP:: run_GAP(unordered_set<uint_t> p_locations){
                 cout << "Solution status = " << cplex.getStatus()   << endl;
         }
         // cplex.end();
-        env.end();
+        // env.end();
     } catch (IloException& e) {
         cerr << "ERROR: " << e.getMessage()  << endl;
         cout << "\nError ilocplex" << endl;

@@ -7,6 +7,7 @@
 
 
 Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval) {
+    
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
     
@@ -352,7 +353,6 @@ void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint
 // NOT WORKING
 void Solution_cap::GAP_eval(){
     // Initialize all fields
-
 
     objective = 0;
     for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;

@@ -32,10 +32,18 @@ shared_ptr<Instance> RSSV::run(int thread_cnt) {
     cout << "\n\n\n\n" << endl;
 
     vector<thread> threads; // spawn M threads
-    for (uint_t i = 1; i <= M; i++) {
-        threads.emplace_back(&RSSV::solveSubproblem, this, i);
-    }
 
+    for (uint_t i = 1; i <= M; i += thread_cnt) {
+        for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
+            threads.emplace_back(&RSSV::solveSubproblem, this, i + j);
+        }
+        // Wait for the current batch of threads to finish before starting the next batch
+        for (auto &th : threads) {
+            th.join();
+        }
+        // Clear the threads vector for the next batch
+        threads.clear();
+    }
     for (auto &th:threads) { // wait for all threads
         th.join();
     }
@@ -83,21 +91,14 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
             threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j);
         }
-    
         // Wait for the current batch of threads to finish before starting the next batch
         for (auto &th : threads) {
             th.join();
         }
-
         // Clear the threads vector for the next batch
         threads.clear();
-    
-    
-    
     }
-    
     cout << "All subproblems solved."  << endl << endl;
-
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
@@ -136,9 +137,7 @@ void RSSV::solveSubproblem(int seed) {
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
     int MAX_ITE = 1000;
 
-
     // checkClock();
-    
 
     if(checkClock()){
         TB heuristic(make_shared<Instance>(subInstance), seed);
@@ -183,9 +182,6 @@ void RSSV::solveSubproblem_CAP(int seed) {
     }else{
         cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
     }
-
-
-
 
     // checkClock();
 }

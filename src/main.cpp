@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     int mode = 0;
     int seed = 1;
     string output_filename;
-    int MAX_ITE_TB = 10;
-    int MAX_ITE_VNS = 100;
+    int MAX_ITE_TB = 100000000;
+    int MAX_ITE_VNS = 10000000;
     bool isBin_CPMP = false;
     // string typeProblem;
     // string typeHeuristic;

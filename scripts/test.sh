@@ -12,7 +12,7 @@
 #conda activate myenv
 
 CMD=./build/large_PMP
-MODE=2
+MODE=7
 
 D_MATRIX=./data/filterData_PACA_may23/dist_matrix_minutes.txt
 WEIGHTS=./data/filterData_PACA_may23/cust_weights.txt
