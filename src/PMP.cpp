@@ -13,9 +13,11 @@ double get_wall_time(){
 
 ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum, lastPrintTime, IloNum, lastBestBound) {
     try {
-        if (cplex.getCplexTime() - lastPrintTime >= 60.0) {
-            IloNum gap = cplex.getMIPRelativeGap();
-            IloNum bestBound = cplex.getBestObjValue();
+
+        // cout << "Callback called" << endl;
+        double interval_time = 5.0; // seconds
+
+        if (cplex.getCplexTime() - lastPrintTime >= interval_time) {
 
             ofstream outputTable;
             outputTable.open("gap.csv",ios:: app);
@@ -36,12 +38,11 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
             std::cout << "Time: " << cplex.getCplexTime() - startTime << " seconds" << std::endl;
             std::cout << "MIP Gap: " << getMIPRelativeGap() << std::endl;
             std::cout << "Best Bound: " << getBestObjValue() << std::endl;
-            // std::cout << "Obj value: " << getObjValue() << std::endl;
             std::cout << "Nodes: " << getNnodes() << std::endl;
             std::cout << "incumbent: " << getIncumbentObjValue() << std::endl;
 
             lastPrintTime = cplex.getCplexTime();
-            lastBestBound = bestBound;
+            lastBestBound = getBestObjValue();
         }
     } catch (IloException &ex) {
         std::cerr << "Error in callback function: " << ex.getMessage() << std::endl;
@@ -90,26 +91,17 @@ void PMP::run(){
     try{
         initILP();
 
-
-        // string output_filename = "gap.txt";
-        // if (!is_BinModel){
-        // output_filename = filename + "_" + typeProb +
-        //     "_GAP_Cont_p_" + to_string(p) + 
-        //     "_mode_" + to_string(mode) +
-        //     ".txt";
-        // }else{
-        //     output_filename = filename + "_" + typeProb +
-        //         "_GAP_Bin_p_" + to_string(p) + 
-        //         "_mode_" + to_string(mode) +
-        //         ".txt";
-        // }
-
+        cplex.setParam(IloCplex::TiLim, 60);
+        // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
+        // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
+        // cplex.setParam(IloCplex::Threads, 8); // use 8 threads
 
         // Set up the MIP callback
         IloNum startTime = cplex.getCplexTime();
         IloNum lastPrintTime = startTime;
         IloNum lastBestBound = cplex.getBestObjValue();
         cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
+
 
         solveILP();
         if (VERBOSE){
@@ -212,12 +204,7 @@ void PMP::initILP(){
 
         this->cplex = IloCplex(this->model);
         // exportILP(cplex);
-   
 
-        // cplex.setParam(IloCplex::TiLim, 60);
-        cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
-        // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
-        // cplex.setParam(IloCplex::Threads, 8); // use 8 threads
 
     } catch (IloException& e) {
         cerr << "ERROR: " << e.getMessage()  << endl;
@@ -356,7 +343,7 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
         cout << "Solution status = " << cplex.getStatus()   << endl;
         cout << "Solution value  = " << cplex.getObjValue() << endl;
         double objectiveValue = cplex.getObjValue();
-        cout << "Objective Value: " << fixed << setprecision(3) << objectiveValue << endl;
+        cout << "Objective Value: " << fixed << setprecision(15) << objectiveValue << endl;
         cout << "Time to solve: " << timePMP << endl;
 
         // for (IloInt j = 0; j < num_facilities; j++){
@@ -377,7 +364,6 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
 
         cout << "Time total: " << cplex.getTime() << endl;
 }
-
 
 void PMP::exportILP(IloCplex& cplex)
 {
@@ -589,7 +575,8 @@ void PMP::saveResults(const string& filename, int mode){
         outputTable << p << ";";
         outputTable << mode << ";";
         outputTable << cplex.getStatus() << ";"; // Status cplex
-        outputTable << cplex.getObjValue() << ";"; // obj value
+        // double objectiveValue = cplex.getObjValue();
+        outputTable << fixed << setprecision(15) << cplex.getObjValue() << ";"; // obj value
         outputTable << cplex.getNnodes() << ";"; // num nodes
         outputTable << cplex.getMIPRelativeGap() <<";"; // relative gap
         outputTable << cplex.getTime() <<  ";"; // time cplex
