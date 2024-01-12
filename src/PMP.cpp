@@ -10,7 +10,7 @@ double get_wall_time(){
     }
 }
 
-
+static std::string gap_outputFilename;
 ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum, lastPrintTime, IloNum, lastBestBound) {
     try {
 
@@ -20,14 +20,17 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
         if (cplex.getCplexTime() - lastPrintTime >= interval_time) {
 
             ofstream outputTable;
-            outputTable.open("gap.csv",ios:: app);
+            outputTable.open("./reports/"+gap_outputFilename,ios:: app);
 
+            
             if (!outputTable.is_open()) {
                 // cerr << "Error opening file: " << output_filename << endl;
                 cerr << "Error opening file: " << endl;
                 // return;
             }else{
-                outputTable << getBestObjValue() << ";"; // obj value
+                // outputTable << fixed << setprecision(15) << cplex.getObjValue() << ";"; // obj value
+                outputTable << fixed << setprecision(15) << getBestObjValue() << ";"; // obj value
+                outputTable << fixed << setprecision(15) << getIncumbentObjValue() << ";"; // obj value
                 outputTable << getNnodes() << ";"; // num nodes
                 outputTable << getMIPRelativeGap() <<";"; // relative gap
                 outputTable << cplex.getCplexTime() - startTime <<  ";"; // time cplex
@@ -37,9 +40,10 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 
             std::cout << "Time: " << cplex.getCplexTime() - startTime << " seconds" << std::endl;
             std::cout << "MIP Gap: " << getMIPRelativeGap() << std::endl;
-            std::cout << "Best Bound: " << getBestObjValue() << std::endl;
             std::cout << "Nodes: " << getNnodes() << std::endl;
-            std::cout << "incumbent: " << getIncumbentObjValue() << std::endl;
+            // std::cout << "Best Integer: " <<  fixed << setprecision(15) << cplex.getObjValue() << std::endl;
+            std::cout << "Best Objective: " <<  fixed << setprecision(15) << getBestObjValue() << std::endl;
+            std::cout << "Incumbent Obj:  " << fixed << setprecision(15) << getIncumbentObjValue() << std::endl;
 
             lastPrintTime = cplex.getCplexTime();
             lastBestBound = getBestObjValue();
@@ -100,10 +104,22 @@ void PMP::run(){
         IloNum startTime = cplex.getCplexTime();
         IloNum lastPrintTime = startTime;
         IloNum lastBestBound = cplex.getBestObjValue();
+        // gap_outputFilename = "gap.csv";
+        if (!is_BinModel){
+            gap_outputFilename = "gap_Cont_service_" + instance->getTypeService() +
+                "_p_" + to_string(p) +
+                ".csv";
+        }else{
+            gap_outputFilename = "gap_Bin_service_" + instance->getTypeService() +
+                "_p_" + to_string(p) +
+                ".csv";
+        }
         cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
 
 
         solveILP();
+
+
         if (VERBOSE){
             if (cplex.getStatus() == IloAlgorithm::Optimal)
                 if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
