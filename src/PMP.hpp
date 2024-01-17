@@ -49,8 +49,8 @@ class PMP
                             IloBoolVarArray y);
         Solution_std getSolution_std(void);
         Solution_cap getSolution_cap(void);
-        void saveVars   (const string& filename, int mode);
-        void saveResults(const string& filename, int mode);
+        void saveVars   (const string& filename,const string& Method);
+        void saveResults(const string& filename,const string& Method);
         int current_day, current_month, current_year;
         // void saveNumConstraints();
         double timeSolver;

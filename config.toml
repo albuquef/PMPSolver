@@ -12,3 +12,6 @@ toleranceCpt = 0
 k = 1
 percentage = 80
 service = "null"
+method = "TB_PMP"
+method_rssv_sp = "TB_PMP"
+method_rssv_fp = "TB_PMP"

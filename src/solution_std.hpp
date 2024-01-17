@@ -29,7 +29,7 @@ public:
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective();
-    void saveAssignment(const string& output_filename,int mode);
+    void saveAssignment(string output_filename,string Method);
    
 };
 

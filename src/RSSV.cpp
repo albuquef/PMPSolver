@@ -20,11 +20,13 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
 /*
  * RSSV metaheuristic implementation.
  */
-shared_ptr<Instance> RSSV::run(int thread_cnt) {
+shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
     cout << "RSSV running...\n";
     cout << "PMP size (N): " << N << endl;
     cout << "sub-PMP size (n): " << n << endl;
     cout << "Subproblems cnt (M): " << M << endl << endl;
+    this->method_RSSV_sp = method_sp;
+    cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl << endl;
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
 
@@ -71,11 +73,14 @@ shared_ptr<Instance> RSSV::run(int thread_cnt) {
     return filtered_instance;
 }
 
-shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
+shared_ptr<Instance> RSSV::run_CAP(int thread_cnt, string& method_sp) {
     cout << "RSSV running...\n";
     cout << "cPMP size (N): " << N << endl;
     cout << "sub-cPMP size (n): " << n << endl;
     cout << "Subproblems cnt (M): " << M << endl << endl;
+    this->method_RSSV_sp = method_sp;
+    cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl << endl;
+
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
 
@@ -135,17 +140,28 @@ void RSSV::solveSubproblem(int seed) {
     auto start = tick();
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
-    int MAX_ITE = 1000;
+    // int MAX_ITE = 1000;
 
     // checkClock();
+    Solution_std sol;
 
     if(checkClock()){
-        TB heuristic(make_shared<Instance>(subInstance), seed);
-        // auto sol = heuristic.run(false);
-        auto sol = heuristic.run(false, MAX_ITE);
-
+        if(method_RSSV_sp == "EXACT_PMP"){
+            PMP pmp(make_shared<Instance>(subInstance), "PMP");
+            pmp.run();
+            sol = pmp.getSolution_std();
+        }else if(method_RSSV_sp == "TB_PMP"){
+            TB heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.run(false, UB_MAX_ITER);
+        }else if(method_RSSV_sp == "VNS_PMP"){
+            VNS heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.runVNS_std(true,UB_MAX_ITER);
+        }else{
+            cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
+            exit(1);
+        }
         if (VERBOSE) cout << "Solution_std " << seed << ": ";
-        sol.print();
+        if (VERBOSE) sol.print();
         processSubsolution(make_shared<Solution_std>(sol));
         if (VERBOSE) tock(start);
         sem.notify(seed);
@@ -169,13 +185,29 @@ void RSSV::solveSubproblem_CAP(int seed) {
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
     // checkClock();
+    Solution_cap sol;
     if(checkClock()){
-        TB heuristic(make_shared<Instance>(subInstance), seed);
-        int MAX_ITE = 1000;
-        auto sol = heuristic.run_cap(false, MAX_ITE);
+        if(method_RSSV_sp == "EXACT_CPMP"){
+            PMP pmp(make_shared<Instance>(subInstance), "CPMP");
+            pmp.run();
+            sol = pmp.getSolution_cap();
+        }else if(method_RSSV_sp == "EXACT_CPMP_BIN"){
+            PMP pmp(make_shared<Instance>(subInstance), "CPMP", true);
+            pmp.run();
+            sol = pmp.getSolution_cap();
+        }else if(method_RSSV_sp == "TB_CPMP"){
+            TB heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.run_cap(false, UB_MAX_ITER);
+        }else if(method_RSSV_sp == "VNS_CPMP"){
+            VNS heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.runVNS_cap("outfile.txt",method_RSSV_sp,false,UB_MAX_ITER);
+        }else{
+            cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
+            exit(1);
+        }
 
         if (VERBOSE) cout << "Solution_cap " << seed << ": ";
-        sol.print();
+        if (VERBOSE) sol.print();
         processSubsolution_CAP(make_shared<Solution_cap>(sol));
         if (VERBOSE) tock(start);
         sem.notify(seed);

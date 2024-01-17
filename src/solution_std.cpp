@@ -90,12 +90,12 @@ dist_t Solution_std::get_objective() {
     return objective;
 }
 
-void Solution_std::saveAssignment(const string& output_filename, int mode) {
+void Solution_std::saveAssignment(string output_filename,string Method) {
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
     string output_filename_final = output_filename + 
         "_p_" + to_string(p_locations.size()) + 
-        "_mode_" + to_string(mode) +
+        "_" + Method +
         ".txt";
 
     // Open file if output_filename is not empty

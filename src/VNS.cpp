@@ -173,7 +173,7 @@ bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
 
 
 
-Solution_cap VNS::runVNS_cap(string output_filename, int mode, bool verbose, int MAX_ITE) {
+Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbose, int MAX_ITE) {
 
     cout << "VNS heuristic capacitated started\n";
     
@@ -213,8 +213,8 @@ Solution_cap VNS::runVNS_cap(string output_filename, int mode, bool verbose, int
         if (elapsed_time >= time_limit_seconds) {
             cout << "Time limit reached. Stopping the algorithm.\n";
             // sol_best.print();
-            // sol_best.saveAssignment(output_filename, 0);
-            // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
+            sol_best.saveAssignment(output_filename, Method);
+            sol_best.saveResults(output_filename, elapsed_time,ite,Method);
             // break;
             return sol_best;
         }

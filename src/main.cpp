@@ -16,6 +16,10 @@ using namespace std::chrono;
 #include "PMP.hpp"
 #include "VNS.hpp"
 
+int seed = 1;
+Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
+
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -28,7 +32,7 @@ int main(int argc, char *argv[]) {
     // Optional parameters
     int threads_cnt = (int) getAvailableThreads();
     int mode = 0;
-    int seed = 1;
+    // int seed = 1;
     string output_filename;
     int MAX_ITE_TB = 100000000;
     int MAX_ITE_VNS = 10000000;
@@ -36,6 +40,9 @@ int main(int argc, char *argv[]) {
     // string typeProblem;
     // string typeHeuristic;
     string TypeService;
+    string Method;
+    string Method_RSSV_sp;
+    string Method_RSSV_fp;
 
 
     // default config path
@@ -118,6 +125,18 @@ int main(int argc, char *argv[]) {
                 
                 TypeService = argv[i + 1];
                 configOverride.insert("service");                
+            } else if (strcmp(argv[i], "-method") == 0){
+                
+                TypeService = argv[i + 1];
+                configOverride.insert("method");                
+            } else if (strcmp(argv[i], "-method_rssv_sp") == 0){
+                
+                TypeService = argv[i + 1];
+                configOverride.insert("method_rssv_sp");                
+            } else if (strcmp(argv[i], "-method_rssv_fp") == 0){
+                
+                TypeService = argv[i + 1];
+                configOverride.insert("method_rssv_fp");                
             }  else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
             
                 cout << 
@@ -217,6 +236,10 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&K, "k");
     config.setFromConfig(&PERCENTAGE, "percentage");
     config.setFromConfig(&TypeService, "service");
+    config.setFromConfig(&Method, "method");
+    config.setFromConfig(&Method_RSSV_sp, "method_rssv_sp");
+    config.setFromConfig(&Method_RSSV_fp, "method_rssv_fp");
+
 
     setThreadNumber(threads_cnt);
 
@@ -243,168 +266,367 @@ int main(int argc, char *argv[]) {
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
 
-    // Do something
     auto start = tick();
-    switch (mode) {
-        case 1: {
-            cout << "-------------------------------------------------\n";
-            cout << "Exact method PMP\n";
-            cout << "-------------------------------------------------\n";
-            PMP pmp(make_shared<Instance>(instance), "PMP");
-            pmp.run();
-            pmp.saveVars(output_filename,mode);
-            pmp.saveResults(output_filename,mode);
-            auto solution = pmp.getSolution_std();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 2: {
-            cout << "-------------------------------------------------\n";
-            cout << "Exact method cPMP continuos\n";
-            cout << "-------------------------------------------------\n";
-            PMP pmp(make_shared<Instance>(instance), "CPMP");
-            pmp.run();
-            pmp.saveVars(output_filename,mode);
-            pmp.saveResults(output_filename,mode);
-            auto solution = pmp.getSolution_cap();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 3: {
-            cout << "-------------------------------------------------\n";
-            cout << "Exact method cPMP binary\n";
-            cout << "-------------------------------------------------\n";
-            PMP pmp(make_shared<Instance>(instance), "CPMP", true);
-            pmp.run();
-            pmp.saveVars(output_filename,mode);
-            pmp.saveResults(output_filename,mode);
-            auto solution = pmp.getSolution_cap();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 4: {
-            cout << "-------------------------------------------------\n";
-            cout << "TB heuristic - standard PMP\n";
-            cout << "-------------------------------------------------\n";
-            TB heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run(true,MAX_ITE_TB);
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 5: {
-            cout << "-------------------------------------------------\n";
-            cout << "TB heuristic - cPMP\n";
-            cout << "-------------------------------------------------\n";
-            TB heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run_cap(true,MAX_ITE_TB);
-            // solution.print();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 6: {
-            // Extract filtered instance
-            cout << "-------------------------------------------------\n";
-            cout << "RSSV heuristic - standard PMP\n";
-            cout << "-------------------------------------------------\n";
-            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            CLOCK_THREADED = true;
-            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
-            // solve filtered instance by the TB heuristic
-            TB heuristic(filtered_instance, seed);
-            auto solution = heuristic.run(true,MAX_ITE_TB);
-            // cout << "Final solution:\n";
-            // solution.print();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 7: {
-            // Extract filtered instance
-            cout << "-------------------------------------------------\n";
-            cout << "RSSV heuristic - cPMP\n";
-            cout << "-------------------------------------------------\n";
-            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            CLOCK_THREADED = true;
 
-            // auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
-            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
-            // solve filtered instance by the TB heuristic
-            TB heuristic(filtered_instance, seed);
-            auto solution = heuristic.run_cap(true,MAX_ITE_TB);
-            cout << "Final solution:\n";
-            solution.print();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 8: {
-            cout << "-------------------------------------------------\n";
-            cout << "TBPercentage heuristic - standard PMP\n";
-            cout << "-------------------------------------------------\n";
-            TBPercentage heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run(true);
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 9: {
-            cout << "-------------------------------------------------\n";
-            cout << "TBPercentage heuristic - cPMP\n";
-            cout << "-------------------------------------------------\n";
-            TBPercentage heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.run_cap(true);
-            solution.print();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 10: {
-            cout << "-------------------------------------------------\n";
-            cout << "VNS heuristic - PMP\n";
-            cout << "-------------------------------------------------\n";
-            VNS heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.runVNS_std(true,MAX_ITE_VNS);
-            // solution.print();
-            solution.saveAssignment(output_filename,mode);
-            break;
-        }
-        case 11: {
-            cout << "-------------------------------------------------\n";
-            cout << "VNS heuristic - cPMP\n";
-            cout << "-------------------------------------------------\n";
-            VNS heuristic(make_shared<Instance>(instance), seed);
-            auto start_time = high_resolution_clock::now();
-            auto solution = heuristic.runVNS_cap(output_filename,mode,false,MAX_ITE_VNS);
-            auto current_time = high_resolution_clock::now();
-            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
-            // solution.print();
-            solution.saveAssignment(output_filename,mode);
-            solution.saveResults(output_filename, mode, elapsed_time,0);
-            break;
-        }case 12: {
-            // Extract filtered instance
-            cout << "-------------------------------------------------\n";
-            cout << "RSSV using VNS heuristic - cPMP\n";
-            cout << "-------------------------------------------------\n";
-            RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
-            CLOCK_THREADED = true;
+    cout << "-------------------------------------------------\n";
+    if(Method == "EXACT_PMP" || Method == "TB_PMP" || Method == "VNS_PMP"){
+        Solution_std solution = methods_PMP(make_shared<Instance>(instance), Method, output_filename);
+        solution.saveAssignment(output_filename,Method);
+    } else if(Method == "EXACT_CPMP" || Method == "EXACT_CPMP_BIN" || Method == "TB_CPMP" || Method == "VNS_CPMP"){
+        Solution_cap solution = methods_CPMP(make_shared<Instance>(instance), Method, output_filename);
+        solution.saveAssignment(output_filename,Method);
+    } else if(Method == "RSSV"){
+        cout << "-------------------------------------------------\n";
+        cout << "RSSV heuristic \n";
+        cout << "-------------------------------------------------\n";
+        RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+        CLOCK_THREADED = true;
 
-            // auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
-            auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
-            // solve filtered instance by the TB heuristic
-            VNS heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.runVNS_cap(output_filename,mode,false,MAX_ITE_VNS);
-            cout << "Final solution:\n";
-            solution.print();
-            solution.saveAssignment(output_filename,mode);
-            break;
+        
+        shared_ptr<Instance> filtered_instance;
+        if(Method_RSSV_sp == "EXACT_PMP" || Method_RSSV_sp == "TB_PMP" || Method_RSSV_sp == "VNS_PMP"){
+            auto filtered_instance = metaheuristic.run(THREAD_NUMBER,Method_RSSV_sp);
+        } else if(Method_RSSV_sp == "EXACT_CPMP" || Method_RSSV_sp == "EXACT_CPMP_BIN" || Method_RSSV_sp == "TB_CPMP" || Method_RSSV_sp == "VNS_CPMP"){
+            auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER,Method_RSSV_sp);
         }
-        default: {
-            cout << "Experimental branch\n";
-            TB heuristic(make_shared<Instance>(instance), seed);
-            auto solution = heuristic.initHighestCapSolution();
-            solution.print();
+
+        if(Method_RSSV_fp == "EXACT_PMP" || Method_RSSV_fp == "TB_PMP" || Method_RSSV_fp == "VNS_PMP"){
+            Solution_std solution = methods_PMP(filtered_instance, Method_RSSV_fp, output_filename);
+            solution.saveAssignment(output_filename,Method);
+        } else if(Method_RSSV_fp == "EXACT_CPMP" || Method_RSSV_fp == "EXACT_CPMP_BIN" || Method_RSSV_fp == "TB_CPMP" || Method_RSSV_fp == "VNS_CPMP"){
+            Solution_cap solution = methods_CPMP(filtered_instance, Method_RSSV_fp, output_filename);
+            solution.saveAssignment(output_filename,Method);
         }
+
+
+
     }
+
+
+
+
+    // if(Method == "EXACT_PMP" || Method == "EXACT_CPMP" || Method == "EXACT_CPMP_BIN"){
+    //     if (Method == "EXACT_PMP"){
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "Exact method PMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         PMP pmp(make_shared<Instance>(instance), "PMP");
+    //         pmp.run();
+    //         pmp.saveVars(output_filename,mode);
+    //         pmp.saveResults(output_filename,mode);
+    //         auto solution = pmp.getSolution_std();
+    //         solution.saveAssignment(output_filename,mode);
+    //     }else if (Method == "EXACT_CPMP"){
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "Exact method cPMP continuos\n";
+    //         cout << "-------------------------------------------------\n";
+    //         PMP pmp(make_shared<Instance>(instance), "CPMP");
+    //         pmp.run();
+    //         pmp.saveVars(output_filename,mode);
+    //         pmp.saveResults(output_filename,mode);
+    //         auto solution = pmp.getSolution_cap();
+    //         solution.saveAssignment(output_filename,mode);
+    //     }
+    //     else if (Method == "EXACT_CPMP_BIN"){
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "Exact method cPMP binary\n";
+    //         cout << "-------------------------------------------------\n";
+    //         PMP pmp(make_shared<Instance>(instance), "CPMP", true);
+    //         pmp.run();
+    //         pmp.saveVars(output_filename,mode);
+    //         pmp.saveResults(output_filename,mode);
+    //         auto solution = pmp.getSolution_cap();
+    //         solution.saveAssignment(output_filename,mode);
+    //     }
+    // }else if (Method == "TB_PMP" || Method == "TB_CPMP"){
+    //         if (Method == "TB_PMP"){
+    //             cout << "-------------------------------------------------\n";
+    //             cout << "TB heuristic - standard PMP\n";
+    //             cout << "-------------------------------------------------\n";
+    //             TB heuristic(make_shared<Instance>(instance), seed);
+    //             auto solution = heuristic.run(true,MAX_ITE_TB);
+    //             solution.saveAssignment(output_filename,mode);
+    //         }else if (Method == "TB_CPMP"){
+    //             cout << "-------------------------------------------------\n";
+    //             cout << "TB heuristic - cPMP\n";
+    //             cout << "-------------------------------------------------\n";
+    //             TB heuristic(make_shared<Instance>(instance), seed);
+    //             auto solution = heuristic.run_cap(true,MAX_ITE_TB);
+    //             // solution.print();
+    //             solution.saveAssignment(output_filename,mode);
+    //         }
+    // }else if (Method == "VNS_PMP" || Method == "VNS_CPMP"){
+    //         if (Method == "VNS_PMP"){
+    //             mode = 4;
+    //         }else if (Method == "VNS_CPMP"){
+    //             mode = 5; 
+    //         }
+    // }else if (Method == "RSSV"){
+
+
+    //     cout << "-------------------------------------------------\n";
+    //     cout << "RSSV heuristic \n";
+
+
+    //     cout << "Method for Subproblems: ";
+    //     if (Method_RSSV_sp == "EXACT_PMP" || Method_RSSV_sp == "EXACT_CPMP" || Method_RSSV_sp == "EXACT_CPMP_BIN"){
+    //         if (Method_RSSV_sp == "TB_PMP"){
+    //             mode = 4;
+    //         }else if (Method_RSSV_sp == "TB_CPMP"){
+    //             mode = 5;
+    //         }
+    //     }else if (Method_RSSV_sp == "TB_uncap" || Method_RSSV_sp == "TB_cap"){
+    //         if (Method_RSSV_sp == "TB_uncap"){
+    //             mode = 4;
+    //         }else if (Method_RSSV_sp == "TB_cap"){
+    //             mode = 5;
+    //     }else if (Method_RSSV_sp == "VNS_uncap" || Method_RSSV_sp == "VNS_cap"){
+    //         if (Method_RSSV_sp == "VNS_uncap"){
+    //             mode = 10;
+    //         }else if (Method_RSSV_sp == "VNS_cap"){
+    //             mode = 11;
+    //     } else if (Method_RSSV_sp == "VNS_cap"){
+    //         if (Method_RSSV_sp == "VNS_cap"){
+    //             mode = 11;
+    //         }
+
+    //     cout << "Method for Final Problem: ";
+
+
+    //     cout << "-------------------------------------------------\n";
+
+
+
+    // }else{
+    //     cout << "[ERROR] Method not found" << endl;
+    //     exit(1);
+    // }
+
+    // // Do something
+    // auto start = tick();
+    // switch (mode) {
+    //     case 1: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "Exact method PMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         PMP pmp(make_shared<Instance>(instance), "PMP");
+    //         pmp.run();
+    //         pmp.saveVars(output_filename,mode);
+    //         pmp.saveResults(output_filename,mode);
+    //         auto solution = pmp.getSolution_std();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 2: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "Exact method cPMP continuos\n";
+    //         cout << "-------------------------------------------------\n";
+    //         PMP pmp(make_shared<Instance>(instance), "CPMP");
+    //         pmp.run();
+    //         pmp.saveVars(output_filename,mode);
+    //         pmp.saveResults(output_filename,mode);
+    //         auto solution = pmp.getSolution_cap();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 3: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "Exact method cPMP binary\n";
+    //         cout << "-------------------------------------------------\n";
+    //         PMP pmp(make_shared<Instance>(instance), "CPMP", true);
+    //         pmp.run();
+    //         pmp.saveVars(output_filename,mode);
+    //         pmp.saveResults(output_filename,mode);
+    //         auto solution = pmp.getSolution_cap();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 4: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "TB heuristic - standard PMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         TB heuristic(make_shared<Instance>(instance), seed);
+    //         auto solution = heuristic.run(true,MAX_ITE_TB);
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 5: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "TB heuristic - cPMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         TB heuristic(make_shared<Instance>(instance), seed);
+    //         auto solution = heuristic.run_cap(true,MAX_ITE_TB);
+    //         // solution.print();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 6: {
+    //         // Extract filtered instance
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "RSSV heuristic - standard PMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+    //         CLOCK_THREADED = true;
+    //         auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+    //         // solve filtered instance by the TB heuristic
+    //         TB heuristic(filtered_instance, seed);
+    //         auto solution = heuristic.run(true,MAX_ITE_TB);
+    //         // cout << "Final solution:\n";
+    //         // solution.print();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 7: {
+    //         // Extract filtered instance
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "RSSV heuristic - cPMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+    //         CLOCK_THREADED = true;
+
+    //         // auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
+    //         auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+    //         // solve filtered instance by the TB heuristic
+    //         TB heuristic(filtered_instance, seed);
+    //         auto solution = heuristic.run_cap(true,MAX_ITE_TB);
+    //         cout << "Final solution:\n";
+    //         solution.print();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 8: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "TBPercentage heuristic - standard PMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         TBPercentage heuristic(make_shared<Instance>(instance), seed);
+    //         auto solution = heuristic.run(true);
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 9: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "TBPercentage heuristic - cPMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         TBPercentage heuristic(make_shared<Instance>(instance), seed);
+    //         auto solution = heuristic.run_cap(true);
+    //         solution.print();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 10: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "VNS heuristic - PMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         VNS heuristic(make_shared<Instance>(instance), seed);
+    //         auto solution = heuristic.runVNS_std(true,MAX_ITE_VNS);
+    //         // solution.print();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     case 11: {
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "VNS heuristic - cPMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         VNS heuristic(make_shared<Instance>(instance), seed);
+    //         auto start_time = high_resolution_clock::now();
+    //         auto solution = heuristic.runVNS_cap(output_filename,mode,false,MAX_ITE_VNS);
+    //         auto current_time = high_resolution_clock::now();
+    //         auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+    //         // solution.print();
+    //         solution.saveAssignment(output_filename,mode);
+    //         solution.saveResults(output_filename, mode, elapsed_time,0);
+    //         break;
+    //     }case 12: {
+    //         // Extract filtered instance
+    //         cout << "-------------------------------------------------\n";
+    //         cout << "RSSV using VNS heuristic - cPMP\n";
+    //         cout << "-------------------------------------------------\n";
+    //         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+    //         CLOCK_THREADED = true;
+
+    //         // auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER);
+    //         auto filtered_instance = metaheuristic.run(THREAD_NUMBER);
+    //         // solve filtered instance by the TB heuristic
+    //         VNS heuristic(make_shared<Instance>(instance), seed);
+    //         auto solution = heuristic.runVNS_cap(output_filename,mode,false,MAX_ITE_VNS);
+    //         cout << "Final solution:\n";
+    //         solution.print();
+    //         solution.saveAssignment(output_filename,mode);
+    //         break;
+    //     }
+    //     default: {
+    //         cout << "Experimental branch\n";
+    //         TB heuristic(make_shared<Instance>(instance), seed);
+    //         auto solution = heuristic.initHighestCapSolution();
+    //         solution.print();
+    //     }
+    // }
 
     cout << endl;
     tock(start);
 
     return 0;
+}
+
+
+Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeMethod, const string& output_filename){
+
+
+    Solution_std solution;
+    cout << "-------------------------------------------------\n";
+    cout << "Method: " << typeMethod << endl;
+    if (typeMethod == "EXACT_PMP"){
+        cout << "Exact method PMP\n";
+        PMP pmp(instance, "PMP");
+        pmp.run();
+        pmp.saveVars(output_filename,typeMethod);
+        pmp.saveResults(output_filename,typeMethod);
+        solution = pmp.getSolution_std();
+    }else if (typeMethod == "TB_PMP"){
+        cout << "TB heuristic - standard PMP\n";
+        TB heuristic(instance, seed);
+        solution = heuristic.run(true,UB_MAX_ITER);
+    }else if (typeMethod == "VNS_PMP"){
+        cout << "VNS heuristic - PMP\n";
+        VNS heuristic(instance, seed);
+        solution = heuristic.runVNS_std(true,UB_MAX_ITER);
+    }else{
+        cout << "[ERROR] Method not found" << endl;
+        exit(1);
+    }
+    cout << "-------------------------------------------------\n";
+    return solution;
+}
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, const string& output_filename){
+
+    Solution_cap solution;
+    cout << "-------------------------------------------------\n";
+    if (typeMethod == "EXACT_CPMP"){
+        cout << "Exact method cPMP continuos\n";
+        PMP pmp(instance, "CPMP");
+        pmp.run();
+        pmp.saveVars(output_filename,typeMethod);
+        pmp.saveResults(output_filename,typeMethod);
+        solution = pmp.getSolution_cap();
+    }else if (typeMethod == "EXACT_CPMP_BIN"){
+        cout << "Exact method cPMP binary\n";
+        PMP pmp(instance, "CPMP", true);
+        pmp.run();
+        pmp.saveVars(output_filename,typeMethod);
+        pmp.saveResults(output_filename,typeMethod);
+        solution = pmp.getSolution_cap();
+    }else if (typeMethod == "TB_CPMP"){
+        cout << "TB heuristic - cPMP\n";
+        TB heuristic(instance, seed);
+        solution = heuristic.run_cap(true,UB_MAX_ITER);
+    }else if (typeMethod == "VNS_CPMP"){
+        cout << "VNS heuristic - cPMP\n";
+        VNS heuristic(instance, seed);
+        solution = heuristic.runVNS_cap(output_filename,typeMethod,false,UB_MAX_ITER);
+    }else{
+        cout << "[ERROR] Method not found" << endl;
+        exit(1);
+    }
+    cout << "-------------------------------------------------\n";
+    return solution;
 }

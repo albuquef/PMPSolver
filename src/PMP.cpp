@@ -499,7 +499,7 @@ Solution_std PMP::getSolution_std(){
     return sol;
 }
 
-void PMP::saveVars(const std::string& filename,int mode){
+void PMP::saveVars(const std::string& filename,const string& Method){
 
     cout << "[INFO] Saving variables" << endl;
 
@@ -510,12 +510,12 @@ void PMP::saveVars(const std::string& filename,int mode){
     if (!is_BinModel){
         output_filename = filename + "_" + typeProb +
             "_Vars_Cont_p_" + to_string(p) + 
-            "_mode_" + to_string(mode) +
+            "_" + Method +
             ".txt";
     }else{
         output_filename = filename + "_" + typeProb +
             "_Vars_Bin_p_" + to_string(p) + 
-            "_mode_" + to_string(mode) +
+            "_" + Method +
             ".txt";
     }
 
@@ -557,20 +557,18 @@ void PMP::saveVars(const std::string& filename,int mode){
 
 }
 
-void PMP::saveResults(const string& filename, int mode){
+void PMP::saveResults(const string& filename,const string& Method){
 
     cout << "[INFO] Saving results" << endl;
 
     string output_filename = "TEST.txt";
     if (!is_BinModel){
         output_filename = filename +
-            "_Cont" + 
-            "_mode_" + to_string(mode) +
+            "_Cont_" + Method +
             ".csv";
     }else{
         output_filename = filename +
-            "_Bin" + 
-            "_mode_" + to_string(mode) +
+            "_Bin_" + Method +
             ".csv";
     }
 
@@ -589,7 +587,7 @@ void PMP::saveResults(const string& filename, int mode){
         outputTable << num_customers << ";";
         outputTable << num_facilities << ";";
         outputTable << p << ";";
-        outputTable << mode << ";";
+        outputTable << Method << ";";
         outputTable << cplex.getStatus() << ";"; // Status cplex
         // double objectiveValue = cplex.getObjValue();
         outputTable << fixed << setprecision(15) << cplex.getObjValue() << ";"; // obj value

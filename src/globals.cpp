@@ -15,3 +15,4 @@ bool VERBOSE = false;
 uint_t TOLERANCE_CPT = 10;
 uint_t K = 50;
 uint_t PERCENTAGE = 50;
+uint_t UB_MAX_ITER = 10000000;
