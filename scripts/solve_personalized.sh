@@ -18,6 +18,7 @@ DIST_TYPE=minutes
 
 D_MATRIX=${DIR_DATA}dist_matrix_${DIST_TYPE}.txt
 WEIGHTS=${DIR_DATA}cust_weights.txt
+TIME_CPLEX=3600
 
 
 SERVICE=urgenc 
@@ -30,7 +31,7 @@ methods=("TB_PMP" "TB_CPMP" "VNS_PMP" "VNS_CPMP")
 p=42
 for metsp in "${methods[@]}"
 do
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE -time_cplex $TIME_CPLEX\
          -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         --mode $MODE -o $OUTPUT | tee ./console/console_${SERVICE}_p_${p}.txt")
 done
@@ -46,7 +47,7 @@ methods=("TB_PMP" "TB_CPMP" "VNS_PMP" "VNS_CPMP")
 p=34
 for metsp in "${methods[@]}"
 do
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE -time_cplex $TIME_CPLEX\
          -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         --mode $MODE -o $OUTPUT | tee ./console/console_${SERVICE}_p_${p}.txt")
 done
