@@ -33,6 +33,7 @@ extern uint_t SUB_PMP_SIZE;
 extern int THREAD_NUMBER;
 extern uint_t CLOCK_START;
 extern uint_t CLOCK_LIMIT;  // time expressed in seconds
+extern uint_t CLOCK_LIMIT_CPLEX;  // time expressed in seconds
 extern uint_t CLOCK_ELAPSED;  // elapsed time since the beginning in seconds
 extern bool CLOCK_THREADED;
 extern bool VERBOSE;

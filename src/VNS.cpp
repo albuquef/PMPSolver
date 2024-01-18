@@ -127,6 +127,10 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
 
     cout << "VNS heuristic started\n";
 
+    // auto time_limit_seconds = 3600;
+    auto time_limit_seconds = CLOCK_LIMIT;
+
+
     TB tb(instance, engine());
     // auto locations = instance->getLocations();
     auto sol_best = tb.initRandomSolution();
@@ -142,22 +146,77 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     auto Kmax = sol_best.get_pLocations().size();  // max number of locations to swap
     // auto Kmax = 10;  // max number of locations to swap
 
-
+    auto start_time_total = high_resolution_clock::now();
     while(ite <= MAX_ITE){
+        auto start_time = high_resolution_clock::now();
         auto sol_tmp = rand_swap_Locations(sol_best,k);
         sol_tmp = tb.localSearch_std(sol_tmp,verbose,DEFAULT_MAX_ITE);
         if (sol_tmp.get_objective() < sol_best.get_objective()){
             sol_best = sol_tmp;
             // cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
             // ite = 0;
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+            if (elapsed_time >= time_limit_seconds) {
+                cout << "Time limit reached. Stopping the algorithm.\n";
+                // sol_best.print();
+                // sol_best.saveAssignment(output_filename, Method);
+                // sol_best.saveResults(output_filename, elapsed_time,ite,Method);
+                // break;
+                return sol_best;
+            }
+
+
+
             k = 1;
         }else if(k < Kmax){
+
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+            if (elapsed_time >= time_limit_seconds) {
+                cout << "Time limit reached. Stopping the algorithm.\n";
+                // sol_best.print();
+                // sol_best.saveAssignment(output_filename, Method);
+                // sol_best.saveResults(output_filename, elapsed_time,ite,Method);
+                // break;
+                return sol_best;
+            }
+
+
             k++;
         }
+
+        auto current_time = high_resolution_clock::now();
+        auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+        if (elapsed_time >= time_limit_seconds) {
+            cout << "Time limit reached. Stopping the algorithm.\n";
+            // sol_best.print();
+            // sol_best.saveAssignment(output_filename, Method);
+            // sol_best.saveResults(output_filename, elapsed_time,ite,Method);
+            // break;
+            return sol_best;
+        }
+
+        if (verbose) {
+            sol_best.print();
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+            cout << "capacitated VNS loop elapsed time: " << elapsed_time << " seconds\n";
+            cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+            // tock(start);
+            cout << endl;
+        }
+
+
         ite++;
     }
 
     cout << "Final solution: \n";
+    auto current_time = high_resolution_clock::now();
+    auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+    cout << "Elapsed time: " << elapsed_time << " seconds\n";
+    cout << "Total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+    cout << "Num ite VNS: " << ite << "\n";
     sol_best.print();
     cout << "\n";
 
@@ -192,24 +251,58 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
     int k = 1;
     
-    auto time_limit_seconds = 3600;
+    // auto time_limit_seconds = 3600;
+    auto time_limit_seconds = CLOCK_LIMIT;
     // int MAX_ITE_LOCAL = int(p/5);
 
-    auto start_time = high_resolution_clock::now();
+    auto start_time_total = high_resolution_clock::now();
     while (ite <= MAX_ITE) {
+
+        cout << "vizinhanca: " << k << "\n";
         auto new_sol = rand_swap_Locations_cap(sol_best,k);
         new_sol = tb.localSearch_cap(new_sol,verbose,DEFAULT_MAX_ITE);
         // new_sol.GAP_eval();
+        auto start_time = high_resolution_clock::now();
         if (new_sol.get_objective() < sol_best.get_objective()) {
             sol_best = new_sol;
             // cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
+            
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+            if (elapsed_time >= time_limit_seconds) {
+                cout << "Time limit reached. Stopping the algorithm.\n";
+                // sol_best.print();
+                sol_best.saveAssignment(output_filename, Method);
+                sol_best.saveResults(output_filename, elapsed_time,ite,Method);
+                // break;
+                return sol_best;
+            }
+
+            cout << "melhorou solucao\n";
+
+
             k = 1;
-        }else if(k < Kmax){
-            k++;
+        }else{
+
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+            if (elapsed_time >= time_limit_seconds) {
+                cout << "Time limit reached. Stopping the algorithm.\n";
+                // sol_best.print();
+                sol_best.saveAssignment(output_filename, Method);
+                sol_best.saveResults(output_filename, elapsed_time,ite,Method);
+                // break;
+                return sol_best;
+            }
+            cout << "finish neighboorhood: "<< k << " \n";
+
+            if(k <= Kmax){ k++; }
+            else{ k = 1;}
+            
         }
 
         auto current_time = high_resolution_clock::now();
-        auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+        auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
         if (elapsed_time >= time_limit_seconds) {
             cout << "Time limit reached. Stopping the algorithm.\n";
             // sol_best.print();
@@ -219,15 +312,28 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
             return sol_best;
         }
 
+        if (verbose) {
+            sol_best.print();
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+            cout << "capacitated VNS loop elapsed time: " << elapsed_time << " seconds\n";
+            cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+            // tock(start);
+            cout << endl;
+        }
+
+
+
         ite++;
+        cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
     }
 
-    // cout << "Final solution: \n";
-    // sol_best.print();
-    // cout << "\n";
+    cout << "Final solution: \n";
+    sol_best.print();
+    cout << "\n";
 
     auto current_time = high_resolution_clock::now();
-    auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+    auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
     cout << "Elapsed time: " << elapsed_time << " seconds\n";
     cout << "Num ite VNS: " << ite << "\n";
 

@@ -11,6 +11,7 @@ threads = 4
 mode = 3
 seed = 48456
 time = 3600
+time_cplex = 3600
 toleranceCpt = 0
 k = 1
 percentage = 80

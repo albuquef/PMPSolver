@@ -95,6 +95,9 @@ void PMP::run(){
     try{
         initILP();
 
+
+        if (CLOCK_LIMIT_CPLEX != -1) cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT_CPLEX);
+
         cplex.setParam(IloCplex::TiLim, 60);
         // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB

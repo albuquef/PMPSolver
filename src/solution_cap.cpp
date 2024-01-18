@@ -35,6 +35,7 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance,
     this->cust_satisfactions = std::move(cust_satisfactions);
     this->assignments = std::move(assignments);
     this->objective = objective;
+    this->typeEval = "CPLEX";
     // objEval();
     // GAP_eval();
 }
@@ -303,6 +304,7 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
 
 void Solution_cap::saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp, string Method_fp){
 
+    cout << "[INFO] Saving results" << endl;
 
     string output_filename_final = output_filename + 
     "_results_" + Method +
@@ -319,13 +321,16 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
         outputTable << instance->getLocations().size() << ";";
         outputTable << instance->get_p() << ";";
         outputTable << Method << ";";
-        if (Method_sp != "null") outputTable << Method_sp << ";";
-        if (Method_fp != "null") outputTable << Method_fp << ";";
         outputTable << typeEval << ";"; 
-        outputTable << get_objective() << ";"; // obj value
+        outputTable << fixed << setprecision(15) << get_objective() << ";"; // obj value
         outputTable << numIter << ";"; // 
         outputTable << timeFinal <<  ";"; // time cplex
+        outputTable << Method_sp << ";";
+        outputTable << Method_fp << ";";
         outputTable << "\n";
+        // if (Method_sp != "null") {outputTable << Method_sp << ";";}
+        // if (Method_fp != "null") {outputTable << Method_fp << ";";}
+        // outputTable << "\n";
     }
     outputTable.close();
 

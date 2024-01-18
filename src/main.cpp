@@ -18,7 +18,7 @@ using namespace std::chrono;
 
 int seed = 1;
 Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename,bool saveFile = true);
 
 using namespace std;
 
@@ -95,7 +95,13 @@ int main(int argc, char *argv[]) {
                        strcmp(argv[i], "-time") == 0) {
 
                 setClockLimit(stoi(argv[i + 1]));
+                CLOCK_LIMIT = stod(argv[i + 1]);
                 configOverride.insert("time");
+
+            } else if (strcmp(argv[i], "-time_cplex") == 0) {
+
+                CLOCK_LIMIT_CPLEX = stod(argv[i + 1]);
+                configOverride.insert("time_cplex");
 
             } else if (strcmp(argv[i], "-o") == 0) {
 
@@ -127,15 +133,15 @@ int main(int argc, char *argv[]) {
                 configOverride.insert("service");                
             } else if (strcmp(argv[i], "-method") == 0){
                 
-                TypeService = argv[i + 1];
+                Method = argv[i + 1];
                 configOverride.insert("method");                
             } else if (strcmp(argv[i], "-method_rssv_sp") == 0){
                 
-                TypeService = argv[i + 1];
+                Method_RSSV_sp = argv[i + 1];
                 configOverride.insert("method_rssv_sp");                
             } else if (strcmp(argv[i], "-method_rssv_fp") == 0){
                 
-                TypeService = argv[i + 1];
+                Method_RSSV_fp = argv[i + 1];
                 configOverride.insert("method_rssv_fp");                
             }  else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
             
@@ -232,6 +238,7 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&mode, "mode");
     config.setFromConfig(&seed, "seed");
     config.setFromConfig(&CLOCK_LIMIT, "time");
+    config.setFromConfig(&CLOCK_LIMIT_CPLEX, "time_cplex");
     config.setFromConfig(&TOLERANCE_CPT, "toleranceCpt");
     config.setFromConfig(&K, "k");
     config.setFromConfig(&PERCENTAGE, "percentage");
@@ -281,21 +288,30 @@ int main(int argc, char *argv[]) {
         cout << "-------------------------------------------------\n";
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
         CLOCK_THREADED = true;
-
+        auto start_time = high_resolution_clock::now();
         
-        shared_ptr<Instance> filtered_instance;
+        shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance);
         if(Method_RSSV_sp == "EXACT_PMP" || Method_RSSV_sp == "TB_PMP" || Method_RSSV_sp == "VNS_PMP"){
             auto filtered_instance = metaheuristic.run(THREAD_NUMBER,Method_RSSV_sp);
         } else if(Method_RSSV_sp == "EXACT_CPMP" || Method_RSSV_sp == "EXACT_CPMP_BIN" || Method_RSSV_sp == "TB_CPMP" || Method_RSSV_sp == "VNS_CPMP"){
             auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER,Method_RSSV_sp);
         }
 
+
+        cout << "-------------------------------------------------\n";
+        cout << "Final Problem RSSV heuristic \n";
+        cout << "-------------------------------------------------\n";
         if(Method_RSSV_fp == "EXACT_PMP" || Method_RSSV_fp == "TB_PMP" || Method_RSSV_fp == "VNS_PMP"){
             Solution_std solution = methods_PMP(filtered_instance, Method_RSSV_fp, output_filename);
             solution.saveAssignment(output_filename,Method);
         } else if(Method_RSSV_fp == "EXACT_CPMP" || Method_RSSV_fp == "EXACT_CPMP_BIN" || Method_RSSV_fp == "TB_CPMP" || Method_RSSV_fp == "VNS_CPMP"){
-            Solution_cap solution = methods_CPMP(filtered_instance, Method_RSSV_fp, output_filename);
+            Solution_cap solution = methods_CPMP(filtered_instance, "RSSV_" + Method_RSSV_fp, output_filename);
+            
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+            if (Method_RSSV_fp == "EXACT_CPMP") solution.objEval();
             solution.saveAssignment(output_filename,Method);
+            solution.saveResults(output_filename, elapsed_time,0,Method, Method_RSSV_sp, Method_RSSV_fp);
         }
 
 
@@ -574,9 +590,10 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
 
     Solution_std solution;
     cout << "-------------------------------------------------\n";
-    cout << "Method: " << typeMethod << endl;
+    // cout << "Method: " << typeMethod << endl;
     if (typeMethod == "EXACT_PMP"){
         cout << "Exact method PMP\n";
+        cout << "-------------------------------------------------\n";
         PMP pmp(instance, "PMP");
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
@@ -584,49 +601,53 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         solution = pmp.getSolution_std();
     }else if (typeMethod == "TB_PMP"){
         cout << "TB heuristic - standard PMP\n";
+        cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
         solution = heuristic.run(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_PMP"){
         cout << "VNS heuristic - PMP\n";
+        cout << "-------------------------------------------------\n";
         VNS heuristic(instance, seed);
         solution = heuristic.runVNS_std(true,UB_MAX_ITER);
     }else{
         cout << "[ERROR] Method not found" << endl;
         exit(1);
     }
-    cout << "-------------------------------------------------\n";
     return solution;
 }
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, const string& output_filename){
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, const string& output_filename, bool saveFile){
 
     Solution_cap solution;
     cout << "-------------------------------------------------\n";
-    if (typeMethod == "EXACT_CPMP"){
+    if (typeMethod == "EXACT_CPMP" || typeMethod == "RSSV_EXACT_CPMP"){
         cout << "Exact method cPMP continuos\n";
+        cout << "-------------------------------------------------\n";    
         PMP pmp(instance, "CPMP");
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
         solution = pmp.getSolution_cap();
-    }else if (typeMethod == "EXACT_CPMP_BIN"){
+    }else if (typeMethod == "EXACT_CPMP_BIN" || typeMethod == "RSSV_EXACT_CPMP_BIN"){
         cout << "Exact method cPMP binary\n";
+        cout << "-------------------------------------------------\n";
         PMP pmp(instance, "CPMP", true);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
         solution = pmp.getSolution_cap();
-    }else if (typeMethod == "TB_CPMP"){
+    }else if (typeMethod == "TB_CPMP" || typeMethod == "RSSV_TB_CPMP"){
         cout << "TB heuristic - cPMP\n";
+        cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
         solution = heuristic.run_cap(true,UB_MAX_ITER);
-    }else if (typeMethod == "VNS_CPMP"){
+    }else if (typeMethod == "VNS_CPMP" || typeMethod == "RSSV_VNS_CPMP"){
         cout << "VNS heuristic - cPMP\n";
+        cout << "-------------------------------------------------\n";
         VNS heuristic(instance, seed);
-        solution = heuristic.runVNS_cap(output_filename,typeMethod,false,UB_MAX_ITER);
+        solution = heuristic.runVNS_cap(output_filename,typeMethod,true,UB_MAX_ITER);
     }else{
         cout << "[ERROR] Method not found" << endl;
         exit(1);
     }
-    cout << "-------------------------------------------------\n";
     return solution;
 }

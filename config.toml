@@ -8,6 +8,7 @@ mode = 2
 p = 5
 seed = 48456
 time = 3600
+time_cplex = 3600
 toleranceCpt = 0
 k = 1
 percentage = 80
