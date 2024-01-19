@@ -54,9 +54,6 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
     }
 }
 
-
-
-
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
@@ -96,9 +93,9 @@ void PMP::run(){
         initILP();
 
 
-        if (CLOCK_LIMIT_CPLEX != -1) cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT_CPLEX);
+        if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT_CPLEX);
 
-        cplex.setParam(IloCplex::TiLim, 60);
+        // cplex.setParam(IloCplex::TiLim, 60);
         // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
         // cplex.setParam(IloCplex::Threads, 8); // use 8 threads
@@ -122,8 +119,8 @@ void PMP::run(){
 
         solveILP();
 
-
-        if (VERBOSE){
+        bool verbose = true;
+        if (verbose){
             if (cplex.getStatus() == IloAlgorithm::Optimal)
                 if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
                 else {printSolution(cplex,x_cont,y);}
@@ -489,13 +486,15 @@ Solution_std PMP::getSolution_std(){
 
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
-    auto locations = instance->getLocations();
-
+    // auto locations = instance->getLocations();
+    
     for (IloInt j = 0; j < num_facilities; j++){
-        if (cplex.getValue(y[j]) > 0.5){
-            p_locations.insert(locations[j+1]);
+            auto loc = instance->getLocations()[j];
+            if (cplex.getValue(y[j]) > 0.5)
+                p_locations.insert(loc);
         }
-    }
+
+
 
     Solution_std sol(instance, p_locations);
 

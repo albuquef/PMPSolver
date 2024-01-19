@@ -60,7 +60,6 @@ for element in "${arr[@]}"; do
     echo "$element"
 done
 
-
 echo "Number of instances: ${#arr[@]}"
 #chmod +x ${arr[$SLURM_ARRAY_TASK_ID]}
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

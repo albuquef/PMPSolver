@@ -393,7 +393,7 @@ void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint
     this->cust_satisfactions = cust_satisfactions;
     this->assignments = assignments;
     this->objective = objective;    
-    objEval();
+    // objEval();
 }
 
 // NOT WORKING

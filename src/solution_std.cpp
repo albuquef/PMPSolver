@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <utility>
+#include <experimental/filesystem>
 #include "solution_std.hpp"
 
 Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
@@ -91,6 +92,9 @@ dist_t Solution_std::get_objective() {
 }
 
 void Solution_std::saveAssignment(string output_filename,string Method) {
+
+    cout << "[INFO] Saving Assignment pmp" << endl;
+
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
     string output_filename_final = output_filename + 
@@ -141,3 +145,41 @@ void Solution_std::saveAssignment(string output_filename,string Method) {
 }
 
 
+void Solution_std::saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp, string Method_fp){
+
+    cout << "[INFO] Saving results pmp" << endl;
+
+    string output_filename_final = output_filename + 
+    "_results_" + Method +
+    ".csv";
+
+    ofstream outputTable;
+    outputTable.open(output_filename_final,ios:: app);
+
+    if (!outputTable.is_open()) {
+        cerr << "Error opening file: " << output_filename << endl;
+        // return;
+    }else{
+        outputTable << instance->getCustomers().size() << ";";
+        outputTable << instance->getLocations().size() << ";";
+        outputTable << instance->get_p() << ";";
+        outputTable << Method << ";";
+        outputTable << fixed << setprecision(15) << get_objective() << ";"; // obj value
+        outputTable << numIter << ";"; // 
+        outputTable << timeFinal <<  ";"; // time cplex
+        outputTable << Method_sp << ";";
+        outputTable << Method_fp << ";";
+        outputTable << "\n";
+        // if (Method_sp != "null") {outputTable << Method_sp << ";";}
+        // if (Method_fp != "null") {outputTable << Method_fp << ";";}
+        // outputTable << "\n";
+    }
+    outputTable.close();
+
+
+
+
+
+
+
+}
