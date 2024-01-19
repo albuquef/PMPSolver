@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
                     "\tpath to an output file, for ewporting a solution\n\n"
                     "-th : \n"
                     "\tno. of subproblems solved by the RSSV in parallel (default = 4)\n\n"
-                    "-t || --time\n"
+                    "-t || -time\n"
                     "\tTakes the CPU time in second after which the program quits automatically.\n\n"
                     "-time_cplex\n"
                     "\t Time limit applied to cplex, if is equal to 1 it means no time limit.\n\n"
@@ -174,15 +174,22 @@ int main(int argc, char *argv[]) {
                     // "There are 12 mods :\n\n"
 
                     "-Method : \n"
-                    "\tMethod to solve the problem, there are 7 methods :\n"
+                    "\tMethod to solve the problem, there are 8 methods :\n"
                     "\t EXACT_PMP, EXACT_CPMP, EXACT_CPMP_BIN : exact methdos using cplex\n"
                     "\t TB_PMP, TB_CPMP : Teitz and Bart heuristic \n"
                     "\t VNS_PMP, VNS_CPMP : Variable Neighbourhood Search heuristic \n\n"
-                    "\t RSSV : Random SamSV heuristic \n\n"
+                    "\t RSSV : Random Search and Spatial Voting algorithm”\n\n"
 
+                    "-method_rssv_sp : \n"
+                    "\tMethod to solve the subproblems of the RSSV, there are 7 methods :\n"
+                    "\t Same methods as 'Method' without RSSV \n"
+
+                    "-method_rssv_fp : \n"
+                    "\tMethod to solve the final problem of the RSSV, there are 7 methods :\n"
+                    "\t Same methods as 'Method' without RSSV \n"
 
                     "Generic example : \n"
-                    "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --mode <no_of_mode>\n\n"
+                    "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --Method <type_of_method>\n\n"
 
                     "Usage example with Toulon from build directory\n"
                     "\t./large_PMP -p 5 -dm ../data/toulon/dist_matrix.txt -w ../data/toulon/cust_weights.txt -c ../data/toulon/loc_capacities --mode 3 -o output.txt\n"
