@@ -1,10 +1,15 @@
 #include "VNS.hpp"
+#include <iomanip>
 #include <chrono> // for time-related functions
 using namespace std::chrono;
 
 VNS::VNS(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
 }
+void VNS::setGenerateReports(bool generate_reports){
+    this->generate_reports = generate_reports;
+}   
+
 
 vector<uint_t> getDistinctIndices(size_t vec_size, size_t k, int seed) {
     if (k > vec_size) {
@@ -27,8 +32,6 @@ vector<uint_t> getDistinctIndices(size_t vec_size, size_t k, int seed) {
 
     return distinct_indices;
 }
-
-
 
 Solution_std VNS::rand_swap_Locations(Solution_std sol_current, int num_swaps, int seed){
 
@@ -136,7 +139,7 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, int num_swap
 
 Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
 
-    cout << "VNS heuristic started\n";
+    cout << "uncapacitated VNS heuristic started\n";
 
     TB tb(instance, engine());
     tb.setSolutionMap(solutions_map);
@@ -154,7 +157,7 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     auto time_limit_seconds = CLOCK_LIMIT;
     // int MAX_ITE_LOCAL = int(p/5);
 
-    int ite = 0;
+    int ite = 1;
     auto start_time_total = high_resolution_clock::now();
     while(ite <= MAX_ITE){
     // while(ite <= 3){
@@ -202,13 +205,29 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     return sol_best;
 }
 
+
+void writeReport(const string& filename, dist_t objective, int num_ite, int num_solutions, dist_t time) {
+    // Open the file for writing in append mode
+    ofstream outputFile(filename, ios::app);
+    if (!outputFile.is_open()) {
+        cerr << "Error opening the output file." << endl;
+        return;
+    }
+
+    outputFile << fixed << setprecision(15) << objective << ";"; // obj value
+    outputFile << num_ite << ";";
+    outputFile << num_solutions << ";";
+    outputFile << time << "\n";
+
+
+    // Close the file
+    outputFile.close();
+}
+
 bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
     if (sol_cand.get_objective() < sol_best.get_objective()) return true;
     return false;
 }
-
-
-
 Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbose, int MAX_ITE) {
 
     cout << "capacitated VNS heuristic started\n";
@@ -232,16 +251,23 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     auto time_limit_seconds = CLOCK_LIMIT;
     // int MAX_ITE_LOCAL = int(p/5);
 
-    int ite = 0;
+    string report_filename = "./reports/report_VNS_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
+
+    int ite = 1;
     auto start_time_total = high_resolution_clock::now();
-    while (ite <= MAX_ITE) {
-    // while (ite <= 10) {
+    // while (ite <= MAX_ITE) {
+    while (ite <= 10) {
         auto start_time = high_resolution_clock::now();
         cout << "vizinhanca: " << k << "\n";
         auto new_sol = rand_swap_Locations_cap(sol_best,k, ite);
         cout << "\nlocal search\n";
-        new_sol = tb.localSearch_cap(new_sol,verbose,DEFAULT_MAX_ITE);
+        // new_sol = tb.localSearch_cap(new_sol,false,DEFAULT_MAX_ITE);
+        new_sol = tb.localSearch_cap(new_sol,false,3);
         new_sol.print();
+        
+
+        if (generate_reports)
+            writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
 
         if (new_sol.get_objective() < sol_best.get_objective()) {
             sol_best = new_sol;
@@ -282,7 +308,6 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     cout << "Final solution: \n";
     sol_best.print();
     cout << "\n";
-
     auto current_time = high_resolution_clock::now();
     auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
     cout << "Elapsed time: " << elapsed_time << " seconds\n";

@@ -220,8 +220,6 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&capacities_filename, "capacities");
     config.setFromConfig(&dist_matrix_filename, "distance_matrix");
     config.setFromConfig(&output_filename, "output");
-    // config.setFromConfig(&output_vars_filename, "output_vars");
-    // config.setFromConfig(&output_table_filename, "output_table");
     config.setFromConfig(&labeled_weights_filename, "weights");
     config.setFromConfig(&threads_cnt, "threads");
     config.setFromConfig(&mode, "mode");
@@ -263,7 +261,6 @@ int main(int argc, char *argv[]) {
 //    omp_set_num_threads(1);
 
     auto start = tick();
-
     cout << "-------------------------------------------------\n";
     if(Method == "EXACT_PMP" || Method == "TB_PMP" || Method == "VNS_PMP"){
         
@@ -292,7 +289,6 @@ int main(int argc, char *argv[]) {
         solution.saveResults(output_filename, elapsed_time,0,Method); 
         
     } else if(Method == "RSSV"){
-        cout << "-------------------------------------------------\n";
         cout << "RSSV heuristic \n";
         cout << "-------------------------------------------------\n";
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
@@ -339,7 +335,6 @@ int main(int argc, char *argv[]) {
 
 
     }
-
     cout << endl;
     tock(start);
 

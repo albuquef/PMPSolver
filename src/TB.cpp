@@ -94,24 +94,22 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 
 Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE) {
 
-    // cout << "TB local search uncapacitated started\n";
+    cout << "uncapacitated TB local search started\n";
 
     //// time limit ////
     auto time_limit_seconds = CLOCK_LIMIT;
     ///
-
 
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_std sol_tmp;
     Solution_std sol_cand;
     int objectiveCpt = 0;
-    int ite=0;
 
+    int ite=1;
     auto start_time_total = high_resolution_clock::now();
     while (improved && ite < MAX_ITE) {
 
-        ite++;
         improved = false;
         sol_cand = sol_best;
         auto start = tick();
@@ -139,65 +137,46 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
                     // }
                 }
             }
-             if (improved) {
-
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+            if (improved) {
 
                 sol_best = sol_cand;
 
-                auto current_time = high_resolution_clock::now();
-                auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
                 if (elapsed_time >= time_limit_seconds) {
                     cout << "Time limit reached. Stopping the algorithm.\n";
-                    // sol_best.print();
-                    // sol_best.saveAssignment(output_filename, 0);
-                    // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
-                    // break;
+                    cout << "Num ite uncapacited TB: " << ite << "\n";
                     cout << "uncapacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
-                    cout << "Num ite TB: " << ite << "\n";
                     return sol_best;
                 }
 
                 break;
             }else{
-                auto current_time = high_resolution_clock::now();
-                auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+
                 if (elapsed_time >= time_limit_seconds) {
-                    cout << "Time limit reached. Stopping the algorithm.\n";
-                    // sol_best.print();
-                    // sol_best.saveAssignment(output_filename, 0);
-                    // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
-                    // break;
+                    cout << "Time limit reached. Stopping the uncapacitated TB  algorithm.\n";
+                    cout << "Num ite uncapacited TB: " << ite << "\n";
                     cout << "uncapacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
-                    cout << "Num ite TB: " << ite << "\n";
                     return sol_best;
                 }
 
 
             };
         }
-        // if (verbose) {
-        //     sol_best.print();
-        //     auto current_time = high_resolution_clock::now();
-        //     auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
-        //     cout << "uncapacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
-        //     cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
-        //     // tock(start);
-        //     cout << endl;
-        // }
+        if (verbose) {
+            sol_best.print();
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+            cout << "Num ite uncapacited TB: " << ite << "\n";
+            cout << "uncapacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
+            cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+            // tock(start);
+            cout << endl;
+        }
         ite++;
-        // cout << "ite TB_PMP: " << ite << "\n";
     }
 
-
-    // cout << "Final solution uncapacited TB: \n";
-    // auto current_time = high_resolution_clock::now();
-    // auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
-    // cout << "Elapsed time: " << elapsed_time << " seconds\n";
-    // cout << "Num ite TB: " << ite << "\n";
-    // sol_best.print();
-    // cout << "\n";
-
-
+    cout << "Num ite uncapacited TB: " << ite << "\n";
     return sol_best;
 }
 
@@ -212,19 +191,16 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
     auto time_limit_seconds = CLOCK_LIMIT;
     ///
 
-    verbose = VERBOSE;
-
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_cap sol_cand;
-    int ite = 0;
 
+    int ite = 1;
     auto start_time_total = high_resolution_clock::now();
     while (improved && ite < MAX_ITE) {
         
         improved = false;
         sol_cand = sol_best;
-        auto start = tick();
         auto p_locations = sol_best.get_pLocations();
 
         vector<uint_t> p_locations_vec;
@@ -241,9 +217,6 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(p_loc) + instance->getLocCapacity(loc) >= instance->getTotalDemand()) {
                         // #pragma omp critical
-
-                        auto start_time = high_resolution_clock::now();
-
 
                         unordered_set<uint_t> p_locations_test = sol_best.get_pLocations();
                         p_locations_test.erase(p_loc);
@@ -287,8 +260,8 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
                 if (elapsed_time >= time_limit_seconds) {
                     cout << "Time limit reached. Stopping the TB algorithm.\n";
+                    cout << "Num ite capacited TB: " << ite << "\n";
                     cout << "capacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
-                    cout << "Num ite TB: " << ite << "\n";
                     return sol_best;
                 }
 
@@ -298,6 +271,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
                 if (elapsed_time >= time_limit_seconds) {
                     cout << "Time limit reached. Stopping the TB algorithm.\n";
+                    cout << "Num ite capacited TB: " << ite << "\n";
                     cout << "capacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
                     cout << "Num ite TB: " << ite << "\n";
                     return sol_best;
@@ -307,29 +281,21 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             };
         }
 
-        // if (verbose) {
-        //     sol_best.print();
-        //     auto current_time = high_resolution_clock::now();
-        //     auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
-        //     cout << "capacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
-        //     cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
-        //     // tock(start);
-        //     cout << endl;
-        // }
+        if (verbose) {
+            sol_best.print();
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+            cout << "Num ite capacited TB: " << ite << "\n";
+            cout << "capacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
+            cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+            // tock(start);
+            cout << endl;
+        }
 
         ite++;
-        // cout << "ite TB_CPMP: " << ite << "\n";
     }
 
-
-    // cout << "Final solution capacited TB: \n";
-    // auto current_time = high_resolution_clock::now();
-    // auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
-    // cout << "Elapsed time: " << elapsed_time << " seconds\n";
-    // cout << "Num ite TB: " << ite << "\n";
-    // sol_best.print();
-    // cout << "\n";
-
+    cout << "Num ite capacited TB: " << ite << "\n";
     return sol_best;
 }
 

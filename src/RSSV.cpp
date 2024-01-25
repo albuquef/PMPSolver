@@ -22,16 +22,15 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
  */
 shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
     cout << "RSSV running...\n";
-    cout << "PMP size (N): " << N << endl;
-    cout << "sub-PMP size (n): " << n << endl;
+    cout << "cPMP size (N): " << N << endl;
+    cout << "sub-cPMP size (n): " << min(n,N) << endl;
     cout << "Subproblems cnt (M): " << M << endl << endl;
     this->method_RSSV_sp = method_sp;
-    cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl << endl;
+    cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
-
     cout << "thread cnt:  " << thread_cnt << endl;
-    cout << "\n\n\n\n" << endl;
+    cout << "\n\n";
 
     vector<thread> threads; // spawn M threads
 
@@ -49,7 +48,7 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
     for (auto &th:threads) { // wait for all threads
         th.join();
     }
-    cout << "All subproblems solved."  << endl << endl;
+    cout << "[INFO] All subproblems solved."  << endl << endl;
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
@@ -76,22 +75,19 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
 shared_ptr<Instance> RSSV::run_CAP(int thread_cnt, string& method_sp) {
     cout << "RSSV running...\n";
     cout << "cPMP size (N): " << N << endl;
-    cout << "sub-cPMP size (n): " << n << endl;
+    cout << "sub-cPMP size (n): " << min(n,N) << endl;
     cout << "Subproblems cnt (M): " << M << endl << endl;
     this->method_RSSV_sp = method_sp;
-    cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl << endl;
-
+    cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
-
     cout << "thread cnt:  " << thread_cnt << endl;
-    cout << "\n\n\n\n" << endl;
+    cout << "\n\n";
 
     vector<thread> threads; // spawn M threads
     // for (uint_t i = 1; i <= M; i++) {
     //     threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i);
     // }
-
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
             threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j);
@@ -103,7 +99,7 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt, string& method_sp) {
         // Clear the threads vector for the next batch
         threads.clear();
     }
-    cout << "All subproblems solved."  << endl << endl;
+    cout << "[INFO] All subproblems solved."  << endl << endl;
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
