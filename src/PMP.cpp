@@ -142,7 +142,6 @@ void PMP:: run_GAP(unordered_set<uint_t> p_locations){
 
         initILP();
         // Set the output to a non-verbose mode
-        // this->cplex.setOut(env.getNullStream());
         cplex.setParam(IloCplex::Param::MIP::Display, 0);
         cplex.setOut(env.getNullStream());  // Disable console output
         // cplex.setLogStream(fileStream);     // Redirect log to a file stream

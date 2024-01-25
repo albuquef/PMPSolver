@@ -175,27 +175,27 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
 
             };
         }
-        if (verbose) {
-            sol_best.print();
-            auto current_time = high_resolution_clock::now();
-            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
-            cout << "uncapacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
-            cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
-            // tock(start);
-            cout << endl;
-        }
+        // if (verbose) {
+        //     sol_best.print();
+        //     auto current_time = high_resolution_clock::now();
+        //     auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+        //     cout << "uncapacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
+        //     cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+        //     // tock(start);
+        //     cout << endl;
+        // }
         ite++;
         // cout << "ite TB_PMP: " << ite << "\n";
     }
 
 
-    cout << "Final solution uncapacited TB: \n";
-    auto current_time = high_resolution_clock::now();
-    auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
-    cout << "Elapsed time: " << elapsed_time << " seconds\n";
-    cout << "Num ite TB: " << ite << "\n";
-    sol_best.print();
-    cout << "\n";
+    // cout << "Final solution uncapacited TB: \n";
+    // auto current_time = high_resolution_clock::now();
+    // auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+    // cout << "Elapsed time: " << elapsed_time << " seconds\n";
+    // cout << "Num ite TB: " << ite << "\n";
+    // sol_best.print();
+    // cout << "\n";
 
 
     return sol_best;
@@ -238,29 +238,42 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 // #pragma omp parallel for
                 for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
                     Solution_cap sol_tmp = sol_best;
-                    Solution_cap sol_tmp2 = sol_best;
+
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(p_loc) + instance->getLocCapacity(loc) >= instance->getTotalDemand()) {
                         // #pragma omp critical
-                        sol_tmp.replaceLocation(p_loc, loc, "PMP");
-                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB1
-                            // evaluate solution with GAP assignment
-                            // sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
-                            sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
-                            // sol_tmp.GAP_eval();
-                            if (sol_cand.get_objective() - sol_tmp2.get_objective() > TOLERANCE_OBJ) { // LB2
-                                sol_cand = sol_tmp2;
+
+                        auto start_time = high_resolution_clock::now();
+
+
+                        unordered_set<uint_t> p_locations_test = sol_best.get_pLocations();
+                        p_locations_test.erase(p_loc);
+                        p_locations_test.insert(loc);
+                        int index = solutions_map.pSetExists_index(p_locations_test);
+                        if (index != -1){
+                            
+                            if(solutions_map.getObjectiveByIndex(index)  < sol_cand.get_objective()){
+                                sol_cand = solutions_map.getSolution(index);
                                 improved = true;
-                                // cout << "improved\n";
+                            }
+
+                        }else{
+                            sol_tmp.replaceLocation(p_loc, loc, "PMP");
+                            if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB1
+                                
+                                Solution_cap sol_tmp2 = sol_best;
+                                // evaluate solution with GAP assignment
+                                sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
+                                // sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
+                                
+                                solutions_map.addUniqueSolution(sol_tmp2);
+
+                                // sol_tmp.GAP_eval();
+                                if (sol_cand.get_objective() - sol_tmp2.get_objective() > TOLERANCE_OBJ) { // LB2
+                                    sol_cand = sol_tmp2;
+                                    improved = true;
+                                }
                             }
                         }
-
-                        // replace location checking LB2
-                        // #pragma omp critical
-                        // sol_tmp.replaceLocation(p_loc, loc);
-                        // if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) {
-                        //     sol_cand = sol_tmp;
-                        //     improved = true;
-                        // }
 
                     }
                 }
@@ -273,11 +286,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 auto current_time = high_resolution_clock::now();
                 auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
                 if (elapsed_time >= time_limit_seconds) {
-                    cout << "Time limit reached. Stopping the algorithm.\n";
-                    // sol_best.print();
-                    // sol_best.saveAssignment(output_filename, 0);
-                    // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
-                    // break;
+                    cout << "Time limit reached. Stopping the TB algorithm.\n";
                     cout << "capacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
                     cout << "Num ite TB: " << ite << "\n";
                     return sol_best;
@@ -288,11 +297,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 auto current_time = high_resolution_clock::now();
                 auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
                 if (elapsed_time >= time_limit_seconds) {
-                    cout << "Time limit reached. Stopping the algorithm.\n";
-                    // sol_best.print();
-                    // sol_best.saveAssignment(output_filename, 0);
-                    // sol_best.saveResults(output_filename, mode, elapsed_time,ite);
-                    // break;
+                    cout << "Time limit reached. Stopping the TB algorithm.\n";
                     cout << "capacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
                     cout << "Num ite TB: " << ite << "\n";
                     return sol_best;
@@ -302,28 +307,32 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             };
         }
 
-        if (verbose) {
-            sol_best.print();
-            auto current_time = high_resolution_clock::now();
-            auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
-            cout << "capacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
-            cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
-            // tock(start);
-            cout << endl;
-        }
+        // if (verbose) {
+        //     sol_best.print();
+        //     auto current_time = high_resolution_clock::now();
+        //     auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+        //     cout << "capacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
+        //     cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+        //     // tock(start);
+        //     cout << endl;
+        // }
 
         ite++;
         // cout << "ite TB_CPMP: " << ite << "\n";
     }
 
 
-    cout << "Final solution capacited TB: \n";
-    auto current_time = high_resolution_clock::now();
-    auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
-    cout << "Elapsed time: " << elapsed_time << " seconds\n";
-    cout << "Num ite TB: " << ite << "\n";
-    sol_best.print();
-    cout << "\n";
+    // cout << "Final solution capacited TB: \n";
+    // auto current_time = high_resolution_clock::now();
+    // auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+    // cout << "Elapsed time: " << elapsed_time << " seconds\n";
+    // cout << "Num ite TB: " << ite << "\n";
+    // sol_best.print();
+    // cout << "\n";
 
     return sol_best;
+}
+
+void TB::setSolutionMap(Solution_MAP sol_map) {
+    this->solutions_map = sol_map;
 }

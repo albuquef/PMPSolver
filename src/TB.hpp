@@ -7,6 +7,7 @@
 #include "instance.hpp"
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
+#include "solution_map.hpp"
 #include "globals.hpp"
 #include "utils.hpp"
 
@@ -28,7 +29,8 @@ public:
     Solution_cap run_cap(bool verbose, int MAX_ITE);
     Solution_std localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE);
     Solution_cap localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE);
-
+    Solution_MAP solutions_map;
+    void setSolutionMap(Solution_MAP sol_map);
 };
 
 

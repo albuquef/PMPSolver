@@ -13,10 +13,12 @@ using namespace std::chrono;
 #include "config_parser.cpp"
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
+#include "solution_map.hpp"
 #include "PMP.hpp"
 #include "VNS.hpp"
 
 int seed = 1;
+Solution_MAP solution_map;
 Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
 Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename,bool saveFile = true);
 
@@ -189,7 +191,7 @@ int main(int argc, char *argv[]) {
                     "\t Same methods as 'Method' without RSSV \n"
 
                     "Generic example : \n"
-                    "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> --Method <type_of_method>\n\n"
+                    "\t./large_PMP -p <number_of_medians> -dm <path_to_matrix_of_distance> -w <path_to_weigths_of_customer> -c <path_to_location_capacities> -method <type_of_method>\n\n"
 
                     "Usage example with Toulon from build directory\n"
                     "\t./large_PMP -p 5 -dm ../data/toulon/dist_matrix.txt -w ../data/toulon/cust_weights.txt -c ../data/toulon/loc_capacities --mode 3 -o output.txt\n"
@@ -262,8 +264,6 @@ int main(int argc, char *argv[]) {
 
     auto start = tick();
 
-
-
     cout << "-------------------------------------------------\n";
     if(Method == "EXACT_PMP" || Method == "TB_PMP" || Method == "VNS_PMP"){
         
@@ -274,6 +274,7 @@ int main(int argc, char *argv[]) {
             
         cout << "\nFinal solution:\n";
         solution.print();
+        cout << "Final total elapsed time: " << elapsed_time << "s\n";
         solution.saveAssignment(output_filename,Method);
         solution.saveResults(output_filename, elapsed_time,0,Method);   
     } else if(Method == "EXACT_CPMP" || Method == "EXACT_CPMP_BIN" || Method == "TB_CPMP" || Method == "VNS_CPMP"){
@@ -286,6 +287,7 @@ int main(int argc, char *argv[]) {
 
         cout << "\nFinal solution:\n";
         solution.print();
+        cout << "Final total elapsed time: " << elapsed_time << "s\n";  
         solution.saveAssignment(output_filename,Method);
         solution.saveResults(output_filename, elapsed_time,0,Method); 
         
@@ -295,7 +297,7 @@ int main(int argc, char *argv[]) {
         cout << "-------------------------------------------------\n";
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
         CLOCK_THREADED = true;
-        auto start_time = high_resolution_clock::now();
+        auto start_time_total = high_resolution_clock::now();
         
         shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance);
         if(Method_RSSV_sp == "EXACT_PMP" || Method_RSSV_sp == "TB_PMP" || Method_RSSV_sp == "VNS_PMP"){
@@ -303,7 +305,6 @@ int main(int argc, char *argv[]) {
         } else if(Method_RSSV_sp == "EXACT_CPMP" || Method_RSSV_sp == "EXACT_CPMP_BIN" || Method_RSSV_sp == "TB_CPMP" || Method_RSSV_sp == "VNS_CPMP"){
             auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER,Method_RSSV_sp);
         }
-
 
         cout << "-------------------------------------------------\n";
         cout << "Final Problem RSSV heuristic \n";
@@ -317,14 +318,20 @@ int main(int argc, char *argv[]) {
 
             cout << "\nFinal solution:\n";
             solution.print();
+            cout << "Final problem elapsed time: " << elapsed_time << "s\n";
+            cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
             solution.saveAssignment(output_filename,Method);
             solution.saveResults(output_filename, elapsed_time,0,Method); 
         } else if(Method_RSSV_fp == "EXACT_CPMP" || Method_RSSV_fp == "EXACT_CPMP_BIN" || Method_RSSV_fp == "TB_CPMP" || Method_RSSV_fp == "VNS_CPMP"){
+            auto start_time = high_resolution_clock::now();
             Solution_cap solution = methods_CPMP(filtered_instance, "RSSV_" + Method_RSSV_fp, output_filename);
-            
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
             if (Method_RSSV_fp == "EXACT_CPMP") solution.objEval();
+            cout << "\nFinal solution:\n";
+            solution.print();
+            cout << "Final elapsed time: " << elapsed_time << "s\n";
+            cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
             solution.saveAssignment(output_filename,Method);
             solution.saveResults(output_filename, elapsed_time,0,Method, Method_RSSV_sp, Method_RSSV_fp);
         }
@@ -373,6 +380,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
 Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, const string& output_filename, bool saveFile){
 
     Solution_cap solution;
+    Solution_MAP solution_map(instance);
     cout << "-------------------------------------------------\n";
     if (typeMethod == "EXACT_CPMP" || typeMethod == "RSSV_EXACT_CPMP"){
         cout << "Exact method cPMP continuos\n";
@@ -394,11 +402,13 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "TB heuristic - cPMP\n";
         cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
+        heuristic.setSolutionMap(solution_map);
         solution = heuristic.run_cap(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_CPMP" || typeMethod == "RSSV_VNS_CPMP"){
         cout << "VNS heuristic - cPMP\n";
         cout << "-------------------------------------------------\n";
         VNS heuristic(instance, seed);
+        heuristic.setSolutionMap(solution_map);
         solution = heuristic.runVNS_cap(output_filename,typeMethod,true,UB_MAX_ITER);
     }else{
         cout << "[ERROR] Method not found" << endl;

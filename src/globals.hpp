@@ -23,7 +23,6 @@ typedef struct {
 } my_tuple;
 typedef vector<my_tuple> assignment;
 
-
 extern uint_t LOC_FREQUENCY; // avg. no. of location occurrences in M sub-PMPs (M = LOC_FREQUENCY*N/n)
 extern double BW_CUTOFF; // locations within BW_CUTOFF * h from a selected one obtain nonzero voting score
 extern uint_t LOC_PRIORITY_CNT;

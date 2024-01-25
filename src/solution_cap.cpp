@@ -193,6 +193,7 @@ void Solution_cap::print() {
     cout << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
     cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
+    cout << "\n";
 }
 
 const unordered_set<uint_t> &Solution_cap::get_pLocations() const {

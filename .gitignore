@@ -7,8 +7,10 @@
 /provided/Matrice_cplt/
 /data/paca_v4/
 /provided/
-/results/
-/reports/
+/results/*
+!results/
+/reports/*
+!reports/
 model.lp
 build
 build/Makefile

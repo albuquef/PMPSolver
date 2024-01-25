@@ -54,6 +54,7 @@ void Solution_std::print() {
 //    }
     cout << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
+    cout << "\n";
 }
 
 const unordered_set<uint_t> &Solution_std::get_pLocations() const {
