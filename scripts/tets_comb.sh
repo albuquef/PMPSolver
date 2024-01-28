@@ -18,8 +18,8 @@ D_MATRIX=${DIR_DATA}dist_matrix.txt
 WEIGHTS=${DIR_DATA}cust_weights.txt
 CAPACITIES=${DIR_DATA}loc_capacities.txt
 OUTPUT=./solutions/test_combinations_toulon
-TIME_CPLEX=60
-TIME_CLOCK=60
+TIME_CPLEX=3600
+TIME_CLOCK=3600
 p=5
 
 methods=("TB_PMP" "TB_CPMP" "VNS_PMP" "VNS_CPMP EXACT_PMP EXACT_CPMP")
