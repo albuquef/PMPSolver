@@ -1,7 +1,7 @@
 #include "TB.hpp"
 #include "globals.hpp"
 #include "utils.hpp"
-
+#include <iomanip>
 #include <utility>
 
 #include <chrono> // for time-related functions
@@ -89,6 +89,25 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
     // auto sol_best = initRandomCapSolution();
     sol_best = localSearch_cap(sol_best, verbose, MAX_ITE);
     return sol_best;
+}
+
+
+void writeReport_TB(const string& filename, dist_t objective, int num_ite, int num_solutions, dist_t time) {
+    // Open the file for writing in append mode
+    ofstream outputFile(filename, ios::app);
+    if (!outputFile.is_open()) {
+        cerr << "Error opening the output file." << endl;
+        return;
+    }
+
+    outputFile << fixed << setprecision(15) << objective << ";"; // obj value
+    outputFile << num_ite << ";";
+    outputFile << num_solutions << ";";
+    outputFile << time << "\n";
+
+
+    // Close the file
+    outputFile.close();
 }
 
 
@@ -187,6 +206,9 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
     // cout << "TB local search capacitated started\n";
     
+    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size()) + ".csv";
+
+
     //// time limit ////
     auto time_limit_seconds = CLOCK_LIMIT;
     ///
@@ -194,6 +216,10 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_cap sol_cand;
+
+    if (generate_reports)
+        writeReport_TB(report_filename, sol_best.get_objective(), 0, solutions_map.getNumSolutions(), 0);
+
 
     int ite = 1;
     auto start_time_total = high_resolution_clock::now();
@@ -240,10 +266,29 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 
                                 solutions_map.addUniqueSolution(sol_tmp2);
 
+                                if (verbose) {
+                                    cout << "best solution candidate: \n";
+                                    sol_tmp2.print();
+                                    auto current_time = high_resolution_clock::now();
+                                    auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+                                    cout << "Num ite capacited TB: " << ite << "\n";
+                                    cout << "capacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
+                                    cout << endl;
+                                }
+
+
                                 // sol_tmp.GAP_eval();
                                 if (sol_cand.get_objective() - sol_tmp2.get_objective() > TOLERANCE_OBJ) { // LB2
+                                    
+     
                                     sol_cand = sol_tmp2;
                                     improved = true;
+                          
+                                    if (generate_reports)
+                                        writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(), duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
+                                    
+
+
                                 }
                             }
                         }
@@ -282,6 +327,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
         }
 
         if (verbose) {
+            cout << "Solution Best: \n";
             sol_best.print();
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
@@ -292,6 +338,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             cout << endl;
         }
 
+        
         ite++;
     }
 
@@ -301,4 +348,12 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
 void TB::setSolutionMap(Solution_MAP sol_map) {
     this->solutions_map = sol_map;
+}
+
+void TB::setGenerateReports(bool generate_reports) {
+    this->generate_reports = generate_reports;
+}
+
+void TB::setMethod(string Method) {
+    this->typeMethod = Method;
 }

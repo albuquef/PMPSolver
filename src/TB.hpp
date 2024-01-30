@@ -19,6 +19,8 @@ private:
     shared_ptr<Instance> instance;
     default_random_engine engine;
     string type_eval_solution;
+    bool generate_reports=false;
+    string typeMethod="TB";
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
@@ -31,6 +33,8 @@ public:
     Solution_cap localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE);
     Solution_MAP solutions_map;
     void setSolutionMap(Solution_MAP sol_map);
+    void setGenerateReports(bool generate_reports);
+    void setMethod(string Method);
 };
 
 

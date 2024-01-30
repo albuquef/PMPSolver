@@ -20,6 +20,7 @@ private:
     shared_ptr<Instance> instance;
     default_random_engine engine;
     bool generate_reports=false;
+    string typeMethod="VNS";
 public:
     explicit VNS(shared_ptr<Instance> instance, uint_t seed);
 
@@ -37,6 +38,7 @@ public:
     Solution_MAP solutions_map;
     void setSolutionMap(Solution_MAP sol_map);
     void setGenerateReports(bool generate_reports);
+    void setMethod(string Method);
 };
 
 

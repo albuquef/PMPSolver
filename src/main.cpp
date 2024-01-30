@@ -328,7 +328,7 @@ int main(int argc, char *argv[]) {
             solution.print();
             cout << "Final elapsed time: " << elapsed_time << "s\n";
             cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
-            solution.saveAssignment(output_filename,Method);
+            solution.saveAssignment(output_filename,"RSSV_" + Method_RSSV_fp);
             solution.saveResults(output_filename, elapsed_time,0,Method, Method_RSSV_sp, Method_RSSV_fp);
         }
 
@@ -398,6 +398,8 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
         heuristic.setSolutionMap(solution_map);
+        heuristic.setGenerateReports(true);
+        heuristic.setMethod(typeMethod);
         solution = heuristic.run_cap(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_CPMP" || typeMethod == "RSSV_VNS_CPMP"){
         cout << "VNS heuristic - cPMP\n";
@@ -405,6 +407,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         VNS heuristic(instance, seed);
         heuristic.setSolutionMap(solution_map);
         heuristic.setGenerateReports(true);
+        heuristic.setMethod(typeMethod);
         solution = heuristic.runVNS_cap(output_filename,typeMethod,true,UB_MAX_ITER);
     }else{
         cout << "[ERROR] Method not found" << endl;

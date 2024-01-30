@@ -240,12 +240,12 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
 
     TB tb(instance, engine());
     tb.setSolutionMap(solutions_map);
+    auto start_time_v0 = high_resolution_clock::now();
     auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initRandomCapSolution();
     tb.solutions_map.addUniqueSolution(sol_best);
     cout << "Initial solution: \n";
     sol_best.print();
-
 
     // limit of neighborhoods
     int p = sol_best.get_pLocations().size();
@@ -253,7 +253,11 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     int k = 1; // initial neighborhood
     
 
-    string report_filename = "./reports/report_VNS_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
+    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
+
+    if (generate_reports)
+        writeReport(report_filename, sol_best.get_objective(), 0, tb.solutions_map.getNumSolutions(), duration_cast<seconds>(high_resolution_clock::now() - start_time_v0).count());
+
 
     int ite = 1;
     auto start_time_total = high_resolution_clock::now();
@@ -263,8 +267,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
         cout << "vizinhanca: " << k << "\n";
         auto new_sol = rand_swap_Locations_cap(sol_best,k, ite);
         cout << "\nlocal search\n";
-        // new_sol = tb.localSearch_cap(new_sol,false,DEFAULT_MAX_ITE);
-        new_sol = tb.localSearch_cap(new_sol,false,3);
+        new_sol = tb.localSearch_cap(new_sol,true,DEFAULT_MAX_ITE);
         new_sol.print();
         
 
@@ -278,7 +281,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
             k++;   
         }else if (k > Kmax){
             cout << "Limit of neighborhoods reached. Stopping the capacitated VNS algorithm.\n ";
-            cout << " k = " << k << " > " Kmax  << " = Kmax \n";
+            cout << " k = " << k << " > " << Kmax  << " = Kmax \n";
             return sol_best;
         }
 
@@ -321,4 +324,8 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
 
 void VNS::setSolutionMap(Solution_MAP sol_map){
     solutions_map = sol_map;
+}
+
+void VNS::setMethod(string Method){
+    this->typeMethod = Method;
 }
