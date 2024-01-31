@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     // Optional parameters
     int threads_cnt = (int) getAvailableThreads();
     int mode = 0;
-    // int seed = 1;
+    int seed = 1;
     string output_filename;
     int MAX_ITE_TB = 100000000;
     int MAX_ITE_VNS = 10000000;
@@ -295,6 +295,8 @@ int main(int argc, char *argv[]) {
         CLOCK_THREADED = true;
         auto start_time_total = high_resolution_clock::now();
         
+
+
         shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance);
         if(Method_RSSV_sp == "EXACT_PMP" || Method_RSSV_sp == "TB_PMP" || Method_RSSV_sp == "VNS_PMP"){
             auto filtered_instance = metaheuristic.run(THREAD_NUMBER,Method_RSSV_sp);

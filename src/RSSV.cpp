@@ -1,7 +1,7 @@
 #include "RSSV.hpp"
 #include "globals.hpp"
 #include "utils.hpp"
-
+#include <random>
 
 void printDDE(void){
     cout << "RSSV finished." << endl;
@@ -33,7 +33,6 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
     cout << "\n\n";
 
     vector<thread> threads; // spawn M threads
-
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
             threads.emplace_back(&RSSV::solveSubproblem, this, i + j);
@@ -45,9 +44,11 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
         // Clear the threads vector for the next batch
         threads.clear();
     }
-    for (auto &th:threads) { // wait for all threads
+
+    for (auto &th : threads) {
         th.join();
     }
+
     cout << "[INFO] All subproblems solved."  << endl << endl;
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
@@ -69,10 +70,16 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
     cout << "\n\nFinal instance parameters:\n";
     filtered_instance->print();
 
+
+    exit(1);
+
     return filtered_instance;
 }
 
 shared_ptr<Instance> RSSV::run_CAP(int thread_cnt, string& method_sp) {
+
+
+
     cout << "RSSV running...\n";
     cout << "cPMP size (N): " << N << endl;
     cout << "sub-cPMP size (n): " << min(n,N) << endl;
@@ -131,11 +138,16 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt, string& method_sp) {
  * sub-PMP considers only n locations and customers.
  */
 void RSSV::solveSubproblem(int seed) {
+
+
+    // // Use the seed for random number generation
+    // std::mt19937 gen(seed);
+
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
     // int MAX_ITE = 1000;
 
     // checkClock();
@@ -169,7 +181,6 @@ void RSSV::solveSubproblem(int seed) {
 
 
 
-
 /*
  * Solve sub-PMP of the original problem by the TB heuristic.
  * sub-PMP considers only n locations and customers.
@@ -179,7 +190,7 @@ void RSSV::solveSubproblem_CAP(int seed) {
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
     // checkClock();
     Solution_cap sol;
     if(checkClock()){

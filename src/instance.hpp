@@ -35,7 +35,7 @@ public:
     dist_t getWeightedDist(uint_t loc, uint_t cust);
     dist_t getRealDist(uint_t loc, uint_t cust);
     dist_t getCustWeight(uint_t cust);
-    Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator);
+    Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed);
     Instance getReducedSubproblem(const vector<uint_t>& locations_new, string type_service);
     void print();
     const vector<uint_t>& getCustomers() const;
