@@ -186,7 +186,7 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
     std::default_random_engine generator(seed);;
 
         // Print information about the engine and seed
-    cout << "SampleSubproblem - Seed: " << seed << ", Engine State: " << generator.operator()() << endl;
+    // cout << "SampleSubproblem - Seed: " << seed << ", Engine State: " << generator.operator()() << endl;
 
     vector<uint_t> locations_new;
     vector<uint_t> customers_new;

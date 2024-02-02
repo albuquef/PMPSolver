@@ -119,24 +119,27 @@ void PMP::run(){
 
         solveILP();
 
-        bool verbose = true;
-        if (verbose){
-            if (cplex.getStatus() == IloAlgorithm::Optimal)
+        bool verb = true;
+        if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
+            isFeasible_Solver = true;
+            if (verb){
                 if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
                 else {printSolution(cplex,x_cont,y);}
-            else
-                cout << "Solution status = " << cplex.getStatus()   << endl;
-        }
+            }
+        }else
+            cout << "Solution status = " << cplex.getStatus()   << endl;
+
         // cplex.end();
         // env.end();
     } catch (IloException& e) {
+        // isFeasible = false;
         cerr << "ERROR: " << e.getMessage()  << endl;
         cout << "\nError ilocplex" << endl;
         return;
     }
 }
 
-void PMP:: run_GAP(unordered_set<uint_t> p_locations){
+void PMP::run_GAP(unordered_set<uint_t> p_locations){
     try{
         this->p_locations = p_locations;
 
@@ -147,16 +150,19 @@ void PMP:: run_GAP(unordered_set<uint_t> p_locations){
         // cplex.setLogStream(fileStream);     // Redirect log to a file stream
         solveILP();
 
-        if (VERBOSE){
-            if (cplex.getStatus() == IloAlgorithm::Optimal)
+        bool verb = true;
+        if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
+            isFeasible_Solver = true;
+            if (verb){
                 if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
                 else {printSolution(cplex,x_cont,y);}
-            else
-                cout << "Solution status = " << cplex.getStatus()   << endl;
-        }
+            }
+        }else
+            cout << "Solution status = " << cplex.getStatus()   << endl;
         // cplex.end();
         // env.end();
     } catch (IloException& e) {
+        // isFeasible = false;
         cerr << "ERROR: " << e.getMessage()  << endl;
         cout << "\nError ilocplex" << endl;
         return;
@@ -359,7 +365,7 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
         cout << "Solution value  = " << cplex.getObjValue() << endl;
         double objectiveValue = cplex.getObjValue();
         cout << "Objective Value: " << fixed << setprecision(15) << objectiveValue << endl;
-        cout << "Time to solve: " << timePMP << endl;
+        cout << "Time to solve: " << timeSolver << endl;
 
         // for (IloInt j = 0; j < num_facilities; j++){
         //     auto loc = instance->getLocations()[j];
@@ -389,6 +395,7 @@ void PMP::solveILP(){
     double cpu0, cpu1;
     cpu0 = get_wall_time(); 
     if (!cplex.solve()){
+        isFeasible_Solver = false;
         env.error() << "Failed to optimize LP." << endl;
         // cout << "Solution status = " << cplex.getStatus()   << endl;
         // throw(-1);
@@ -475,7 +482,9 @@ Solution_cap PMP::getSolution_cap(){
     } catch (IloException& e) {
         cerr << "ERROR: " << e.getMessage()  << endl;
         cout << "\nError get solution cap" << endl;
-        return Solution_cap();
+        Solution_cap sol;
+        sol.setFeasibility(false);
+        return sol;
     }
 }
 
@@ -601,4 +610,6 @@ void PMP::saveResults(const string& filename,const string& Method){
     outputTable.close();
 }
 
-
+bool PMP::getFeasibility_Solver(){
+    return isFeasible_Solver;
+}

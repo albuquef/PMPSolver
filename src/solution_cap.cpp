@@ -15,9 +15,15 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     this->typeEval = typeEval;
     // cout << "typeEval: " << typeEval << endl;
     if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
+        cout << "GAP eval antes" << endl;
         GAP_eval(); 
+        cout << "GAP eval depois" << endl;
+        cout << "fs: " << getFeasibility() << endl;
     }else if(strcmp(typeEval, "heuristic") == 0){
+        cout << "heuristic eval" << endl;
         fullCapEval(); // urgency priority heuristic
+        cout << "Heur eval depois" << endl;
+        cout << "fs: " << getFeasibility() << endl;
     }else{
         cerr << "ERROR: typeEval not recognized" << endl;
         // exit(1);
@@ -39,7 +45,6 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance,
     // objEval();
     // GAP_eval();
 }
-
 
 
 void Solution_cap::naiveEval() {
@@ -111,7 +116,9 @@ void Solution_cap::fullCapEval() {
     for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
     if (total_capacity < total_demand) {
         fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
-        exit(1);
+        isFeasible = false;
+        // exit(1);
+        return;
     }
 
 
@@ -164,6 +171,7 @@ void Solution_cap::fullCapEval() {
         urgencies_vec = getUrgencies();
     }
 
+    isFeasible = true;
     // cout << "fullCapEval: " << objective << endl;
     objEval();
 
@@ -261,47 +269,6 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
     cout.rdbuf(stream_buffer_cout);
     file.close();
 }
-
-// void Solution_cap::saveResults(string output_filename,string Method, string Method_sp, string Method_fp) {
-    
-//     cout << "[INFO] Saving assignment RSSV" << endl;
-    
-//     fstream file;
-//     streambuf *stream_buffer_cout = cout.rdbuf();
-
-//     string output_filename_final = output_filename + 
-//         "_p_" + to_string(p_locations.size()) + 
-//         "_" + Method +
-//         ".txt";
-
-//     // Open file if output_filename is not empty
-//     if (!output_filename_final.empty()) {
-//         file.open(output_filename_final, ios::out);
-//         streambuf *stream_buffer_file = file.rdbuf();
-//         cout.rdbuf(stream_buffer_file); // redirect cout to file
-//     }
-
-//     cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
-
-//     cout << "P LOCATIONS\n";
-//     for (auto p_loc:p_locations) cout << p_loc << endl;
-//     cout << endl;
-
-//     cout << "LOCATION USAGES\nlocation (usage/capacity)\n";
-//     for (auto p_loc:p_locations)
-//         cout << p_loc << " (" << loc_usages[p_loc] << "/" << instance->getLocCapacity(p_loc) << ")\n";
-//     cout << endl;
-
-//     cout << "CUSTOMER ASSIGNMENTS\ncustomer (demand) -> location (assigned demand)\n";
-//     for (auto cust:instance->getCustomers()) {
-//         cout << cust << " (" << instance->getCustWeight(cust) << ") -> ";
-//         for (auto a:assignments[cust]) cout << a.node << " (" << a.usage << ") ";
-//         cout << endl;
-//     }
-
-//     cout.rdbuf(stream_buffer_cout);
-//     file.close();
-// }
 
 void Solution_cap::saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp, string Method_fp){
 
@@ -411,28 +378,34 @@ void Solution_cap::GAP_eval(){
     if (strcmp(typeEval, "GAP") == 0){
         PMP pmp(instance, "GAP", true);
         pmp.run_GAP(p_locations);
-        auto sol_gap = pmp.getSolution_cap();
-        setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
+        // auto sol_gap = pmp.getSolution_cap();
+        if (pmp.getFeasibility_Solver()){
+            isFeasible = true;  
+            auto sol_gap = pmp.getSolution_cap();
+            setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
+        }else{
+            cout << "GAP not feasible" << endl;
+            auto sol_gap = Solution_cap();
+            isFeasible = false;
+        }
     }
     if (strcmp(typeEval, "GAPrelax") == 0){
         PMP pmp(instance, "GAP", false);
         pmp.run_GAP(p_locations);
-        auto sol_gap = pmp.getSolution_cap();
-        setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
+        // auto sol_gap = pmp.getSolution_cap();
+        if (pmp.getFeasibility_Solver()){
+            isFeasible = true;
+            auto sol_gap = pmp.getSolution_cap();
+            setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
+        }else{
+            cout << "GAPrelax not feasible" << endl;
+            auto sol_gap = Solution_cap();
+            isFeasible = false;
+        }
     }
-
-    // cout << "GAP_eval: " << objective << endl;
-
-    // // Check if capacity demands can be met
-    // uint_t total_capacity = 0;
-    // uint_t total_demand = instance->getTotalDemand();
-    // for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
-    // if (total_capacity < total_demand) {
-    //     fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
-    //     exit(1);
-    // }        
+   
 }
 
 void Solution_cap::objEval(){
@@ -445,3 +418,10 @@ void Solution_cap::objEval(){
 
 }
 
+bool Solution_cap::getFeasibility(){
+    return isFeasible;
+}
+
+void Solution_cap::setFeasibility(bool feasible){
+    isFeasible = feasible;
+}

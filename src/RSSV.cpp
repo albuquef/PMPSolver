@@ -45,9 +45,6 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
         threads.clear();
     }
 
-    for (auto &th : threads) {
-        th.join();
-    }
 
     cout << "[INFO] All subproblems solved."  << endl << endl;
 
@@ -70,8 +67,6 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
     cout << "\n\nFinal instance parameters:\n";
     filtered_instance->print();
 
-
-    exit(1);
 
     return filtered_instance;
 }

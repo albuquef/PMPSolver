@@ -240,12 +240,15 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
 
     TB tb(instance, engine());
     tb.setSolutionMap(solutions_map);
+    tb.setMethod("TB_" + Method);
     auto start_time_v0 = high_resolution_clock::now();
     auto sol_best = tb.initHighestCapSolution();
-    // auto sol_best = tb.initRandomCapSolution();
+    // auto sol_best = tb.initSmartRandomCapSolution();
     tb.solutions_map.addUniqueSolution(sol_best);
     cout << "Initial solution: \n";
     sol_best.print();
+
+    // exit(0);
 
     // limit of neighborhoods
     int p = sol_best.get_pLocations().size();
@@ -303,9 +306,9 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
         }
 
         cout << "ite: " << ite << " k: " << k << " sol_best: " << sol_best.get_objective() << "\n";
-        cout << "------------------\n";
+        cout << "-------------------------------\n";
         cout << "size solutions_map: " << tb.solutions_map.getNumSolutions() << "\n";
-        cout << "------------------\n";
+        cout << "-------------------------------\n";
 
         ite++;
     }

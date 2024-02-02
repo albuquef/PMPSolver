@@ -26,6 +26,7 @@ private:
     void setSolution(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations
                     ,unordered_map<uint_t, dist_t>  loc_usages,unordered_map<uint_t, dist_t> cust_satisfactions
                     ,unordered_map<uint_t, assignment> assignments, dist_t objective);
+    bool isFeasible=false;
 public:
 
     Solution_cap() = default;
@@ -57,7 +58,8 @@ public:
     unordered_map<uint_t, assignment> getAssignments();
     void saveAssignment(string output_filename,string Method);
     void saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp="null", string Method_fp="null");
-
+    void setFeasibility(bool feasible);
+    bool getFeasibility();
 };
 
 

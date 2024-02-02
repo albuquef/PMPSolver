@@ -58,6 +58,7 @@ class PMP
         bool is_BinModel;
         bool VERBOSE;
         string typeServ;
+        bool getFeasibility_Solver();
         
 
 
@@ -70,6 +71,8 @@ class PMP
         BoolVarMatrix x_bin;
         IloBoolVarArray y;
         NumVarMatrix x_cont;
+        bool isFeasible_Solver=false;
+        // bool isFeasible=false;
         // IloNumVarArray y_cont;
         uint_t p;
         uint_t num_facilities;
@@ -108,62 +111,6 @@ class PMP
 
 };
 
-// Define the callback class
-class GapInfoCallback : public IloCplex::MIPInfoCallbackI {
-public:
-    GapInfoCallback(IloEnv env, IloCplex cplex, IloNum startTime, IloNum lastPrintTime, IloNum lastBestBound, const std::string& filename)
-        : IloCplex::MIPInfoCallbackI(env), cplex(cplex), startTime(startTime), lastPrintTime(lastPrintTime), lastBestBound(lastBestBound), filename(filename) {}
 
-protected:
-    void main() override {
-        try {
-
-        // cout << "Callback called" << endl;
-        double interval_time = 5.0; // seconds
-
-        if (cplex.getCplexTime() - lastPrintTime >= interval_time) {
-
-            ofstream outputTable;
-            outputTable.open("./reports/"+filename,ios:: app);
-
-            
-            if (!outputTable.is_open()) {
-                // cerr << "Error opening file: " << output_filename << endl;
-                cerr << "Error opening file: " << endl;
-                // return;
-            }else{
-                outputTable << fixed << setprecision(15) << cplex.getObjValue() << ";"; // obj value
-                outputTable << fixed << setprecision(15) << getBestObjValue() << ";"; // obj value
-                outputTable << fixed << setprecision(15) << getIncumbentObjValue() << ";"; // obj value
-                outputTable << getNnodes() << ";"; // num nodes
-                outputTable << getMIPRelativeGap() <<";"; // relative gap
-                outputTable << cplex.getCplexTime() - startTime <<  ";"; // time cplex
-                outputTable << "\n";
-            }
-            outputTable.close();
-
-            std::cout << "Time: " << cplex.getCplexTime() - startTime << " seconds" << std::endl;
-            std::cout << "MIP Gap: " << getMIPRelativeGap() << std::endl;
-            std::cout << "Nodes: " << getNnodes() << std::endl;
-            std::cout << "Best Integer: " <<  fixed << setprecision(15) << cplex.getObjValue() << std::endl;
-            std::cout << "Best Objective: " <<  fixed << setprecision(15) << getBestObjValue() << std::endl;
-            std::cout << "Incumbent Obj:  " << fixed << setprecision(15) << getIncumbentObjValue() << std::endl;
-
-            lastPrintTime = cplex.getCplexTime();
-            lastBestBound = getBestObjValue();
-        }
-    } catch (IloException &ex) {
-        std::cerr << "Error in callback function: " << ex.getMessage() << std::endl;
-        throw; // Rethrow the exception to terminate the program
-    }
-    }
-
-private:
-    IloCplex cplex;
-    IloNum startTime;
-    IloNum lastPrintTime;
-    IloNum lastBestBound;
-    std::string filename;
-};
 
 #endif // PMP_H

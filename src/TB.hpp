@@ -26,6 +26,7 @@ public:
     Solution_std initRandomSolution();
     Solution_cap initRandomCapSolution();
     Solution_cap initHighestCapSolution();
+    Solution_cap initSmartRandomCapSolution();
 
     Solution_std run(bool verbose, int MAX_ITE);
     Solution_cap run_cap(bool verbose, int MAX_ITE);
