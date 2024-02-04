@@ -94,49 +94,26 @@ Solution_cap TB::initSmartRandomCapSolution(){
     sort(sorted_locations.begin(), sorted_locations.end());
     reverse(sorted_locations.begin(), sorted_locations.end());
 
+    // p_locations = {1413,1302,1048,952,927,951,877,213,842,206,1040,818,1414,156,214,547,874,23,1049,50,949,801,283,918,511,405,664,629,947,651};
+    // Solution_cap solut(instance, p_locations, "GAPrelax");
+
+    // p_locations = {204,36,195,26,174,17,164,16,2,105,156,50,206,21,20,893,842,302,251,772,385,107,884,482,99,432,414,67,474,689};
+    // Solution_cap solut(instance, p_locations, "GAPrelax");
 
     // for (int i = 0; i < p; i++) {
     //     p_locations.insert(sorted_locations[i].second);
     // }
 
-    uniform_int_distribution<uint_t> distribution (0, locations.size() - 1);
+    // uniform_int_distribution<uint_t> distribution (0, filter_locations.size() - 1);
+    uniform_int_distribution<uint_t> distribution (0, 90);
     while (p_locations.size() < p) {
         auto loc_id = distribution(engine);
-        auto loc = locations[loc_id];
+        auto loc = filter_locations[loc_id];
         p_locations.insert(loc);
     }
 
-    cout << "Aqui: \n";
     Solution_cap solut(instance, p_locations, "GAPrelax");
-    cout << "Aqui: \n";
     bool feasible = solut.getFeasibility();
-    if (solut.getFeasibility() == true){
-        cout << "feasible solution found\n";
-    }else{
-        cout << "infeasible solution found\n";
-    }
-    // bool feasible = false;
-    // cout << "feasible: " << feasible << "\n";
-
-    // vector<pair<uint_t, uint_t>> sorted_p_locations;
-    // for (auto p_loc:solut.get_pLocations()) {
-    //     auto cap = instance->getLocCapacity(p_loc);
-    //     sorted_p_locations.emplace_back(cap, p_loc);
-    // }
-    // sort(sorted_p_locations.begin(), sorted_p_locations.end());
-    // solut.replaceLocation(sorted_p_locations[0].second, sorted_locations[0].second, "GAPrelax");
-    // // Delete first element of sorted_locations
-    // if (!sorted_locations.empty()) {sorted_locations.erase(sorted_locations.begin());}
-    // // sorted_locations.erase(sorted_locations.begin());
-
-    // feasible = solut.getFeasibility();
-
-    // if (solut.getFeasibility() == true){
-    //     cout << "feasible solution found\n";
-    // }else{
-    //     cout << "infeasible solution found\n";
-    // }
-
     while(!feasible){
         
             vector<pair<uint_t, uint_t>> sorted_p_locations;
@@ -145,12 +122,11 @@ Solution_cap TB::initSmartRandomCapSolution(){
                 sorted_p_locations.emplace_back(cap, p_loc);
             }
             sort(sorted_p_locations.begin(), sorted_p_locations.end());
-            solut.replaceLocation(sorted_p_locations[0].second, sorted_locations[0].second, "GAPrelax");
-            // Delete first element of sorted_locations
-            if (!sorted_locations.empty()) {sorted_locations.erase(sorted_locations.begin());}
-            // sorted_locations.erase(sorted_locations.begin());
-
-            feasible = solut.getFeasibility();
+            if (sorted_p_locations[0].second != sorted_locations[0].second){
+                solut.replaceLocation(sorted_p_locations[0].second, sorted_locations[0].second, "GAPrelax");
+                if (!sorted_locations.empty()) {sorted_locations.erase(sorted_locations.begin());}
+                feasible = solut.getFeasibility();
+            }
 
             if (solut.getFeasibility() == true){
                 cout << "feasible solution found\n";
@@ -158,6 +134,7 @@ Solution_cap TB::initSmartRandomCapSolution(){
                 cout << "infeasible solution found\n";
             }
     }
+
 
     return solut;
 
@@ -357,12 +334,13 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 Solution_cap sol_tmp2 = sol_best;
                                 // evaluate solution with GAP assignment
                                 auto time_solve_gap_start = high_resolution_clock::now();
-                                sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
+                                // sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
+                                sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
                                 auto time_solve_gap_end = high_resolution_clock::now();
-                                cout << "GAPrelax elapsed time: " << duration_cast<seconds>(time_solve_gap_end - time_solve_gap_start).count() << " seconds\n";
+                                cout << "replace location elapsed time: " << duration_cast<seconds>(time_solve_gap_end - time_solve_gap_start).count() << " seconds\n";
                                 // sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
                                 
-                                solutions_map.addUniqueSolution(sol_tmp2);
+                                // solutions_map.addUniqueSolution(sol_tmp2);
 
                                 if (verbose) {
                                     cout << "solution candidate: \n";
@@ -378,7 +356,13 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 // sol_tmp.GAP_eval();
                                 if (sol_cand.get_objective() - sol_tmp2.get_objective() > TOLERANCE_OBJ) { // LB2
                                     
-     
+                                    // auto time_solve_gap_start = high_resolution_clock::now();
+                                    // auto p_loc = sol_tmp2.get_pLocations();
+                                    // sol_cand = Solution_cap(instance, p_loc);
+                                    // auto time_solve_gap_end = high_resolution_clock::now();
+                                    // cout << "gap eval elapsed time: " << duration_cast<seconds>(time_solve_gap_end - time_solve_gap_start).count() << " seconds\n";
+                                    // solutions_map.addUniqueSolution(sol_cand);
+
                                     sol_cand = sol_tmp2;
                                     improved = true;
                           
@@ -396,13 +380,20 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                     }
                 }
             }
+            auto current_time = high_resolution_clock::now();
+            auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+                
             if (improved) {
 
 
-                sol_best = sol_cand;
+                // sol_best = sol_cand;
 
-                auto current_time = high_resolution_clock::now();
-                auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
+                auto p_loc = sol_cand.get_pLocations();
+                sol_best = Solution_cap(instance, p_loc);
+                solutions_map.addUniqueSolution(sol_best);
+
+
+
                 if (elapsed_time >= time_limit_seconds) {
                     cout << "Time limit reached. Stopping the TB algorithm.\n";
                     cout << "Num ite capacited TB: " << ite << "\n";
@@ -412,8 +403,6 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
                 break;
             }else{
-                auto current_time = high_resolution_clock::now();
-                auto elapsed_time = duration_cast<seconds>(current_time - start_time_total).count();
                 if (elapsed_time >= time_limit_seconds) {
                     cout << "Time limit reached. Stopping the TB algorithm.\n";
                     cout << "Num ite capacited TB: " << ite << "\n";
@@ -421,8 +410,6 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                     cout << "Num ite TB: " << ite << "\n";
                     return sol_best;
                 }
-
-
             };
         }
 

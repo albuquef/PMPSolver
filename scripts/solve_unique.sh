@@ -18,8 +18,8 @@ DIST_TYPE=minutes
 
 D_MATRIX=${DIR_DATA}dist_matrix_${DIST_TYPE}.txt
 WEIGHTS=${DIR_DATA}cust_weights.txt
-TIME_CPLEX=0
-TIME_CLOCK=0
+TIME_CPLEX=3600
+TIME_CLOCK=3600
 
 
 ###### mat
@@ -36,3 +36,15 @@ do
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         --mode $MODE -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
 done
+
+if [ -z "$arr" ]; then
+    echo "No instances"
+fi
+
+for element in "${arr[@]}"; do
+    echo "$element"
+done
+
+# echo "Number of instances: ${#arr[@]}"
+#chmod +x ${arr[$SLURM_ARRAY_TASK_ID]}
+# srun ${arr[$SLURM_ARRAY_TASK_ID]}

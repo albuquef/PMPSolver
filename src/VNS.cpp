@@ -231,6 +231,7 @@ bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
 Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbose, int MAX_ITE) {
 
     cout << "capacitated VNS heuristic started\n";
+    auto start_time_total = high_resolution_clock::now();
     
     // limit of time and iterations
     // auto time_limit_seconds = 3600;
@@ -244,6 +245,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     auto start_time_v0 = high_resolution_clock::now();
     auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
+    sol_best = tb.localSearch_cap(sol_best,true,10);
     tb.solutions_map.addUniqueSolution(sol_best);
     cout << "Initial solution: \n";
     sol_best.print();
@@ -253,8 +255,8 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     // limit of neighborhoods
     int p = sol_best.get_pLocations().size();
     auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
-    int k = 1; // initial neighborhood
-    
+    // int k = 1; // initial neighborhood
+    int k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
 
     string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
 
@@ -263,14 +265,13 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
 
 
     int ite = 1;
-    auto start_time_total = high_resolution_clock::now();
     while (ite <= MAX_ITE) {
     // while (ite <= 10) {
         auto start_time = high_resolution_clock::now();
         cout << "vizinhanca: " << k << "\n";
         auto new_sol = rand_swap_Locations_cap(sol_best,k, ite);
         cout << "\nlocal search\n";
-        new_sol = tb.localSearch_cap(new_sol,true,DEFAULT_MAX_ITE);
+        new_sol = tb.localSearch_cap(new_sol,true,100);
         new_sol.print();
         
 
@@ -278,9 +279,14 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
             writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
 
         if (new_sol.get_objective() < sol_best.get_objective()) {
+            // auto p_loc = new_sol.get_pLocations();
+            // sol_best = Solution_cap(instance, p_loc);
+        
             sol_best = new_sol;
-            k = 1;
-        }else if (k <= Kmax){
+            // k = 1;
+            k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
+        }
+        if (k <= Kmax){
             k++;   
         }else if (k > Kmax){
             cout << "Limit of neighborhoods reached. Stopping the capacitated VNS algorithm.\n ";
