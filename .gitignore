@@ -11,6 +11,8 @@
 !results/
 /reports/*
 !reports/
+/console/*
+!console/
 model.lp
 build
 build/Makefile

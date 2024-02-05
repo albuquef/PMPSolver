@@ -245,18 +245,29 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     auto start_time_v0 = high_resolution_clock::now();
     auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
-    sol_best = tb.localSearch_cap(sol_best,true,10);
+    // sol_best = tb.localSearch_cap(sol_best,true,10);
     tb.solutions_map.addUniqueSolution(sol_best);
     cout << "Initial solution: \n";
     sol_best.print();
 
+    cout << "Initial solution heuristic: \n";
+    auto sol_best_heuristic = Solution_cap(instance,sol_best.get_pLocations(), "heuristic");
+    sol_best_heuristic.print();
+
+
+    // PMP pmp(instance, "CPMP");
+    // pmp.setSolution_cap(sol_best_heuristic);
+
     // exit(0);
+
+    return sol_best_heuristic;
+
 
     // limit of neighborhoods
     int p = sol_best.get_pLocations().size();
     auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
-    // int k = 1; // initial neighborhood
-    int k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
+    int k = 1; // initial neighborhood
+    // int k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
 
     string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
 
@@ -291,7 +302,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
         }else if (k > Kmax){
             cout << "Limit of neighborhoods reached. Stopping the capacitated VNS algorithm.\n ";
             cout << " k = " << k << " > " << Kmax  << " = Kmax \n";
-            return sol_best;
+            // return sol_best;
         }
 
         auto current_time = high_resolution_clock::now();

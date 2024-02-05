@@ -173,7 +173,7 @@ void Solution_cap::fullCapEval() {
 
     isFeasible = true;
     // cout << "fullCapEval: " << objective << endl;
-    objEval();
+    // objEval();
 
 }
 
@@ -400,6 +400,7 @@ void Solution_cap::GAP_eval(){
             setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
         }else{
+            objective=numeric_limits<dist_t>::max();
             cout << "GAPrelax not feasible" << endl;
             auto sol_gap = Solution_cap();
             isFeasible = false;

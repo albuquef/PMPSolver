@@ -443,13 +443,13 @@ Solution_cap PMP::getSolution_cap(){
                 for (IloInt i = 0; i < num_customers; i++){
                     auto cust = instance->getCustomers()[i];
                     // cout << "cust = " << cust << endl;
-                    if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.001){
+                    if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.0001){
                         auto dem_used = cplex.getValue(x_bin[i][j])* instance->getCustWeight(cust);//instance->getWeightedDist(loc,cust);
                         loc_usages[loc] += dem_used;
                         cust_satisfactions[cust] += dem_used;
                         auto obj_increment = dem_used * instance->getRealDist(loc, cust);
                         assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
-                    }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0.001){
+                    }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0.0001){
                         auto dem_used = cplex.getValue(x_cont[i][j])* instance->getCustWeight(cust);
                         loc_usages[loc] += dem_used;
                         cust_satisfactions[cust] += dem_used;
@@ -459,7 +459,7 @@ Solution_cap PMP::getSolution_cap(){
                     }
 
 
-                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.001){
+                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.0001){
                         
                             cerr << "ERROR: usage > capacity" << endl;    
                             exit(1);
@@ -613,3 +613,105 @@ void PMP::saveResults(const string& filename,const string& Method){
 bool PMP::getFeasibility_Solver(){
     return isFeasible_Solver;
 }
+
+void PMP::setSolution_cap(Solution_cap sol){
+        
+    cout << "[INFO] Setting CPLEX variables from solution" << endl;
+
+    try {
+        model = IloModel(env);
+        initVars();
+
+        if(is_BinModel == true)
+            createModel(this->model,this->x_bin,this->y);
+        else
+            createModel(this->model,this->x_cont,this->y);  
+
+        IloEnv env = model.getEnv();
+        IloBoolVarArray startVar_y(env);
+        IloBoolArray startVal_y(env);
+
+        auto p_locations = sol.get_pLocations();
+        auto sol_assignments = sol.getAssignments();
+
+        // Set y variables based on the selected locations in the solution
+        for (IloInt j = 0; j < num_facilities; j++) {
+            auto loc = instance->getLocations()[j];
+            if (p_locations.find(loc) != p_locations.end()) {
+                // cplex.setValue(y[j], 1.0);
+                startVar_y.add(y[j]);
+                startVal_y.add(IloBool(1));
+            } else {
+                // cplex.setValue(y[j], 0.0);
+                startVar_y.add(y[j]);
+                startVal_y.add(IloBool(0));
+            }        
+        }
+
+        std::vector<std::vector<IloNum>> X_matrix(num_customers, std::vector<IloNum>(num_facilities));
+        for (auto& num_customers : X_matrix) {
+            std::fill(num_customers.begin(), num_customers.end(), IloNum(0));
+        }
+
+
+        for (IloInt i = 0; i < num_customers; i++){
+            auto cust = instance->getCustomers()[i];
+            for (IloInt j = 0; j < num_facilities; j++){
+                    auto loc_j = instance->getLocations()[j];
+                for (auto a:sol_assignments[cust]) {
+                    auto loc = a.node;
+                    if (loc == loc_j) {
+                        X_matrix[i][j] = IloNum(1);
+                    }    
+                }
+            }
+        }
+
+
+        NumVarMatrix startVar_x(env);
+        IloArray<IloNumArray> startVal_x(env);
+
+        for(IloInt i = 0; i < num_customers; i++){
+            IloNumArray startVal_x_i(env);
+            for(IloInt j = 0; j < num_facilities; j++){
+                startVal_x_i.add(X_matrix[i][j]);
+                // startVar_x.add(x_cont[i][j]);
+            }
+            startVal_x.add(startVal_x_i);
+            startVar_x.add(x_cont[i]);
+        }
+
+
+                // Now, you can proceed to solve the optimization problem using CPLEX
+        try {
+
+            this->cplex = IloCplex(this->model);
+
+            cplex.addMIPStart(startVar_y, startVal_y);
+            cplex.addMIPStart(startVar_x, startVal_x);
+            // Solve the CPLEX model
+            cplex.solve();
+            
+            // Check the solution status
+            if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
+                cout << "CPLEX found an feasible/optimal solution." << endl;
+                // You can access the objective value and other information here
+            } else {
+                cout << "CPLEX did not find an optimal solution." << endl;
+                // Handle other solution statuses if needed
+            }
+        } catch (IloException& e) {
+            cerr << "ERROR: " << e.getMessage() << endl;
+            cout << "\nError solving the CPLEX model" << endl;
+        }
+
+
+    } catch (IloException& e) {
+        cerr << "ERROR: " << e.getMessage() << endl;
+        cout << "\nError setting CPLEX variables from solution" << endl;
+    }
+
+
+
+}
+

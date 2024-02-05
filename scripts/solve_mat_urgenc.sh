@@ -11,7 +11,6 @@
 #source /etc/profile.d/conda.sh # Required before using conda
 #conda activate myenv
 
-MODE=2
 CMD=./build/large_PMP
 DIR_DATA=./data/filterData_PACA_may23/
 DIST_TYPE=minutes

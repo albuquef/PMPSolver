@@ -104,8 +104,11 @@ Solution_cap TB::initSmartRandomCapSolution(){
     //     p_locations.insert(sorted_locations[i].second);
     // }
 
+    // p_locations = {1,2,3,4};
+    // Solution_cap solut(instance, p_locations, "GAPrelax");
+
     // uniform_int_distribution<uint_t> distribution (0, filter_locations.size() - 1);
-    uniform_int_distribution<uint_t> distribution (0, 90);
+    uniform_int_distribution<uint_t> distribution (0, min(90, (int)filter_locations.size()) - 1);
     while (p_locations.size() < p) {
         auto loc_id = distribution(engine);
         auto loc = filter_locations[loc_id];
@@ -334,13 +337,12 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 Solution_cap sol_tmp2 = sol_best;
                                 // evaluate solution with GAP assignment
                                 auto time_solve_gap_start = high_resolution_clock::now();
-                                // sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
-                                sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
+                                sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
+                                // sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
                                 auto time_solve_gap_end = high_resolution_clock::now();
                                 cout << "replace location elapsed time: " << duration_cast<seconds>(time_solve_gap_end - time_solve_gap_start).count() << " seconds\n";
-                                // sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
                                 
-                                // solutions_map.addUniqueSolution(sol_tmp2);
+                                solutions_map.addUniqueSolution(sol_tmp2);
 
                                 if (verbose) {
                                     cout << "solution candidate: \n";
@@ -356,13 +358,6 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 // sol_tmp.GAP_eval();
                                 if (sol_cand.get_objective() - sol_tmp2.get_objective() > TOLERANCE_OBJ) { // LB2
                                     
-                                    // auto time_solve_gap_start = high_resolution_clock::now();
-                                    // auto p_loc = sol_tmp2.get_pLocations();
-                                    // sol_cand = Solution_cap(instance, p_loc);
-                                    // auto time_solve_gap_end = high_resolution_clock::now();
-                                    // cout << "gap eval elapsed time: " << duration_cast<seconds>(time_solve_gap_end - time_solve_gap_start).count() << " seconds\n";
-                                    // solutions_map.addUniqueSolution(sol_cand);
-
                                     sol_cand = sol_tmp2;
                                     improved = true;
                           
@@ -386,13 +381,11 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             if (improved) {
 
 
-                // sol_best = sol_cand;
+                sol_best = sol_cand;
 
-                auto p_loc = sol_cand.get_pLocations();
-                sol_best = Solution_cap(instance, p_loc);
-                solutions_map.addUniqueSolution(sol_best);
-
-
+                // auto p_loc = sol_cand.get_pLocations();
+                // sol_best = Solution_cap(instance, p_loc);
+                // solutions_map.addUniqueSolution(sol_best);
 
                 if (elapsed_time >= time_limit_seconds) {
                     cout << "Time limit reached. Stopping the TB algorithm.\n";

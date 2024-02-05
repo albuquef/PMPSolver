@@ -411,6 +411,12 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
         solution = heuristic.runVNS_cap(output_filename,typeMethod,true,UB_MAX_ITER);
+
+        PMP pmp(instance, "CPMP");
+        pmp.setSolution_cap(solution);
+
+        exit(1);
+
     }else{
         cout << "[ERROR] Method not found" << endl;
         exit(1);

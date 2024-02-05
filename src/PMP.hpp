@@ -49,6 +49,7 @@ class PMP
                             IloBoolVarArray y);
         Solution_std getSolution_std(void);
         Solution_cap getSolution_cap(void);
+        void setSolution_cap(Solution_cap sol);
         void saveVars   (const string& filename,const string& Method);
         void saveResults(const string& filename,const string& Method);
         int current_day, current_month, current_year;
