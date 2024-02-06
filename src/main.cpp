@@ -412,9 +412,13 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setMethod(typeMethod);
         solution = heuristic.runVNS_cap(output_filename,typeMethod,true,UB_MAX_ITER);
 
-        PMP pmp(instance, "CPMP");
-        pmp.setSolution_cap(solution);
-
+    
+        if (solution.isSolutionFeasible()){
+            cout << "Solution feasible\n";   
+        } else {
+            cout << "Solution not feasible\n";
+        }
+        
         exit(1);
 
     }else{

@@ -10,6 +10,10 @@ double get_wall_time(){
     }
 }
 
+
+vector<uint_t> locations_global; // p selected locations
+int num_facilities_global;
+IloBoolVarArray y_global;
 static std::string gap_outputFilename;
 ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum, lastPrintTime, IloNum, lastBestBound) {
     try {
@@ -38,6 +42,16 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
             }
             outputTable.close();
 
+
+            // print the y values
+            // std::cout << "Printing p_loc values: " << std::endl;
+            // for (IloInt j = 0; j < num_facilities_global; j++){
+            //     auto loc = locations_global[j];
+            //     // if (cplex.getValue(y_global[j]) > 0.5)
+            //     if (getIncumbentValue(y[j]) > 0.5)
+            //         cout << loc  << " ";
+            //     cout << endl;
+            // }
             std::cout << "Time: " << cplex.getCplexTime() - startTime << " seconds" << std::endl;
             std::cout << "MIP Gap: " << getMIPRelativeGap() << std::endl;
             std::cout << "Nodes: " << getNnodes() << std::endl;
@@ -114,6 +128,9 @@ void PMP::run(){
                 "_p_" + to_string(p) +
                 ".csv";
         }
+
+        num_facilities_global = num_facilities;
+        locations_global = instance->getLocations();
         cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
 
 
@@ -614,6 +631,7 @@ bool PMP::getFeasibility_Solver(){
     return isFeasible_Solver;
 }
 
+// not wotking
 void PMP::setSolution_cap(Solution_cap sol){
         
     cout << "[INFO] Setting CPLEX variables from solution" << endl;
@@ -687,8 +705,8 @@ void PMP::setSolution_cap(Solution_cap sol){
 
             this->cplex = IloCplex(this->model);
 
-            cplex.addMIPStart(startVar_y, startVal_y);
-            cplex.addMIPStart(startVar_x, startVal_x);
+            // cplex.addMIPStart(startVar_y, startVal_y);
+            // cplex.addMIPStart(startVar_x, startVal_x);
             // Solve the CPLEX model
             cplex.solve();
             

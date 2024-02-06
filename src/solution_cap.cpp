@@ -15,15 +15,9 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     this->typeEval = typeEval;
     // cout << "typeEval: " << typeEval << endl;
     if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
-        cout << "GAP eval antes" << endl;
         GAP_eval(); 
-        cout << "GAP eval depois" << endl;
-        cout << "fs: " << getFeasibility() << endl;
     }else if(strcmp(typeEval, "heuristic") == 0){
-        cout << "heuristic eval" << endl;
         fullCapEval(); // urgency priority heuristic
-        cout << "Heur eval depois" << endl;
-        cout << "fs: " << getFeasibility() << endl;
     }else{
         cerr << "ERROR: typeEval not recognized" << endl;
         // exit(1);
@@ -75,22 +69,48 @@ uint_t Solution_cap::getClosestpLoc(uint_t cust) {
     return loc_closest;
 }
 
-
+// Function to check if the target value is in the first element of any pair in the vector
+bool isFirstValuePresent(const std::vector<std::pair<uint_t, dist_t>>& urgencies_vec, uint_t target) {
+    // Iterate over each pair in the vector
+    for (const auto& pair : urgencies_vec) {
+        // Check if the target value matches the first element of the pair
+        if (pair.first == target) {
+            // Return true if the target value is found
+            return true;
+        }
+    }
+    // Return false if the target value is not found
+    return false;
+}
 vector<pair<uint_t, dist_t>> Solution_cap::getUrgencies() {
     vector<pair<uint_t, dist_t>> urgencies_vec;
 
     // get closest and second closest p location with some remaining capacity
     for (auto p:cust_satisfactions) {
         auto cust = p.first;
-        auto sat = p.second;                                // cust satisfaction
-        auto dem = instance->getCustWeight(cust) - sat;     // cust remaining demand
-        if (sat < dem) { // cust not fully satisfied yet
+        auto sat = p.second; // cust satisfaction                              
+        // auto dem = instance->getCustWeight(cust) - sat;     // cust remaining demand
+        auto dem = instance->getCustWeight(cust);     // cust remaining demand
+        // if (cust == 206){
+        //     cout << "dem cust 206 = " << dem << endl;  
+        //     cout << "sat cust 206 = " << sat << endl;
+        // }
+        // if (cust == 50){
+        //     cout << "dem cust 50 = " << dem << endl;  
+        //     cout << "sat cust 50 = " << sat << endl;
+        // }
+        // if (sat < dem) { // cust not fully satisfied yet
+        if (dem - sat > 0) { // cust not fully satisfied yet
             auto l1 = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
             auto l2 = getClosestOpenpLoc(cust, l1);
             auto dist1 = instance->getRealDist(l1, cust);
             auto dist2 = instance->getRealDist(l2, cust);
             dist_t urgency = fabs(dist1 - dist2);
             urgencies_vec.emplace_back(make_pair(cust, urgency));
+            // if (cust == 206)
+            //     cout << "urg cust 206 = " << urgency << endl;
+            // if (cust == 50) 
+            //     cout << "urg cust 50 = " << urgency << endl;
         }
     }
 
@@ -127,11 +147,24 @@ void Solution_cap::fullCapEval() {
     bool location_full = false;
     bool infeasible = false;
     int cont = 0;
+
+    // print urgencies vector
+    // for (auto p:urgencies_vec) {
+    //     cout << p.first << " " << p.second << endl;
+    // }
+
+    int cont_iter = 0;
+
     while (!urgencies_vec.empty() && !infeasible) {
         // Assign customers, until some capacity is full
         for (auto p:urgencies_vec) {
             auto cust = p.first;
             auto dem_rem = instance->getCustWeight(cust) - cust_satisfactions[cust]; // remaining demand
+
+            cont_iter++;
+            // cout << "cont_iter: " << cont_iter << endl;
+            // cout << "\n\ncust: " << cust << " dem_rem: " << dem_rem << endl;
+
             while (dem_rem > 0  && !infeasible) {
                 auto loc = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
                 if (loc == numeric_limits<uint_t>::max()) {
@@ -147,18 +180,32 @@ void Solution_cap::fullCapEval() {
                         loc_usages[loc] += cap_rem;
                         cust_satisfactions[cust] += cap_rem;
                         auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
-                        objective += obj_increment;
+                        // objective += obj_increment;
                         assignments[cust].emplace_back(my_tuple{loc, cap_rem, obj_increment});
                         dem_rem -= cap_rem;
                         location_full = true;
+
+                    //     cout << "Finish all capacited\n";
+                    //    cout << "cust: " << cust << " dem_rem: " << dem_rem << endl;
+                    //     cout << "loc: " << loc << " cap_rem: " << cap_rem << endl;
+                    //     cout << "loc_usages[" << loc << "]: " << loc_usages[loc] << endl;
+                    //     cout << "cust_satisfactions[" << cust << "]: " << cust_satisfactions[cust] << endl;
+                    //     cout << "\n";
+
                         break;
                     } else { // assign dem_rem
                         loc_usages[loc] += dem_rem;
                         cust_satisfactions[cust] += dem_rem;
                         auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
-                        objective += obj_increment;
+                        // objective += obj_increment;
                         assignments[cust].emplace_back(my_tuple{loc, dem_rem, obj_increment});
                         dem_rem = 0;
+                    //    cout << "Finish all demand\n";
+                    //    cout << "cust: " << cust << " dem_rem: " << dem_rem << endl;
+                    //     cout << "loc: " << loc << " cap_rem: " << cap_rem << endl;
+                    //     cout << "loc_usages[" << loc << "]: " << loc_usages[loc] << endl;
+                    //     cout << "cust_satisfactions[" << cust << "]: " << cust_satisfactions[cust] << endl;
+                    //     cout << "\n";
                     }
                 }
             }
@@ -169,11 +216,12 @@ void Solution_cap::fullCapEval() {
         // Recompute urgencies and repeat (for unassigned customers and open locations only)
         location_full = false;
         urgencies_vec = getUrgencies();
+
     }
 
-    isFeasible = true;
+    isFeasible = !infeasible;
     // cout << "fullCapEval: " << objective << endl;
-    // objEval();
+    objEval();
 
 }
 
@@ -302,12 +350,6 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
     }
     outputTable.close();
 
-
-
-
-
-
-
 }
 
 
@@ -426,3 +468,67 @@ bool Solution_cap::getFeasibility(){
 void Solution_cap::setFeasibility(bool feasible){
     isFeasible = feasible;
 }
+
+
+int getIndex(vector<uint_t> vec, uint_t val){
+    auto it = find(vec.begin(), vec.end(), val);
+    if (it != vec.end()) return distance(vec.begin(), it);
+    else return -1;
+}
+
+bool Solution_cap::isSolutionFeasible(){
+    
+    isFeasible = true;
+
+    uint_t total_capacity = 0;
+    uint_t total_demand = instance->getTotalDemand();
+    for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
+    if (total_capacity < total_demand) {
+        fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
+        isFeasible = false;
+        // exit(1);
+        return isFeasible;
+    }
+    
+    auto locations = instance->getLocations();
+    vector<uint_t> vector_capacities = vector<uint_t>(locations.size(), 0);
+
+    for (auto cust:instance->getCustomers()) {
+        double satisfaction = 0;
+        for (auto a:assignments[cust]) {
+            satisfaction += a.usage;
+            vector_capacities[getIndex(locations, a.node)] += a.usage;
+            if (a.usage > instance->getLocCapacity(a.node)){
+                cerr << "ERROR: usage > capacity" << endl;
+                isFeasible = false;
+                return isFeasible;
+                // exit(1);
+            }
+            if (a.usage > instance->getCustWeight(cust)){
+                cerr << "ERROR: satisfaction > weight" << endl;
+                isFeasible = false;
+                return isFeasible;
+                // exit(1);
+            }
+        }
+        if (satisfaction < instance->getCustWeight(cust)){
+            cout << "ERROR: Cust= " <<  cust << " not satisfied" << endl;
+            isFeasible = false;
+            return isFeasible;
+        }
+    }
+
+
+    for (auto loc:instance->getLocations()) {
+        if (vector_capacities[getIndex(locations,loc)] > instance->getLocCapacity(loc)){
+            cerr << "ERROR: usage > capacity" << endl;
+            isFeasible = false;
+            return isFeasible;
+            // exit(1);
+        }
+    }
+ 
+ 
+    return isFeasible;
+}
+

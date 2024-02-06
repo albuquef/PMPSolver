@@ -337,12 +337,12 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 Solution_cap sol_tmp2 = sol_best;
                                 // evaluate solution with GAP assignment
                                 auto time_solve_gap_start = high_resolution_clock::now();
-                                sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
-                                // sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
+                                // sol_tmp2.replaceLocation(p_loc, loc, "GAPrelax");
+                                sol_tmp2.replaceLocation(p_loc, loc, "heuristic");
                                 auto time_solve_gap_end = high_resolution_clock::now();
                                 cout << "replace location elapsed time: " << duration_cast<seconds>(time_solve_gap_end - time_solve_gap_start).count() << " seconds\n";
                                 
-                                solutions_map.addUniqueSolution(sol_tmp2);
+                                // solutions_map.addUniqueSolution(sol_tmp2);
 
                                 if (verbose) {
                                     cout << "solution candidate: \n";
@@ -381,11 +381,11 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             if (improved) {
 
 
-                sol_best = sol_cand;
+                // sol_best = sol_cand;
 
-                // auto p_loc = sol_cand.get_pLocations();
-                // sol_best = Solution_cap(instance, p_loc);
-                // solutions_map.addUniqueSolution(sol_best);
+                auto p_loc = sol_cand.get_pLocations();
+                sol_best = Solution_cap(instance, p_loc);
+                solutions_map.addUniqueSolution(sol_best);
 
                 if (elapsed_time >= time_limit_seconds) {
                     cout << "Time limit reached. Stopping the TB algorithm.\n";
@@ -394,6 +394,18 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                     return sol_best;
                 }
 
+                cout << "Solution Best inside: \n";
+                sol_best.print();
+                auto current_time = high_resolution_clock::now();
+                auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+                cout << "Num ite capacited TB: " << ite << "\n";
+                cout << "capacitated TB loop elapsed time: " << elapsed_time << " seconds\n";
+                cout << "total time: " << duration_cast<seconds>(current_time - start_time_total).count() << " seconds\n";
+                // tock(start);
+                cout << endl;
+
+
+                ite++;
                 break;
             }else{
                 if (elapsed_time >= time_limit_seconds) {

@@ -60,7 +60,6 @@ class PMP
         bool VERBOSE;
         string typeServ;
         bool getFeasibility_Solver();
-        
 
 
     private:

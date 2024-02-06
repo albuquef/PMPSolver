@@ -242,6 +242,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     TB tb(instance, engine());
     tb.setSolutionMap(solutions_map);
     tb.setMethod("TB_" + Method);
+    tb.setGenerateReports(true);
     auto start_time_v0 = high_resolution_clock::now();
     auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
@@ -250,24 +251,11 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     cout << "Initial solution: \n";
     sol_best.print();
 
-    cout << "Initial solution heuristic: \n";
-    auto sol_best_heuristic = Solution_cap(instance,sol_best.get_pLocations(), "heuristic");
-    sol_best_heuristic.print();
-
-
-    // PMP pmp(instance, "CPMP");
-    // pmp.setSolution_cap(sol_best_heuristic);
-
-    // exit(0);
-
-    return sol_best_heuristic;
-
-
     // limit of neighborhoods
     int p = sol_best.get_pLocations().size();
     auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
-    int k = 1; // initial neighborhood
-    // int k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
+    // int k = 1; // initial neighborhood
+    int k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
 
     string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
 
@@ -282,10 +270,9 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
         cout << "vizinhanca: " << k << "\n";
         auto new_sol = rand_swap_Locations_cap(sol_best,k, ite);
         cout << "\nlocal search\n";
-        new_sol = tb.localSearch_cap(new_sol,true,100);
+        new_sol = tb.localSearch_cap(new_sol,true,DEFAULT_MAX_ITE);
         new_sol.print();
         
-
         if (generate_reports)
             writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
 
@@ -295,7 +282,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
         
             sol_best = new_sol;
             // k = 1;
-            k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
+            k = int(sol_best.get_pLocations().size()/4); // initial neighborhood
         }
         if (k <= Kmax){
             k++;   

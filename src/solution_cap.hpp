@@ -60,6 +60,7 @@ public:
     void saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp="null", string Method_fp="null");
     void setFeasibility(bool feasible);
     bool getFeasibility();
+    bool isSolutionFeasible();  
 };
 
 
