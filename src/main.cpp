@@ -383,6 +383,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "Exact method cPMP continuos\n";
         cout << "-------------------------------------------------\n";    
         PMP pmp(instance, "CPMP");
+        pmp.setGenerateReports(true);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -391,6 +392,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "Exact method cPMP binary\n";
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "CPMP", true);
+        pmp.setGenerateReports(true);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -411,7 +413,6 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
         solution = heuristic.runVNS_cap(output_filename,typeMethod,true,UB_MAX_ITER);
-
     
         if (solution.isSolutionFeasible()){
             cout << "Solution feasible\n";   
@@ -419,7 +420,6 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
             cout << "Solution not feasible\n";
         }
         
-        exit(1);
 
     }else{
         cout << "[ERROR] Method not found" << endl;

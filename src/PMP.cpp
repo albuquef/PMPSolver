@@ -11,9 +11,7 @@ double get_wall_time(){
 }
 
 
-vector<uint_t> locations_global; // p selected locations
-int num_facilities_global;
-IloBoolVarArray y_global;
+
 static std::string gap_outputFilename;
 ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum, lastPrintTime, IloNum, lastBestBound) {
     try {
@@ -129,10 +127,9 @@ void PMP::run(){
                 ".csv";
         }
 
-        num_facilities_global = num_facilities;
-        locations_global = instance->getLocations();
-        cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
-
+        if (generate_reports){
+            cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
+        }
 
         solveILP();
 
@@ -167,8 +164,9 @@ void PMP::run_GAP(unordered_set<uint_t> p_locations){
         // cplex.setLogStream(fileStream);     // Redirect log to a file stream
         solveILP();
 
-        bool verb = true;
+        bool verb = false;
         if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
+          
             isFeasible_Solver = true;
             if (verb){
                 if(is_BinModel == true) {printSolution(cplex,x_bin,y);}
@@ -631,6 +629,10 @@ bool PMP::getFeasibility_Solver(){
     return isFeasible_Solver;
 }
 
+void PMP::setGenerateReports(bool generate_reports){
+    this->generate_reports = generate_reports;
+}
+
 // not wotking
 void PMP::setSolution_cap(Solution_cap sol){
         
@@ -732,4 +734,5 @@ void PMP::setSolution_cap(Solution_cap sol){
 
 
 }
+
 

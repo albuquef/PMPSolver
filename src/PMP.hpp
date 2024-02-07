@@ -11,7 +11,7 @@
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
 #include "utils.hpp"
-#include "TB.hpp"
+// #include "TB.hpp"
 
 #include <ilcplex/ilocplex.h>
 
@@ -60,6 +60,7 @@ class PMP
         bool VERBOSE;
         string typeServ;
         bool getFeasibility_Solver();
+        void setGenerateReports(bool generate_reports);
 
 
     private:
@@ -72,7 +73,7 @@ class PMP
         IloBoolVarArray y;
         NumVarMatrix x_cont;
         bool isFeasible_Solver=false;
-        // bool isFeasible=false;
+        bool generate_reports=false;
         // IloNumVarArray y_cont;
         uint_t p;
         uint_t num_facilities;

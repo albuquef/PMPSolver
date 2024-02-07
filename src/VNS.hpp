@@ -4,6 +4,7 @@
 #include <omp.h>
 #include <utility>
 #include <string>
+#include <sys/time.h>
 
 #include "instance.hpp"
 #include "solution_std.hpp"
