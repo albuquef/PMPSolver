@@ -270,9 +270,6 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     sol_best.print();
     cout << endl;
 
-
-    exit(0);
-
     // limit of neighborhoods
     int p = sol_best.get_pLocations().size();
     auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
