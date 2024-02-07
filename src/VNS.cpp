@@ -352,7 +352,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
         }
 
 
-        if (elapsed_time >= time_limit_seconds) {
+        if (elapsed_time_total >= time_limit_seconds) {
             cout << "Time limit reached. Stopping the capacitated VNS algorithm.\n";
             return sol_best;
         }
