@@ -26,6 +26,7 @@ private:
     dist_t h; // bandwidth
     uint_t total_demand;
     const string type_service;
+    const string type_subarea;
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
@@ -47,6 +48,10 @@ public:
     dist_t getLocCapacity(uint_t loc);
     dist_t getTotalDemand() const;
     string getTypeService() const;
+
+    // to do Coverage
+    // void read_subareas(const string& subareas_filename, const string& type_subarea);
+    // uint_t getNumSubareas() const;
 
 };
 

@@ -27,7 +27,7 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
         loc_max_id(loc_max_id), 
         cust_max_id(cust_max_id), 
         type_service(type_service) {
-            
+
     total_demand = 0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
@@ -173,6 +173,41 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
     }
 }
 
+
+
+void Instance::read_subareas(const string &subareas_filename, const string &type_subarea) {
+    this->type_subarea = type_subarea;
+    fstream subareas_file(subareas_filename);
+    uint_t num_subareas = 0;
+    // if (subareas_file.is_open()) {
+    //     string line;
+    //     loc_max_id = 0;
+    //     subarea_max_id = 0;
+    //     string line;
+    //     // Scan data to determine distance matrix dimensions
+    //     cout << "Scanning input data...\n";
+    //     auto start = tick();
+    //     getline(subareas_file, line); // skip first line
+    //     cout << "Skipped line: " << line << endl;
+    //     while (getline(subareas_file, line)) {
+    //         auto tokens = tokenize(line, ',');
+    //         auto loc = stoi(tokens[0]);
+    //         auto subarea = stoi(tokens[1]);
+    //         subareas[loc] = subarea;
+    //     }
+    //     cout << "Loaded " << subareas.size() << " subareas\n";
+    //     // while (getline(dist_matrix_file, line)) {
+    //     //     auto tokens = tokenize(line, delim);
+    //     //     cust_max_id = max(cust_max_id, (uint_t) stoi(tokens[0]));
+    //     //     loc_max_id = max(loc_max_id, (uint_t) stoi(tokens[1]));
+    //     // }
+
+
+    // } else {
+    //     cerr << "Error while trying to open the subareas file" << endl;
+    //     exit(-1);
+    // }
+}
 
 uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
 //    return loc * cust_max_id + cust;    // faster extraction of cust values
