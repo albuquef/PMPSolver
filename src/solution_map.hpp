@@ -31,12 +31,9 @@ public:
     // }
 
     bool addUniqueSolution(const Solution_cap& newSolution) {
-        if(newSolution.get_objective() == 0 || newSolution.get_pLocations().size() == -1){
+        if(newSolution.get_objective() == 0 || newSolution.get_pLocations().size() != instance->get_p()){
             return false;
         }
-        // if(newSolution.get_pLocations().size() == 0 || newSolution.get_pLocations().size() != instance->get_p()){
-        //     return false;
-        // }
         
         if (!solutionExists(newSolution)) {
             addSolution(newSolution);

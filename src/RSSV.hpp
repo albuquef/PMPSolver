@@ -27,8 +27,8 @@ private:
     int DEFAULT_MAX_NUM_ITER = 10000000;
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
-    shared_ptr<Instance> run(int thread_cnt, string& method_sp);
-    shared_ptr<Instance> run_CAP(int thread_cnt, string& method_sp);
+    shared_ptr<Instance> run(uint_t thread_cnt, string& method_sp);
+    shared_ptr<Instance> run_CAP(uint_t thread_cnt, string& method_sp);
     void solveSubproblem(int seed);
     void solveSubproblem_CAP(int seed);
     void processSubsolution(shared_ptr<Solution_std> solution);

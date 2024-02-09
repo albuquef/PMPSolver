@@ -56,10 +56,9 @@ void Solution_cap::naiveEval() {
 
 uint_t Solution_cap::getClosestpLoc(uint_t cust) {
     dist_t dist_min = numeric_limits<dist_t>::max();
-    dist_t dist;
-    uint_t loc_closest;
+    uint_t loc_closest = numeric_limits<uint_t>::max();
     for (auto loc:p_locations) {
-        dist = instance->getWeightedDist(loc, cust);
+        dist_t dist = instance->getWeightedDist(loc, cust);
         if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;
@@ -340,7 +339,7 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
         outputTable << typeEval << ";"; 
         outputTable << fixed << setprecision(15) << get_objective() << ";"; // obj value
         outputTable << numIter << ";"; // 
-        outputTable << timeFinal <<  ";"; // time cplex
+        outputTable << fixed << setprecision(15) << timeFinal <<  ";"; // time cplex
         outputTable << Method_sp << ";";
         outputTable << Method_fp << ";";
         outputTable << "\n";
@@ -427,6 +426,7 @@ void Solution_cap::GAP_eval(){
             setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
         }else{
+            objective=numeric_limits<dist_t>::max();
             cout << "GAP not feasible" << endl;
             auto sol_gap = Solution_cap();
             isFeasible = false;

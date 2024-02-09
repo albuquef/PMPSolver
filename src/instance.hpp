@@ -29,9 +29,9 @@ private:
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
+    Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p, uint_t loc_max, uint_t cust_max,string type_service="null");    
     Instance(const string& dist_matrix_filename, const string& weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service="null");
-    Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p, uint_t loc_max, uint_t cust_max,string type_service="null");
-
+    
     dist_t getWeightedDist(uint_t loc, uint_t cust);
     dist_t getRealDist(uint_t loc, uint_t cust);
     dist_t getCustWeight(uint_t cust);
@@ -47,7 +47,6 @@ public:
     dist_t getLocCapacity(uint_t loc);
     dist_t getTotalDemand() const;
     string getTypeService() const;
-
 
 };
 

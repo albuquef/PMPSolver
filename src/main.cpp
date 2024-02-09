@@ -20,7 +20,7 @@ using namespace std::chrono;
 int seed = 1;
 Solution_MAP solution_map;
 Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename,bool saveFile = true);
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
 
 using namespace std;
 
@@ -32,13 +32,10 @@ int main(int argc, char *argv[]) {
     string labeled_weights_filename;
     string capacities_filename;
     // Optional parameters
-    int threads_cnt = (int) getAvailableThreads();
+    uint_t threads_cnt = (uint_t) getAvailableThreads();
     int mode = 0;
     int seed = 1;
     string output_filename;
-    int MAX_ITE_TB = 100000000;
-    int MAX_ITE_VNS = 10000000;
-    bool isBin_CPMP = false;
     // string typeProblem;
     // string typeHeuristic;
     string TypeService;
@@ -374,7 +371,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
     }
     return solution;
 }
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, const string& output_filename, bool saveFile){
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, const string& output_filename){
 
     Solution_cap solution;
     Solution_MAP solution_map(instance);
@@ -412,7 +409,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setSolutionMap(solution_map);
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
-        solution = heuristic.runVNS_cap(output_filename,typeMethod,true,UB_MAX_ITER);
+        solution = heuristic.runVNS_cap(typeMethod,true,UB_MAX_ITER);
     
         if (solution.isSolutionFeasible()){
             cout << "Solution feasible\n";   

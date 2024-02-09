@@ -45,14 +45,15 @@ vector<uint_t> getDistinctIndices(size_t vec_size, size_t k, int seed) {
     return distinct_indices;
 }
 
-Solution_std VNS::rand_swap_Locations(Solution_std sol_current, int num_swaps, int seed){
+Solution_std VNS::rand_swap_Locations(Solution_std sol_current, unsigned int num_swaps, int seed){
 
     // Set the seed for the random number generator
     std::mt19937 rng(seed);
 
-    int p = sol_current.get_pLocations().size();
+    // num_swaps = static_cast<unsigned int>(num_swaps);
     auto locations = instance->getLocations();
     auto p_locations = sol_current.get_pLocations();
+    auto p_locations_final = sol_current.get_pLocations();
 
     vector<uint_t> p_locations_vec;
     p_locations_vec.reserve(p_locations.size());
@@ -80,21 +81,23 @@ Solution_std VNS::rand_swap_Locations(Solution_std sol_current, int num_swaps, i
     std::vector<uint_t> indices_p = getDistinctIndices(p_locations_vec.size(), num_swaps, seed);
     for (auto i:indices_p) p_swap_loc.push_back(p_locations_vec[i]);
 
-    for (int i = 0; i < num_swaps; i++) {
-        sol_current.replaceLocation(p_swap_loc[i], out_swap_loc[i]);
+
+    for (uint_t i = 0; i < num_swaps; i++) {
+        p_locations_final.erase(p_swap_loc[i]);
+        p_locations_final.insert(out_swap_loc[i]);
+        // sol_current.replaceLocation(p_swap_loc[i], out_swap_loc[i]);
         // cout << "p_swap_loc: " << p_swap_loc[i] << " out_swap_loc: " << out_swap_loc[i] << "\n";
     }
-
-    if (sol_current.get_pLocations().size() > p) return sol_current;
+    sol_current = Solution_std(instance, p_locations_final);
 
     return sol_current;
 }
-Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, int num_swaps, int seed){
+Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, unsigned int num_swaps, int seed){
 
     // Set the seed for the random number generator
     std::mt19937 rng(seed);
 
-    int p = sol_current.get_pLocations().size();
+    num_swaps = static_cast<unsigned int>(num_swaps);
     auto locations = instance->getLocations();
     auto p_locations = sol_current.get_pLocations();
     auto p_locations_final = sol_current.get_pLocations();
@@ -131,13 +134,13 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, int num_swap
 
     dist_t add_Capacity = 0.0;
     dist_t lost_Capacity = 0.0;
-    for (int i = 0; i < num_swaps; i++) {
+    for (uint_t i = 0; i < num_swaps; i++) {
         add_Capacity += instance->getLocCapacity(out_swap_loc[i]);
         lost_Capacity += instance->getLocCapacity(p_swap_loc[i]);
     }
 
     if (sol_current.getTotalCapacity() - lost_Capacity + add_Capacity >= instance->getTotalDemand()){
-        for (int i = 0; i < num_swaps; i++) {
+        for (uint_t i = 0; i < num_swaps; i++) {
             p_locations_final.erase(p_swap_loc[i]);
             p_locations_final.insert(out_swap_loc[i]);
             // sol_current.replaceLocation(p_swap_loc[i], out_swap_loc[i]);
@@ -147,8 +150,6 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, int num_swap
     }else{
         cout << "Not enough capacity\n";
     }
-
-    if (sol_current.get_pLocations().size() > p) return sol_current;
 
     return sol_current;
 }
@@ -164,9 +165,8 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     sol_best.print();
 
     // limit of neighborhoods
-    int p = sol_best.get_pLocations().size();
-    auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
-    int k = 1; // initial neighborhood
+    auto Kmax = static_cast<unsigned int>(sol_best.get_pLocations().size()/2);  // max number of locations to swap
+    unsigned int k = 1; // initial neighborhood
     
     // limit of time and iterations
     // auto time_limit_seconds = 3600;
@@ -244,7 +244,7 @@ bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
     if (sol_cand.get_objective() < sol_best.get_objective()) return true;
     return false;
 }
-Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbose, int MAX_ITE) {
+Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     cout << "capacitated VNS heuristic started\n";
     // auto start_time_total = high_resolution_clock::now();
@@ -260,7 +260,6 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     tb.setSolutionMap(solutions_map);
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
-    auto start_time_v0 = high_resolution_clock::now();
     // auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
     auto sol_best = tb.initCPLEXCapSolution(600);
@@ -268,13 +267,14 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
     tb.solutions_map.addUniqueSolution(sol_best);
     cout << "Initial solution: \n";
     sol_best.print();
+    cout << "time: " << get_wall_time_VNS() - start_time_total << " seconds\n";
     cout << endl;
 
     // limit of neighborhoods
     int p = sol_best.get_pLocations().size();
-    auto Kmax = int(sol_best.get_pLocations().size()/2);  // max number of locations to swap
-    // int k = 1; // initial neighborhood
-    int k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
+    auto Kmax = static_cast<unsigned int>(sol_best.get_pLocations().size()/2); // max number of locations to swap
+    // unsigned int k = 1; // initial neighborhood
+    unsigned int  k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
 
     string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
 
@@ -295,7 +295,7 @@ Solution_cap VNS::runVNS_cap(string output_filename, string& Method, bool verbos
         tb.setExternalTime(get_wall_time_VNS() - start_time_total);
         new_sol = tb.localSearch_cap(new_sol,false,MAX_ITE_LOCAL_SEARCH);
         // new_sol.print();
-        auto current_time = get_wall_time_VNS();
+
         auto elapsed_time = get_wall_time_VNS() - start_time;
         if (verbose) {
             cout << "Best solution in TB local search: \n";

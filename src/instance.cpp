@@ -4,18 +4,37 @@
 #include <sstream>
 #include <string.h>
 
-Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
-                   shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p,
-                   uint_t loc_max, uint_t cust_max, string type_service)
-        : locations(std::move(locations)), customers(std::move(customers)), cust_weights(std::move(cust_weights)),
-          dist_matrix(std::move(dist_matrix)),
-          loc_capacities(std::move(loc_capacities)), p(p),
-          loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service){
+// Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
+//                    shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p,
+//                    uint_t loc_max, uint_t cust_max, string type_service)
+//         : locations(locations), customers(customers), cust_weights(cust_weights),
+//           dist_matrix(dist_matrix),
+//           loc_capacities(loc_capacities), p(p),
+//           loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service){
+//     total_demand = 0;
+//     for (auto cust:this->customers) {
+//         total_demand += this->getCustWeight(cust);
+//     }
+// }
+
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> loc_capacities, shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max_id, uint_t cust_max_id, string type_service) : 
+        locations(locations), 
+        customers(customers), 
+        cust_weights(cust_weights), 
+        loc_capacities(loc_capacities), 
+        dist_matrix(dist_matrix), 
+        p(p), 
+        loc_max_id(loc_max_id), 
+        cust_max_id(cust_max_id), 
+        type_service(type_service) {
+            
     total_demand = 0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
 }
+
+
 
 vector<string> tokenize(const string& input, char delim) {
     vector <string> tokens;
@@ -236,7 +255,7 @@ uint_t Instance::get_p() const {
 
 uint_t Instance::getClosestCust(uint_t loc) {
     dist_t dist_min = numeric_limits<dist_t>::max();
-    uint_t cust_cl;
+    uint_t cust_cl = numeric_limits<uint_t>::max();
     for (auto cust:customers) {
         auto dist = getRealDist(loc, cust);
         if (dist <= dist_min) {

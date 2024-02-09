@@ -29,10 +29,9 @@ void Solution_std::naiveEval() {
 
 uint_t Solution_std::getClosestpLoc(uint_t cust) {
     dist_t dist_min = numeric_limits<dist_t>::max();
-    dist_t dist;
-    uint_t loc_closest;
+    uint_t loc_closest=numeric_limits<uint_t>::max();
     for (auto loc:p_locations) {
-        dist = instance->getWeightedDist(loc, cust);
+        dist_t dist = instance->getWeightedDist(loc, cust);
         if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;
@@ -69,23 +68,26 @@ void Solution_std::replaceLocation(uint_t loc_old, uint_t loc_new) {
     // Update p_locations
     p_locations.erase(loc_old);
     p_locations.insert(loc_new);
-    // Update assignment and objective
-    for (auto cust:instance->getCustomers()) {
-        auto dist_old = assignment[cust].dist;
-        auto dist_new = instance->getWeightedDist(loc_new, cust);
-        if (assignment[cust].node == loc_old) { // cust must be reassigned to some other p location
-            auto loc_closest = getClosestpLoc(cust);
-            auto dist_closest = instance->getWeightedDist(loc_closest, cust);
-            assignment[cust] = my_pair {loc_closest, dist_closest};
-            objective -= dist_old;
-            objective += dist_closest;
-        } else if (dist_old - dist_new > TOLERANCE_OBJ) { // cust may be reassigned to loc_new
-            assignment[cust] = my_pair {loc_new, dist_new};
-            objective -= dist_old;
-            objective += dist_new;
-        }
-//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
-    }
+
+    naiveEval();
+
+//     // Update assignment and objective
+//     for (auto cust:instance->getCustomers()) {
+//         auto dist_old = assignment[cust].dist;
+//         auto dist_new = instance->getWeightedDist(loc_new, cust);
+//         if (assignment[cust].node == loc_old) { // cust must be reassigned to some other p location
+//             auto loc_closest = getClosestpLoc(cust);
+//             auto dist_closest = instance->getWeightedDist(loc_closest, cust);
+//             assignment[cust] = my_pair {loc_closest, dist_closest};
+//             objective -= dist_old;
+//             objective += dist_closest;
+//         } else if (dist_old - dist_new > TOLERANCE_OBJ) { // cust may be reassigned to loc_new
+//             assignment[cust] = my_pair {loc_new, dist_new};
+//             objective -= dist_old;
+//             objective += dist_new;
+//         }
+// //        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
+//     }
 }
 
 dist_t Solution_std::get_objective() {

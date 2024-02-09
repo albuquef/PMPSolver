@@ -20,7 +20,7 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
 /*
  * RSSV metaheuristic implementation.
  */
-shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
+shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
     cout << "RSSV running...\n";
     cout << "cPMP size (N): " << N << endl;
     cout << "sub-cPMP size (n): " << min(n,N) << endl;
@@ -71,7 +71,7 @@ shared_ptr<Instance> RSSV::run(int thread_cnt, string& method_sp) {
     return filtered_instance;
 }
 
-shared_ptr<Instance> RSSV::run_CAP(int thread_cnt, string& method_sp) {
+shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
 
 
 
@@ -202,7 +202,7 @@ void RSSV::solveSubproblem_CAP(int seed) {
             sol = heuristic.run_cap(false, UB_MAX_ITER);
         }else if(method_RSSV_sp == "VNS_CPMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);
-            sol = heuristic.runVNS_cap("outfile.txt",method_RSSV_sp,false,UB_MAX_ITER);
+            sol = heuristic.runVNS_cap(method_RSSV_sp,false,UB_MAX_ITER);
         }else{
             cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
             exit(1);

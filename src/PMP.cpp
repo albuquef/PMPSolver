@@ -43,7 +43,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 
             // print the y values
             // std::cout << "Printing p_loc values: " << std::endl;
-            // for (IloInt j = 0; j < num_facilities_global; j++){
+            // for(IloInt j = 0; j < num_facilities_global; j++){
             //     auto loc = locations_global[j];
             //     // if (cplex.getValue(y_global[j]) > 0.5)
             //     if (getIncumbentValue(y[j]) > 0.5)
@@ -105,7 +105,8 @@ void PMP::run(){
         initILP();
 
 
-        if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT_CPLEX);
+        // if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT_CPLEX);
+        if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::Param::TimeLimit, CLOCK_LIMIT_CPLEX);
 
         // cplex.setParam(IloCplex::TiLim, 60);
         // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
@@ -188,7 +189,7 @@ void PMP::initVars(){
 
     IloEnv env = model.getEnv();
 
-    // alloc memory and add to model for vars y_j
+    // alloc memory and add to model forvars y_j
     y = IloBoolVarArray(env, static_cast<IloInt>(num_facilities));
     for(IloInt j = 0; j < static_cast<IloInt>(num_facilities); j++){
         char name[50];
@@ -197,31 +198,31 @@ void PMP::initVars(){
         model.add(this->y[j]);
     }
 
-    // alloc memory for vars x_ij and add to model
+    // alloc memory forvars x_ij and add to model
     if(is_BinModel == true){
         this->x_bin = BoolVarMatrix(env, static_cast<IloInt>(num_customers));
-        for (IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
+        for(IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
             this->x_bin[i] = IloBoolVarArray(env, static_cast<IloInt>(num_facilities));
         
-            for (IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
-                for (IloInt j = 0; j < static_cast<IloInt>(num_facilities); j++){
-                    char name[50];
-                    sprintf(name, "x(%ld,%ld)", i+1, j+1);
-                    this->x_bin[i][j].setName(name);
-                    model.add(this->x_bin[i][j]);
-                }
+        for(IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
+            for(IloInt j = 0; j < static_cast<IloInt>(num_facilities); j++){
+                char name[50];
+                sprintf(name, "x(%ld,%ld)", i+1, j+1);
+                this->x_bin[i][j].setName(name);
+                model.add(this->x_bin[i][j]);
+            }
     }else{
         this->x_cont = NumVarMatrix(env, static_cast<IloInt>(num_customers));
-        for (IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
+        for(IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
             this->x_cont[i] = IloNumVarArray(env, static_cast<IloInt>(num_facilities),0.0,1.0, ILOFLOAT);
 
-            for (IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
-                for (IloInt j = 0; j < static_cast<IloInt>(num_facilities); j++){
-                    char name[50];
-                    sprintf(name, "x(%ld,%ld)", i+1, j+1);
-                    this->x_cont[i][j].setName(name);
-                    model.add(this->x_cont[i][j]);
-                }
+        for(IloInt i = 0; i < static_cast<IloInt>(num_customers); i++)
+            for(IloInt j = 0; j < static_cast<IloInt>(num_facilities); j++){
+                char name[50];
+                sprintf(name, "x(%ld,%ld)", i+1, j+1);
+                this->x_cont[i][j].setName(name);
+                model.add(this->x_cont[i][j]);
+            }
     }
 
 }
@@ -276,8 +277,8 @@ void PMP::objFunction(IloModel model, VarType x){
     
     IloEnv env = model.getEnv();
     IloExpr objExpr(env);
-    for (IloInt i = 0; i < num_customers; i++)
-        for (IloInt j = 0; j < num_facilities; j++){
+    for(IloInt i = 0; i < num_customers; i++)
+        for(IloInt j = 0; j < num_facilities; j++){
             // if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){objExpr += instance->getRealDist(j+1,i+1) * x[i][j];}
             // else{objExpr += instance->getWeightedDist(j+1,i+1) * x[i][j];}
             auto loc = instance->getLocations()[j];
@@ -295,9 +296,9 @@ void PMP::constr_DemandSatif(IloModel model, VarType x){
     if (VERBOSE){cout << "[INFO] Adding Demand Satisfied Constraints "<< endl;}
 
     IloEnv env = model.getEnv();
-    for (IloInt i = 0; i < num_customers; i++){
+    for(IloInt i = 0; i < num_customers; i++){
         IloExpr expr(env);
-        for (IloInt j = 0; j < num_facilities; j++){
+        for(IloInt j = 0; j < num_facilities; j++){
             expr += x[i][j];
         }
         model.add(expr == 1);
@@ -313,7 +314,7 @@ void PMP::constr_pLocations(IloModel model, IloBoolVarArray y){
 
     IloEnv env = model.getEnv();
     IloExpr expr(env);
-    for (IloInt j = 0; j < num_facilities; j++)
+    for(IloInt j = 0; j < num_facilities; j++)
         expr += y[j];
     model.add(expr == p);
     expr.end();
@@ -325,9 +326,9 @@ void PMP::constr_UBpmp(IloModel model, VarType x, IloBoolVarArray y){
 
     if (VERBOSE){cout << "[INFO] Adding UB Constraints "<< endl;}
 
-    IloEnv env = model.getEnv();
-    for (IloInt i = 0; i < num_customers; i++)
-        for (IloInt j = 0; j < num_facilities; j++)
+    //IloEnv env = model.getEnv();
+    for(IloInt i = 0; i < num_customers; i++)
+        for(IloInt j = 0; j < num_facilities; j++)
             model.add(x[i][j] <= y[j]);
 
 }
@@ -341,10 +342,10 @@ void  PMP::constr_maxCapacity(IloModel model, VarType x, IloBoolVarArray y){
     if (VERBOSE){cout << "[INFO] Adding Max Capacity Constraints "<< endl;}
 
     IloEnv env = model.getEnv();
-    for (IloInt j = 0; j < num_facilities; j++){
+    for(IloInt j = 0; j < num_facilities; j++){
         IloExpr expr(env);
         auto loc = instance->getLocations()[j];
-        for (IloInt i = 0; i < num_customers; i++){
+        for(IloInt i = 0; i < num_customers; i++){
             auto cust = instance->getCustomers()[i];
             expr += IloNum(instance->getCustWeight(cust)) * x[i][j];
         }
@@ -358,8 +359,8 @@ void PMP::constr_GAP(IloModel model, IloBoolVarArray y){
 
     if (VERBOSE){cout << "[INFO] Adding GAP fixed p Constraints "<< endl;}
 
-    IloEnv env = model.getEnv();
-    for (IloInt j = 0; j < num_facilities; j++){
+    // IloEnv env = model.getEnv();
+    for(IloInt j = 0; j < num_facilities; j++){
         auto loc = instance->getLocations()[j];
         if (p_locations.find(loc) == p_locations.end()){
             model.add(y[j] == 0);
@@ -380,23 +381,27 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
         cout << "Solution value  = " << cplex.getObjValue() << endl;
         double objectiveValue = cplex.getObjValue();
         cout << "Objective Value: " << fixed << setprecision(15) << objectiveValue << endl;
+        cout << "Num. of var x" << x.getSize() << endl;
+        cout << "Num. of var y" << y.getSize() << endl;
         cout << "Time to solve: " << timeSolver << endl;
 
-        // for (IloInt j = 0; j < num_facilities; j++){
-        //     auto loc = instance->getLocations()[j];
-        //     for (IloInt i = 0; i < num_customers; i++){
-        //         auto cust = instance->getCustomers()[i];
-        //         if (cplex.getValue(x[i][j]) > 0.001)
-        //             cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x[i][j]) << endl;
-        //     }
-        // }
-    
-        // for (IloInt j = 0; j < num_facilities; j++){
-        //     auto loc = instance->getLocations()[j];
-        //     if (cplex.getValue(y[j]) > 0.5)
-        //         cout << "y[" << loc << "] = " << cplex.getValue(y[j]) << endl;
-        // }
-
+        bool verbose_vars = false;
+        if (verbose_vars){
+            for(IloInt j = 0; j < num_facilities; j++){
+                auto loc = instance->getLocations()[j];
+                for(IloInt i = 0; i < num_customers; i++){
+                    auto cust = instance->getCustomers()[i];
+                    if (cplex.getValue(x[i][j]) > 0.001)
+                        cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x[i][j]) << endl;
+                }
+            }
+        
+            for(IloInt j = 0; j < num_facilities; j++){
+                auto loc = instance->getLocations()[j];
+                if (cplex.getValue(y[j]) > 0.5)
+                    cout << "y[" << loc << "] = " << cplex.getValue(y[j]) << endl;
+            }
+        }
 
         cout << "Time total: " << cplex.getTime() << endl;
 }
@@ -425,10 +430,9 @@ Solution_cap PMP::getSolution_cap(){
 
     try{
         unordered_set<uint_t> p_locations;
-        auto p = instance->get_p();
         auto locations = instance->getLocations();
 
-        for (IloInt j = 0; j < num_facilities; j++){
+        for(IloInt j = 0; j < num_facilities; j++){
             auto loc = instance->getLocations()[j];
             if (cplex.getValue(y[j]) > 0.5)
                 p_locations.insert(loc);
@@ -438,24 +442,24 @@ Solution_cap PMP::getSolution_cap(){
         unordered_map<uint_t, dist_t> cust_satisfactions; // customer -> satisfaction from <0, weight>
         unordered_map<uint_t, assignment> assignments; // customer -> assignment (p location, usage, weighted distance)
 
-        for (auto p_loc:p_locations) loc_usages[p_loc] = 0;
-        for (auto cust:instance->getCustomers()) {
+        for(auto p_loc:p_locations) loc_usages[p_loc] = 0;
+        for(auto cust:instance->getCustomers()) {
             cust_satisfactions[cust] = 0;
             assignments[cust] = assignment{};
         }
 
         // cout << "p_loc = ";
-        // for (auto p_loc:p_locations)
+        // for(auto p_loc:p_locations)
         //     cout << p_loc << ", ";
         // cout << endl;   
 
         dist_t objtest = 0;
 
-        for (IloInt j = 0; j < num_facilities; j++)
+        for(IloInt j = 0; j < num_facilities; j++)
             if (cplex.getValue(y[j]) > 0.5){
                 auto loc = instance->getLocations()[j];
                 // cout << "loc = " << loc << endl;
-                for (IloInt i = 0; i < num_customers; i++){
+                for(IloInt i = 0; i < num_customers; i++){
                     auto cust = instance->getCustomers()[i];
                     // cout << "cust = " << cust << endl;
                     if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.0001){
@@ -508,16 +512,14 @@ Solution_std PMP::getSolution_std(){
     // cout << "[INFO] Getting solution standard" << endl;
 
     unordered_set<uint_t> p_locations;
-    auto p = instance->get_p();
+    // auto p = instance->get_p();
     // auto locations = instance->getLocations();
     
-    for (IloInt j = 0; j < num_facilities; j++){
+    for(IloInt j = 0; j < num_facilities; j++){
             auto loc = instance->getLocations()[j];
             if (cplex.getValue(y[j]) > 0.5)
                 p_locations.insert(loc);
         }
-
-
 
     Solution_std sol(instance, p_locations);
 
@@ -551,25 +553,25 @@ void PMP::saveVars(const std::string& filename,const string& Method){
         cout.rdbuf(stream_buffer_file); // redirect cout to file
     }
 
-    for (IloInt j = 0; j < num_facilities; j++){
+    for(IloInt j = 0; j < num_facilities; j++){
         auto loc = instance->getLocations()[j];
         if (cplex.getValue(this->y[j]) > 0.5)
             cout << "y[" << loc << "] = " << cplex.getValue(this->y[j]) << endl;
     }
 
     if (!is_BinModel){
-        for (IloInt j = 0; j < num_facilities; j++){
+        for(IloInt j = 0; j < num_facilities; j++){
             auto loc = instance->getLocations()[j];
-            for (IloInt i = 0; i < num_customers; i++){
+            for(IloInt i = 0; i < num_customers; i++){
                 auto cust = instance->getCustomers()[i];
                 if (cplex.getValue(x_cont[i][j]) > 0.001)
                     cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x_cont[i][j]) << endl;
             }
         }
     }else{
-        for (IloInt j = 0; j < num_facilities; j++){
+        for(IloInt j = 0; j < num_facilities; j++){
         auto loc = instance->getLocations()[j];
-            for (IloInt i = 0; i < num_customers; i++){
+            for(IloInt i = 0; i < num_customers; i++){
                 auto cust = instance->getCustomers()[i];
                 if (cplex.getValue(x_bin[i][j]) > 0.001)
                     cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x_bin[i][j]) << endl;
@@ -655,7 +657,7 @@ void PMP::setSolution_cap(Solution_cap sol){
         auto sol_assignments = sol.getAssignments();
 
         // Set y variables based on the selected locations in the solution
-        for (IloInt j = 0; j < num_facilities; j++) {
+        for(IloInt j = 0; j < num_facilities; j++) {
             auto loc = instance->getLocations()[j];
             if (p_locations.find(loc) != p_locations.end()) {
                 // cplex.setValue(y[j], 1.0);
@@ -669,16 +671,16 @@ void PMP::setSolution_cap(Solution_cap sol){
         }
 
         std::vector<std::vector<IloNum>> X_matrix(num_customers, std::vector<IloNum>(num_facilities));
-        for (auto& num_customers : X_matrix) {
+        for(auto& num_customers : X_matrix) {
             std::fill(num_customers.begin(), num_customers.end(), IloNum(0));
         }
 
 
-        for (IloInt i = 0; i < num_customers; i++){
+        for(IloInt i = 0; i < num_customers; i++){
             auto cust = instance->getCustomers()[i];
-            for (IloInt j = 0; j < num_facilities; j++){
+            for(IloInt j = 0; j < num_facilities; j++){
                     auto loc_j = instance->getLocations()[j];
-                for (auto a:sol_assignments[cust]) {
+                for(auto a:sol_assignments[cust]) {
                     auto loc = a.node;
                     if (loc == loc_j) {
                         X_matrix[i][j] = IloNum(1);

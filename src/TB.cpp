@@ -77,7 +77,7 @@ Solution_cap TB::initHighestCapSolution() {
     sort(sorted_locations.begin(), sorted_locations.end());
     reverse(sorted_locations.begin(), sorted_locations.end());
 
-    for (int i = 0; i < p; i++) {
+    for (uint_t i = 0; i < p; i++) {
         p_locations.insert(sorted_locations[i].second);
     }
 
@@ -203,7 +203,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
     bool improved = true;
     Solution_std sol_tmp;
     Solution_std sol_cand;
-    int objectiveCpt = 0;
+    // int objectiveCpt = 0;
 
     int ite=1;
     auto start_time_total = high_resolution_clock::now();
@@ -211,7 +211,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
 
         improved = false;
         sol_cand = sol_best;
-        auto start = tick();
+        // auto start = tick();
         auto p_locations = sol_best.get_pLocations();
 
         auto start_time = high_resolution_clock::now();
@@ -225,7 +225,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
                     if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { 
                         sol_cand = sol_tmp;
                         improved = true;
-                        objectiveCpt = 0;
+                        // objectiveCpt = 0;
                     }
                     // else{
                     //     objectiveCpt++;
@@ -358,9 +358,6 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 
                                 // solutions_map.addUniqueSolution(sol_tmp2);
 
-
-
-                                auto current_time = get_wall_time_TB() + external_time;
                                 auto elapsed_time = (get_wall_time_TB() - start_time) + external_time;
                                 if (verbose) {
                                     cout << "solution candidate: \n";
@@ -401,7 +398,6 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 }
             }
 
-            auto current_time = get_wall_time_TB() + external_time;
             auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
                 
             if (improved) {
@@ -445,7 +441,6 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             };
         }
 
-        auto current_time = get_wall_time_TB() + external_time;
         auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
 
         if (verbose) {

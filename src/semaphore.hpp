@@ -16,6 +16,7 @@ public:
     }
 
     inline void notify( int tid ) {
+        this->tid = tid;
         std::unique_lock<std::mutex> lock(mtx);
         count++;
         //cout << "thread " << tid <<  " notify" << endl;
@@ -23,6 +24,7 @@ public:
         cv.notify_one();
     }
     inline void wait( int tid ) {
+        this->tid = tid;
         std::unique_lock<std::mutex> lock(mtx);
         while(count == 0) {
             //cout << "thread " << tid << " wait" << endl;
@@ -35,6 +37,7 @@ public:
 private:
     std::mutex mtx;
     std::condition_variable cv;
+    int tid;
     int count;
 };
 
