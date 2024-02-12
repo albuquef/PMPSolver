@@ -269,8 +269,6 @@ int main(int argc, char *argv[]) {
 
     if(!coverages_filename.empty())
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
-    
-    exit(1);
 
     auto start = tick();
     cout << "-------------------------------------------------\n";

@@ -78,6 +78,7 @@ class PMP
         uint_t p;
         uint_t num_facilities;
         uint_t num_customers;
+        uint_t num_subareas;
 
         void initVars();
         void initILP        (void);
@@ -109,6 +110,8 @@ class PMP
 
         unordered_set<uint_t> p_locations; // p selected locations
         void constr_GAP (IloModel model, IloBoolVarArray y);
+
+        void constr_Cover (IloModel model, IloBoolVarArray y);
 
 };
 

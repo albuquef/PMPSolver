@@ -269,9 +269,6 @@ uint_t Instance::getSubareaLocation(uint_t loc){
     return loc_coverages[loc];
 }
 
-
-
-
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
     
     // Create a new engine and seed it
@@ -321,6 +318,11 @@ const vector<uint_t> &Instance::getCustomers() const {
 const vector<uint_t> &Instance::getLocations() const {
     return this->locations;
 }
+
+unordered_set<uint_t> Instance::getCoverages(){
+    return unique_subareas;
+}
+
 
 const vector<uint_t> Instance::getLocationsSubarea(uint_t subarea){
 

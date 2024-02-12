@@ -57,6 +57,7 @@ public:
     string getTypeSubarea();
     uint_t getSubareaLocation(uint_t loc);
     const vector<uint_t> getLocationsSubarea(uint_t subarea);
+    unordered_set<uint_t>  getCoverages();
     // bool isLocationSubara(uint_t loc, uint subarea)
 
     // to do Coverage

@@ -372,6 +372,29 @@ void PMP::constr_GAP(IloModel model, IloBoolVarArray y){
 }
 
 
+void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
+
+    if (VERBOSE){cout << "[INFO] Adding Cover Constraints "<< endl;}
+
+    num_subareas = instance->getCoverages().size();   
+    cout << "Num. of subareas: " << num_subareas << endl; 
+
+    for (IloInt s = 0; s < num_subareas; s++){
+        IloExpr expr(env);
+        // auto subarea = instance->getCoverages()[s];
+        auto subarea = instance->getLocationsSubarea(s);
+        for(IloInt j = 0; j < num_facilities; j++){
+            auto loc = instance->getLocations()[j];
+            if (subarea.find(loc) != subarea.end()){
+                expr += y[j];
+            }
+        }
+        model.add(expr >= 1);
+        expr.end();
+    }
+
+}
+
 
 // void PMP::printSolution(IloCplex& cplex, BoolVarMatrix x, IloBoolVarArray y){
 template <typename VarType>  
