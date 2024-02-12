@@ -174,39 +174,66 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
 }
 
 
-
-void Instance::read_subareas(const string &subareas_filename, const string &type_subarea) {
+void Instance::ReadCoverages(const string& coverages_filename,string type_subarea,char delim){
     this->type_subarea = type_subarea;
-    fstream subareas_file(subareas_filename);
-    uint_t num_subareas = 0;
-    // if (subareas_file.is_open()) {
-    //     string line;
-    //     loc_max_id = 0;
-    //     subarea_max_id = 0;
-    //     string line;
-    //     // Scan data to determine distance matrix dimensions
-    //     cout << "Scanning input data...\n";
-    //     auto start = tick();
-    //     getline(subareas_file, line); // skip first line
-    //     cout << "Skipped line: " << line << endl;
-    //     while (getline(subareas_file, line)) {
-    //         auto tokens = tokenize(line, ',');
-    //         auto loc = stoi(tokens[0]);
-    //         auto subarea = stoi(tokens[1]);
-    //         subareas[loc] = subarea;
-    //     }
-    //     cout << "Loaded " << subareas.size() << " subareas\n";
-    //     // while (getline(dist_matrix_file, line)) {
-    //     //     auto tokens = tokenize(line, delim);
-    //     //     cust_max_id = max(cust_max_id, (uint_t) stoi(tokens[0]));
-    //     //     loc_max_id = max(loc_max_id, (uint_t) stoi(tokens[1]));
-    //     // }
+    fstream coverages_file(coverages_filename);
+    // uint_t num_subareas = 0;
+    auto start = tick();
 
+    if (coverages_file.is_open()) {
+        string line;
+        tock(start);
+        // Load coverages
+        start = tick();
+        cout << "Loading coverages...\n";
+        loc_coverages = shared_ptr<uint_t[]>(new uint_t[loc_max_id + 1], default_delete<uint_t[]>());
+        for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_coverages[loc] = 0;
+        getline(coverages_file, line); // skip first line
+        cout << "Skipped line: " << line << endl;
+        uint_t cover_cnt = 0; 
+        vector<uint_t> qtd_coverages; // to store the number of coverages per subarea
+        while (getline(coverages_file, line)) {
+            auto tokens = tokenize(line, delim);
+            auto loc = stoi(tokens[0]);
+            auto subarea = stoi(tokens[1]);
+            loc_coverages[loc] = subarea;
+            unique_subareas.insert(subarea);
+            cover_cnt++;
+        }
+        cout << "Loaded " << cover_cnt << " locations covered\n";
+        cout << "Number of subareas: " << unique_subareas.size() << endl;
 
-    // } else {
-    //     cerr << "Error while trying to open the subareas file" << endl;
-    //     exit(-1);
-    // }
+        // Sttistics about the number of coverages per subarea
+        for (auto subarea:unique_subareas) {
+            // cout << "Subarea " << subarea << " has " << count(loc_coverages.get(), loc_coverages.get() + loc_max_id + 1, subarea) << " locations" << endl;
+            qtd_coverages.push_back(count(loc_coverages.get(), loc_coverages.get() + loc_max_id + 1, subarea));
+        }
+        // Initialize max and min with the first element of the vector
+        uint_t max = qtd_coverages[0];
+        uint_t min = qtd_coverages[0];
+        uint_t sum = 0.0;
+        // Find max, min, and sum of elements
+        for (uint_t num : qtd_coverages) {
+            if (num > max) {
+                max = num;
+            }
+            if (num < min) {
+                min = num;
+            }
+            sum += num;
+        }
+        
+        // Calculate average
+        double average = sum / qtd_coverages.size();
+        cout << "Average number of locations for subarea: " << average << endl;
+        cout << "Max qte locations for one subarea: " << max << endl;
+        cout << "Min qte locations for one subarea: " << min << endl;
+
+        tock(start);
+    }else{
+        cerr << "Error while trying to open the subareas file" << endl;
+        cout << "subareas filename: " << coverages_filename << endl;
+    }
 }
 
 uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
@@ -233,6 +260,17 @@ dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
     uint_t index = getDistIndex(loc, cust);
     return dist_matrix[index];
 }
+
+string Instance::getTypeSubarea(){
+    return type_subarea;
+}
+
+uint_t Instance::getSubareaLocation(uint_t loc){
+    return loc_coverages[loc];
+}
+
+
+
 
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
     
@@ -282,6 +320,17 @@ const vector<uint_t> &Instance::getCustomers() const {
 
 const vector<uint_t> &Instance::getLocations() const {
     return this->locations;
+}
+
+const vector<uint_t> Instance::getLocationsSubarea(uint_t subarea){
+
+    vector<uint_t> vet;
+    for(uint_t loc = 0; loc < loc_max_id + 1; loc++){
+        if(loc_coverages[loc] == subarea)
+            vet.push_back(loc);
+    }
+
+    return vet;
 }
 
 uint_t Instance::get_p() const {

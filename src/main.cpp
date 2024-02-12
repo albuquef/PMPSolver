@@ -31,14 +31,14 @@ int main(int argc, char *argv[]) {
     string dist_matrix_filename;
     string labeled_weights_filename;
     string capacities_filename;
+    string TypeService;
+    string coverages_filename;
+    string TypeSubarea;
     // Optional parameters
     uint_t threads_cnt = (uint_t) getAvailableThreads();
     int mode = 0;
     int seed = 1;
     string output_filename;
-    // string typeProblem;
-    // string typeHeuristic;
-    string TypeService;
     string Method;
     string Method_RSSV_sp;
     string Method_RSSV_fp;
@@ -112,6 +112,11 @@ int main(int argc, char *argv[]) {
                 capacities_filename = argv[i + 1];
                 configOverride.insert("capacities");
 
+            } else if (strcmp(argv[i], "-cover") == 0) {
+
+                coverages_filename = argv[i + 1];
+                configOverride.insert("coverages");
+
             } else if (strcmp(argv[i], "-toleranceCpt") == 0){
                 
                 TOLERANCE_CPT = stoi(argv[i + 1]);
@@ -130,6 +135,10 @@ int main(int argc, char *argv[]) {
                 
                 TypeService = argv[i + 1];
                 configOverride.insert("service");                
+            } else if (strcmp(argv[i], "-subarea") == 0){
+                
+                TypeSubarea = argv[i + 1];
+                configOverride.insert("subarea");                
             } else if (strcmp(argv[i], "-method") == 0){
                 
                 Method = argv[i + 1];
@@ -215,6 +224,7 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&VERBOSE, "verbose");
     config.setFromConfig(&p, "p");
     config.setFromConfig(&capacities_filename, "capacities");
+    config.setFromConfig(&coverages_filename, "coverages");
     config.setFromConfig(&dist_matrix_filename, "distance_matrix");
     config.setFromConfig(&output_filename, "output");
     config.setFromConfig(&labeled_weights_filename, "weights");
@@ -256,6 +266,11 @@ int main(int argc, char *argv[]) {
     // Load instance
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
+
+    if(!coverages_filename.empty())
+        instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
+    
+    exit(1);
 
     auto start = tick();
     cout << "-------------------------------------------------\n";
