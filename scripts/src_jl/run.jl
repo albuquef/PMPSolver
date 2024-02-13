@@ -2,16 +2,14 @@ using Dates, Plots, JuMP
 using Cbc, CPLEX
 using DataFrames
 
-
 include("pmp.jl")
 include("instance.jl")
 
-
 function solve(solver="CPLEX",saveReports=false,plotSol=false)
     
-    # global OUTPUT_PATH = "./output"
+    global OUTPUT_PATH = "./output"
     # global OUTPUT_PATH = "./output/output_test_23_02_17/"
-    global OUTPUT_PATH = "./src_jl/output_jl/"
+    # global OUTPUT_PATH = "./src_jl/output_jl/"
 
     if isdir(OUTPUT_PATH) == 0
         mkdir(OUTPUT_PATH)  # create the folder
@@ -46,6 +44,8 @@ function solve(solver="CPLEX",saveReports=false,plotSol=false)
     println("Current time: ",Dates.format(now(), "HH:MM")) 
     
     @time model,x,y = create_model(problem, model,p,num_locations,num_customers)
+
+    write_to_file(model, "./model.lp")
 
     println("\n[INFO] Optimizing the Model")
     global time_to_solve = @elapsed begin  
@@ -111,6 +111,8 @@ function solve_PACA()
     println("Current time: ",Dates.format(now(), "HH:MM")) 
     
     @time model,x,y = create_model(problem, model,p,num_locations,num_customers)
+
+
 
     println("\n[INFO] Optimizing the Model")
     global time_to_solve = @elapsed begin  

@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     string Method;
     string Method_RSSV_sp;
     string Method_RSSV_fp;
+    bool cover_mode = false;
 
 
     // default config path
@@ -267,9 +268,10 @@ int main(int argc, char *argv[]) {
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
 
-    if(!coverages_filename.empty())
+    if(!coverages_filename.empty()){
+        cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
-
+    }
     auto start = tick();
     cout << "-------------------------------------------------\n";
     if(Method == "EXACT_PMP" || Method == "TB_PMP" || Method == "VNS_PMP"){
@@ -394,6 +396,8 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";    
         PMP pmp(instance, "CPMP");
         pmp.setGenerateReports(true);
+        pmp.setCoverModel(true);
+        // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -403,6 +407,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "CPMP", true);
         pmp.setGenerateReports(true);
+        pmp.setCoverModel(true);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);

@@ -132,6 +132,8 @@ void PMP::run(){
             cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
         }
 
+        cplex.exportModel("./model.lp");
+
         solveILP();
 
         bool verb = true;
@@ -265,7 +267,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if(strcmp(typeProb,"GAP") != 0) {constr_pLocations(model,y);}
     if(strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0){constr_maxCapacity(model,x,y);}
     if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){constr_UBpmp(model,x,y);}
-
+    if(CoverModel) {constr_Cover(model,y);}
 }
 
 
@@ -383,13 +385,16 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
         IloExpr expr(env);
         // auto subarea = instance->getCoverages()[s];
         auto subarea = instance->getLocationsSubarea(s);
+        bool y_exist = false;
         for(IloInt j = 0; j < num_facilities; j++){
             auto loc = instance->getLocations()[j];
-            if (subarea.find(loc) != subarea.end()){
+            if (find(subarea.begin(), subarea.end(), loc) != subarea.end()){
                 expr += y[j];
+                y_exist = true;
             }
         }
-        model.add(expr >= 1);
+        if(!subarea.empty() && y_exist)
+            model.add(expr >= 1);
         expr.end();
     }
 
@@ -404,8 +409,8 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
         cout << "Solution value  = " << cplex.getObjValue() << endl;
         double objectiveValue = cplex.getObjValue();
         cout << "Objective Value: " << fixed << setprecision(15) << objectiveValue << endl;
-        cout << "Num. of var x" << x.getSize() << endl;
-        cout << "Num. of var y" << y.getSize() << endl;
+        cout << "Num. of var x>0: " << x.getSize() << endl;
+        cout << "Num. of var y>0: " << y.getSize() << endl;
         cout << "Time to solve: " << timeSolver << endl;
 
         bool verbose_vars = false;
@@ -657,6 +662,11 @@ bool PMP::getFeasibility_Solver(){
 void PMP::setGenerateReports(bool generate_reports){
     this->generate_reports = generate_reports;
 }
+
+void PMP::setCoverModel(bool CoverModel){
+    this->CoverModel = CoverModel;
+}
+
 
 // not wotking
 void PMP::setSolution_cap(Solution_cap sol){
