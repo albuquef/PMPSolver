@@ -45,7 +45,7 @@ function solve(solver="CPLEX",saveReports=false,plotSol=false)
     
     @time model,x,y = create_model(problem, model,p,num_locations,num_customers)
 
-    write_to_file(model, "./model.lp")
+    # write_to_file(model, "./model.lp")
 
     println("\n[INFO] Optimizing the Model")
     global time_to_solve = @elapsed begin  
