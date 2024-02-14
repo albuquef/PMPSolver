@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <thread>
 #include "TB.hpp"
+#include "VNS.hpp"
+#include "PMP.hpp"
 #include "instance.hpp"
 #include "instance.hpp"
 #include "solution_std.hpp"
@@ -21,10 +23,12 @@ private:
     Semaphore sem;
     mutex weights_mutex;
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
+    string method_RSSV_sp;
+    int DEFAULT_MAX_NUM_ITER = 10000000;
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
-    shared_ptr<Instance> run(int thread_cnt);
-    shared_ptr<Instance> run_CAP(int thread_cnt);
+    shared_ptr<Instance> run(uint_t thread_cnt, string& method_sp);
+    shared_ptr<Instance> run_CAP(uint_t thread_cnt, string& method_sp);
     void solveSubproblem(int seed);
     void solveSubproblem_CAP(int seed);
     void processSubsolution(shared_ptr<Solution_std> solution);

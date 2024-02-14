@@ -4,6 +4,8 @@
 #include <utility>
 #include <unordered_set>
 #include <unordered_map>
+#include <random>
+#include <vector>
 #include "globals.hpp"
 #include "instance.hpp"
 
@@ -20,13 +22,16 @@ public:
 
     Solution_std() = default;
     Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations);
+    Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations,unordered_map<uint_t, my_pair> assignment);
     void naiveEval();
     uint_t getClosestpLoc(uint_t cust);
     const unordered_set<uint_t>& get_pLocations() const;
+    const vector<uint_t> & get_Locations() const;
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective();
-    void saveAssignment(const string& output_filename,int mode);
+    void saveAssignment(string output_filename,string Method);
+    void saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp="null", string Method_fp="null");
 };
 
 

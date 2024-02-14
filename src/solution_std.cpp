@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <utility>
+#include <experimental/filesystem>
 #include "solution_std.hpp"
 
 Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
@@ -28,10 +29,9 @@ void Solution_std::naiveEval() {
 
 uint_t Solution_std::getClosestpLoc(uint_t cust) {
     dist_t dist_min = numeric_limits<dist_t>::max();
-    dist_t dist;
-    uint_t loc_closest;
+    uint_t loc_closest=numeric_limits<uint_t>::max();
     for (auto loc:p_locations) {
-        dist = instance->getWeightedDist(loc, cust);
+        dist_t dist = instance->getWeightedDist(loc, cust);
         if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;
@@ -53,45 +53,56 @@ void Solution_std::print() {
 //    }
     cout << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
+    cout << "\n";
 }
 
 const unordered_set<uint_t> &Solution_std::get_pLocations() const {
     return this->p_locations;
 }
 
+const vector<uint_t> &Solution_std::get_Locations() const {
+    return this->instance->getLocations();
+}
+
 void Solution_std::replaceLocation(uint_t loc_old, uint_t loc_new) {
     // Update p_locations
     p_locations.erase(loc_old);
     p_locations.insert(loc_new);
-    // Update assignment and objective
-    for (auto cust:instance->getCustomers()) {
-        auto dist_old = assignment[cust].dist;
-        auto dist_new = instance->getWeightedDist(loc_new, cust);
-        if (assignment[cust].node == loc_old) { // cust must be reassigned to some other p location
-            auto loc_closest = getClosestpLoc(cust);
-            auto dist_closest = instance->getWeightedDist(loc_closest, cust);
-            assignment[cust] = my_pair {loc_closest, dist_closest};
-            objective -= dist_old;
-            objective += dist_closest;
-        } else if (dist_old - dist_new > TOLERANCE) { // cust may be reassigned to loc_new
-            assignment[cust] = my_pair {loc_new, dist_new};
-            objective -= dist_old;
-            objective += dist_new;
-        }
-//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
-    }
+
+    naiveEval();
+
+//     // Update assignment and objective
+//     for (auto cust:instance->getCustomers()) {
+//         auto dist_old = assignment[cust].dist;
+//         auto dist_new = instance->getWeightedDist(loc_new, cust);
+//         if (assignment[cust].node == loc_old) { // cust must be reassigned to some other p location
+//             auto loc_closest = getClosestpLoc(cust);
+//             auto dist_closest = instance->getWeightedDist(loc_closest, cust);
+//             assignment[cust] = my_pair {loc_closest, dist_closest};
+//             objective -= dist_old;
+//             objective += dist_closest;
+//         } else if (dist_old - dist_new > TOLERANCE_OBJ) { // cust may be reassigned to loc_new
+//             assignment[cust] = my_pair {loc_new, dist_new};
+//             objective -= dist_old;
+//             objective += dist_new;
+//         }
+// //        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
+//     }
 }
 
 dist_t Solution_std::get_objective() {
     return objective;
 }
 
-void Solution_std::saveAssignment(const string& output_filename, int mode) {
+void Solution_std::saveAssignment(string output_filename,string Method) {
+
+    cout << "[INFO] Saving Assignment pmp" << endl;
+
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
     string output_filename_final = output_filename + 
         "_p_" + to_string(p_locations.size()) + 
-        "_mode_" + to_string(mode) +
+        "_" + Method +
         ".txt";
 
     // Open file if output_filename is not empty
@@ -101,7 +112,7 @@ void Solution_std::saveAssignment(const string& output_filename, int mode) {
         cout.rdbuf(stream_buffer_file); // redirect cout to file
     }
 
-    cout << setprecision(5) << "OBJECTIVE\n" << objective << endl << endl;
+    cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
 
     cout << "P LOCATIONS\n";
     for (auto p_loc:p_locations) cout << p_loc << endl;
@@ -134,4 +145,44 @@ void Solution_std::saveAssignment(const string& output_filename, int mode) {
 
     cout.rdbuf(stream_buffer_cout);
     file.close();
+}
+
+
+void Solution_std::saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp, string Method_fp){
+
+    cout << "[INFO] Saving results pmp" << endl;
+
+    string output_filename_final = output_filename + 
+    "_results_" + Method +
+    ".csv";
+
+    ofstream outputTable;
+    outputTable.open(output_filename_final,ios:: app);
+
+    if (!outputTable.is_open()) {
+        cerr << "Error opening file: " << output_filename << endl;
+        // return;
+    }else{
+        outputTable << instance->getCustomers().size() << ";";
+        outputTable << instance->getLocations().size() << ";";
+        outputTable << instance->get_p() << ";";
+        outputTable << Method << ";";
+        outputTable << fixed << setprecision(15) << get_objective() << ";"; // obj value
+        outputTable << numIter << ";"; // 
+        outputTable << timeFinal <<  ";"; // time cplex
+        outputTable << Method_sp << ";";
+        outputTable << Method_fp << ";";
+        outputTable << "\n";
+        // if (Method_sp != "null") {outputTable << Method_sp << ";";}
+        // if (Method_fp != "null") {outputTable << Method_fp << ";";}
+        // outputTable << "\n";
+    }
+    outputTable.close();
+
+
+
+
+
+
+
 }

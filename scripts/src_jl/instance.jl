@@ -12,6 +12,8 @@ function readCustomers(PATH,num_customers,filename)
 
     cust_weights = zeros(num_customers)
 
+    println("Filename customers: " , PATH*filename)
+
     if isfile(PATH*filename)
         reader = readdlm(PATH*filename)
         nrows = size(reader,1)

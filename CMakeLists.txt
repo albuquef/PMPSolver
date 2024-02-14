@@ -54,7 +54,8 @@ set(SOURCE_FILES
     src/config_parser.cpp 
     src/toml.hpp 
     src/TBPercentage.hpp src/TBPercentage.cpp
-    src/PMP.hpp src/PMP.cpp)
+    src/PMP.hpp src/PMP.cpp
+    src/VNS.hpp src/VNS.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

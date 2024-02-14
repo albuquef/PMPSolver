@@ -1,7 +1,7 @@
 #ifndef PMP_HPP
 #define PMP_HPP
 #include <iostream>
-#include <filesystem>
+#include <experimental/filesystem>
 #include <sys/time.h>
 #include <string.h>
 #include <utility>
@@ -11,7 +11,7 @@
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
 #include "utils.hpp"
-#include "TB.hpp"
+// #include "TB.hpp"
 
 #include <ilcplex/ilocplex.h>
 
@@ -37,23 +37,34 @@ class PMP
 
     public: 
         // PMP(Reader *r, const char* typeSEC):rd(r){rd->show();};
-        PMP(const shared_ptr<Instance>& instance, const char* typeProb, bool is_BinModel=false);
+        PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel=false);
         ~PMP();
         void exportILP      (IloCplex& cplex);
         void solveILP       (void);
+        void run           (void);
+        void run_GAP       (unordered_set<uint_t> p_locations);
         template <typename VarType>  
         void printSolution  (IloCplex& cplex,
                             VarType x,
                             IloBoolVarArray y);
-        Solution_cap getSolution_cap(void);
         Solution_std getSolution_std(void);
-        void saveVars   (const string& filename, int mode);
-        void saveResults(const string& filename, int mode);
+        Solution_cap getSolution_cap(void);
+        void setSolution_cap(Solution_cap sol);
+        void saveVars   (const string& filename,const string& Method);
+        void saveResults(const string& filename,const string& Method);
         int current_day, current_month, current_year;
         // void saveNumConstraints();
         double timeSolver;
         double timePMP;
         bool is_BinModel;
+        bool VERBOSE;
+        bool CoverModel=false;
+        string typeServ;
+        bool getFeasibility_Solver();
+        void setGenerateReports(bool generate_reports);
+        // void setVerbose(bool VERBOSE);
+        void setCoverModel(bool CoverModel);
+
 
     private:
         shared_ptr<Instance> instance; // original PMP instance
@@ -64,10 +75,13 @@ class PMP
         BoolVarMatrix x_bin;
         IloBoolVarArray y;
         NumVarMatrix x_cont;
+        bool isFeasible_Solver=false;
+        bool generate_reports=false;
         // IloNumVarArray y_cont;
         uint_t p;
         uint_t num_facilities;
         uint_t num_customers;
+        uint_t num_subareas;
 
         void initVars();
         void initILP        (void);
@@ -96,6 +110,11 @@ class PMP
         // void constr_maxCapacity (IloModel model, BoolVarMatrix x, IloBoolVarArray y);
         template <typename VarType>
         void constr_maxCapacity (IloModel model, VarType x, IloBoolVarArray y);
+
+        unordered_set<uint_t> p_locations; // p selected locations
+        void constr_GAP (IloModel model, IloBoolVarArray y);
+
+        void constr_Cover (IloModel model, IloBoolVarArray y);
 
 };
 

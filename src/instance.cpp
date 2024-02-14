@@ -4,18 +4,37 @@
 #include <sstream>
 #include <string.h>
 
-Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
-                   shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p,
-                   uint_t loc_max, uint_t cust_max)
-        : locations(std::move(locations)), customers(std::move(customers)), cust_weights(std::move(cust_weights)),
-          dist_matrix(std::move(dist_matrix)),
-          loc_capacities(std::move(loc_capacities)), p(p),
-          loc_max_id(loc_max), cust_max_id(cust_max) {
+// Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
+//                    shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p,
+//                    uint_t loc_max, uint_t cust_max, string type_service)
+//         : locations(locations), customers(customers), cust_weights(cust_weights),
+//           dist_matrix(dist_matrix),
+//           loc_capacities(loc_capacities), p(p),
+//           loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service){
+//     total_demand = 0;
+//     for (auto cust:this->customers) {
+//         total_demand += this->getCustWeight(cust);
+//     }
+// }
+
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> loc_capacities, shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max_id, uint_t cust_max_id, string type_service) : 
+        locations(locations), 
+        customers(customers), 
+        cust_weights(cust_weights), 
+        loc_capacities(loc_capacities), 
+        dist_matrix(dist_matrix), 
+        p(p), 
+        loc_max_id(loc_max_id), 
+        cust_max_id(cust_max_id), 
+        type_service(type_service) {
+
     total_demand = 0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
 }
+
+
 
 vector<string> tokenize(const string& input, char delim) {
     vector <string> tokens;
@@ -28,7 +47,7 @@ vector<string> tokenize(const string& input, char delim) {
     return tokens;
 }
 
-Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim) : p(p) {
+Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service) : p(p), type_service(type_service) {
 
     // Open streams
     fstream dist_matrix_file(dist_matrix_filename);
@@ -155,6 +174,68 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
 }
 
 
+void Instance::ReadCoverages(const string& coverages_filename,string type_subarea,char delim){
+    this->type_subarea = type_subarea;
+    fstream coverages_file(coverages_filename);
+    // uint_t num_subareas = 0;
+    auto start = tick();
+
+    if (coverages_file.is_open()) {
+        string line;
+        tock(start);
+        // Load coverages
+        start = tick();
+        cout << "Loading coverages...\n";
+        loc_coverages = shared_ptr<uint_t[]>(new uint_t[loc_max_id + 1], default_delete<uint_t[]>());
+        for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_coverages[loc] = 0;
+        getline(coverages_file, line); // skip first line
+        cout << "Skipped line: " << line << endl;
+        uint_t cover_cnt = 0; 
+        vector<uint_t> qtd_coverages; // to store the number of coverages per subarea
+        while (getline(coverages_file, line)) {
+            auto tokens = tokenize(line, delim);
+            auto loc = stoi(tokens[0]);
+            auto subarea = stoi(tokens[1]);
+            loc_coverages[loc] = subarea;
+            unique_subareas.insert(subarea);
+            cover_cnt++;
+        }
+        cout << "Loaded " << cover_cnt << " locations covered\n";
+        cout << "Number of subareas: " << unique_subareas.size() << endl;
+
+        // Sttistics about the number of coverages per subarea
+        for (auto subarea:unique_subareas) {
+            // cout << "Subarea " << subarea << " has " << count(loc_coverages.get(), loc_coverages.get() + loc_max_id + 1, subarea) << " locations" << endl;
+            qtd_coverages.push_back(count(loc_coverages.get(), loc_coverages.get() + loc_max_id + 1, subarea));
+        }
+        // Initialize max and min with the first element of the vector
+        uint_t max = qtd_coverages[0];
+        uint_t min = qtd_coverages[0];
+        uint_t sum = 0.0;
+        // Find max, min, and sum of elements
+        for (uint_t num : qtd_coverages) {
+            if (num > max) {
+                max = num;
+            }
+            if (num < min) {
+                min = num;
+            }
+            sum += num;
+        }
+        
+        // Calculate average
+        double average = sum / qtd_coverages.size();
+        cout << "Average number of locations for subarea: " << average << endl;
+        cout << "Max qte locations for one subarea: " << max << endl;
+        cout << "Min qte locations for one subarea: " << min << endl;
+
+        tock(start);
+    }else{
+        cerr << "Error while trying to open the subareas file" << endl;
+        cout << "subareas filename: " << coverages_filename << endl;
+    }
+}
+
 uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
 //    return loc * cust_max_id + cust;    // faster extraction of cust values
     return cust * loc_max_id + loc;    // faster extraction of loc values
@@ -180,17 +261,32 @@ dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
     return dist_matrix[index];
 }
 
-Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, default_random_engine *generator) {
+string Instance::getTypeSubarea(){
+    return type_subarea;
+}
+
+uint_t Instance::getSubareaLocation(uint_t loc){
+    return loc_coverages[loc];
+}
+
+Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
+    
+    // Create a new engine and seed it
+    std::default_random_engine generator(seed);;
+
+        // Print information about the engine and seed
+    // cout << "SampleSubproblem - Seed: " << seed << ", Engine State: " << generator.operator()() << endl;
+
     vector<uint_t> locations_new;
     vector<uint_t> customers_new;
 
     if (loc_cnt < locations.size()) {
-        locations_new = getRandomSubvector(locations, loc_cnt, generator);
+        locations_new = getRandomSubvector(locations, loc_cnt, &generator);
     } else {
         locations_new = locations;
     }
     if (cust_cnt < customers.size()) {
-        customers_new = getRandomSubvector(customers, cust_cnt, generator);
+        customers_new = getRandomSubvector(customers, cust_cnt, &generator);
     } else {
         customers_new = customers;
     }
@@ -223,13 +319,29 @@ const vector<uint_t> &Instance::getLocations() const {
     return this->locations;
 }
 
+unordered_set<uint_t> Instance::getCoverages(){
+    return unique_subareas;
+}
+
+
+const vector<uint_t> Instance::getLocationsSubarea(uint_t subarea){
+
+    vector<uint_t> vet;
+    for(uint_t loc = 0; loc < loc_max_id + 1; loc++){
+        if(loc_coverages[loc] == subarea)
+            vet.push_back(loc);
+    }
+
+    return vet;
+}
+
 uint_t Instance::get_p() const {
     return p;
 }
 
 uint_t Instance::getClosestCust(uint_t loc) {
     dist_t dist_min = numeric_limits<dist_t>::max();
-    uint_t cust_cl;
+    uint_t cust_cl = numeric_limits<uint_t>::max();
     for (auto cust:customers) {
         auto dist = getRealDist(loc, cust);
         if (dist <= dist_min) {
@@ -249,8 +361,8 @@ double Instance::getVotingScore(uint_t loc, uint_t cust) {
     return score;
 }
 
-Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new) {
-    return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id);
+Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new, string type_service) {
+    return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id, type_service);
 }
 
 dist_t Instance::getLocCapacity(uint_t loc) {
@@ -261,7 +373,9 @@ dist_t Instance::getTotalDemand() const {
     return total_demand;
 }
 
-
+string Instance::getTypeService() const {
+    return type_service;
+}
 
 
 

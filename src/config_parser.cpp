@@ -38,7 +38,7 @@ class ConfigParser {
          * @param option
          */
         bool notOverriden(const char* option) {
-            return !configOverride.contains(option);
+            return configOverride.find(option) == configOverride.end();
         }
 
     public:

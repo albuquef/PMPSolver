@@ -62,7 +62,7 @@ Solution_cap TBPercentage::initHighestCapSolution() {
     sort(sorted_locations.begin(), sorted_locations.end());
     reverse(sorted_locations.begin(), sorted_locations.end());
 
-    for (int i = 0; i < p; i++) {
+    for (uint_t i = 0; i < p; i++) {
         p_locations.insert(sorted_locations[i].second);
     }
     Solution_cap sol(instance, p_locations);
@@ -84,7 +84,7 @@ unordered_set<uint_t>* TBPercentage::randomSplitLocationsByPercentage(int moving
     unordered_set<uint_t> tempPLocations = pLocations;
     srand (time(NULL)); //Generate random seed
     
-    while(splitLocations[0].size() < movingAmount){
+    while(splitLocations[0].size() < static_cast<unsigned int>(movingAmount)){
         int loc_id = rand() % tempPLocations.size();
         auto sample = *std::next(tempPLocations.begin(), loc_id);
         tempPLocations.erase(sample);
@@ -134,7 +134,7 @@ Solution_std TBPercentage::run(bool verbose) {
             for(auto loc_m:movingLocations){
                 sol_tmp = sol_best;
                 sol_tmp.replaceLocation(loc_m, loc);
-                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ){
                     movingLocations.erase(loc_m);
                     movingLocations.insert(loc);
                     sol_cand = sol_tmp;
@@ -187,7 +187,7 @@ Solution_std TBPercentage::run(bool verbose) {
             for(auto loc_m:movingLocations){
                 sol_tmp = sol_best;
                 sol_tmp.replaceLocation(loc_m, loc);
-                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+                if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ){
                     movingLocations.erase(loc_m);
                     movingLocations.insert(loc);
                     sol_cand = sol_tmp;
@@ -197,7 +197,7 @@ Solution_std TBPercentage::run(bool verbose) {
                 }
                 else{
                     cpt++;
-                    if(cpt == K){
+                    if(static_cast<unsigned int>(cpt) == K){
                         cptBool = true;
                         break;
                     }
@@ -287,7 +287,11 @@ Solution_cap TBPercentage::run_cap(bool verbose) {
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(loc_m) + instance->getLocCapacity(loc) >= instance->getTotalDemand()){
                         sol_cand.replaceLocation(loc_m, loc);
                         // #pragma omp critical
+<<<<<<< HEAD
                         if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
+=======
+                        if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ){
+>>>>>>> feature/VNS
                             sol_cand = sol_tmp;
                             improved = true;
                             cpt = 0;
@@ -296,7 +300,7 @@ Solution_cap TBPercentage::run_cap(bool verbose) {
                         else{
                             cpt++;
 
-                            if(cpt == K/2){
+                            if(static_cast<unsigned int>(cpt) == K/2){
                                 //Mettre un gros cout qui liste toute les locations, pour vérif si on a bien les immobiles qui ont pas bougées
                                 flag = false;
                             }

@@ -8,7 +8,12 @@ function basic_model(model,p,num_locations,num_customers)
 
     println("Creating the variables - x_ij")
     # @variable(model, x[i in df_customers.customer, j in df_locations.location], Bin);
-    @time @variable(model, x[i in 1:num_customers, j in 1:num_locations], Bin);
+    if model_bin
+        @time @variable(model, x[i in 1:num_customers, j in 1:num_locations], Bin);
+    else
+        @time @variable(model, 0 <= x[i in 1:num_customers, j in 1:num_locations] <= 1);
+    end
+
 
     println("Creating the variables - y_j")
     # @variable(model, y[j in size(df_locations.location)], Bin);
@@ -16,7 +21,7 @@ function basic_model(model,p,num_locations,num_customers)
 
     println("Creating the objective function")
     # @time @objective(model, Min, sum(round.(cust_weights[i];digits=2)*getDist(i,j)*x[i, j] for i in 1:num_customers,j in 1:num_locations))
-    @time @objective(model, Min, sum(round.(cust_weights[i];digits=2)*dist_matrix[i,j]*x[i, j] for i in 1:num_customers,j in 1:num_locations))
+    @time @objective(model, Min, sum(round.(cust_weights[i];digits=5)*dist_matrix[i,j]*x[i, j] for i in 1:num_customers,j in 1:num_locations))
 
     println("Creating the constraint - Satisfied Customer")
     @time @constraint(model, customer_service[i in 1:num_customers],
@@ -46,7 +51,7 @@ function create_model(problem, model,p,num_locations,num_customers)
     elseif problem == "CPMP"
         println("Creating the constraint - Capacity Limit")
         @time @constraint(model, location_capacity[j in 1:num_locations], 
-            sum(round.(cust_weights[i];digits=2)*x[i, j] for i in 1:num_customers) <= loc_capacities[j] * y[j]
+            sum(round.(cust_weights[i];digits=5)*x[i, j] for i in 1:num_customers) <= loc_capacities[j] * y[j]
         );
     elseif problem == "PMP_SC"
         println("Creating the constraint - custormers attended only by p medians")

@@ -1,7 +1,7 @@
 #include "RSSV.hpp"
 #include "globals.hpp"
 #include "utils.hpp"
-
+#include <random>
 
 void printDDE(void){
     cout << "RSSV finished." << endl;
@@ -20,83 +20,88 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
 /*
  * RSSV metaheuristic implementation.
  */
-shared_ptr<Instance> RSSV::run(int thread_cnt) {
+shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
     cout << "RSSV running...\n";
-    cout << "PMP size (N): " << N << endl;
-    cout << "sub-PMP size (n): " << n << endl;
+    cout << "cPMP size (N): " << N << endl;
+    cout << "sub-cPMP size (n): " << min(n,N) << endl;
     cout << "Subproblems cnt (M): " << M << endl << endl;
+    this->method_RSSV_sp = method_sp;
+    cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
-
     cout << "thread cnt:  " << thread_cnt << endl;
-    cout << "\n\n\n\n" << endl;
+    cout << "\n\n";
 
     vector<thread> threads; // spawn M threads
-    for (uint_t i = 1; i <= M; i++) {
-        threads.emplace_back(&RSSV::solveSubproblem, this, i);
+    for (uint_t i = 1; i <= M; i += thread_cnt) {
+        for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
+            threads.emplace_back(&RSSV::solveSubproblem, this, i + j);
+        }
+        // Wait for the current batch of threads to finish before starting the next batch
+        for (auto &th : threads) {
+            th.join();
+        }
+        // Clear the threads vector for the next batch
+        threads.clear();
     }
 
-    for (auto &th:threads) { // wait for all threads
-        th.join();
-    }
-    cout << "All subproblems solved."  << endl << endl;
+
+    cout << "[INFO] All subproblems solved."  << endl << endl;
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
-    cout << "Filtered " << filtered_cnt << " locations: ";
+    cout << "\n\nFiltered " << filtered_cnt << " locations: ";
     for (auto fl:filtered_locations) cout << fl << " ";
     cout << endl << endl;
 
     auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
-    cout << "Extracted " << prioritized_locations.size() << " prioritized locations: ";
+    cout << "\n\nExtracted " << prioritized_locations.size() << " prioritized locations: ";
     for (auto pl:prioritized_locations) cout << pl << " ";
     cout << endl << endl;
 
     for (auto fl:filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
-    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
-    cout << "Final instance parameters:\n";
+    // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
+    cout << "\n\nFinal instance parameters:\n";
     filtered_instance->print();
+
 
     return filtered_instance;
 }
 
-shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
+shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
+
+
+
     cout << "RSSV running...\n";
     cout << "cPMP size (N): " << N << endl;
-    cout << "sub-cPMP size (n): " << n << endl;
+    cout << "sub-cPMP size (n): " << min(n,N) << endl;
     cout << "Subproblems cnt (M): " << M << endl << endl;
+    this->method_RSSV_sp = method_sp;
+    cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
-
     cout << "thread cnt:  " << thread_cnt << endl;
-    cout << "\n\n\n\n" << endl;
+    cout << "\n\n";
 
     vector<thread> threads; // spawn M threads
     // for (uint_t i = 1; i <= M; i++) {
     //     threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i);
     // }
-
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
             threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j);
         }
-    
         // Wait for the current batch of threads to finish before starting the next batch
         for (auto &th : threads) {
             th.join();
         }
-
         // Clear the threads vector for the next batch
         threads.clear();
-    
-    
-    
     }
-    
-    cout << "All subproblems solved."  << endl << endl;
-
+    cout << "[INFO] All subproblems solved."  << endl << endl;
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
@@ -112,7 +117,7 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
     for (auto fl:filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
-    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     cout << "Final instance parameters:\n";
     filtered_instance->print();
 
@@ -128,23 +133,38 @@ shared_ptr<Instance> RSSV::run_CAP(int thread_cnt) {
  * sub-PMP considers only n locations and customers.
  */
 void RSSV::solveSubproblem(int seed) {
+
+
+    // // Use the seed for random number generation
+    // std::mt19937 gen(seed);
+
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
-    Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-    int MAX_ITE = 1000;
-
+    // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
+    // int MAX_ITE = 1000;
 
     // checkClock();
-    
+    Solution_std sol;
 
     if(checkClock()){
-        TB heuristic(make_shared<Instance>(subInstance), seed);
-        // auto sol = heuristic.run(false);
-        auto sol = heuristic.run(false, MAX_ITE);
-
+        if(method_RSSV_sp == "EXACT_PMP"){
+            PMP pmp(make_shared<Instance>(subInstance), "PMP");
+            pmp.run();
+            sol = pmp.getSolution_std();
+        }else if(method_RSSV_sp == "TB_PMP"){
+            TB heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.run(false, UB_MAX_ITER);
+        }else if(method_RSSV_sp == "VNS_PMP"){
+            VNS heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.runVNS_std(true,UB_MAX_ITER);
+        }else{
+            cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
+            exit(1);
+        }
         if (VERBOSE) cout << "Solution_std " << seed << ": ";
-        sol.print();
+        if (VERBOSE) sol.print();
         processSubsolution(make_shared<Solution_std>(sol));
         if (VERBOSE) tock(start);
         sem.notify(seed);
@@ -156,7 +176,6 @@ void RSSV::solveSubproblem(int seed) {
 
 
 
-
 /*
  * Solve sub-PMP of the original problem by the TB heuristic.
  * sub-PMP considers only n locations and customers.
@@ -165,25 +184,38 @@ void RSSV::solveSubproblem_CAP(int seed) {
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
     auto start = tick();
-    Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-
+    // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
+    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
     // checkClock();
+    Solution_cap sol;
     if(checkClock()){
-        TB heuristic(make_shared<Instance>(subInstance), seed);
-        int MAX_ITE = 1000;
-        auto sol = heuristic.run_cap(false, MAX_ITE);
+        if(method_RSSV_sp == "EXACT_CPMP"){
+            PMP pmp(make_shared<Instance>(subInstance), "CPMP");
+            pmp.run();
+            sol = pmp.getSolution_cap();
+        }else if(method_RSSV_sp == "EXACT_CPMP_BIN"){
+            PMP pmp(make_shared<Instance>(subInstance), "CPMP", true);
+            pmp.run();
+            sol = pmp.getSolution_cap();
+        }else if(method_RSSV_sp == "TB_CPMP"){
+            TB heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.run_cap(false, UB_MAX_ITER);
+        }else if(method_RSSV_sp == "VNS_CPMP"){
+            VNS heuristic(make_shared<Instance>(subInstance), seed);
+            sol = heuristic.runVNS_cap(method_RSSV_sp,false,UB_MAX_ITER);
+        }else{
+            cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
+            exit(1);
+        }
 
         if (VERBOSE) cout << "Solution_cap " << seed << ": ";
-        sol.print();
+        if (VERBOSE) sol.print();
         processSubsolution_CAP(make_shared<Solution_cap>(sol));
         if (VERBOSE) tock(start);
         sem.notify(seed);
     }else{
         cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
     }
-
-
-
 
     // checkClock();
 }
@@ -266,11 +298,11 @@ unordered_set<uint_t> RSSV::extractPrioritizedLocations(uint_t min_cnt) {
     for (auto c:instance->getCustomers()) {
         uint_t cnt = 0;
         for (auto l:instance->getLocations()) {
-            if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) cnt++;
+            if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE_OBJ) cnt++;
         }
         if (cnt <= min_cnt) {
             for (auto l:instance->getLocations()) {
-                if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE) locations.insert(l);
+                if (DEFAULT_DISTANCE - instance->getRealDist(l, c) > TOLERANCE_OBJ) locations.insert(l);
             }
         }
     }

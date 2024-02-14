@@ -1,11 +1,13 @@
 #ifndef LARGE_PMP_GLOBALS_HPP
 #define LARGE_PMP_GLOBALS_HPP
-#define TOLERANCE 0.0001
+#define TOLERANCE_OBJ 0.0001
 #define DEFAULT_DISTANCE 1000000000
+#define DEFAULT_MAX_ITE 1000000000
 #define DEFAULT_WEIGHT 0.0
 #define DEFAULT_CAPACITY 0.0
 
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -30,11 +32,13 @@ extern uint_t SUB_PMP_SIZE;
 extern int THREAD_NUMBER;
 extern uint_t CLOCK_START;
 extern uint_t CLOCK_LIMIT;  // time expressed in seconds
+extern uint_t CLOCK_LIMIT_CPLEX;  // time expressed in seconds
 extern uint_t CLOCK_ELAPSED;  // elapsed time since the beginning in seconds
 extern bool CLOCK_THREADED;
 extern bool VERBOSE;
 extern uint_t TOLERANCE_CPT;
 extern uint_t K;
 extern uint_t PERCENTAGE;
+extern uint_t UB_MAX_ITER;
 
 #endif //LARGE_PMP_GLOBALS_HPP
