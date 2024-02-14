@@ -21,6 +21,7 @@ println(ARGS)
 global solver = "CPLEX"
 
 # args
+# julia ./main.jl CPMP_SC 144 216 36 grid ratio 2x2 36
 global problem = ARGS[1]
 global num_customers = parse(Int,ARGS[2])
 global num_locations = parse(Int,ARGS[3])
