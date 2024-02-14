@@ -3,6 +3,7 @@ distance_matrix = "./data/toulon/dist_matrix.txt"
 output = "./results/test_toulon"
 weights = "./data/toulon/cust_weights.txt"
 cover = ""
+cover_mode = 0
 verbose = true
 threads = 4
 mode = 2

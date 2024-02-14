@@ -287,11 +287,7 @@ Solution_cap TBPercentage::run_cap(bool verbose) {
                     if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(loc_m) + instance->getLocCapacity(loc) >= instance->getTotalDemand()){
                         sol_cand.replaceLocation(loc_m, loc);
                         // #pragma omp critical
-<<<<<<< HEAD
-                        if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE){
-=======
                         if(sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ){
->>>>>>> feature/VNS
                             sol_cand = sol_tmp;
                             improved = true;
                             cpt = 0;

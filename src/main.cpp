@@ -46,8 +46,8 @@ int main(int argc, char *argv[]) {
 
 
     // default config path
-    // std::string configPath = "config.toml";
-    // std::set<const char*> configOverride;
+    std::string configPath = "config.toml";
+    std::set<const char*> configOverride;
 
 
     // Parameters parsing
@@ -56,46 +56,45 @@ int main(int argc, char *argv[]) {
             if (strcmp(argv[i], "-p") == 0) {
 
                 p = stoi(argv[i + 1]);
-                // configOverride.insert("p");
+                configOverride.insert("p");
 
             } else if (strcmp(argv[i], "-v") == 0 ||
                        strcmp(argv[i], "-verbose") == 0) {
 
                 VERBOSE = true;
-                // configOverride.insert("verbose");
+                configOverride.insert("verbose");
 
             } else if (strcmp(argv[i], "-config") == 0) {
-                // configPath = argv[i + 1];
+                configPath = argv[i + 1];
             } else if (strcmp(argv[i], "-dm") == 0) {
 
                 dist_matrix_filename = argv[i + 1];
-                // configOverride.insert("distance_matrix");
+                configOverride.insert("distance_matrix");
 
             } else if (strcmp(argv[i], "-w") == 0) {
 
                 labeled_weights_filename = argv[i + 1];
-                // configOverride.insert("weights");
+                configOverride.insert("weights");
 
             } else if (strcmp(argv[i], "-th") == 0) {
 
                 threads_cnt = stoi(argv[i + 1]);
-                // configOverride.insert("threads");
+                configOverride.insert("threads");
 
             } else if (strcmp(argv[i], "--mode") == 0) {
 
                 mode = stoi(argv[i + 1]);
-                // configOverride.insert("mode");
+                configOverride.insert("mode");
 
             } else if (strcmp(argv[i], "--seed") == 0) {
 
                 seed = stoi(argv[i + 1]);
-                // configOverride.insert("seed");
+                configOverride.insert("seed");
 
             } else if (strcmp(argv[i], "-t") == 0 || 
                        strcmp(argv[i], "-time") == 0) {
 
                 setClockLimit(stoi(argv[i + 1]));
-                // configOverride.insert("time");
                 CLOCK_LIMIT = stod(argv[i + 1]);
                 configOverride.insert("time");
 
@@ -107,12 +106,12 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "-o") == 0) {
 
                 output_filename = argv[i + 1];
-                // configOverride.insert("output");
+                configOverride.insert("output");
 
             } else if (strcmp(argv[i], "-c") == 0) {
 
                 capacities_filename = argv[i + 1];
-                // configOverride.insert("capacities");
+                configOverride.insert("capacities");
 
             } else if (strcmp(argv[i], "-cover") == 0) {
 
@@ -122,17 +121,16 @@ int main(int argc, char *argv[]) {
             } else if (strcmp(argv[i], "-toleranceCpt") == 0){
                 
                 TOLERANCE_CPT = stoi(argv[i + 1]);
-                // configOverride.insert("toleranceCpt");
+                configOverride.insert("toleranceCpt");
                 
             } else if (strcmp(argv[i], "-k") == 0){
                 
                 K = stoi(argv[i + 1]);
-                // configOverride.insert("k");
+                configOverride.insert("k");
                 
             } else if (strcmp(argv[i], "-percentage") == 0){
                 
                 PERCENTAGE = stoi(argv[i + 1]);
-                // configOverride.insert("percentage");
                 configOverride.insert("percentage");
             } else if (strcmp(argv[i], "-service") == 0){
                 
@@ -154,7 +152,18 @@ int main(int argc, char *argv[]) {
                 
                 Method_RSSV_fp = argv[i + 1];
                 configOverride.insert("method_rssv_fp");                
-            }  else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
+            } else if (strcmp(argv[i], "-cover_mode") == 0){
+                if (strcmp(argv[i + 1], "true") == 0 || strcmp(argv[i + 1], "1") == 0){
+                    cover_mode = true;
+                } else if (strcmp(argv[i + 1], "false") == 0 || strcmp(argv[i + 1], "0") == 0){
+                    cover_mode = false;
+                } else {
+                    cerr << "Unknown parameter [cover mode]: " << argv[i] << endl;
+                    // exit(1);
+                }
+                // cover_mode = argv[i + 1];
+                configOverride.insert("cover_mode");                
+            } else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
             
                 cout << 
                     "\nTo run the program, you have to specify some options : \n\n"
@@ -270,10 +279,15 @@ int main(int argc, char *argv[]) {
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
 
-    if(!coverages_filename.empty()){
-        cover_mode = true;
+    if(!coverages_filename.empty() && cover_mode){
+        // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
     }
+
+    cout << "[INFO] Instance loaded\n";
+    instance.print();
+
+
     auto start = tick();
     cout << "-------------------------------------------------\n";
     if(Method == "EXACT_PMP" || Method == "TB_PMP" || Method == "VNS_PMP"){

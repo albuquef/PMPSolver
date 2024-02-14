@@ -177,14 +177,11 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
 void Instance::ReadCoverages(const string& coverages_filename,string type_subarea,char delim){
     this->type_subarea = type_subarea;
     fstream coverages_file(coverages_filename);
-    // uint_t num_subareas = 0;
-    auto start = tick();
-
+    cover_max_id = 0;
     if (coverages_file.is_open()) {
         string line;
-        tock(start);
         // Load coverages
-        start = tick();
+        auto start = tick();
         cout << "Loading coverages...\n";
         loc_coverages = shared_ptr<uint_t[]>(new uint_t[loc_max_id + 1], default_delete<uint_t[]>());
         for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_coverages[loc] = 0;
@@ -196,6 +193,7 @@ void Instance::ReadCoverages(const string& coverages_filename,string type_subare
             auto tokens = tokenize(line, delim);
             auto loc = stoi(tokens[0]);
             auto subarea = stoi(tokens[1]);
+            cover_max_id = max(cover_max_id, (uint_t) subarea);
             loc_coverages[loc] = subarea;
             unique_subareas.insert(subarea);
             cover_cnt++;
@@ -307,6 +305,8 @@ void Instance::print() {
     cout << "loc_cnt: " << locations.size() << endl;
     cout << "cust_max_id: " << cust_max_id << endl;
     cout << "cust_cnt: " << customers.size() << endl;
+    cout << "cover_max_id: " << cover_max_id << endl;
+    cout << "subareas_cnt: " << unique_subareas.size() << endl;
     cout << "p: " << p << endl;
     cout << "total_demand: " << total_demand << endl << endl;
 }
@@ -377,7 +377,13 @@ string Instance::getTypeService() const {
     return type_service;
 }
 
-
+bool Instance::isCoverMode() {
+    if (unique_subareas.empty()) {
+        return false;
+    }
+    return true;
+    // return !unique_subareas.empty();
+}
 
 
 

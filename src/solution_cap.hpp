@@ -27,6 +27,7 @@ private:
                     ,unordered_map<uint_t, dist_t>  loc_usages,unordered_map<uint_t, dist_t> cust_satisfactions
                     ,unordered_map<uint_t, assignment> assignments, dist_t objective);
     bool isFeasible=false;
+    bool cover_mode=true;
 public:
 
     Solution_cap() = default;

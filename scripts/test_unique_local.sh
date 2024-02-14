@@ -40,10 +40,10 @@ do
 done
 
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
-
 for element in "${arr[@]}"; do
-    $element
+    echo "$element"
 done
+
+# for element in "${arr[@]}"; do
+#   $element
+# done

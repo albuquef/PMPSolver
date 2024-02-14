@@ -25,7 +25,7 @@ private:
     uint_t p;
     uint_t loc_max_id; // kept for addressing the full distance matrix
     uint_t cust_max_id; // kept for addressing the full distance matrix
-    uint_t cover_max_id; 
+    uint_t cover_max_id=0; 
     dist_t h; // bandwidth
     uint_t total_demand;
     const string type_service;
@@ -58,6 +58,7 @@ public:
     uint_t getSubareaLocation(uint_t loc);
     const vector<uint_t> getLocationsSubarea(uint_t subarea);
     unordered_set<uint_t>  getCoverages();
+    bool isCoverMode();
     // bool isLocationSubara(uint_t loc, uint subarea)
 
     // to do Coverage

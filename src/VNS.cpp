@@ -260,10 +260,20 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     tb.setSolutionMap(solutions_map);
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
+
     // auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
-    auto sol_best = tb.initCPLEXCapSolution(600);
-    // sol_best = tb.localSearch_cap(sol_best,true,10);
+    // auto sol_best = tb.initCPLEXCapSolution(600);
+    
+    auto sol_best = tb.initHighestCapSolution_Cover();
+    
+    if(sol_best.isSolutionFeasible()){
+        cout << "Initial solution feasible \n";
+    }else{
+        cout << "Initial solution not feasible\n";
+    }
+    exit(0);
+ 
     tb.solutions_map.addUniqueSolution(sol_best);
     cout << "Initial solution: \n";
     sol_best.print();

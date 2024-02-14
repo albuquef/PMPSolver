@@ -379,7 +379,6 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
     if (VERBOSE){cout << "[INFO] Adding Cover Constraints "<< endl;}
 
     num_subareas = instance->getCoverages().size();   
-    cout << "Num. of subareas: " << num_subareas << endl; 
 
     for (IloInt s = 0; s < num_subareas; s++){
         IloExpr expr(env);

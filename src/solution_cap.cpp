@@ -11,6 +11,15 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
     
+    // cover_mode = instance->isCoverMode();
+
+    // if (instance->isCoverMode()){
+    this->cover_mode = true;
+    if(cover_mode){
+        cout << "Cover mode initial" << endl;
+    }
+    // }
+
     // Initialize all fields
     this->typeEval = typeEval;
     // cout << "typeEval: " << typeEval << endl;
@@ -146,11 +155,6 @@ void Solution_cap::fullCapEval() {
     bool location_full = false;
     bool infeasible = false;
     int cont = 0;
-
-    // print urgencies vector
-    // for (auto p:urgencies_vec) {
-    //     cout << p.first << " " << p.second << endl;
-    // }
 
     int cont_iter = 0;
 
@@ -527,7 +531,29 @@ bool Solution_cap::isSolutionFeasible(){
             // exit(1);
         }
     }
- 
+    cout << "Cover mode: " << cover_mode << endl;
+    if(this->cover_mode){
+        cout << "Cover mode test" << endl;
+        // auto coverages = instance->getCoverages();
+        for(auto subarea:instance->getCoverages()){
+            auto loc_subarea = instance->getLocationsSubarea(subarea);
+            bool covered = false;
+            for(auto loc:loc_subarea){
+                if (p_locations.find(loc) != p_locations.end()){
+                    covered = true;
+                }
+            }
+            if (!covered){
+                cerr << "ERROR: subarea not covered" << endl;
+                cout << "subarea: " << subarea << endl;
+                isFeasible = false;
+                return isFeasible;
+            }
+
+        }
+    }else{
+        cout << "Not Cover mode" << endl;
+    }
  
     return isFeasible;
 }

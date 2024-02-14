@@ -65,6 +65,8 @@ Solution_cap TB::initRandomCapSolution() {
 
 Solution_cap TB::initHighestCapSolution() {
 
+    cout << "Initial Solution Highest Cap \n";
+
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
     auto locations = instance->getLocations();
@@ -79,6 +81,60 @@ Solution_cap TB::initHighestCapSolution() {
 
     for (uint_t i = 0; i < p; i++) {
         p_locations.insert(sorted_locations[i].second);
+    }
+
+    Solution_cap solut(instance, p_locations);
+
+    return solut;
+}
+
+Solution_cap TB::initHighestCapSolution_Cover() {
+
+    cout << "Initial Solution Highest Cap Coverages\n";
+    if (instance->isCoverMode() == false){
+        cout << "Instance is not in cover mode\n";
+        initHighestCapSolution();
+    }
+
+    unordered_set<uint_t> p_locations;
+    auto p = instance->get_p();
+    auto locations = instance->getLocations();
+    auto unique_subareas = instance->getCoverages();
+    auto num_subareas = unique_subareas.size();
+
+    vector<pair<uint_t, uint_t>> hight_loc_each_cover;
+    unique_subareas = instance->getCoverages();
+    for (auto subarea:unique_subareas) {
+        auto locs = instance->getLocationsSubarea(subarea);
+        vector<pair<uint_t, uint_t>> sorted_locations;
+        for (auto loc:locs) {
+            auto cap = instance->getLocCapacity(loc);
+            sorted_locations.emplace_back(cap, loc);
+        }
+        sort(sorted_locations.begin(), sorted_locations.end());
+        reverse(sorted_locations.begin(), sorted_locations.end());
+        hight_loc_each_cover.emplace_back(sorted_locations[0].first, sorted_locations[0].second);
+    }
+
+    for (uint_t i = 0; i < num_subareas; i++) {
+        p_locations.insert(hight_loc_each_cover[i].second);
+    }
+
+    if (p_locations.size() < p){
+        // cout << "not enough locations in coverages\n";
+        vector<pair<uint_t, uint_t>> sorted_locations_diff;
+        for (auto loc : locations) {
+            // Check if loc exists in p_locations
+            if (p_locations.find(loc) != p_locations.end()) {
+                auto cap = instance->getLocCapacity(loc);
+                sorted_locations_diff.emplace_back(cap, loc);
+            }
+        }
+        sort(sorted_locations_diff.begin(), sorted_locations_diff.end());
+        reverse(sorted_locations_diff.begin(), sorted_locations_diff.end());
+        for (uint_t i = 0; i < (p-num_subareas); i++) {
+            p_locations.insert(sorted_locations_diff[i].second);
+        }
     }
 
     Solution_cap solut(instance, p_locations);
@@ -161,109 +217,12 @@ Solution_std TB::run(bool verbose, int MAX_ITE) {
     auto sol_best = initRandomSolution();
     sol_best = localSearch_std(sol_best, verbose, MAX_ITE);
 
-
-    while (improved && ite < MAX_ITE) {
-
-        ite++;
-
-        checkClock();
-        improved = false;
-        sol_cand = sol_best;
-        auto start = tick();
-        auto p_locations = sol_best.get_pLocations();
-
-        for (auto loc:locations) { // First improvement over locations
-            // if (!p_locations.contains(loc)) {
-            if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
-                for (auto p_loc:p_locations) { // Best improvement over p_locations
-                    sol_tmp = sol_best;
-                    sol_tmp.replaceLocation(p_loc, loc);
-//                    cout << sol_tmp.get_objective() << " " << sol_cand.get_objective() << endl;
-                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) { 
-                        sol_cand = sol_tmp;
-                        improved = true;
-                        objectiveCpt = 0;
-                    }
-                    else{
-                        objectiveCpt++;
-
-                        if(objectiveCpt == TOLERANCE_CPT){
-                            break;
-                        }
-                    }
-                }
-            }
-            if (improved) {
-                sol_best = sol_cand;
-                break;
-            };
-        }
-        if (verbose) {
-            sol_best.print();
-            cout << "uncapacitated TB loop: ";
-            tock(start);
-            cout << endl;
-        }
-    }
-
-    checkClock();
     return sol_best;
 }
 
 Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 
     auto sol_best = initHighestCapSolution();
-    auto locations = instance->getLocations();
-    bool improved = true;
-    Solution_cap sol_cand;
-    // int max_ite = 3;
-    int ite = 0;
-
-
-    while (improved && ite < MAX_ITE) {
-        
-        ite++;
-        
-        improved = false;
-        sol_cand = sol_best;
-        auto start = tick();
-        auto p_locations = sol_best.get_pLocations();
-
-        vector<uint_t> p_locations_vec;
-        p_locations_vec.reserve(p_locations.size());
-        for (auto p_loc:p_locations) p_locations_vec.push_back(p_loc);
-
-        for (auto loc:locations) { // First improvement over locations
-            // if (!p_locations.contains(loc)) {
-            if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){    
-                #pragma omp parallel for
-                for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
-                    Solution_cap sol_tmp = sol_best;
-                    if (sol_tmp.getTotalCapacity() - instance->getLocCapacity(p_loc) + instance->getLocCapacity(loc) >= instance->getTotalDemand()) {
-                        sol_tmp.replaceLocation(p_loc, loc);
-                        #pragma omp critical
-                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE ) {
-                            sol_cand = sol_tmp;
-                            improved = true;
-                        }
-
-                    }
-                }
-            }
-
-            if (improved) {
-                sol_best = sol_cand;
-                break;
-            };
-        }
-
-        if (verbose) {
-            sol_best.print();
-            cout << "capacitated TB loop: ";
-            tock(start);
-            cout << endl;
-        }
-    }
     // auto sol_best = initRandomCapSolution();
     sol_best = localSearch_cap(sol_best, verbose, MAX_ITE);
     return sol_best;

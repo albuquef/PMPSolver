@@ -29,6 +29,7 @@ public:
     Solution_std initRandomSolution();
     Solution_cap initRandomCapSolution();
     Solution_cap initHighestCapSolution();
+    Solution_cap initHighestCapSolution_Cover();
     Solution_cap initSmartRandomCapSolution();
     Solution_cap initCPLEXCapSolution(double time_limit);
 
