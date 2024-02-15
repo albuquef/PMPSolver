@@ -259,10 +259,6 @@ dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
     return dist_matrix[index];
 }
 
-string Instance::getTypeSubarea(){
-    return type_subarea;
-}
-
 uint_t Instance::getSubareaLocation(uint_t loc){
     return loc_coverages[loc];
 }
@@ -303,10 +299,12 @@ void Instance::print() {
 
     cout << "loc_max_id: " << loc_max_id << endl;
     cout << "loc_cnt: " << locations.size() << endl;
+    cout << "service: " << type_service << endl;
     cout << "cust_max_id: " << cust_max_id << endl;
     cout << "cust_cnt: " << customers.size() << endl;
     cout << "cover_max_id: " << cover_max_id << endl;
     cout << "subareas_cnt: " << unique_subareas.size() << endl;
+    cout << "subareas: "<< type_subarea << endl;
     cout << "p: " << p << endl;
     cout << "total_demand: " << total_demand << endl << endl;
 }
@@ -319,10 +317,13 @@ const vector<uint_t> &Instance::getLocations() const {
     return this->locations;
 }
 
-unordered_set<uint_t> Instance::getCoverages(){
+// const vector<uint_t> &Instance::getCoverages() const {
+//     return this->loc_coverages;
+// }
+
+unordered_set<uint_t> Instance::getSubareasSet(){
     return unique_subareas;
 }
-
 
 const vector<uint_t> Instance::getLocationsSubarea(uint_t subarea){
 
@@ -377,13 +378,20 @@ string Instance::getTypeService() const {
     return type_service;
 }
 
-bool Instance::isCoverMode() {
-    if (unique_subareas.empty()) {
-        return false;
-    }
-    return true;
-    // return !unique_subareas.empty();
+string Instance::getTypeSubarea() const {
+    return type_subarea;
 }
 
+void Instance::setCoverModel(bool cover_mode){
+    this->cover_mode = cover_mode;
+}
+
+bool Instance::isCoverMode() {
+    return cover_mode;
+}
+
+bool Instance::isInTheSameSubarea(uint_t loc1, uint_t loc2){
+    return loc_coverages[loc1] == loc_coverages[loc2];
+}
 
 

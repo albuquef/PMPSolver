@@ -282,10 +282,13 @@ int main(int argc, char *argv[]) {
     if(!coverages_filename.empty() && cover_mode){
         // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
+        instance.setCoverModel(true);
     }
 
     cout << "[INFO] Instance loaded\n";
     instance.print();
+
+    cout <<"Cover mode: " << instance.isCoverMode() << "\n";
 
 
     auto start = tick();
@@ -435,6 +438,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setSolutionMap(solution_map);
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
+        heuristic.setCoverMode(true);
         solution = heuristic.run_cap(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_CPMP" || typeMethod == "RSSV_VNS_CPMP"){
         cout << "VNS heuristic - cPMP\n";
@@ -443,6 +447,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setSolutionMap(solution_map);
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
+        heuristic.setCoverMode(true);
         solution = heuristic.runVNS_cap(typeMethod,true,UB_MAX_ITER);
     
         if (solution.isSolutionFeasible()){

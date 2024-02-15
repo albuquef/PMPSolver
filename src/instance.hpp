@@ -30,6 +30,7 @@ private:
     uint_t total_demand;
     const string type_service;
     string type_subarea;
+    bool cover_mode=false;
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
@@ -53,11 +54,13 @@ public:
     dist_t getLocCapacity(uint_t loc);
     dist_t getTotalDemand() const;
     string getTypeService() const;
-
-    string getTypeSubarea();
+    string getTypeSubarea() const;
     uint_t getSubareaLocation(uint_t loc);
+    bool isInTheSameSubarea(uint_t loc1, uint_t loc2);
     const vector<uint_t> getLocationsSubarea(uint_t subarea);
-    unordered_set<uint_t>  getCoverages();
+    unordered_set<uint_t>  getSubareasSet();
+    // const vector<uint_t>& getCoverages() const;
+    void setCoverModel(bool cover_mode);
     bool isCoverMode();
     // bool isLocationSubara(uint_t loc, uint subarea)
 

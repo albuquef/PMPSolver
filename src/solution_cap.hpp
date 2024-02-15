@@ -27,7 +27,7 @@ private:
                     ,unordered_map<uint_t, dist_t>  loc_usages,unordered_map<uint_t, dist_t> cust_satisfactions
                     ,unordered_map<uint_t, assignment> assignments, dist_t objective);
     bool isFeasible=false;
-    bool cover_mode=true;
+    bool cover_mode=false;
 public:
 
     Solution_cap() = default;
@@ -62,6 +62,8 @@ public:
     void setFeasibility(bool feasible);
     bool getFeasibility();
     bool isSolutionFeasible();  
+    bool isCoverMode();
+    void setCoverMode(bool cover_mode); 
 };
 
 

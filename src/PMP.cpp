@@ -378,11 +378,11 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
 
     if (VERBOSE){cout << "[INFO] Adding Cover Constraints "<< endl;}
 
-    num_subareas = instance->getCoverages().size();   
+    num_subareas = instance->getSubareasSet().size();   
 
     for (IloInt s = 0; s < num_subareas; s++){
         IloExpr expr(env);
-        // auto subarea = instance->getCoverages()[s];
+        // auto subarea = instance->getSubareasSet()[s];
         auto subarea = instance->getLocationsSubarea(s);
         bool y_exist = false;
         for(IloInt j = 0; j < num_facilities; j++){

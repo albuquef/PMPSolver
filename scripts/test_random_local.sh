@@ -21,8 +21,8 @@ p_values=(36)
 COVERAGES=${DIR_DATA}loc_coverages_${TYPEDIV}.txt
 OUTPUT=./solutions/test_random_${TYPEDIV}
 
-# METHOD="EXACT_CPMP"
-METHOD="VNS_CPMP"
+METHOD="EXACT_CPMP"
+# METHOD="VNS_CPMP"
 for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\

@@ -12,12 +12,9 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     this->p_locations = std::move(p_locations);
     
     // cover_mode = instance->isCoverMode();
-
+    cover_mode = true;
     // if (instance->isCoverMode()){
-    this->cover_mode = true;
-    if(cover_mode){
-        cout << "Cover mode initial" << endl;
-    }
+    //     cover_mode = true;
     // }
 
     // Initialize all fields
@@ -99,14 +96,7 @@ vector<pair<uint_t, dist_t>> Solution_cap::getUrgencies() {
         auto sat = p.second; // cust satisfaction                              
         // auto dem = instance->getCustWeight(cust) - sat;     // cust remaining demand
         auto dem = instance->getCustWeight(cust);     // cust remaining demand
-        // if (cust == 206){
-        //     cout << "dem cust 206 = " << dem << endl;  
-        //     cout << "sat cust 206 = " << sat << endl;
-        // }
-        // if (cust == 50){
-        //     cout << "dem cust 50 = " << dem << endl;  
-        //     cout << "sat cust 50 = " << sat << endl;
-        // }
+
         // if (sat < dem) { // cust not fully satisfied yet
         if (dem - sat > 0) { // cust not fully satisfied yet
             auto l1 = getClosestOpenpLoc(cust, numeric_limits<uint_t>::max());
@@ -115,10 +105,6 @@ vector<pair<uint_t, dist_t>> Solution_cap::getUrgencies() {
             auto dist2 = instance->getRealDist(l2, cust);
             dist_t urgency = fabs(dist1 - dist2);
             urgencies_vec.emplace_back(make_pair(cust, urgency));
-            // if (cust == 206)
-            //     cout << "urg cust 206 = " << urgency << endl;
-            // if (cust == 50) 
-            //     cout << "urg cust 50 = " << urgency << endl;
         }
     }
 
@@ -292,6 +278,13 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
         "_" + Method +
         ".txt";
 
+    if(cover_mode){
+        output_filename_final = output_filename + 
+        "_p_" + to_string(p_locations.size()) + 
+        "_" + Method + "_cover_" + instance->getTypeSubarea() +
+        ".txt";
+    }
+
     // Open file if output_filename is not empty
     if (!output_filename_final.empty()) {
         file.open(output_filename_final, ios::out);
@@ -328,6 +321,12 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
     string output_filename_final = output_filename + 
     "_results_" + Method +
     ".csv";
+
+    if(cover_mode){
+        output_filename_final = output_filename + 
+        "_results_" + Method + "_cover_" + instance->getTypeSubarea() +
+        ".csv";
+    }
 
     ofstream outputTable;
     outputTable.open(output_filename_final,ios:: app);
@@ -531,11 +530,10 @@ bool Solution_cap::isSolutionFeasible(){
             // exit(1);
         }
     }
-    cout << "Cover mode: " << cover_mode << endl;
-    if(this->cover_mode){
-        cout << "Cover mode test" << endl;
-        // auto coverages = instance->getCoverages();
-        for(auto subarea:instance->getCoverages()){
+
+    if(cover_mode){
+        // auto coverages = instance->getSubareasSet();
+        for(auto subarea:instance->getSubareasSet()){
             auto loc_subarea = instance->getLocationsSubarea(subarea);
             bool covered = false;
             for(auto loc:loc_subarea){
@@ -551,10 +549,15 @@ bool Solution_cap::isSolutionFeasible(){
             }
 
         }
-    }else{
-        cout << "Not Cover mode" << endl;
     }
  
     return isFeasible;
 }
 
+bool Solution_cap::isCoverMode(){
+    return cover_mode;
+}
+
+void Solution_cap::setCoverMode(bool cover_mode){
+    this->cover_mode = cover_mode;
+}

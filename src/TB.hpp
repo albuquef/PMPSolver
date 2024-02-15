@@ -24,6 +24,7 @@ private:
     bool generate_reports=false;
     string typeMethod="TB";
     double external_time=0;
+    bool cover_mode=false;
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
@@ -37,11 +38,18 @@ public:
     Solution_cap run_cap(bool verbose, int MAX_ITE);
     Solution_std localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE);
     Solution_cap localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE);
+    Solution_cap localSearch_cap_cover(Solution_cap sol_best, bool verbose, int MAX_ITE);
+    // bool isBetterSolution(Solution_cap sol, uint_t in_p, uint_t out_p);   
+    int isSolutionExistsinMap(Solution_cap sol, uint_t in_p, uint_t out_p);
+    bool test_Capacity(Solution_cap sol, uint_t in_p, uint_t out_p);
+    bool test_LB_PMP(Solution_cap sol, uint_t in_p, uint_t out_p);
+    bool test_Cover(uint_t in_p, uint_t out_p);
     Solution_MAP solutions_map;
     void setSolutionMap(Solution_MAP sol_map);
     void setGenerateReports(bool generate_reports);
     void setMethod(string Method);
     void setExternalTime(double time);
+    void setCoverMode(bool cover_mode);
 };
 
 

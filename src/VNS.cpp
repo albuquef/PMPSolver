@@ -153,6 +153,76 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, unsigned int
 
     return sol_current;
 }
+Solution_cap VNS::rand_swap_Locations_cap_cover(Solution_cap sol_current, unsigned int num_swaps, int seed){
+
+    // Set the seed for the random number generator
+    std::mt19937 rng(seed);
+
+    //change two locations inside p and outside p with the same subarea
+    auto locations = instance->getLocations();
+    auto p_locations = sol_current.get_pLocations();
+    auto p_locations_final = sol_current.get_pLocations();
+
+    vector<uint_t> p_locations_vec;
+    p_locations_vec.reserve(p_locations.size());
+    for (auto p_loc:p_locations) p_locations_vec.push_back(p_loc);
+
+    std::vector<size_t> excludeIndices = { static_cast<size_t>(-1) };
+    // Copy locations to out_locations_vec excluding elements in p_locations
+    std::vector<uint_t> outside_p_locations_vec;
+    std::copy_if(locations.begin(), locations.end(), std::back_inserter(outside_p_locations_vec),
+             [&p_locations](uint_t loc) { return p_locations.find(loc) == p_locations.end(); });
+
+    if (outside_p_locations_vec.size() < num_swaps || p_locations_vec.size() < num_swaps) return sol_current;
+
+    vector<uint_t> out_swap_loc;
+    vector<uint_t> p_swap_loc;
+    out_swap_loc.reserve(num_swaps);
+    p_swap_loc.reserve(num_swaps);
+
+    std::vector<uint_t> indices_p = getDistinctIndices(p_locations_vec.size(), num_swaps, seed);
+    for (auto i:indices_p) p_swap_loc.push_back(p_locations_vec[i]);
+
+    // generate indices with the same subarea outside p to swap
+    for (auto p_loc:p_swap_loc){
+        auto subarea = instance->getSubareaLocation(p_loc);
+        std::vector<uint_t> indices_out;
+        for (uint_t i = 0; i < outside_p_locations_vec.size(); i++){
+            if (instance->getSubareaLocation(outside_p_locations_vec[i]) == subarea) indices_out.push_back(i);
+        }
+        if (indices_out.size() > 0){
+            std::vector<uint_t> indices_out_dist = getDistinctIndices(indices_out.size(), 1, seed);
+            out_swap_loc.push_back(outside_p_locations_vec[indices_out[indices_out_dist[0]]]);
+        }
+    }
+
+    // print vectors
+    cout << "\np_swap_loc: ";
+    for (auto i:p_swap_loc) cout << i << " ";
+    cout << "\nout_swap_loc: ";
+    for (auto i:out_swap_loc) cout << i << " ";
+    cout << "\n";
+    if (out_swap_loc.size() < num_swaps) return sol_current;
+
+    dist_t add_Capacity = 0.0;
+    dist_t lost_Capacity = 0.0;
+    for (uint_t i = 0; i < num_swaps; i++) {
+        add_Capacity += instance->getLocCapacity(out_swap_loc[i]);
+        lost_Capacity += instance->getLocCapacity(p_swap_loc[i]);
+    }
+
+    if (sol_current.getTotalCapacity() - lost_Capacity + add_Capacity >= instance->getTotalDemand()){
+        for (uint_t i = 0; i < num_swaps; i++) {
+            p_locations_final.erase(p_swap_loc[i]);
+            p_locations_final.insert(out_swap_loc[i]);
+        }
+        sol_current = Solution_cap(instance, p_locations_final);
+    }else{  
+        cout << "Not enough capacity\n";
+    }
+
+    return sol_current;
+}
 
 Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
 
@@ -253,25 +323,41 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     // limit of time and iterations
     // auto time_limit_seconds = 3600;
     auto time_limit_seconds = CLOCK_LIMIT;
-    // int MAX_ITE_LOCAL = int(p/5);
     cout << "Time Limit: " << time_limit_seconds << " seconds\n";
 
     TB tb(instance, engine());
     tb.setSolutionMap(solutions_map);
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
+    tb.setCoverMode(cover_mode);
 
     // auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
     // auto sol_best = tb.initCPLEXCapSolution(600);
     
     auto sol_best = tb.initHighestCapSolution_Cover();
-    
+    sol_best.setCoverMode(cover_mode);
+
+    // sol_best = tb.localSearch_cap_cover(sol_best,false,DEFAULT_MAX_ITE);
+    // sol_best = tb.localSearch_cap(sol_best,false,DEFAULT_MAX_ITE);
+    sol_best.print();
     if(sol_best.isSolutionFeasible()){
         cout << "Initial solution feasible \n";
     }else{
         cout << "Initial solution not feasible\n";
     }
+
+    auto sol_cand = rand_swap_Locations_cap_cover(sol_best, 5,1);
+    sol_cand.print();
+
+    if(sol_cand.isSolutionFeasible()){
+        cout << "Initial solution feasible \n";
+    }else{
+        cout << "Initial solution not feasible\n";
+    }
+
+    // return sol_best;
+
     exit(0);
  
     tb.solutions_map.addUniqueSolution(sol_best);
@@ -392,4 +478,8 @@ void VNS::setSolutionMap(Solution_MAP sol_map){
 
 void VNS::setMethod(string Method){
     this->typeMethod = Method;
+}
+
+void VNS::setCoverMode(bool cover_mode){
+    this->cover_mode = cover_mode;
 }

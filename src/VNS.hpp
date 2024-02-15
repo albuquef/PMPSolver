@@ -22,6 +22,7 @@ private:
     default_random_engine engine;
     bool generate_reports=false;
     string typeMethod="VNS";
+    bool cover_mode=false;
 public:
     explicit VNS(shared_ptr<Instance> instance, uint_t seed);
 
@@ -29,7 +30,7 @@ public:
 
     Solution_std rand_swap_Locations(Solution_std sol_current, unsigned int num_swaps, int seed);
     Solution_cap rand_swap_Locations_cap(Solution_cap sol_current, unsigned int num_swaps, int seed);
-
+    Solution_cap rand_swap_Locations_cap_cover(Solution_cap sol_current, unsigned int num_swaps, int seed);
     Solution_std runVNS_std(bool verbose, int MAX_ITE);
     Solution_cap runVNS_cap(string& Method, bool verbose, int MAX_ITE);
     bool isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best);    
@@ -40,6 +41,7 @@ public:
     void setSolutionMap(Solution_MAP sol_map);
     void setGenerateReports(bool generate_reports);
     void setMethod(string Method);
+    void setCoverMode(bool cover_mode);
 };
 
 
