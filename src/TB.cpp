@@ -185,6 +185,8 @@ Solution_cap TB::initHighestCapSolution_Cover() {
     auto locations = instance->getLocations();
     auto unique_subareas = instance->getSubareasSet();
     auto num_subareas = unique_subareas.size();
+    uint_t cont_p = 0;
+
 
     vector<pair<uint_t, uint_t>> hight_loc_each_cover;
     for (auto subarea:unique_subareas) {
@@ -201,14 +203,14 @@ Solution_cap TB::initHighestCapSolution_Cover() {
 
     for (uint_t i = 0; i < num_subareas; i++) {
         p_locations.insert(hight_loc_each_cover[i].second);
+        cont_p++;
     }
 
-    if (p_locations.size() < p){
-        // cout << "not enough locations in coverages\n";
+    if (cont_p < p){
         vector<pair<uint_t, uint_t>> sorted_locations_diff;
         for (auto loc : locations) {
             // Check if loc exists in p_locations
-            if (p_locations.find(loc) != p_locations.end()) {
+            if (p_locations.find(loc) == p_locations.end()) {
                 auto cap = instance->getLocCapacity(loc);
                 sorted_locations_diff.emplace_back(cap, loc);
             }
@@ -217,12 +219,12 @@ Solution_cap TB::initHighestCapSolution_Cover() {
         reverse(sorted_locations_diff.begin(), sorted_locations_diff.end());
         for (uint_t i = 0; i < (p-num_subareas); i++) {
             p_locations.insert(sorted_locations_diff[i].second);
+            cont_p++;
         }
     }
 
     Solution_cap solut(instance, p_locations);
-    solut.setCoverMode(true);
-
+   
     return solut;
 }
 
@@ -376,6 +378,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
     // cout << "TB local search capacitated started\n";
     
     string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size()) + ".csv";
+    if(cover_mode) report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size()) + "_cover_" + instance->getTypeSubarea() +".csv";
 
     //// time limit ////
     auto time_limit_seconds = CLOCK_LIMIT;
@@ -411,8 +414,20 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 for (auto p_loc:p_locations_vec) { // Best improvement over p_locations
 
                     if(test_Cover(p_loc, loc)){
-                        
                         if (test_Capacity(sol_cand, p_loc, loc)) {
+
+                            // print p_locations
+                            // for (auto p_loc:p_locations) cout << p_loc << " ";
+                            // cout << "\np_locations size: " << p_locations.size() << "\n\n";
+                            // for (auto p_loc:p_locations_vec) cout << p_loc << " ";
+                            // cout << "\np loc size: " << p_locations_vec.size() << "\n";
+                            // cout << "p_loc: " << p_loc << " loc: " << loc << "\n";
+
+                            // if(p_locations.size() < instance->get_p()){
+                            //     cout << "p_locations size: " << p_locations.size() << "\n";
+                            //     exit(1);
+                            // }
+
                             // #pragma omp critical
                             int index = isSolutionExistsinMap(sol_cand, p_loc, loc);
                             if (index != -1){
@@ -428,7 +443,13 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 // solutions_map.addUniqueSolution(sol_tmp);
                                 sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
+
                                 auto elapsed_time = (get_wall_time_TB() - start_time) + external_time;
+                                // if (verbose) {
+                                //     printSolution_TB(sol_tmp, elapsed_time, ite);
+                                //     cout << endl;
+                                // }
+                                // auto elapsed_time = (get_wall_time_TB() - start_time) + external_time;
                                 if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB2
                         
                                     if (verbose) {
@@ -456,8 +477,20 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 // sol_best = sol_cand;
 
                 auto p_loc = sol_cand.get_pLocations();
+                // print p loc sol cand]
+                // for (auto p_loc:p_loc) cout << p_loc << " ";
+                // cout << "\n";
+                // cout << "p loc size: " << p_loc.size() << "\n";
                 sol_best = Solution_cap(instance, p_loc);
                 solutions_map.addUniqueSolution(sol_best);
+
+                if (verbose) {
+                    cout << "Solution Improved global TB: \n";
+                    printSolution_TB(sol_best, elapsed_time_total, ite);
+                    cout << endl;
+                }
+
+
 
                 if (generate_reports)
                     writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);

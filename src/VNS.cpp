@@ -317,6 +317,10 @@ bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
 Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     cout << "capacitated VNS heuristic started\n";
+    int p = instance->get_p();
+    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
+    if (cover_mode) report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + "_cover_"+ instance->getTypeSubarea() +".csv";
+
     // auto start_time_total = high_resolution_clock::now();
     auto start_time_total = get_wall_time_VNS();
     
@@ -324,6 +328,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     // auto time_limit_seconds = 3600;
     auto time_limit_seconds = CLOCK_LIMIT;
     cout << "Time Limit: " << time_limit_seconds << " seconds\n";
+    cout << "Cover Mode: " << cover_mode << "\n";
 
     TB tb(instance, engine());
     tb.setSolutionMap(solutions_map);
@@ -337,47 +342,34 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     
     auto sol_best = tb.initHighestCapSolution_Cover();
     sol_best.setCoverMode(cover_mode);
-
-    // sol_best = tb.localSearch_cap_cover(sol_best,false,DEFAULT_MAX_ITE);
-    // sol_best = tb.localSearch_cap(sol_best,false,DEFAULT_MAX_ITE);
+    tb.solutions_map.addUniqueSolution(sol_best);
     sol_best.print();
+    if (generate_reports)
+        writeReport(report_filename, sol_best.get_objective(), 0, tb.solutions_map.getNumSolutions(), get_wall_time_VNS() - start_time_total);  
+
+    cout << "local search initial solution\n";
+    sol_best = tb.localSearch_cap(sol_best,true,DEFAULT_MAX_ITE);
+    tb.solutions_map.addUniqueSolution(sol_best);
+    // sol_best = tb.localSearch_cap(sol_best,false,DEFAULT_MAX_ITE);
+    cout << "Initial solution: \n";
+    sol_best.print();
+    cout << "time: " << get_wall_time_VNS() - start_time_total << " seconds\n";
     if(sol_best.isSolutionFeasible()){
         cout << "Initial solution feasible \n";
     }else{
         cout << "Initial solution not feasible\n";
     }
-
-    auto sol_cand = rand_swap_Locations_cap_cover(sol_best, 5,1);
-    sol_cand.print();
-
-    if(sol_cand.isSolutionFeasible()){
-        cout << "Initial solution feasible \n";
-    }else{
-        cout << "Initial solution not feasible\n";
-    }
-
-    // return sol_best;
-
-    exit(0);
- 
-    tb.solutions_map.addUniqueSolution(sol_best);
-    cout << "Initial solution: \n";
-    sol_best.print();
-    cout << "time: " << get_wall_time_VNS() - start_time_total << " seconds\n";
     cout << endl;
 
     // limit of neighborhoods
-    int p = sol_best.get_pLocations().size();
-    auto Kmax = static_cast<unsigned int>(sol_best.get_pLocations().size()/2); // max number of locations to swap
-    // unsigned int k = 1; // initial neighborhood
-    unsigned int  k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
-
-    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
+    auto Kmax = static_cast<unsigned int>(p/2); // max number of locations to swap
+    cout << "Kmax: " << Kmax << "\n";
+    cout << "p: " << p << "\n";
+    unsigned int k = 2; // initial neighborhood
+    // unsigned int  k = int(sol_best.get_pLocations().size()/4);; // initial neighborhood
 
     if (generate_reports)
         writeReport(report_filename, sol_best.get_objective(), 0, tb.solutions_map.getNumSolutions(), get_wall_time_VNS() - start_time_total);  
-
-    int MAX_ITE_LOCAL_SEARCH = 200;
 
     int ite = 1;
     while (ite <= MAX_ITE) {
@@ -385,11 +377,16 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         // auto start_time = high_resolution_clock::now();
         auto start_time = get_wall_time_VNS();
         cout << "Vizinhanca: " << k << "\n";
-        auto new_sol = rand_swap_Locations_cap(sol_best,k, ite);
+        auto new_sol = sol_best;
+        if(!cover_mode)
+            new_sol = rand_swap_Locations_cap(sol_best,k, ite);
+        else
+            new_sol = rand_swap_Locations_cap_cover(sol_best,k, ite);
+
         cout << "\nlocal search\n";
         // new_sol = tb.localSearch_cap(new_sol,true,DEFAULT_MAX_ITE);
         tb.setExternalTime(get_wall_time_VNS() - start_time_total);
-        new_sol = tb.localSearch_cap(new_sol,false,MAX_ITE_LOCAL_SEARCH);
+        new_sol = tb.localSearch_cap(new_sol,true,DEFAULT_MAX_ITE);
         // new_sol.print();
 
         auto elapsed_time = get_wall_time_VNS() - start_time;
@@ -425,15 +422,15 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
             }
 
 
-            // k = 1;
-            k = int(sol_best.get_pLocations().size()/4); // initial neighborhood
+            k = 1;
+            // k = int(sol_best.get_pLocations().size()/4); // initial neighborhood
         }
         if (k <= Kmax){
             k++;   
         }else if (k > Kmax){
             cout << "Limit of neighborhoods reached. Stopping the capacitated VNS algorithm.\n ";
             cout << " k = " << k << " > " << Kmax  << " = Kmax \n";
-            // k = 2;
+            k = 2;
             // k = int(sol_best.get_pLocations().size()/4); // initial neighborhood
             // return sol_best;
         }
@@ -467,6 +464,13 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     cout << "\n";
     cout << "Elapsed time: " << elapsed_time << " seconds\n";
     cout << "Num ite VNS: " << ite << "\n";
+
+    if(sol_best.isSolutionFeasible()){
+        cout << "Final solution feasible \n";
+    }else{
+        cout << "Final solution not feasible\n";
+    }
+
 
     return sol_best;
 

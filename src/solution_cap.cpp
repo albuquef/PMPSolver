@@ -10,7 +10,9 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
+    // print p_locations
     
+
     // cover_mode = instance->isCoverMode();
     cover_mode = true;
     // if (instance->isCoverMode()){
@@ -235,9 +237,10 @@ void Solution_cap::print() {
     for (auto p:p_locations) {
         cout << p << " ";
     }
-    cout << endl;
+    cout << "\np size: " << p_locations.size() << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
     cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
+    cout << "cover mode: " << cover_mode << "\n";
     // cout << "\n";
 }
 
@@ -246,19 +249,41 @@ const unordered_set<uint_t> &Solution_cap::get_pLocations() const {
 }
 
 void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* typeEVAL) {
-    // Update p_locations
-    p_locations.erase(loc_old);
-    p_locations.insert(loc_new);
+    
+    // // test if loc_old is in p_locations
+    // if (p_locations.find(loc_old) == p_locations.end()) {
+    //     cerr << "ERROR: loc_old not in p_locations" << endl;
+    //     exit(1);
+    // }   
+    // // test if loc_new is not in p_locations
+    // if (p_locations.find(loc_new) != p_locations.end()) {
+    //     cerr << "ERROR: loc_new already in p_locations" << endl;
+    //     exit(1);
+    // }
+    // test if loc_new is in p_locations or loc_old is not in p_locations
+    if(!(p_locations.find(loc_old) == p_locations.end()) && !(p_locations.find(loc_new) != p_locations.end())){
+        // Update p_locations
+        p_locations.erase(loc_old);
+        p_locations.insert(loc_new);
 
-    if (strcmp(typeEVAL, "GAP") == 0 || strcmp(typeEVAL, "GAPrelax") == 0){
-        GAP_eval(); 
-    }else if(strcmp(typeEVAL, "heuristic") == 0){
-        fullCapEval(); // urgency priority heuristic
-    }else if (strcmp(typeEVAL, "naive") == 0 || strcmp(typeEVAL, "PMP") == 0){
-        naiveEval();
-    }else{
-        cerr << "ERROR: typeEVAL not recognized" << endl;
-        // exit(1);
+        if (strcmp(typeEVAL, "GAP") == 0 || strcmp(typeEVAL, "GAPrelax") == 0){
+            GAP_eval(); 
+        }else if(strcmp(typeEVAL, "heuristic") == 0){
+            fullCapEval(); // urgency priority heuristic
+        }else if (strcmp(typeEVAL, "naive") == 0 || strcmp(typeEVAL, "PMP") == 0){
+            naiveEval();
+        }else{
+            cerr << "ERROR: typeEVAL not recognized" << endl;
+            // exit(1);
+        }
+        //print p locations
+        // cout << endl;
+        // cout << "p locations inside: ";
+        // for (auto p:p_locations) {
+        //     cout << p << " ";
+        // }
+        // cout << "\np size: " << p_locations.size() << endl;
+        // cout << endl;
     }
 }
 
