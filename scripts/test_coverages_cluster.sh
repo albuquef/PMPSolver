@@ -20,6 +20,7 @@ WEIGHTS=${DIR_DATA}cust_weights.txt
 TIME_CPLEX=3600
 TIME_CLOCK=3600
 
+COVER_MODE=1
 
 # METHOD="EXACT_CPMP"
 METHOD="VNS_CPMP"
@@ -37,7 +38,7 @@ OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
 for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
@@ -106,7 +107,7 @@ if [ -z "$arr" ]; then
 fi
 
 # for element in "${arr[@]}"; do
-#     echo "$element && wait"
+#     echo "$element"
 # done
 
 # echo "Number of instances: ${#arr[@]}"
