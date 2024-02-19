@@ -439,9 +439,9 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                             }else if (test_LB_PMP(sol_cand,p_loc,loc)) { // LB1
                                     
                                 Solution_cap sol_tmp = sol_cand;
-                                // sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
-                                // solutions_map.addUniqueSolution(sol_tmp);
-                                sol_tmp.replaceLocation(p_loc, loc, "heuristic");
+                                sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
+                                solutions_map.addUniqueSolution(sol_tmp);
+                                // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
 
                                 auto elapsed_time = (get_wall_time_TB() - start_time) + external_time;
@@ -474,15 +474,15 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
             auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
             if (improved) {
-                // sol_best = sol_cand;
+                sol_best = sol_cand;
 
-                auto p_loc = sol_cand.get_pLocations();
+                // auto p_loc = sol_cand.get_pLocations();
                 // print p loc sol cand]
                 // for (auto p_loc:p_loc) cout << p_loc << " ";
                 // cout << "\n";
                 // cout << "p loc size: " << p_loc.size() << "\n";
-                sol_best = Solution_cap(instance, p_loc);
-                solutions_map.addUniqueSolution(sol_best);
+                //sol_best = Soeution_cap(instance, p_loc);
+                // solutions_map.addUniqueSolution(sol_best);
 
                 if (verbose) {
                     cout << "Solution Improved global TB: \n";

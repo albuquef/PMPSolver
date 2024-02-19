@@ -56,7 +56,7 @@ OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
 for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
@@ -76,7 +76,7 @@ OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
 for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
@@ -95,7 +95,7 @@ OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
 for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
