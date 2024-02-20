@@ -294,7 +294,7 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
         customers_new = customers;
     }
 
-    return Instance(locations_new, customers_new, cust_weights, dist_matrix, loc_capacities, p_new, loc_max_id, cust_max_id);
+    return Instance(locations_new, customers_new, cust_weights, dist_matrix, loc_capacities, p_new, loc_max_id, cust_max_id,type_service);
 }
 
 void Instance::print() {
@@ -311,9 +311,11 @@ void Instance::print() {
     cout << "service: " << type_service << endl;
     cout << "cust_max_id: " << cust_max_id << endl;
     cout << "cust_cnt: " << customers.size() << endl;
-    cout << "cover_max_id: " << cover_max_id << endl;
-    cout << "subareas_cnt: " << unique_subareas.size() << endl;
-    cout << "subareas: "<< type_subarea << endl;
+    if (cover_mode) {
+        cout << "cover_max_id: " << cover_max_id << endl;
+        cout << "subareas_cnt: " << unique_subareas.size() << endl;
+        cout << "subareas: "<< type_subarea << endl;
+    }
     cout << "p: " << p << endl;
     cout << "total_demand: " << total_demand << endl << endl;
 }

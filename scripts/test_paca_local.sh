@@ -11,7 +11,7 @@ TIME_CLOCK=3600
 ###### mat
 SERVICE=mat # lycee, mat, poste, urgenc
 SUBAREA=arrond # arrond  canton epci commune epci
-COVER_MODE=true
+COVER_MODE=0
 p_values=(30)
 
 CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt

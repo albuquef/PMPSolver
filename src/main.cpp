@@ -288,6 +288,21 @@ int main(int argc, char *argv[]) {
     cout << "[INFO] Instance loaded\n";
     instance.print();
 
+    // Instance subInstance = instance;
+    subInstance = subInstance.sampleSubproblem(5, 5, instance.get_p(),2);
+    cout << "[INFO] SubInstance loaded\n";
+    subInstance.print();
+
+
+    cout << "loc 0: " << subInstance.getLocations()[0] << endl;
+    cout << "cust 0: " << subInstance.getCustomers()[0] << endl;
+    cout << "weighted cust 0: " << subInstance.getCustWeight(subInstance.getCustomers()[0]) << endl;
+    // distance between location 0 and customer 0
+    cout << "distance between loc 0 and cust 0: " << instance.getRealDist(subInstance.getLocations()[0], subInstance.getCustomers()[0]) << endl;
+
+    cout << "distance between loc 0 and cust 0: " << subInstance.getRealDist(subInstance.getLocations()[0], subInstance.getCustomers()[0]) << endl;
+
+    exit(0);
 
     auto start = tick();
     cout << "-------------------------------------------------\n";
