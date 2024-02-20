@@ -32,6 +32,7 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
+
 }
 
 
@@ -244,7 +245,6 @@ void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
     dist_matrix[index] = value;
 }
 
-
 dist_t Instance::getCustWeight(uint_t cust) {
     return cust_weights[cust];
 }
@@ -256,6 +256,15 @@ dist_t Instance::getWeightedDist(uint_t loc, uint_t cust) {
 
 dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
     uint_t index = getDistIndex(loc, cust);
+    cout << "\n index: " << index << endl;
+    // cout << dist_matrix[index] << endl;
+    
+    if (dist_matrix) {
+        cout << "dist_matrix is not null" << endl;
+    } else {
+        cout << "dist_matrix is null" << endl;
+    }
+
     return dist_matrix[index];
 }
 
@@ -266,7 +275,7 @@ uint_t Instance::getSubareaLocation(uint_t loc){
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
     
     // Create a new engine and seed it
-    std::default_random_engine generator(seed);;
+    std::default_random_engine generator(seed);
 
         // Print information about the engine and seed
     // cout << "SampleSubproblem - Seed: " << seed << ", Engine State: " << generator.operator()() << endl;

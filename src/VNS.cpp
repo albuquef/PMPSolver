@@ -408,9 +408,9 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         auto elapsed_time_total = get_wall_time_VNS() - start_time_total;
 
         if (new_sol.get_objective() < sol_best.get_objective()) {
-            // auto p_loc = new_sol.get_pLocations();
-            // sol_best = Solution_cap(instance, p_loc);
-            sol_best = new_sol;
+            auto p_loc =  new_sol.get_pLocations();
+            sol_best = Solution_cap(instance, p_loc);
+            // sol_best = new_sol;
 
             if (verbose) {
                 cout << "Improved Best solution global: \n";

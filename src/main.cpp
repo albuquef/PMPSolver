@@ -282,13 +282,11 @@ int main(int argc, char *argv[]) {
     if(!coverages_filename.empty() && cover_mode){
         // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
-        instance.setCoverModel(true);
+        // instance.setCoverModel(true);
     }
 
     cout << "[INFO] Instance loaded\n";
     instance.print();
-
-    cout <<"Cover mode: " << instance.isCoverMode() << "\n";
 
 
     auto start = tick();

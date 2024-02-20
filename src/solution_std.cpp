@@ -5,22 +5,30 @@
 
 Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
     
-    this->instance = std::move(instance);
-    this->p_locations = std::move(p_locations);
+    this->instance = instance;
+    this->p_locations = p_locations;
 
-    cout << "p locations: "; 
-    for (auto loc:this->p_locations)
-        cout << loc << " ";
+    instance->print();
+
+
+    // print loc 0 and cust 0   
+    cout << "loc 0: " << instance->getLocations()[0]<< endl;
+    cout << "cust 0: " << instance->getCustomers()[0] << endl;
+    cout << "customer weight 0: " << instance->getCustWeight(instance->getCustomers()[0]) << endl;
+
+    cout << "distance between loc 0 and cust 0: " << instance->getRealDist(instance->getCustomers()[0], instance->getLocations()[0]) << endl;
 
     naiveEval();
 }
 
 void Solution_std::naiveEval() {
 //    assert(p_locations.size() == instance->get_p());
+
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
         auto dist = instance->getWeightedDist(loc, cust);
+        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
         objective += dist;
         assignment[cust] = my_pair{loc, dist};
 //        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;

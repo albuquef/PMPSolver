@@ -143,8 +143,14 @@ void RSSV::solveSubproblem(int seed) {
     auto start = tick();
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
-    // int MAX_ITE = 1000;
 
+    cout << "loc 0: " << subInstance.getLocations()[0] << endl;
+    cout << "cust 0: " << subInstance.getCustomers()[0] << endl;
+    cout << "weighted cust 0: " << subInstance.getCustWeight(subInstance.getCustomers()[0]) << endl;
+    // distance between location 0 and customer 0
+    cout << "distance between loc 0 and cust 0: " << subInstance.getRealDist(subInstance.getLocations()[0], subInstance.getCustomers()[0]) << endl;
+
+    // int MAX_ITE = 1000;
     // checkClock();
     Solution_std sol;
 

@@ -57,6 +57,8 @@ TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance))
 
 Solution_std TB::initRandomSolution() {
     // Sample p distinct locations
+
+
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
     auto locations = instance->getLocations();
@@ -68,6 +70,8 @@ Solution_std TB::initRandomSolution() {
         p_locations.insert(loc);
     }
     Solution_std sol(instance, p_locations);
+
+
     return sol;
 }
 
@@ -268,6 +272,8 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
     Solution_std sol_cand;
     // int objectiveCpt = 0;
 
+
+
     int ite=1;
     auto start_time_total = high_resolution_clock::now();
     while (improved && ite < MAX_ITE) {
@@ -439,9 +445,9 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                             }else if (test_LB_PMP(sol_cand,p_loc,loc)) { // LB1
                                     
                                 Solution_cap sol_tmp = sol_cand;
-                                sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
-                                solutions_map.addUniqueSolution(sol_tmp);
-                                // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
+                                // sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
+                                // solutions_map.addUniqueSolution(sol_tmp);
+                                sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
 
                                 auto elapsed_time = (get_wall_time_TB() - start_time) + external_time;

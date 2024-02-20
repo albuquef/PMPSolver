@@ -19,6 +19,7 @@ private:
     shared_ptr<dist_t[]> cust_weights;
     shared_ptr<dist_t[]> loc_capacities;
     shared_ptr<dist_t[]> dist_matrix;
+
     shared_ptr<uint_t[]> loc_coverages;
     unordered_set<uint_t> unique_subareas;
 
@@ -41,6 +42,7 @@ public:
 
     dist_t getWeightedDist(uint_t loc, uint_t cust);
     dist_t getRealDist(uint_t loc, uint_t cust);
+    uint_t getSizeDistMatrix();
     dist_t getCustWeight(uint_t cust);
     Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed);
     Instance getReducedSubproblem(const vector<uint_t>& locations_new, string type_service);
@@ -59,14 +61,9 @@ public:
     bool isInTheSameSubarea(uint_t loc1, uint_t loc2);
     const vector<uint_t> getLocationsSubarea(uint_t subarea);
     unordered_set<uint_t>  getSubareasSet();
-    // const vector<uint_t>& getCoverages() const;
     void setCoverModel(bool cover_mode);
     bool isCoverMode();
-    // bool isLocationSubara(uint_t loc, uint subarea)
 
-    // to do Coverage
-    // void read_subareas(const string& subareas_filename, const string& type_subarea);
-    // uint_t getNumSubareas() const;
 
 };
 
