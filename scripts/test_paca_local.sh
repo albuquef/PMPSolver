@@ -1,11 +1,11 @@
 CMD=./build/large_PMP
 DIR_DATA=./data/filterData_PACA_may23/
 DIST_TYPE=minutes
-NUM_THREADS=1
+NUM_THREADS=4
 
 D_MATRIX=${DIR_DATA}dist_matrix_${DIST_TYPE}.txt
 WEIGHTS=${DIR_DATA}cust_weights.txt
-TIME_CPLEX=300
+TIME_CPLEX=3600
 TIME_CLOCK=3600
 
 ###### mat

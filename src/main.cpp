@@ -19,8 +19,8 @@ using namespace std::chrono;
 
 int seed = 1;
 Solution_MAP solution_map;
-Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, const string& output_filename);
+Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, bool cover_mode,  const string& output_filename);
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, bool cover_mode, const string& output_filename);
 
 using namespace std;
 
@@ -282,34 +282,18 @@ int main(int argc, char *argv[]) {
     if(!coverages_filename.empty() && cover_mode){
         // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
-        // instance.setCoverModel(true);
+        instance.setCoverModel(true);
     }
 
     cout << "[INFO] Instance loaded\n";
     instance.print();
-
-    // // Instance subInstance = instance;
-    Instance subInstance = instance.sampleSubproblem(10, 10, instance.get_p(),2);
-    cout << "[INFO] SubInstance loaded\n";
-    subInstance.print();
-
-
-    cout << "loc 0: " << subInstance.getLocations()[0] << endl;
-    cout << "cust 0: " << subInstance.getCustomers()[0] << endl;
-    cout << "weighted cust 0: " << subInstance.getCustWeight(subInstance.getCustomers()[0]) << endl;
-    // distance between location 0 and customer 0
-    cout << "distance between loc 0 and cust 0: " << instance.getRealDist(subInstance.getLocations()[0], subInstance.getCustomers()[0]) << endl;
-
-    cout << "distance between loc 0 and cust 0: " << subInstance.getRealDist(subInstance.getLocations()[0], subInstance.getCustomers()[0]) << endl;
-
-    exit(0);
 
     auto start = tick();
     cout << "-------------------------------------------------\n";
     if(Method == "EXACT_PMP" || Method == "TB_PMP" || Method == "VNS_PMP"){
         
         auto start_time = high_resolution_clock::now();
-        Solution_std solution = methods_PMP(make_shared<Instance>(instance), Method, output_filename);
+        Solution_std solution = methods_PMP(make_shared<Instance>(instance), Method,cover_mode, output_filename);
         auto current_time = high_resolution_clock::now();
         auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
             
@@ -322,7 +306,7 @@ int main(int argc, char *argv[]) {
         
         
         auto start_time = high_resolution_clock::now();
-        Solution_cap solution = methods_CPMP(make_shared<Instance>(instance), Method, output_filename);
+        Solution_cap solution = methods_CPMP(make_shared<Instance>(instance), Method, cover_mode, output_filename);
         auto current_time = high_resolution_clock::now();
         auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
 
@@ -336,6 +320,7 @@ int main(int argc, char *argv[]) {
         cout << "RSSV heuristic \n";
         cout << "-------------------------------------------------\n";
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
+        metaheuristic.setCoverMode(cover_mode);
         CLOCK_THREADED = true;
         auto start_time_total = high_resolution_clock::now();
         
@@ -354,7 +339,7 @@ int main(int argc, char *argv[]) {
         if(Method_RSSV_fp == "EXACT_PMP" || Method_RSSV_fp == "TB_PMP" || Method_RSSV_fp == "VNS_PMP"){
             
             auto start_time = high_resolution_clock::now();
-            Solution_std solution = methods_PMP(filtered_instance, Method_RSSV_fp, output_filename);
+            Solution_std solution = methods_PMP(filtered_instance, Method_RSSV_fp,cover_mode, output_filename);
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
 
@@ -366,7 +351,7 @@ int main(int argc, char *argv[]) {
             solution.saveResults(output_filename, elapsed_time,0,Method); 
         } else if(Method_RSSV_fp == "EXACT_CPMP" || Method_RSSV_fp == "EXACT_CPMP_BIN" || Method_RSSV_fp == "TB_CPMP" || Method_RSSV_fp == "VNS_CPMP"){
             auto start_time = high_resolution_clock::now();
-            Solution_cap solution = methods_CPMP(filtered_instance, "RSSV_" + Method_RSSV_fp, output_filename);
+            Solution_cap solution = methods_CPMP(filtered_instance, "RSSV_" + Method_RSSV_fp, cover_mode, output_filename);
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
             if (Method_RSSV_fp == "EXACT_CPMP") solution.objEval();
@@ -388,7 +373,7 @@ int main(int argc, char *argv[]) {
 }
 
 
-Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeMethod, const string& output_filename){
+Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeMethod,bool cover_mode, const string& output_filename){
 
 
     Solution_std solution;
@@ -398,6 +383,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "Exact method PMP\n";
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "PMP");
+        pmp.setCoverModel(cover_mode);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -406,11 +392,13 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "TB heuristic - standard PMP\n";
         cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
+        heuristic.setCoverMode(cover_mode);
         solution = heuristic.run(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_PMP"){
         cout << "VNS heuristic - PMP\n";
         cout << "-------------------------------------------------\n";
         VNS heuristic(instance, seed);
+        heuristic.setCoverMode(cover_mode);
         solution = heuristic.runVNS_std(true,UB_MAX_ITER);
     }else{
         cout << "[ERROR] Method not found" << endl;
@@ -418,7 +406,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
     }
     return solution;
 }
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, const string& output_filename){
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, bool cover_mode, const string& output_filename){
 
     Solution_cap solution;
     Solution_MAP solution_map(instance);
@@ -428,7 +416,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";    
         PMP pmp(instance, "CPMP");
         pmp.setGenerateReports(true);
-        pmp.setCoverModel(true);
+        pmp.setCoverModel(cover_mode);
         // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
@@ -439,7 +427,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "CPMP", true);
         pmp.setGenerateReports(true);
-        pmp.setCoverModel(true);
+        pmp.setCoverModel(cover_mode);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -451,7 +439,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setSolutionMap(solution_map);
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
-        heuristic.setCoverMode(true);
+        heuristic.setCoverMode(cover_mode);
         solution = heuristic.run_cap(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_CPMP" || typeMethod == "RSSV_VNS_CPMP"){
         cout << "VNS heuristic - cPMP\n";
@@ -460,7 +448,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setSolutionMap(solution_map);
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
-        heuristic.setCoverMode(true);
+        heuristic.setCoverMode(cover_mode);
         solution = heuristic.runVNS_cap(typeMethod,true,UB_MAX_ITER);
     
         if (solution.isSolutionFeasible()){

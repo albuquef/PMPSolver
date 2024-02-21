@@ -75,6 +75,48 @@ Solution_std TB::initRandomSolution() {
     return sol;
 }
 
+Solution_std TB::initRandomSolution_cover() {
+    // Sample p distinct locations
+
+    unordered_set<uint_t> p_locations;
+    auto p = instance->get_p();
+    auto locations = instance->getLocations();
+    auto unique_subareas = instance->getSubareasSet();
+    // auto num_subareas = unique_subareas.size();
+    uint_t cont_p = 0;
+
+    vector<pair<uint_t, uint_t>> hight_loc_each_cover;
+    for (auto subarea:unique_subareas) {
+        auto locs = instance->getLocationsSubarea(subarea);
+        vector<pair<uint_t, uint_t>> subareas_locations;
+        for (auto loc:locs) {
+            subareas_locations.emplace_back(0, loc);
+        }
+        uniform_int_distribution<uint_t> distribution (0, subareas_locations.size() - 1);
+
+        auto loc_id = distribution(engine);
+        auto loc = subareas_locations[loc_id].second;
+        p_locations.insert(loc);
+        cont_p++;
+    }
+
+    while(cont_p < p){
+        uniform_int_distribution<uint_t> distribution (0, locations.size() - 1);
+        auto loc_id = distribution(engine);
+        auto loc = locations[loc_id];
+        p_locations.insert(loc);
+        cont_p++;
+    }
+
+    Solution_std sol(instance, p_locations);
+
+    return sol;
+
+}
+
+
+
+
 Solution_cap TB::initRandomCapSolution() {
     // Sample p distinct locations
     unordered_set<uint_t> p_locations;
@@ -244,7 +286,22 @@ Solution_cap TB::initCPLEXCapSolution(double time_limit) {
 
 Solution_std TB::run(bool verbose, int MAX_ITE) {
 
-    auto sol_best = initRandomSolution();
+    cout << "uncapacitated TB started\n";
+
+    Solution_std sol_best;
+    if (!cover_mode) sol_best = initRandomSolution();
+    if (cover_mode) sol_best = initRandomSolution_cover();
+    sol_best.setCoverMode(cover_mode);
+
+    // sol_best.print();
+
+    // if(sol_best.isSolutionFeasible() == false){
+    //     cout << "Initial solution is not feasible\n";
+    // }else{
+    //     cout << "Initial solution is feasible\n";
+    // }
+
+    // exit(1);
     sol_best = localSearch_std(sol_best, verbose, MAX_ITE);
 
     return sol_best;
@@ -287,21 +344,23 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
             // if (!p_locations.contains(loc)) {
             if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
-                    sol_tmp = sol_best;
-                    sol_tmp.replaceLocation(p_loc, loc);
-                    
-                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { 
-                        sol_cand = sol_tmp;
-                        improved = true;
-                        // objectiveCpt = 0;
-                    }
-                    // else{
-                    //     objectiveCpt++;
+                    if(test_Cover(p_loc, loc)){
+                        sol_tmp = sol_best;
+                        sol_tmp.replaceLocation(p_loc, loc);
+                        
+                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { 
+                            sol_cand = sol_tmp;
+                            improved = true;
+                            // objectiveCpt = 0;
+                        }
+                        // else{
+                        //     objectiveCpt++;
 
-                    //     if(objectiveCpt == TOLERANCE_CPT){
-                    //         break;
-                    //     }
-                    // }
+                        //     if(objectiveCpt == TOLERANCE_CPT){
+                        //         break;
+                        //     }
+                        // }
+                    }
                 }
             }
             auto elapsed_time = duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count();
@@ -323,6 +382,11 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
                     cout << "Time limit reached. Stopping the uncapacitated TB  algorithm.\n";
                     printSolution_TB(sol_best, elapsed_time, ite);
                     cout << "uncapacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
+                    if(sol_best.isSolutionFeasible() == false){
+                        cout << "Initial solution is not feasible\n";
+                    }else{
+                        cout << "Initial solution is feasible\n";
+                    }
                     return sol_best;
                 }
 
@@ -337,6 +401,11 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
     }
 
     cout << "Num ite total uncapacited TB: " << ite << "\n";
+    if(sol_best.isSolutionFeasible() == false){
+        cout << "Initial solution is not feasible\n";
+    }else{
+        cout << "Initial solution is feasible\n";
+    }
     return sol_best;
 }
 
@@ -480,15 +549,15 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
             auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
             if (improved) {
-                sol_best = sol_cand;
+                // sol_best = sol_cand;
 
-                // auto p_loc = sol_cand.get_pLocations();
+                auto p_loc = sol_cand.get_pLocations();
                 // print p loc sol cand]
                 // for (auto p_loc:p_loc) cout << p_loc << " ";
                 // cout << "\n";
                 // cout << "p loc size: " << p_loc.size() << "\n";
-                //sol_best = Soeution_cap(instance, p_loc);
-                // solutions_map.addUniqueSolution(sol_best);
+                sol_best = Soeution_cap(instance, p_loc);
+                solutions_map.addUniqueSolution(sol_best);
 
                 if (verbose) {
                     cout << "Solution Improved global TB: \n";

@@ -25,6 +25,7 @@ private:
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
     string method_RSSV_sp;
     int DEFAULT_MAX_NUM_ITER = 10000000;
+    bool cover_mode = false;
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
     shared_ptr<Instance> run(uint_t thread_cnt, string& method_sp);
@@ -35,6 +36,10 @@ public:
     void processSubsolution_CAP(shared_ptr<Solution_cap> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
+
+    void setCoverMode(bool mode) {
+        cover_mode = mode;
+    }
 };
 
 #endif //LARGE_PMP_RSSV_HPP

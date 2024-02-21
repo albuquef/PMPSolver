@@ -449,8 +449,8 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         if (elapsed_time_total >= time_limit_seconds) {
             cout << "Time limit reached. Stopping the capacitated VNS algorithm.\n";
 
-            auto p_loc =  sol_best.get_pLocations();
-            sol_best = Solution_cap(instance, p_loc);
+            // auto p_loc =  sol_best.get_pLocations();
+            // sol_best = Solution_cap(instance, p_loc);
 
             return sol_best;
         }
@@ -476,8 +476,8 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         cout << "Final solution not feasible\n";
     }
 
-    auto p_loc =  sol_best.get_pLocations();
-    sol_best = Solution_cap(instance, p_loc);
+    // auto p_loc =  sol_best.get_pLocations();
+    // sol_best = Solution_cap(instance, p_loc);
     return sol_best;
 
 }

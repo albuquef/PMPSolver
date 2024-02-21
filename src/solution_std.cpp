@@ -10,14 +10,6 @@ Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> 
 
     instance->print();
 
-
-    // print loc 0 and cust 0   
-    cout << "loc 0: " << instance->getLocations()[0]<< endl;
-    cout << "cust 0: " << instance->getCustomers()[0] << endl;
-    cout << "customer weight 0: " << instance->getCustWeight(instance->getCustomers()[0]) << endl;
-
-    cout << "distance between loc 0 and cust 0: " << instance->getRealDist(instance->getCustomers()[0], instance->getLocations()[0]) << endl;
-
     naiveEval();
 }
 
@@ -28,7 +20,7 @@ void Solution_std::naiveEval() {
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
         auto dist = instance->getWeightedDist(loc, cust);
-        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
+        // cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
         objective += dist;
         assignment[cust] = my_pair{loc, dist};
 //        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
@@ -60,6 +52,7 @@ void Solution_std::print() {
 //        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
 //    }
     cout << endl;
+    cout << "p size: " << p_locations.size() << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
     cout << "\n";
 }
@@ -186,11 +179,32 @@ void Solution_std::saveResults(string output_filename, double timeFinal, int num
         // outputTable << "\n";
     }
     outputTable.close();
+}
 
 
+bool Solution_std::isSolutionFeasible() {
+    
+    
+    if (p_locations.size() != instance->get_p()) return false;
 
+    if(cover_mode){
+        // auto coverages = instance->getSubareasSet();
+        for(auto subarea:instance->getSubareasSet()){
+            auto loc_subarea = instance->getLocationsSubarea(subarea);
+            bool covered = false;
+            for(auto loc:loc_subarea){
+                if (p_locations.find(loc) != p_locations.end()){
+                    covered = true;
+                }
+            }
+            if (!covered){
+                cerr << "ERROR: subarea not covered" << endl;
+                cout << "subarea: " << subarea << endl;
+                return false;
+            }
 
+        }
+    }
 
-
-
+    return true;
 }

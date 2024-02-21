@@ -18,6 +18,8 @@ private:
     shared_ptr<Instance> instance; // solved instance
 
     unordered_map<uint_t, my_pair> assignment; // customer -> p location, distance to it
+
+    bool cover_mode = false;
 public:
 
     Solution_std() = default;
@@ -32,6 +34,12 @@ public:
     dist_t get_objective();
     void saveAssignment(string output_filename,string Method);
     void saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp="null", string Method_fp="null");
+
+    bool isSolutionFeasible();
+
+    void setCoverMode(bool mode) {
+        cover_mode = mode;
+    }
 };
 
 
