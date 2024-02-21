@@ -17,26 +17,17 @@
 //     }
 // }
 
-Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> loc_capacities, shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max_id, uint_t cust_max_id, string type_service) : 
-        locations(locations), 
-        customers(customers), 
-        cust_weights(cust_weights), 
-        loc_capacities(loc_capacities), 
-        dist_matrix(dist_matrix), 
-        p(p), 
-        loc_max_id(loc_max_id), 
-        cust_max_id(cust_max_id), 
-        type_service(type_service) {
-
-    cout << "Instance constructor" << endl;
-
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
+                   shared_ptr<dist_t[]> loc_capacities, shared_ptr<dist_t[]> dist_matrix, uint_t p,
+                   uint_t loc_max, uint_t cust_max, string type_service)
+        : locations(locations), customers(customers), cust_weights(cust_weights),
+          loc_capacities(loc_capacities),dist_matrix(dist_matrix),
+          p(p),loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service){
     total_demand = 0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
-
 }
-
 
 
 vector<string> tokenize(const string& input, char delim) {
@@ -177,6 +168,128 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
 }
 
 
+uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
+//    return loc * cust_max_id + cust;    // faster extraction of cust values
+    return cust * loc_max_id + loc;    // faster extraction of loc values
+}
+
+void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
+    uint_t index = getDistIndex(loc, cust);
+    dist_matrix[index] = value;
+}
+
+dist_t Instance::getCustWeight(uint_t cust) {
+    return cust_weights[cust];
+}
+
+dist_t Instance::getWeightedDist(uint_t loc, uint_t cust) {
+    uint_t index = getDistIndex(loc, cust);
+    return cust_weights[cust] * dist_matrix[index];
+}
+
+dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
+    uint_t index = getDistIndex(loc, cust);
+    return dist_matrix[index];
+}
+
+
+Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
+    
+
+    // Create a new engine and seed it
+    std::default_random_engine generator(seed);
+
+    vector<uint_t> locations_new;
+    vector<uint_t> customers_new;
+
+    if (loc_cnt < locations.size()) {
+        locations_new = getRandomSubvector(locations, loc_cnt, &generator);
+    } else {
+        locations_new = locations;
+    }
+    if (cust_cnt < customers.size()) {
+        customers_new = getRandomSubvector(customers, cust_cnt, &generator);
+    } else {
+        customers_new = customers;
+    }
+
+    return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service);
+}
+
+void Instance::print() {
+//    cout << "Locations: ";
+//    for (auto l:locations) cout << l << " ";
+//    cout << endl;
+
+//    cout << "Customers: ";
+//    for (auto c:customers) cout << c << " ";
+//    cout << endl;
+
+    cout << "loc_max_id: " << loc_max_id << endl;
+    cout << "loc_cnt: " << locations.size() << endl;
+    cout << "service: " << type_service << endl;
+    cout << "cust_max_id: " << cust_max_id << endl;
+    cout << "cust_cnt: " << customers.size() << endl;
+    if (cover_mode) {
+        cout << "cover_max_id: " << cover_max_id << endl;
+        cout << "subareas_cnt: " << unique_subareas.size() << endl;
+        cout << "subareas: "<< type_subarea << endl;
+    }
+    cout << "p: " << p << endl;
+    cout << "total_demand: " << total_demand << endl << endl;
+}
+
+const vector<uint_t> &Instance::getCustomers() const {
+    return this->customers;
+}
+
+const vector<uint_t> &Instance::getLocations() const {
+    return this->locations;
+}
+
+uint_t Instance::get_p() const {
+    return p;
+}
+
+uint_t Instance::getClosestCust(uint_t loc) {
+    dist_t dist_min = numeric_limits<dist_t>::max();
+    uint_t cust_cl = numeric_limits<uint_t>::max();
+    for (auto cust:customers) {
+        auto dist = getRealDist(loc, cust);
+        if (dist <= dist_min) {
+            dist_min = dist;
+            cust_cl = cust;
+        }
+    }
+    return cust_cl;
+}
+
+double Instance::getVotingScore(uint_t loc, uint_t cust) {
+    auto dist = getRealDist(loc, cust);
+    double score = 0;
+    if (dist <= BW_CUTOFF * h) {
+        score = exp(-(dist * dist) / (h * h));
+    }
+    return score;
+}
+
+Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new, string type_service) {
+    return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id, type_service);
+}
+
+dist_t Instance::getLocCapacity(uint_t loc) {
+    return loc_capacities[loc];
+}
+
+dist_t Instance::getTotalDemand() const {
+    return total_demand;
+}
+
+string Instance::getTypeService() const {
+    return type_service;
+}
+
+
 void Instance::ReadCoverages(const string& coverages_filename,string type_subarea,char delim){
     this->type_subarea = type_subarea;
     fstream coverages_file(coverages_filename);
@@ -237,166 +350,29 @@ void Instance::ReadCoverages(const string& coverages_filename,string type_subare
     }
 }
 
-uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
-//    return loc * cust_max_id + cust;    // faster extraction of cust values
-    return cust * loc_max_id + loc;    // faster extraction of loc values
-}
-
-void Instance::setDist(uint_t loc, uint_t cust, dist_t value) {
-    uint_t index = getDistIndex(loc, cust);
-    dist_matrix[index] = value;
-}
-
-dist_t Instance::getCustWeight(uint_t cust) {
-    return cust_weights[cust];
-}
-
-dist_t Instance::getWeightedDist(uint_t loc, uint_t cust) {
-    uint_t index = getDistIndex(loc, cust);
-    return cust_weights[cust] * dist_matrix[index];
-}
-
-dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
-    uint_t index = getDistIndex(loc, cust);
-    cout << "\n index: " << index << endl;
-    // cout << dist_matrix[index] << endl;
-    
-    if (dist_matrix) {
-        cout << "dist_matrix is not null" << endl;
-    } else {
-        cout << "dist_matrix is null" << endl;
-    }
-
-    return dist_matrix[index];
+string Instance::getTypeSubarea() const {
+    return type_subarea;
 }
 
 uint_t Instance::getSubareaLocation(uint_t loc){
     return loc_coverages[loc];
 }
 
-Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
-    
-
-    // Create a new engine and seed it
-    std::default_random_engine generator(seed);
-
-        // Print information about the engine and seed
-    // cout << "SampleSubproblem - Seed: " << seed << ", Engine State: " << generator.operator()() << endl;
-
-    vector<uint_t> locations_new;
-    vector<uint_t> customers_new;
-
-    // vector<uint_t> locations_new(loc_cnt+1);
-    // vector<uint_t> customers_new(cust_cnt+1);
-
-    if (loc_cnt < locations.size()) {
-        locations_new = getRandomSubvector(locations, loc_cnt, &generator);
-    } else {
-        locations_new = locations;
-    }
-    if (cust_cnt < customers.size()) {
-        customers_new = getRandomSubvector(customers, cust_cnt, &generator);
-    } else {
-        customers_new = customers;
-    }
-
-    return Instance(locations_new, customers_new, cust_weights, dist_matrix, loc_capacities, p_new, loc_max_id, cust_max_id,type_service);
-}
-
-void Instance::print() {
-//    cout << "Locations: ";
-//    for (auto l:locations) cout << l << " ";
-//    cout << endl;
-
-//    cout << "Customers: ";
-//    for (auto c:customers) cout << c << " ";
-//    cout << endl;
-
-    cout << "loc_max_id: " << loc_max_id << endl;
-    cout << "loc_cnt: " << locations.size() << endl;
-    cout << "service: " << type_service << endl;
-    cout << "cust_max_id: " << cust_max_id << endl;
-    cout << "cust_cnt: " << customers.size() << endl;
-    if (cover_mode) {
-        cout << "cover_max_id: " << cover_max_id << endl;
-        cout << "subareas_cnt: " << unique_subareas.size() << endl;
-        cout << "subareas: "<< type_subarea << endl;
-    }
-    cout << "p: " << p << endl;
-    cout << "total_demand: " << total_demand << endl << endl;
-}
-
-const vector<uint_t> &Instance::getCustomers() const {
-    return this->customers;
-}
-
-const vector<uint_t> &Instance::getLocations() const {
-    return this->locations;
-}
-
-// const vector<uint_t> &Instance::getCoverages() const {
-//     return this->loc_coverages;
-// }
-
 unordered_set<uint_t> Instance::getSubareasSet(){
     return unique_subareas;
 }
 
 const vector<uint_t> Instance::getLocationsSubarea(uint_t subarea){
-
     vector<uint_t> vet;
     for(uint_t loc = 0; loc < loc_max_id + 1; loc++){
         if(loc_coverages[loc] == subarea)
             vet.push_back(loc);
     }
-
     return vet;
 }
 
-uint_t Instance::get_p() const {
-    return p;
-}
-
-uint_t Instance::getClosestCust(uint_t loc) {
-    dist_t dist_min = numeric_limits<dist_t>::max();
-    uint_t cust_cl = numeric_limits<uint_t>::max();
-    for (auto cust:customers) {
-        auto dist = getRealDist(loc, cust);
-        if (dist <= dist_min) {
-            dist_min = dist;
-            cust_cl = cust;
-        }
-    }
-    return cust_cl;
-}
-
-double Instance::getVotingScore(uint_t loc, uint_t cust) {
-    auto dist = getRealDist(loc, cust);
-    double score = 0;
-    if (dist <= BW_CUTOFF * h) {
-        score = exp(-(dist * dist) / (h * h));
-    }
-    return score;
-}
-
-Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new, string type_service) {
-    return Instance(locations_new, customers, cust_weights, dist_matrix, loc_capacities, p, loc_max_id, cust_max_id, type_service);
-}
-
-dist_t Instance::getLocCapacity(uint_t loc) {
-    return loc_capacities[loc];
-}
-
-dist_t Instance::getTotalDemand() const {
-    return total_demand;
-}
-
-string Instance::getTypeService() const {
-    return type_service;
-}
-
-string Instance::getTypeSubarea() const {
-    return type_subarea;
+bool Instance::isInTheSameSubarea(uint_t loc1, uint_t loc2){
+    return loc_coverages[loc1] == loc_coverages[loc2];
 }
 
 void Instance::setCoverModel(bool cover_mode){
@@ -406,9 +382,3 @@ void Instance::setCoverModel(bool cover_mode){
 bool Instance::isCoverMode() {
     return cover_mode;
 }
-
-bool Instance::isInTheSameSubarea(uint_t loc1, uint_t loc2){
-    return loc_coverages[loc1] == loc_coverages[loc2];
-}
-
-
