@@ -8,7 +8,7 @@ Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> 
     this->instance = instance;
     this->p_locations = p_locations;
 
-    instance->print();
+    // instance->print();
 
     naiveEval();
 }
@@ -67,11 +67,17 @@ const vector<uint_t> &Solution_std::get_Locations() const {
 
 void Solution_std::replaceLocation(uint_t loc_old, uint_t loc_new) {
     // Update p_locations
+
+     if(!(p_locations.find(loc_old) == p_locations.end()) && !(p_locations.find(loc_new) != p_locations.end())){
     p_locations.erase(loc_old);
     p_locations.insert(loc_new);
 
     naiveEval();
-
+     
+    }else{
+        cout << "ERROR: loc_old not in p_locations or loc_new in p_locations" << endl;
+        
+    }
 //     // Update assignment and objective
 //     for (auto cust:instance->getCustomers()) {
 //         auto dist_old = assignment[cust].dist;

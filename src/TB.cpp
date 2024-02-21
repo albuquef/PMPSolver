@@ -344,7 +344,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
             // if (!p_locations.contains(loc)) {
             if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
-                    if(test_Cover(p_loc, loc)){
+                    // if(test_Cover(p_loc, loc)){
                         sol_tmp = sol_best;
                         sol_tmp.replaceLocation(p_loc, loc);
                         
@@ -361,7 +361,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
                         //     }
                         // }
                     }
-                }
+                // }
             }
             auto elapsed_time = duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count();
             if (improved) {
@@ -556,7 +556,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 // for (auto p_loc:p_loc) cout << p_loc << " ";
                 // cout << "\n";
                 // cout << "p loc size: " << p_loc.size() << "\n";
-                sol_best = Soeution_cap(instance, p_loc);
+                sol_best = Solution_cap(instance, p_loc);
                 solutions_map.addUniqueSolution(sol_best);
 
                 if (verbose) {
