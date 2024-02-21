@@ -5,7 +5,7 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
-#SBATCH --array=0-23%5
+#SBATCH --array=0-12%6
 
 # Activate the conda env if needed
 #source /etc/profile.d/conda.sh # Required before using conda
@@ -44,43 +44,43 @@ do
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
 done
 
-###### mat
-SERVICE=mat # lycee, mat, poste, urgenc
-SUBAREA=epci # arrond  canton epci commune epci
-p_values=(51 54 58 62)
+# ###### mat
+# SERVICE=mat # lycee, mat, poste, urgenc
+# SUBAREA=epci # arrond  canton epci commune epci
+# p_values=(51 54 58 62)
 
-CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
-COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
-OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
+# CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
+# COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
+# OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
 
-for p in "${p_values[@]}"
-do
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
-done
+# for p in "${p_values[@]}"
+# do
+#   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+#         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+#         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+#         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+#         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
+# done
 
 
 
-###### urgenc
-SERVICE=urgenc # lycee, mat, poste, urgenc
-SUBAREA=arrond # arrond  canton epci commune epci
-p_values=(42 48 54 60 66 72 78)
+# ###### urgenc
+# SERVICE=urgenc # lycee, mat, poste, urgenc
+# SUBAREA=arrond # arrond  canton epci commune epci
+# p_values=(42 48 54 60 66 72 78)
 
-CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
-COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
-OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
+# CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
+# COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
+# OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
 
-for p in "${p_values[@]}"
-do
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
-done
+# for p in "${p_values[@]}"
+# do
+#   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+#         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+#         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+#         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+#         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
+# done
 
 
 ###### urgenc
@@ -106,10 +106,10 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
+for element in "${arr[@]}"; do
+    echo "$element"
+done
 
-# echo "Number of instances: ${#arr[@]}"
+echo "Number of instances: ${#arr[@]}"
 #chmod +x ${arr[$SLURM_ARRAY_TASK_ID]}
-srun ${arr[$SLURM_ARRAY_TASK_ID]}
+# srun ${arr[$SLURM_ARRAY_TASK_ID]}

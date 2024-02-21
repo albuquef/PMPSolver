@@ -28,6 +28,8 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
         cust_max_id(cust_max_id), 
         type_service(type_service) {
 
+    cout << "Instance constructor" << endl;
+
     total_demand = 0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
@@ -274,6 +276,7 @@ uint_t Instance::getSubareaLocation(uint_t loc){
 
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
     
+
     // Create a new engine and seed it
     std::default_random_engine generator(seed);
 
@@ -282,6 +285,9 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
 
     vector<uint_t> locations_new;
     vector<uint_t> customers_new;
+
+    // vector<uint_t> locations_new(loc_cnt+1);
+    // vector<uint_t> customers_new(cust_cnt+1);
 
     if (loc_cnt < locations.size()) {
         locations_new = getRandomSubvector(locations, loc_cnt, &generator);

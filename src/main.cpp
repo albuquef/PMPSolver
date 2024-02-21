@@ -288,8 +288,8 @@ int main(int argc, char *argv[]) {
     cout << "[INFO] Instance loaded\n";
     instance.print();
 
-    // Instance subInstance = instance;
-    subInstance = subInstance.sampleSubproblem(5, 5, instance.get_p(),2);
+    // // Instance subInstance = instance;
+    Instance subInstance = instance.sampleSubproblem(10, 10, instance.get_p(),2);
     cout << "[INFO] SubInstance loaded\n";
     subInstance.print();
 

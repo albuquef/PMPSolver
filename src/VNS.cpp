@@ -378,10 +378,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         auto start_time = get_wall_time_VNS();
         cout << "Vizinhanca: " << k << "\n";
         auto new_sol = sol_best;
-        if(!cover_mode)
-            new_sol = rand_swap_Locations_cap(sol_best,k, ite);
-        else
-            new_sol = rand_swap_Locations_cap_cover(sol_best,k, ite);
+        new_sol = rand_swap_Locations_cap(sol_best,k, ite);
 
         cout << "\nlocal search\n";
         // new_sol = tb.localSearch_cap(new_sol,true,DEFAULT_MAX_ITE);
@@ -401,16 +398,15 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         }
 
 
+        auto elapsed_time_total = get_wall_time_VNS() - start_time_total;
         if (generate_reports)
             writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), elapsed_time);
 
         
-        auto elapsed_time_total = get_wall_time_VNS() - start_time_total;
-
         if (new_sol.get_objective() < sol_best.get_objective()) {
-            auto p_loc =  new_sol.get_pLocations();
-            sol_best = Solution_cap(instance, p_loc);
-            // sol_best = new_sol;
+            // auto p_loc =  new_sol.get_pLocations();
+            // sol_best = Solution_cap(instance, p_loc);
+            sol_best = new_sol;
 
             if (verbose) {
                 cout << "Improved Best solution global: \n";
@@ -422,8 +418,13 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
             }
 
 
-            k = 1;
+            k = 2;
             // k = int(sol_best.get_pLocations().size()/4); // initial neighborhood
+            // elapsed_time_total = get_wall_time_VNS() - start_time_total;
+            // if (generate_reports)
+            //     writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), elapsed_time_total);
+
+
         }
         if (k <= Kmax){
             k++;   
@@ -447,6 +448,10 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
         if (elapsed_time_total >= time_limit_seconds) {
             cout << "Time limit reached. Stopping the capacitated VNS algorithm.\n";
+
+            auto p_loc =  sol_best.get_pLocations();
+            sol_best = Solution_cap(instance, p_loc);
+
             return sol_best;
         }
 
@@ -471,7 +476,8 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         cout << "Final solution not feasible\n";
     }
 
-
+    auto p_loc =  sol_best.get_pLocations();
+    sol_best = Solution_cap(instance, p_loc);
     return sol_best;
 
 }
