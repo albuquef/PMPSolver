@@ -58,12 +58,13 @@ class PMP
         double timePMP;
         bool is_BinModel;
         bool VERBOSE;
-        bool CoverModel=false;
         string typeServ;
         bool getFeasibility_Solver();
         void setGenerateReports(bool generate_reports);
         // void setVerbose(bool VERBOSE);
-        void setCoverModel(bool CoverModel);
+        bool CoverModel=false;
+        string typeSubarea;
+        void setCoverModel(bool CoverModel, string typeSubarea);
 
 
     private:

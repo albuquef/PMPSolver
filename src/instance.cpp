@@ -29,6 +29,18 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
     }
 }
 
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
+                   shared_ptr<dist_t[]> loc_capacities, shared_ptr<dist_t[]> dist_matrix, uint_t p,
+                   uint_t loc_max, uint_t cust_max, string type_service, unordered_set<uint_t> unique_subareas, shared_ptr<uint_t[]> loc_coverages, string type_subarea)
+        : locations(locations), customers(customers), cust_weights(cust_weights),
+          loc_capacities(loc_capacities),dist_matrix(dist_matrix),
+          p(p),loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service), 
+          unique_subareas(unique_subareas), loc_coverages(loc_coverages), type_subarea(type_subarea){
+    total_demand = 0;
+    for (auto cust:this->customers) {
+        total_demand += this->getCustWeight(cust);
+    }
+}
 
 vector<string> tokenize(const string& input, char delim) {
     vector <string> tokens;
@@ -213,7 +225,12 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
         customers_new = customers;
     }
 
-    return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service);
+
+    if (!cover_mode) {
+        return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service);
+    }
+
+    return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
 }
 
 void Instance::print() {

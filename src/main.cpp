@@ -383,7 +383,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "Exact method PMP\n";
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "PMP");
-        pmp.setCoverModel(cover_mode);
+        pmp.setCoverModel(cover_mode, instance->getTypeSubarea());
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -416,7 +416,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";    
         PMP pmp(instance, "CPMP");
         pmp.setGenerateReports(true);
-        pmp.setCoverModel(cover_mode);
+        pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
         // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
@@ -427,7 +427,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "CPMP", true);
         pmp.setGenerateReports(true);
-        pmp.setCoverModel(cover_mode);
+        pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);

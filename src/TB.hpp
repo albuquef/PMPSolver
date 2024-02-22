@@ -28,12 +28,12 @@ private:
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
-    Solution_std initRandomSolution_cover();
+    Solution_std initRandomSolution_Cover();
     Solution_cap initRandomCapSolution();
     Solution_cap initHighestCapSolution();
     Solution_cap initHighestCapSolution_Cover();
     Solution_cap initSmartRandomCapSolution();
-    Solution_cap initCPLEXCapSolution(double time_limit);
+    Solution_cap initCPLEXCapSolution(double time_limit, const char* typeProb);
 
     Solution_std run(bool verbose, int MAX_ITE);
     Solution_cap run_cap(bool verbose, int MAX_ITE);

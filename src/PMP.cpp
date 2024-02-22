@@ -69,7 +69,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = false;    
+    VERBOSE = true;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -93,6 +93,8 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
             cout << "Binary Model: true" << endl;
         else 
             cout << "Binary Model: false" << endl;
+        if 
+
     }
 }
 PMP::~PMP()
@@ -118,15 +120,27 @@ void PMP::run(){
         IloNum lastPrintTime = startTime;
         IloNum lastBestBound = cplex.getBestObjValue();
         // gap_outputFilename = "gap.csv";
+
+        string gap_outputFilename_part1;
         if (!is_BinModel){
-            gap_outputFilename = "gap_Cont_service_" + instance->getTypeService() +
-                "_p_" + to_string(p) +
-                ".csv";
+            gap_outputFilename_part1 = "gap_Cont_service_" + instance->getTypeService() +
+                "_p_" + to_string(p); 
+                // ".csv";
         }else{
-            gap_outputFilename = "gap_Bin_service_" + instance->getTypeService() +
-                "_p_" + to_string(p) +
-                ".csv";
+            gap_outputFilename_part1 = "gap_Bin_service_" + instance->getTypeService() +
+                "_p_" + to_string(p); 
+                // ".csv";
         }
+        string gap_outputFilename_part2;
+        if(instance->isCoverMode())
+            gap_outputFilename_part2 = "_cover_"+ typeSubarea +".csv";
+        else
+            gap_outputFilename_part2 = ".csv";
+
+        gap_outputFilename = gap_outputFilename_part1 + gap_outputFilename_part2;
+
+        cout << "gap reports: " << gap_outputFilename << endl;
+
 
         if (generate_reports){
             cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
@@ -159,6 +173,8 @@ void PMP::run(){
 void PMP::run_GAP(unordered_set<uint_t> p_locations){
     try{
         this->p_locations = p_locations;
+
+        VERBOSE = false; 
 
         initILP();
         // Set the output to a non-verbose mode
@@ -662,8 +678,9 @@ void PMP::setGenerateReports(bool generate_reports){
     this->generate_reports = generate_reports;
 }
 
-void PMP::setCoverModel(bool CoverModel){
+void PMP::setCoverModel(bool CoverModel, string typeSubarea){
     this->CoverModel = CoverModel;
+    this->typeSubarea = typeSubarea;
 }
 
 

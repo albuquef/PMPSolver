@@ -338,10 +338,10 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     // auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
-    // auto sol_best = tb.initCPLEXCapSolution(600);
+
+    auto sol_best = tb.initCPLEXCapSolution(100,"CPMP");
     
-    auto sol_best = tb.initHighestCapSolution_Cover();
-    sol_best.setCoverMode(cover_mode);
+    // auto sol_best = tb.initHighestCapSolution_Cover();
     tb.solutions_map.addUniqueSolution(sol_best);
     sol_best.print();
     if (generate_reports)
@@ -417,13 +417,8 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
                 cout << endl;
             }
 
-
             k = 2;
             // k = int(sol_best.get_pLocations().size()/4); // initial neighborhood
-            // elapsed_time_total = get_wall_time_VNS() - start_time_total;
-            // if (generate_reports)
-            //     writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), elapsed_time_total);
-
 
         }
         if (k <= Kmax){

@@ -32,6 +32,7 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
     cout << "thread cnt:  " << thread_cnt << endl;
     cout << "\n\n";
 
+    auto start_time = tick();
     vector<thread> threads; // spawn M threads
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
@@ -47,6 +48,7 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
 
 
     cout << "[INFO] All subproblems solved."  << endl << endl;
+    tock(start_time);
 
     auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
@@ -151,7 +153,7 @@ void RSSV::solveSubproblem(int seed) {
     if(checkClock()){
         if(method_RSSV_sp == "EXACT_PMP"){
             PMP pmp(make_shared<Instance>(subInstance), "PMP");
-            pmp.setCoverModel(cover_mode);
+            pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
             pmp.run();
             sol = pmp.getSolution_std();
         }else if(method_RSSV_sp == "TB_PMP"){
@@ -194,12 +196,12 @@ void RSSV::solveSubproblem_CAP(int seed) {
     if(checkClock()){
         if(method_RSSV_sp == "EXACT_CPMP"){
             PMP pmp(make_shared<Instance>(subInstance), "CPMP");
-            pmp.setCoverModel(cover_mode);
+            pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
             pmp.run();
             sol = pmp.getSolution_cap();
         }else if(method_RSSV_sp == "EXACT_CPMP_BIN"){
             PMP pmp(make_shared<Instance>(subInstance), "CPMP", true);
-            pmp.setCoverModel(cover_mode);
+            pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
             pmp.run();
             sol = pmp.getSolution_cap();
         }else if(method_RSSV_sp == "TB_CPMP"){
