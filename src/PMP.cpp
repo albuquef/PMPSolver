@@ -69,7 +69,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = true;    
+    VERBOSE = false;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -93,7 +93,6 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
             cout << "Binary Model: true" << endl;
         else 
             cout << "Binary Model: false" << endl;
-        if 
 
     }
 }

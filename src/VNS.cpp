@@ -146,7 +146,7 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, unsigned int
             // sol_current.replaceLocation(p_swap_loc[i], out_swap_loc[i]);
             // cout << "p_swap_loc: " << p_swap_loc[i] << " out_swap_loc: " << out_swap_loc[i] << "\n";
         }
-        sol_current = Solution_cap(instance, p_locations_final);
+        sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
     }else{
         cout << "Not enough capacity\n";
     }
@@ -216,7 +216,7 @@ Solution_cap VNS::rand_swap_Locations_cap_cover(Solution_cap sol_current, unsign
             p_locations_final.erase(p_swap_loc[i]);
             p_locations_final.insert(out_swap_loc[i]);
         }
-        sol_current = Solution_cap(instance, p_locations_final);
+        sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
     }else{  
         cout << "Not enough capacity\n";
     }
@@ -335,13 +335,13 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
     tb.setCoverMode(cover_mode);
+    // auto sol_best = tb.initCPLEXCapSolution(100,"CPMP");
 
     // auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
 
-    auto sol_best = tb.initCPLEXCapSolution(100,"CPMP");
-    
-    // auto sol_best = tb.initHighestCapSolution_Cover();
+    auto sol_best = tb.initHighestCapSolution_Cover();
+
     tb.solutions_map.addUniqueSolution(sol_best);
     sol_best.print();
     if (generate_reports)
@@ -400,12 +400,12 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
         auto elapsed_time_total = get_wall_time_VNS() - start_time_total;
         if (generate_reports)
-            writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), elapsed_time);
+            writeReport(report_filename, new_sol.get_objective(), ite, tb.solutions_map.getNumSolutions(), elapsed_time_total);
 
         
         if (new_sol.get_objective() < sol_best.get_objective()) {
             // auto p_loc =  new_sol.get_pLocations();
-            // sol_best = Solution_cap(instance, p_loc);
+            // sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
             sol_best = new_sol;
 
             if (verbose) {
@@ -445,7 +445,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
             cout << "Time limit reached. Stopping the capacitated VNS algorithm.\n";
 
             // auto p_loc =  sol_best.get_pLocations();
-            // sol_best = Solution_cap(instance, p_loc);
+            // sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
 
             return sol_best;
         }
@@ -472,7 +472,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     }
 
     // auto p_loc =  sol_best.get_pLocations();
-    // sol_best = Solution_cap(instance, p_loc);
+    // sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
     return sol_best;
 
 }

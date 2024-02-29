@@ -32,7 +32,7 @@ public:
 
     Solution_cap() = default;
     // Solution_cap(shared_ptr<Instance> instance);
-    Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEVAL="GAPrelax");
+    Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEVAL="GAPrelax", bool cover_mode=false);
     Solution_cap(shared_ptr<Instance> instance,
                  unordered_set<uint_t> p_locations,
                  unordered_map<uint_t, dist_t> loc_usages, 

@@ -6,7 +6,7 @@
 #include <utility>
 
 
-Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval) {
+Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval, bool cover_mode) {
     
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
@@ -14,12 +14,10 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> 
     
 
     // cover_mode = instance->isCoverMode();
-    cover_mode = true;
-    // if (instance->isCoverMode()){
-    //     cover_mode = true;
-    // }
 
     // Initialize all fields
+    // this->cover_mode = instance->isCoverMode();
+    this->cover_mode = cover_mode;
     this->typeEval = typeEval;
     // cout << "typeEval: " << typeEval << endl;
     if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
@@ -261,7 +259,7 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
     //     exit(1);
     // }
     // test if loc_new is in p_locations or loc_old is not in p_locations
-    if(!(p_locations.find(loc_old) == p_locations.end()) && !(p_locations.find(loc_new) != p_locations.end())){
+    if((p_locations.find(loc_old) != p_locations.end()) && (p_locations.find(loc_new) == p_locations.end())){
         // Update p_locations
         p_locations.erase(loc_old);
         p_locations.insert(loc_new);
@@ -284,7 +282,34 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
         // }
         // cout << "\np size: " << p_locations.size() << endl;
         // cout << endl;
+    }else{
+        cerr << "ERROR: loc_new already in p_locations or loc_old not in p_locations" << endl;
+        if(!(p_locations.find(loc_old) != p_locations.end())) {
+            cerr << "loc_old: " << loc_old << " not in p locations" << endl;
+        }
+        if(!(p_locations.find(loc_new) == p_locations.end())) {
+            cerr << "loc_new: " << loc_new << " is in p_locations" << endl;
+        }
+        cout << "loc_old: " << loc_old << " loc_new: " << loc_new << endl;
+        cout << "p_locations: ";
+        for (auto p:p_locations) {
+            cout << p << " ";
+        }
+        cout << endl;
+        // exit(1);
+    } else if
+
+    // is in the same subarea
+    if(cover_mode && instance->getSubareaLocation(loc_old) != instance->getSubareaLocation(loc_new))
+    {
+        cerr << "ERROR: loc_old and loc_new are not in the same subarea" << endl;
+        cout << "loc_old: " << loc_old << " loc_new: " << loc_new << endl;
+        cout << "subarea_old: " << instance->getSubareaLocation(loc_old) << " subarea_new: " << instance->getSubareaLocation(loc_new) << endl;
+        // exit(1);
     }
+
+
+
 }
 
 dist_t Solution_cap::get_objective() const {
