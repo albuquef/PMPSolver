@@ -324,14 +324,24 @@ int main(int argc, char *argv[]) {
         CLOCK_THREADED = true;
         auto start_time_total = high_resolution_clock::now();
         
-
-
-        shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance);
+        // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance);
+        shared_ptr<Instance> filtered_instance;
         if(Method_RSSV_sp == "EXACT_PMP" || Method_RSSV_sp == "TB_PMP" || Method_RSSV_sp == "VNS_PMP"){
-            auto filtered_instance = metaheuristic.run(THREAD_NUMBER,Method_RSSV_sp);
+            filtered_instance = metaheuristic.run(THREAD_NUMBER,Method_RSSV_sp);
         } else if(Method_RSSV_sp == "EXACT_CPMP" || Method_RSSV_sp == "EXACT_CPMP_BIN" || Method_RSSV_sp == "TB_CPMP" || Method_RSSV_sp == "VNS_CPMP"){
-            auto filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER,Method_RSSV_sp);
+            filtered_instance = metaheuristic.run_CAP(THREAD_NUMBER,Method_RSSV_sp);
+        }else{
+            cout << "[ERROR] Method subproblem RSSV not found" << endl;
+            exit(1);
         }
+        filtered_instance->setCoverModel(cover_mode);
+        cout << "Final instance parameters:\n";
+        filtered_instance->print();
+
+
+        // auto locations = filtered_instance->getLocations();
+        // cout << "locations size: " << locations.size() << "\n";
+        // exit(1);
 
         cout << "-------------------------------------------------\n";
         cout << "Final Problem RSSV heuristic \n";

@@ -120,11 +120,10 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
-    cout << "Final instance parameters:\n";
-    filtered_instance->print();
+    // cout << "Final instance parameters:\n";
+    // filtered_instance->print();
 
     atexit(printDDE);
-
 
     return filtered_instance;
 }

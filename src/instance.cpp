@@ -40,6 +40,7 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
+    this->cover_max_id = unique_subareas.size();
 }
 
 vector<string> tokenize(const string& input, char delim) {
@@ -291,7 +292,15 @@ double Instance::getVotingScore(uint_t loc, uint_t cust) {
 }
 
 Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new, string type_service) {
-    return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id, type_service);
+    // return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id, type_service);
+
+    if (!cover_mode) {
+        return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service);
+    }
+
+    return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
+
+
 }
 
 dist_t Instance::getLocCapacity(uint_t loc) {

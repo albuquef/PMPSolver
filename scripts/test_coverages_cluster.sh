@@ -22,18 +22,21 @@ TIME_CLOCK=3600
 
 COVER_MODE=1
 
-# METHOD="EXACT_CPMP"
-METHOD="VNS_CPMP"
+# # METHOD="EXACT_CPMP"
+# METHOD="VNS_CPMP"
 
 ###### mat
 SERVICE=mat # lycee, mat, poste, urgenc
 SUBAREA=arrond # arrond  canton epci commune epci
-p_values=(26 30 34 38 42 46 50 54)
+# p_values=(26 30 34 38 42 46 50 54)
+p_values=(26 42)
+
+# METHOD="EXACT_CPMP"
+METHOD="VNS_CPMP"
 
 CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
 COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
 OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
-
 
 for p in "${p_values[@]}"
 do
@@ -43,6 +46,84 @@ do
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
 done
+
+METHOD="RSSV"
+# METHOD_RSSV_FINAL="TB_CPMP"
+METHOD_RSSV_FINAL="VNS_CPMP"
+metsp="TB_PMP"
+for p in "${p_values[@]}"
+do
+  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+done
+
+
+METHOD="RSSV"
+METHOD_RSSV_FINAL="EXACT_CPMP"
+metsp="TB_PMP"
+for p in "${p_values[@]}"
+do
+  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+done
+
+
+
+
+###### mat
+SERVICE=urgenc # lycee, mat, poste, urgenc
+SUBAREA=epci # arrond  canton epci commune epci
+p_values=(54 78)
+
+# METHOD="EXACT_CPMP"
+METHOD="VNS_CPMP"
+
+CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
+COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
+OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
+
+for p in "${p_values[@]}"
+do
+  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
+done
+
+METHOD="RSSV"
+# METHOD_RSSV_FINAL="TB_CPMP"
+METHOD_RSSV_FINAL="VNS_CPMP"
+metsp="TB_PMP"
+for p in "${p_values[@]}"
+do
+  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+done
+
+
+METHOD="RSSV"
+METHOD_RSSV_FINAL="EXACT_CPMP"
+metsp="TB_PMP"
+for p in "${p_values[@]}"
+do
+  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+done
+
+
 
 # ###### mat
 # SERVICE=mat # lycee, mat, poste, urgenc
@@ -84,22 +165,22 @@ done
 
 
 ###### urgenc
-SERVICE=urgenc # lycee, mat, poste, urgenc
-SUBAREA=epci # arrond  canton epci commune epci
-p_values=(54 60 66 72 78)
+# SERVICE=urgenc # lycee, mat, poste, urgenc
+# SUBAREA=epci # arrond  canton epci commune epci
+# p_values=(54 60 66 72 78)
 
-CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
-COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
-OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
+# CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
+# COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
+# OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
 
-for p in "${p_values[@]}"
-do
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
-done
+# for p in "${p_values[@]}"
+# do
+#   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
+#         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+#         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+#         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+#         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
+# done
 
 
 if [ -z "$arr" ]; then
@@ -110,6 +191,6 @@ for element in "${arr[@]}"; do
     echo "$element"
 done
 
-echo "Number of instances: ${#arr[@]}"
+# echo "Number of instances: ${#arr[@]}"
 #chmod +x ${arr[$SLURM_ARRAY_TASK_ID]}
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

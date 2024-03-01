@@ -8,10 +8,9 @@
 
 Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval, bool cover_mode) {
     
-    this->instance = std::move(instance);
-    this->p_locations = std::move(p_locations);
-    // print p_locations
-    
+    this->instance = instance;
+    this->p_locations = p_locations;
+    // print p_locations    
 
     // cover_mode = instance->isCoverMode();
 
@@ -238,7 +237,11 @@ void Solution_cap::print() {
     cout << "\np size: " << p_locations.size() << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
     cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
-    cout << "cover mode: " << cover_mode << "\n";
+    if(cover_mode){ cout << "cover mode: yes" << "\n";
+    }else{ cout << "cover mode: no" << "\n";}
+    if(isSolutionFeasible()) cout << "Solution is Feasible\n";
+    else cout << "Solution is Infeasible\n";
+    
     // cout << "\n";
 }
 
@@ -248,16 +251,6 @@ const unordered_set<uint_t> &Solution_cap::get_pLocations() const {
 
 void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* typeEVAL) {
     
-    // // test if loc_old is in p_locations
-    // if (p_locations.find(loc_old) == p_locations.end()) {
-    //     cerr << "ERROR: loc_old not in p_locations" << endl;
-    //     exit(1);
-    // }   
-    // // test if loc_new is not in p_locations
-    // if (p_locations.find(loc_new) != p_locations.end()) {
-    //     cerr << "ERROR: loc_new already in p_locations" << endl;
-    //     exit(1);
-    // }
     // test if loc_new is in p_locations or loc_old is not in p_locations
     if((p_locations.find(loc_old) != p_locations.end()) && (p_locations.find(loc_new) == p_locations.end())){
         // Update p_locations
@@ -274,14 +267,6 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
             cerr << "ERROR: typeEVAL not recognized" << endl;
             // exit(1);
         }
-        //print p locations
-        // cout << endl;
-        // cout << "p locations inside: ";
-        // for (auto p:p_locations) {
-        //     cout << p << " ";
-        // }
-        // cout << "\np size: " << p_locations.size() << endl;
-        // cout << endl;
     }else{
         cerr << "ERROR: loc_new already in p_locations or loc_old not in p_locations" << endl;
         if(!(p_locations.find(loc_old) != p_locations.end())) {
@@ -297,8 +282,7 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
         }
         cout << endl;
         // exit(1);
-    } else if
-
+    } 
     // is in the same subarea
     if(cover_mode && instance->getSubareaLocation(loc_old) != instance->getSubareaLocation(loc_new))
     {
@@ -552,14 +536,14 @@ bool Solution_cap::isSolutionFeasible(){
             satisfaction += a.usage;
             vector_capacities[getIndex(locations, a.node)] += a.usage;
             if (a.usage > instance->getLocCapacity(a.node)+0.1){
-                cerr << "ERROR: usage > capacity" << endl;
-                cerr << "usage: " << a.usage << "\n capacity: " << instance->getLocCapacity(a.node) << endl;
+                cout << "ERROR: usage > capacity" << endl;
+                cout << "usage: " << a.usage << "\n capacity: " << instance->getLocCapacity(a.node) << endl;
                 isFeasible = false;
                 return isFeasible;
                 // exit(1);
             }
             if (a.usage > instance->getCustWeight(cust)){
-                cerr << "ERROR: satisfaction > weight" << endl;
+                cout << "ERROR: satisfaction > weight" << endl;
                 isFeasible = false;
                 return isFeasible;
                 // exit(1);
@@ -575,7 +559,7 @@ bool Solution_cap::isSolutionFeasible(){
 
     for (auto loc:instance->getLocations()) {
         if (vector_capacities[getIndex(locations,loc)] > instance->getLocCapacity(loc)){
-            cerr << "ERROR: usage > capacity" << endl;
+            cout << "ERROR: usage > capacity" << endl;
             isFeasible = false;
             return isFeasible;
             // exit(1);
@@ -593,7 +577,7 @@ bool Solution_cap::isSolutionFeasible(){
                 }
             }
             if (!covered){
-                cerr << "ERROR: subarea not covered" << endl;
+                cout << "ERROR: subarea not covered" << endl;
                 cout << "subarea: " << subarea << endl;
                 isFeasible = false;
                 return isFeasible;

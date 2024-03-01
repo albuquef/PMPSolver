@@ -173,7 +173,14 @@ void PMP::run_GAP(unordered_set<uint_t> p_locations){
     try{
         this->p_locations = p_locations;
 
-        VERBOSE = false; 
+        cout << "p_locations: ";
+        for (auto loc:p_locations) cout << loc << " ";
+        cout << "\n";
+
+        cout << "p = "  << p << endl;
+
+
+        VERBOSE = true; 
 
         initILP();
         // Set the output to a non-verbose mode
@@ -182,7 +189,7 @@ void PMP::run_GAP(unordered_set<uint_t> p_locations){
         // cplex.setLogStream(fileStream);     // Redirect log to a file stream
         solveILP();
 
-        bool verb = false;
+        bool verb = true;
         if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
           
             isFeasible_Solver = true;
@@ -427,16 +434,16 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
         cout << "Num. of var y>0: " << y.getSize() << endl;
         cout << "Time to solve: " << timeSolver << endl;
 
-        bool verbose_vars = false;
+        bool verbose_vars = true;
         if (verbose_vars){
-            for(IloInt j = 0; j < num_facilities; j++){
-                auto loc = instance->getLocations()[j];
-                for(IloInt i = 0; i < num_customers; i++){
-                    auto cust = instance->getCustomers()[i];
-                    if (cplex.getValue(x[i][j]) > 0.001)
-                        cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x[i][j]) << endl;
-                }
-            }
+            // for(IloInt j = 0; j < num_facilities; j++){
+            //     auto loc = instance->getLocations()[j];
+            //     for(IloInt i = 0; i < num_customers; i++){
+            //         auto cust = instance->getCustomers()[i];
+            //         if (cplex.getValue(x[i][j]) > 0.001)
+            //             cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x[i][j]) << endl;
+            //     }
+            // }
         
             for(IloInt j = 0; j < num_facilities; j++){
                 auto loc = instance->getLocations()[j];

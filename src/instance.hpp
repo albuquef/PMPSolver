@@ -45,6 +45,7 @@ public:
     dist_t getCustWeight(uint_t cust);
     Instance sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed);
     Instance getReducedSubproblem(const vector<uint_t>& locations_new, string type_service);
+    // Instance getReducedSubproblem(const vector<uint_t>& locations_new, string type_service, unordered_set<uint_t> unique_subareas, shared_ptr<uint_t[]> loc_coverages, string type_subarea);
     void print();
     const vector<uint_t>& getCustomers() const;
     const vector<uint_t>& getLocations() const;

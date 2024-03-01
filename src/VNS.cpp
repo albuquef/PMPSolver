@@ -148,7 +148,7 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, unsigned int
         }
         sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
     }else{
-        cout << "Not enough capacity\n";
+        cout << "[WARN] Not enough capacity new swap solution\n";
     }
 
     return sol_current;
@@ -193,13 +193,16 @@ Solution_cap VNS::rand_swap_Locations_cap_cover(Solution_cap sol_current, unsign
         if (indices_out.size() > 0){
             std::vector<uint_t> indices_out_dist = getDistinctIndices(indices_out.size(), 1, seed);
             out_swap_loc.push_back(outside_p_locations_vec[indices_out[indices_out_dist[0]]]);
+        }else{
+            cout << "[WARN] No location with the same subarea to swap\n";
+            out_swap_loc.push_back(p_loc);
         }
     }
 
     // print vectors
-    cout << "\np_swap_loc: ";
+    cout << "\np_swap_loc(cover): ";
     for (auto i:p_swap_loc) cout << i << " ";
-    cout << "\nout_swap_loc: ";
+    cout << "\nout_swap_loc(cover): ";
     for (auto i:out_swap_loc) cout << i << " ";
     cout << "\n";
     if (out_swap_loc.size() < num_swaps) return sol_current;
@@ -218,7 +221,7 @@ Solution_cap VNS::rand_swap_Locations_cap_cover(Solution_cap sol_current, unsign
         }
         sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
     }else{  
-        cout << "Not enough capacity\n";
+        cout << "[WARN] Not enough capacity in swap cover\n";
     }
 
     return sol_current;
@@ -328,25 +331,27 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     // auto time_limit_seconds = 3600;
     auto time_limit_seconds = CLOCK_LIMIT;
     cout << "Time Limit: " << time_limit_seconds << " seconds\n";
-    cout << "Cover Mode: " << cover_mode << "\n";
+    if (cover_mode) cout << "Cover Mode: ON " << "\n";
 
     TB tb(instance, engine());
+    tb.setCoverMode(cover_mode);
     tb.setSolutionMap(solutions_map);
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
-    tb.setCoverMode(cover_mode);
     // auto sol_best = tb.initCPLEXCapSolution(100,"CPMP");
 
     // auto sol_best = tb.initHighestCapSolution();
     // auto sol_best = tb.initSmartRandomCapSolution();
 
-    auto sol_best = tb.initHighestCapSolution_Cover();
-
-    tb.solutions_map.addUniqueSolution(sol_best);
+    Solution_cap sol_best = tb.initHighestCapSolution_Cover();
     sol_best.print();
+    tb.solutions_map.addUniqueSolution(sol_best);
     if (generate_reports)
         writeReport(report_filename, sol_best.get_objective(), 0, tb.solutions_map.getNumSolutions(), get_wall_time_VNS() - start_time_total);  
 
+
+    exit(0);
+    
     cout << "local search initial solution\n";
     sol_best = tb.localSearch_cap(sol_best,true,DEFAULT_MAX_ITE);
     tb.solutions_map.addUniqueSolution(sol_best);
@@ -378,8 +383,11 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         auto start_time = get_wall_time_VNS();
         cout << "Vizinhanca: " << k << "\n";
         auto new_sol = sol_best;
-        new_sol = rand_swap_Locations_cap(sol_best,k, ite);
-
+        if (cover_mode){
+            new_sol = rand_swap_Locations_cap_cover(sol_best,k, ite);
+        }else{
+            new_sol = rand_swap_Locations_cap(sol_best,k, ite);
+        }
         cout << "\nlocal search\n";
         // new_sol = tb.localSearch_cap(new_sol,true,DEFAULT_MAX_ITE);
         tb.setExternalTime(get_wall_time_VNS() - start_time_total);
@@ -404,16 +412,21 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
         
         if (new_sol.get_objective() < sol_best.get_objective()) {
-            // auto p_loc =  new_sol.get_pLocations();
-            // sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
-            sol_best = new_sol;
+            auto p_loc =  new_sol.get_pLocations();
+            sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
+            // sol_best = new_sol;
 
             if (verbose) {
-                cout << "Improved Best solution global: \n";
+                cout << "Improved Best solution global VNS: \n";
                 sol_best.print();
                 cout << "Num ite capacited VNS: " << ite << "\n";
                 cout << "capacitated VNS loop elapsed time: " << elapsed_time << " seconds\n";
                 cout << "elapsed time total: " << elapsed_time_total << " seconds\n";
+                if (sol_best.isSolutionFeasible()){
+                    cout << "Improved Best solution feasible \n";
+                }else{
+                    cout << "Improved Best solution not feasible\n";
+                }
                 cout << endl;
             }
 
@@ -432,7 +445,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
         }
 
         if (verbose) {
-            cout << "Best solution global: \n";
+            cout << "Best solution global VNS: \n";
             sol_best.print();
             cout << "Num ite capacited VNS: " << ite << "\n";
             cout << "capacitated VNS loop elapsed time: " << elapsed_time << " seconds\n";
