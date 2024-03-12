@@ -233,6 +233,13 @@ Solution_cap TB::initHighestCapSolution_Cover() {
     unordered_set<uint_t> p_locations;
     auto p = instance->get_p();
     auto locations = instance->getLocations();
+
+    auto filtered_locations = locations; // Filter n locations according to voting weights
+    // cout << "[TB cpp] Filtered " << filtered_locations.size() << " locations: ";
+    // for (auto fl:filtered_locations) cout << fl << " ";
+    // cout << endl << endl;
+
+
     auto unique_subareas = instance->getSubareasSet();
     auto num_subareas = unique_subareas.size();
     uint_t cont_p = 0;
@@ -240,19 +247,21 @@ Solution_cap TB::initHighestCapSolution_Cover() {
     vector<pair<uint_t, uint_t>> hight_loc_each_cover;
     for (auto subarea:unique_subareas) {
         auto locs = instance->getLocationsSubarea(subarea);
-        cout << "subarea: " << subarea << " size: " << locs.size() << "\n";
+        // cout << "subarea: " << subarea << " size: " << locs.size() << "\n";
         // print vector locs
         // for (auto loc:locs) cout << loc << " ";
         // cout << "\n";
         vector<pair<uint_t, uint_t>> sorted_locations;
         for (auto loc:locs) {
-            auto cap = instance->getLocCapacity(loc);
-            sorted_locations.emplace_back(cap, loc);
+            if (find(filtered_locations.begin(), filtered_locations.end(), loc) != filtered_locations.end()) {
+                auto cap = instance->getLocCapacity(loc);
+                sorted_locations.emplace_back(cap, loc);
+            }
         }
         sort(sorted_locations.begin(), sorted_locations.end());
         reverse(sorted_locations.begin(), sorted_locations.end());
         hight_loc_each_cover.emplace_back(sorted_locations[0].first, sorted_locations[0].second);
-        cout << "add loc: " << sorted_locations[0].second  << "\n";
+        // cout << "add loc: " << sorted_locations[0].second  << "\n";
     }
 
     for (uint_t i = 0; i < num_subareas; i++) {
@@ -261,9 +270,9 @@ Solution_cap TB::initHighestCapSolution_Cover() {
     }
 
     // print p_locations
-    cout << "p_locations subareas: ";
-    for (auto loc:p_locations) cout << loc << " ";
-    cout << "\n";
+    // cout << "p_locations subareas: ";
+    // for (auto loc:p_locations) cout << loc << " ";
+    // cout << "\n";
 
 
 
@@ -271,7 +280,7 @@ Solution_cap TB::initHighestCapSolution_Cover() {
         vector<pair<uint_t, uint_t>> sorted_locations_diff;
         for (auto loc : locations) {
             // Check if loc exists in p_locations
-            if (p_locations.find(loc) == p_locations.end()) {
+            if (p_locations.find(loc) == p_locations.end() && find(filtered_locations.begin(), filtered_locations.end(), loc) != filtered_locations.end()) {
                 auto cap = instance->getLocCapacity(loc);
                 sorted_locations_diff.emplace_back(cap, loc);
             }

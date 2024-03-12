@@ -535,21 +535,22 @@ bool Solution_cap::isSolutionFeasible(){
         for (auto a:assignments[cust]) {
             satisfaction += a.usage;
             vector_capacities[getIndex(locations, a.node)] += a.usage;
-            if (a.usage > instance->getLocCapacity(a.node)+0.1){
+            if (a.usage > instance->getLocCapacity(a.node)+0.01){
                 cout << "ERROR: usage > capacity" << endl;
                 cout << "usage: " << a.usage << "\n capacity: " << instance->getLocCapacity(a.node) << endl;
                 isFeasible = false;
                 return isFeasible;
                 // exit(1);
             }
-            if (a.usage > instance->getCustWeight(cust)){
+            if (a.usage > instance->getCustWeight(cust) + 0.01){
                 cout << "ERROR: satisfaction > weight" << endl;
+                cout << "satisfaction: " << a.usage << "\n weight: " << instance->getCustWeight(cust) << endl;
                 isFeasible = false;
                 return isFeasible;
                 // exit(1);
             }
         }
-        if (satisfaction+0.1 < instance->getCustWeight(cust)){
+        if (satisfaction + 0.01 < instance->getCustWeight(cust)){
             cout << "ERROR: Cust= " <<  cust << " not satisfied" << endl;
             isFeasible = false;
             return isFeasible;

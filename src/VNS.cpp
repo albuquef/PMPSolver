@@ -349,13 +349,11 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     if (generate_reports)
         writeReport(report_filename, sol_best.get_objective(), 0, tb.solutions_map.getNumSolutions(), get_wall_time_VNS() - start_time_total);  
 
-
-    exit(0);
+    // exit(0);
     
     cout << "local search initial solution\n";
     sol_best = tb.localSearch_cap(sol_best,true,DEFAULT_MAX_ITE);
     tb.solutions_map.addUniqueSolution(sol_best);
-    // sol_best = tb.localSearch_cap(sol_best,false,DEFAULT_MAX_ITE);
     cout << "Initial solution: \n";
     sol_best.print();
     cout << "time: " << get_wall_time_VNS() - start_time_total << " seconds\n";

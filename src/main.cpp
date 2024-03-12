@@ -338,6 +338,11 @@ int main(int argc, char *argv[]) {
         cout << "Final instance parameters:\n";
         filtered_instance->print();
 
+        // auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
+        // auto filtered_locations = filtered_instance->getLocations(); // Filter n locations according to voting weights
+        // cout << "Filtered " << filtered_locations.size() << " locations: ";
+        // for (auto fl:filtered_locations) cout << fl << " ";
+        // cout << endl << endl;
 
         // auto locations = filtered_instance->getLocations();
         // cout << "locations size: " << locations.size() << "\n";
@@ -472,5 +477,6 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "[ERROR] Method not found" << endl;
         exit(1);
     }
+    solution.setCoverMode(cover_mode);
     return solution;
 }

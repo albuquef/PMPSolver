@@ -9,6 +9,7 @@
 #include <iostream>
 #include <utility>
 #include <random>
+#include <limits.h>
 #include "utils.hpp"
 #include "globals.hpp"
 
@@ -51,6 +52,8 @@ public:
     const vector<uint_t>& getLocations() const;
     uint_t get_p() const;
     uint_t getDistIndex(uint_t loc, uint_t cust);
+    uint_t getLocIndex(uint_t loc);
+    uint_t getCustIndex(uint_t cust);
     uint_t getClosestCust(uint_t loc);
     double getVotingScore(uint_t loc, uint_t cust);
     dist_t getLocCapacity(uint_t loc);

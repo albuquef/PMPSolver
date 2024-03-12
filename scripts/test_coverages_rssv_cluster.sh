@@ -5,7 +5,7 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
-#SBATCH --array=0-12%6
+#SBATCH --array=0-23%3
 
 # Activate the conda env if needed
 #source /etc/profile.d/conda.sh # Required before using conda
@@ -24,7 +24,8 @@ NUM_THREADS=4
 
 METHOD="RSSV"
 # METHOD_RSSV_FINAL="TB_CPMP"
-METHOD_RSSV_FINAL="VNS_CPMP"
+# METHOD_RSSV_FINAL="VNS_CPMP"
+METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP"
 ###### mat
 SERVICE=mat # lycee, mat, poste, urgenc
@@ -39,6 +40,7 @@ for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+        # -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
@@ -57,7 +59,8 @@ for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
+        #-time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
 done

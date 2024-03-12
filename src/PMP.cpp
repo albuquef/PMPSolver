@@ -69,7 +69,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = false;    
+    VERBOSE = true;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -149,7 +149,7 @@ void PMP::run(){
 
         solveILP();
 
-        bool verb = true;
+        bool verb = false;
         if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
             isFeasible_Solver = true;
             if (verb){
@@ -173,23 +173,17 @@ void PMP::run_GAP(unordered_set<uint_t> p_locations){
     try{
         this->p_locations = p_locations;
 
-        cout << "p_locations: ";
-        for (auto loc:p_locations) cout << loc << " ";
-        cout << "\n";
-
-        cout << "p = "  << p << endl;
-
-
-        VERBOSE = true; 
+        VERBOSE = false; 
 
         initILP();
         // Set the output to a non-verbose mode
         cplex.setParam(IloCplex::Param::MIP::Display, 0);
         cplex.setOut(env.getNullStream());  // Disable console output
         // cplex.setLogStream(fileStream);     // Redirect log to a file stream
+        // exportILP(cplex);
         solveILP();
 
-        bool verb = true;
+        bool verb = false;
         if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
           
             isFeasible_Solver = true;
@@ -383,15 +377,31 @@ void PMP::constr_GAP(IloModel model, IloBoolVarArray y){
 
     if (VERBOSE){cout << "[INFO] Adding GAP fixed p Constraints "<< endl;}
 
-    // IloEnv env = model.getEnv();
-    for(IloInt j = 0; j < num_facilities; j++){
-        auto loc = instance->getLocations()[j];
-        if (p_locations.find(loc) == p_locations.end()){
-            model.add(y[j] == 0);
-        }else{
-            model.add(y[j] == 1);
+    auto locations = instance->getLocations();
+
+    for(auto loc:locations){
+        auto index_loc = instance->getLocIndex(loc);
+        if (index_loc != 10000 && (p_locations.find(loc) == p_locations.end())){
+        // if (p_locations.find(loc) == p_locations.end()){ 
+            model.add(y[index_loc] == 0);
+            // cout << "index: " << index_loc << " loc: " << loc
+        }else if (index_loc != 10000 && (p_locations.find(loc) != p_locations.end())){
+            model.add(y[index_loc] == 1);
+            // cout << "index: " << index_loc << " loc: " << loc << endl;
         }
     }
+
+
+    // IloEnv env = model.getEnv();
+    // for(IloInt j = 0; j < num_facilities; j++){
+    //     auto loc = instance->getLocations()[j];
+    //     if (p_locations.find(loc) == p_locations.end()){
+    //         model.add(y[j] == 0);
+    //     }else{
+    //         cout << "add pos: " << j << " loc: " << loc << endl;
+    //         model.add(y[j] == 1);
+    //     }
+    // }
 
 }
 
