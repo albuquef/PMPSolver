@@ -22,7 +22,7 @@ TIME_CLOCK=0
 COVER_MODE=1
 NUM_THREADS=4
 
-METHOD="EXACT_CPMP"
+METHOD="EXACT_CPMP" # 128GB
 # METHOD="VNS_CPMP"
 ###### mat
 SERVICE=mat # lycee, mat, poste, urgenc
