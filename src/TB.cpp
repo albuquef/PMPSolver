@@ -571,18 +571,18 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                         }
                     }
                 }else if(!test_Capacity(sol_cand, p_loc, loc)){
-                    cout << "capacity constraint violated: yes\n";
+                    // cout << "capacity constraint violated: yes\n";
                 }
             }
         }
 
         auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
         if (improved) {
-            sol_best = sol_cand;
+            // sol_best = sol_cand;
 
-            // auto p_loc = sol_cand.get_pLocations();
-            // sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
-            // solutions_map.addUniqueSolution(sol_best);
+            auto p_loc = sol_cand.get_pLocations();
+            sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
+            solutions_map.addUniqueSolution(sol_best);
 
             if (verbose) {
                 cout << "Solution Improved global TB: \n";

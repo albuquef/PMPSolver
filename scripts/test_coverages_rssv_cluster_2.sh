@@ -40,7 +40,8 @@ for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
 done
@@ -58,6 +59,7 @@ for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
+        #-time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
@@ -78,7 +80,7 @@ for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
 done
@@ -97,7 +99,7 @@ for p in "${p_values[@]}"
 do
   arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
         -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
 done

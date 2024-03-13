@@ -274,19 +274,22 @@ int main(int argc, char *argv[]) {
         cerr << "If you need help to use, add --help or a '?' after name of program.\n" ;
         exit(1);
     }
+
     cout << "Loading instance...\n";
     // Load instance
     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
-
     if(!coverages_filename.empty() && cover_mode){
         // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
         instance.setCoverModel(true);
     }
-
     cout << "[INFO] Instance loaded\n";
     instance.print();
+
+    // cout << "[INFO] Instance filtered\n";
+    // Instance instance_filter = instance_original.filterInstance(TypeService);
+    // instance_filter.print();
 
     auto start = tick();
     cout << "-------------------------------------------------\n";

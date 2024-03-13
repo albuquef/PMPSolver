@@ -8,8 +8,8 @@ D_MATRIX=${DIR_DATA}dist_matrix.txt
 WEIGHTS=${DIR_DATA}cust_weights_3.txt
 TYPEDIV="2x2"
 CAPACITIES=${DIR_DATA}loc_capacities_${TYPEDIV}_ratio.txt
-TIME_CPLEX=3600
-TIME_CLOCK=3600
+TIME_CPLEX=60
+TIME_CLOCK=60
 
 ###### mat
 SERVICE=mat # lycee, mat, poste, urgenc
@@ -45,9 +45,9 @@ done
 # done
 
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
+# for element in "${arr[@]}"; do
+#     echo "$element"
+# done
 
 for element in "${arr[@]}"; do
     $element

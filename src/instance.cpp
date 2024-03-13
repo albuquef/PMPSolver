@@ -440,3 +440,23 @@ uint_t Instance::getCustIndex(uint_t cust){
     return index;
     
 }
+
+Instance Instance::filterInstance(string type_service) {
+
+
+    // remove all locations with capacity less or equal than 1
+    vector<uint_t> locations_filtered;
+    for (auto loc:locations) {
+        if (loc_capacities[loc] > 1) {
+            locations_filtered.push_back(loc);
+        }
+    }
+    
+    // getReducedSubproblem(locations_filtered, type_service);
+
+    // return a new instance with the filtered locations
+    if (!cover_mode) {
+        return Instance(locations_filtered, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service);
+    }
+    return Instance(locations_filtered, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
+}

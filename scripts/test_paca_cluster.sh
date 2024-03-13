@@ -3,7 +3,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --partition=cpuonly
-#SBATCH --mem=64G
+#SBATCH --mem=128G
 #SBATCH --time=100:00:00 
 #SBATCH --array=0-23%3
 
@@ -17,16 +17,13 @@ DIST_TYPE=minutes
 
 D_MATRIX=${DIR_DATA}dist_matrix_${DIST_TYPE}.txt
 WEIGHTS=${DIR_DATA}cust_weights.txt
-TIME_CPLEX=3600
-TIME_CLOCK=3600
+TIME_CPLEX=0
+TIME_CLOCK=0
 COVER_MODE=1
 NUM_THREADS=4
 
-METHOD="RSSV"
-# METHOD_RSSV_FINAL="TB_CPMP"
-# METHOD_RSSV_FINAL="VNS_CPMP"
-METHOD_RSSV_FINAL="EXACT_CPMP"
-metsp="TB_PMP"
+METHOD="EXACT_CPMP"
+# METHOD="VNS_CPMP"
 ###### mat
 SERVICE=mat # lycee, mat, poste, urgenc
 SUBAREA=arrond # arrond  canton epci commune epci
@@ -42,7 +39,7 @@ do
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
 done
 
 # ###### mat
@@ -60,7 +57,7 @@ do
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
 done
 
 
@@ -80,7 +77,7 @@ do
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
 done
 
 
@@ -99,9 +96,8 @@ do
         -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
         -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt")
+        -o $OUTPUT | tee ./console/console_${SERVICE}_${METHOD}_p_${p}.txt")
 done
-
 
 if [ -z "$arr" ]; then
     echo "No instances"
@@ -118,3 +114,4 @@ done
 echo "Number of instances: ${#arr[@]}"
 #chmod +x ${arr[$SLURM_ARRAY_TASK_ID]}
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}
+

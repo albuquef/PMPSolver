@@ -69,7 +69,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = true;    
+    VERBOSE = false;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -85,15 +85,10 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
         cout << "Number of facilities: " << num_facilities << endl;
         cout << "Number of customers: " << num_customers << endl;
         // cout << "Type of problem: " << typeProb << endl;
-        if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0)
-            cout << "Capacity Model: true" << endl;
-        else 
-            cout << "Capacity Model: false" << endl;
-        if (is_BinModel == true) 
-            cout << "Binary Model: true" << endl;
-        else 
-            cout << "Binary Model: false" << endl;
-
+        if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0) cout << "Capacity Model: true" << endl;
+        else cout << "Capacity Model: false" << endl;
+        if (is_BinModel == true) cout << "Binary Model: true" << endl;
+        else cout << "Binary Model: false" << endl;
     }
 }
 PMP::~PMP()
@@ -412,7 +407,7 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
 
     num_subareas = instance->getSubareasSet().size();   
 
-    for (IloInt s = 0; s < num_subareas; s++){
+    for (IloInt s = 0; s <= num_subareas; s++){
         IloExpr expr(env);
         // auto subarea = instance->getSubareasSet()[s];
         auto subarea = instance->getLocationsSubarea(s);
@@ -426,6 +421,12 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
         }
         if(!subarea.empty() && y_exist)
             model.add(expr >= 1);
+
+        if(!subarea.empty() && y_exist){
+            model.add(expr >= 1);
+            cout << "subarea: " << s << " size: " << subarea.size() << endl;
+        }
+
         expr.end();
     }
 

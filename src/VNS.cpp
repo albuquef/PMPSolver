@@ -410,9 +410,11 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
         
         if (new_sol.get_objective() < sol_best.get_objective()) {
-            auto p_loc =  new_sol.get_pLocations();
-            sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
-            // sol_best = new_sol;
+            // auto p_loc =  new_sol.get_pLocations();
+            // sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
+            // tb.solutions_map.addUniqueSolution(sol_best);
+
+            sol_best = new_sol;
 
             if (verbose) {
                 cout << "Improved Best solution global VNS: \n";
