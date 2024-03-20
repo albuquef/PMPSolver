@@ -69,7 +69,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = false;    
+    VERBOSE = true;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -339,7 +339,6 @@ void PMP::constr_UBpmp(IloModel model, VarType x, IloBoolVarArray y){
 
     if (VERBOSE){cout << "[INFO] Adding UB Constraints "<< endl;}
 
-    //IloEnv env = model.getEnv();
     for(IloInt i = 0; i < num_customers; i++)
         for(IloInt j = 0; j < num_facilities; j++)
             model.add(x[i][j] <= y[j]);
@@ -376,16 +375,14 @@ void PMP::constr_GAP(IloModel model, IloBoolVarArray y){
 
     for(auto loc:locations){
         auto index_loc = instance->getLocIndex(loc);
-        if (index_loc != 10000 && (p_locations.find(loc) == p_locations.end())){
-        // if (p_locations.find(loc) == p_locations.end()){ 
+        if (index_loc != 10000000 && (p_locations.find(loc) == p_locations.end())){
             model.add(y[index_loc] == 0);
             // cout << "index: " << index_loc << " loc: " << loc
-        }else if (index_loc != 10000 && (p_locations.find(loc) != p_locations.end())){
+        }else if (index_loc != 10000000 && (p_locations.find(loc) != p_locations.end())){
             model.add(y[index_loc] == 1);
             // cout << "index: " << index_loc << " loc: " << loc << endl;
         }
     }
-
 
     // IloEnv env = model.getEnv();
     // for(IloInt j = 0; j < num_facilities; j++){
@@ -522,13 +519,13 @@ Solution_cap PMP::getSolution_cap(){
                 for(IloInt i = 0; i < num_customers; i++){
                     auto cust = instance->getCustomers()[i];
                     // cout << "cust = " << cust << endl;
-                    if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.0001){
+                    if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0){
                         auto dem_used = cplex.getValue(x_bin[i][j])* instance->getCustWeight(cust);//instance->getWeightedDist(loc,cust);
                         loc_usages[loc] += dem_used;
                         cust_satisfactions[cust] += dem_used;
                         auto obj_increment = dem_used * instance->getRealDist(loc, cust);
                         assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
-                    }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0.0001){
+                    }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0){
                         auto dem_used = cplex.getValue(x_cont[i][j])* instance->getCustWeight(cust);
                         loc_usages[loc] += dem_used;
                         cust_satisfactions[cust] += dem_used;

@@ -251,6 +251,8 @@ const unordered_set<uint_t> &Solution_cap::get_pLocations() const {
 
 void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* typeEVAL) {
     
+    this->typeEval = typeEVAL;
+
     // test if loc_new is in p_locations or loc_old is not in p_locations
     if((p_locations.find(loc_old) != p_locations.end()) && (p_locations.find(loc_new) == p_locations.end())){
         // Update p_locations
@@ -290,6 +292,12 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
         cout << "loc_old: " << loc_old << " loc_new: " << loc_new << endl;
         cout << "subarea_old: " << instance->getSubareaLocation(loc_old) << " subarea_new: " << instance->getSubareaLocation(loc_new) << endl;
         // exit(1);
+    }
+
+    if(!isSolutionFeasible()){
+        cerr << "ERROR: Solution is not feasible" << endl;
+        // objective = numeric_limits<dist_t>::max();    
+       // exit(1);
     }
 
 
@@ -442,9 +450,10 @@ void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint
     // objEval();
 }
 
-// NOT WORKING
 void Solution_cap::GAP_eval(){
     // Initialize all fields
+
+    cout << "GAP_eval" << endl;
 
     objective = 0;
     for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
@@ -470,12 +479,17 @@ void Solution_cap::GAP_eval(){
         }
     }
     if (strcmp(typeEval, "GAPrelax") == 0){
+
+        cout << "GAPrelax" << endl;
+
         PMP pmp(instance, "GAP", false);
         pmp.run_GAP(p_locations);
         // auto sol_gap = pmp.getSolution_cap();
         if (pmp.getFeasibility_Solver()){
             isFeasible = true;
             auto sol_gap = pmp.getSolution_cap();
+            sol_gap.print();
+            sol_gap.saveAssignment("GAP_intern", "GAP");
             setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
         }else{
@@ -539,21 +553,23 @@ bool Solution_cap::isSolutionFeasible(){
                 cout << "ERROR: usage > capacity" << endl;
                 cout << "usage: " << a.usage << "\n capacity: " << instance->getLocCapacity(a.node) << endl;
                 isFeasible = false;
-                return isFeasible;
-                // exit(1);
+                // return isFeasible;
+                exit(1);
             }
             if (a.usage > instance->getCustWeight(cust) + 0.01){
                 cout << "ERROR: satisfaction > weight" << endl;
                 cout << "satisfaction: " << a.usage << "\n weight: " << instance->getCustWeight(cust) << endl;
                 isFeasible = false;
-                return isFeasible;
-                // exit(1);
+                // return isFeasible;
+                exit(1);
             }
         }
-        if (satisfaction + 0.01 < instance->getCustWeight(cust)){
+        if (satisfaction + 0.1 < instance->getCustWeight(cust)){
             cout << "ERROR: Cust= " <<  cust << " not satisfied" << endl;
+            cout << "satisfaction: " << satisfaction << "\n weight: " << instance->getCustWeight(cust) << endl;
             isFeasible = false;
-            return isFeasible;
+            // return isFeasible;
+            exit(1);
         }
     }
 

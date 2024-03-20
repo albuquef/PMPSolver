@@ -414,7 +414,7 @@ uint_t Instance::getLocIndex(uint_t loc){
 
     auto it = find(locations.begin(), locations.end(), loc);
     // Check if element was found and get its index
-    uint_t index=10000; // UNINT_MAX
+    uint_t index=10000000; // UNINT_MAX
     if (it != locations.end()) {
         index = distance(locations.begin(), it); // Calculate index using iterator
         // cout << "Index of " << loc << " is: " << index << endl;
@@ -429,7 +429,7 @@ uint_t Instance::getCustIndex(uint_t cust){
 
     auto it = find(customers.begin(), customers.end(), cust);
     // Check if element was found and get its index
-    uint_t index=10000; // UNINT_MAX
+    uint_t index=10000000; // UNINT_MAX
     if (it != customers.end()) {
         index = distance(customers.begin(), it); // Calculate index using iterator
         // cout << "Index of " << cust << " is: " << index << endl;
@@ -443,7 +443,6 @@ uint_t Instance::getCustIndex(uint_t cust){
 
 Instance Instance::filterInstance(string type_service) {
 
-
     // remove all locations with capacity less or equal than 1
     vector<uint_t> locations_filtered;
     for (auto loc:locations) {
@@ -453,8 +452,6 @@ Instance Instance::filterInstance(string type_service) {
     }
     
     // getReducedSubproblem(locations_filtered, type_service);
-
-    // return a new instance with the filtered locations
     if (!cover_mode) {
         return Instance(locations_filtered, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service);
     }

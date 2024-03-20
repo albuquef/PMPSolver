@@ -338,19 +338,28 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     tb.setSolutionMap(solutions_map);
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
-    auto sol_best = tb.initCPLEXCapSolution(600,"CPMP");
-    // auto sol_best = tb.initHighestCapSolution();
-    // auto sol_best = tb.initSmartRandomCapSolution();
-    // Solution_cap sol_best = tb.initHighestCapSolution_Cover();
 
+    // Solution_cap sol_best;
+    // sol_best = tb.fixedCapSolution();
+    // if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
+    // else sol_best = tb.initHighestCapSolution();
+
+    auto sol_best = tb.initCPLEXCapSolution(600,"CPMP");
+    // auto sol_best = tb.initCPLEXCapSolution(600,"CPMP");
+    // auto sol_best = tb.initSmartRandomCapSolution();
+
+
+    cout << "Initial solution: \n";
     sol_best.print();
-    tb.solutions_map.addUniqueSolution(sol_best);
+    if(sol_best.isSolutionFeasible()) 
+        tb.solutions_map.addUniqueSolution(sol_best);
     if (generate_reports)
         writeReport(report_filename, sol_best.get_objective(), 0, tb.solutions_map.getNumSolutions(), get_wall_time_VNS() - start_time_total);  
     
     cout << "local search initial solution\n";
     sol_best = tb.localSearch_cap(sol_best,true,DEFAULT_MAX_ITE);
-    tb.solutions_map.addUniqueSolution(sol_best);
+    if(sol_best.isSolutionFeasible()) 
+        tb.solutions_map.addUniqueSolution(sol_best);
     cout << "Initial solution: \n";
     sol_best.print();
     cout << "time: " << get_wall_time_VNS() - start_time_total << " seconds\n";

@@ -66,9 +66,10 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
 
     // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
-    cout << "\n\nFinal instance parameters:\n";
-    filtered_instance->print();
+    // cout << "\n\nFinal instance parameters:\n";
+    // filtered_instance->print();
 
+    atexit(printDDE);
 
     return filtered_instance;
 }
@@ -145,6 +146,9 @@ void RSSV::solveSubproblem(int seed) {
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
 
+    // subInstance.print();
+
+
     // int MAX_ITE = 1000;
     // checkClock();
     Solution_std sol;
@@ -162,7 +166,7 @@ void RSSV::solveSubproblem(int seed) {
         }else if(method_RSSV_sp == "VNS_PMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
-            sol = heuristic.runVNS_std(true,UB_MAX_ITER);
+            sol = heuristic.runVNS_std(false,UB_MAX_ITER);
         }else{
             cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
             exit(1);

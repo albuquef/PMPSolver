@@ -4,6 +4,8 @@
 #include <omp.h>
 #include <utility>
 #include <sys/time.h>
+#include <omp.h>
+
 
 #include "instance.hpp"
 #include "solution_std.hpp"
@@ -34,6 +36,7 @@ public:
     Solution_cap initHighestCapSolution_Cover();
     Solution_cap initSmartRandomCapSolution();
     Solution_cap initCPLEXCapSolution(double time_limit, const char* typeProb);
+    Solution_cap fixedCapSolution();
 
     Solution_std run(bool verbose, int MAX_ITE);
     Solution_cap run_cap(bool verbose, int MAX_ITE);

@@ -277,19 +277,26 @@ int main(int argc, char *argv[]) {
 
     cout << "Loading instance...\n";
     // Load instance
-    Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
+    Instance instance_original(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
+    if(!coverages_filename.empty() && cover_mode){
+        // cover_mode = true;
+        instance_original.ReadCoverages(coverages_filename,TypeSubarea, ' ');
+        instance_original.setCoverModel(true);
+    }
+    cout << "[INFO] Instance loaded\n";
+    instance_original.print();
+
+    cout << "[INFO] Instance filtered\n";
+    Instance instance = instance_original.filterInstance(TypeService);
     if(!coverages_filename.empty() && cover_mode){
         // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
         instance.setCoverModel(true);
     }
-    cout << "[INFO] Instance loaded\n";
+    cout << "[INFO] Instance filtered\n";
     instance.print();
 
-    // cout << "[INFO] Instance filtered\n";
-    // Instance instance_filter = instance_original.filterInstance(TypeService);
-    // instance_filter.print();
 
     auto start = tick();
     cout << "-------------------------------------------------\n";
@@ -340,16 +347,6 @@ int main(int argc, char *argv[]) {
         filtered_instance->setCoverModel(cover_mode);
         cout << "Final instance parameters:\n";
         filtered_instance->print();
-
-        // auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
-        // auto filtered_locations = filtered_instance->getLocations(); // Filter n locations according to voting weights
-        // cout << "Filtered " << filtered_locations.size() << " locations: ";
-        // for (auto fl:filtered_locations) cout << fl << " ";
-        // cout << endl << endl;
-
-        // auto locations = filtered_instance->getLocations();
-        // cout << "locations size: " << locations.size() << "\n";
-        // exit(1);
 
         cout << "-------------------------------------------------\n";
         cout << "Final Problem RSSV heuristic \n";

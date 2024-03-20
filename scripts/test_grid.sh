@@ -1,3 +1,4 @@
+#!/bin/bash
 CMD=./build/large_PMP
 NUM_CUSTOMERS=144
 NUM_LOCATIONS=216
