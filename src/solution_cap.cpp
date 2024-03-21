@@ -237,7 +237,7 @@ void Solution_cap::print() {
     cout << "\np size: " << p_locations.size() << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
     cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
-    if(cover_mode){ cout << "cover mode: yes" << "\n";
+    if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";
     }else{ cout << "cover mode: no" << "\n";}
     if(isSolutionFeasible()) cout << "Solution is Feasible\n";
     else cout << "Solution is Infeasible\n";
@@ -452,9 +452,6 @@ void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint
 
 void Solution_cap::GAP_eval(){
     // Initialize all fields
-
-    cout << "GAP_eval" << endl;
-
     objective = 0;
     for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
     for (auto cust:this->instance->getCustomers()) {
@@ -464,6 +461,7 @@ void Solution_cap::GAP_eval(){
 
     if (strcmp(typeEval, "GAP") == 0){
         PMP pmp(instance, "GAP", true);
+        // pmp.setCoverMode(cover_mode);
         pmp.run_GAP(p_locations);
         // auto sol_gap = pmp.getSolution_cap();
         if (pmp.getFeasibility_Solver()){
@@ -479,17 +477,15 @@ void Solution_cap::GAP_eval(){
         }
     }
     if (strcmp(typeEval, "GAPrelax") == 0){
-
-        cout << "GAPrelax" << endl;
-
         PMP pmp(instance, "GAP", false);
+        // pmp.setCoverMode(cover_mode);
         pmp.run_GAP(p_locations);
         // auto sol_gap = pmp.getSolution_cap();
         if (pmp.getFeasibility_Solver()){
             isFeasible = true;
             auto sol_gap = pmp.getSolution_cap();
-            sol_gap.print();
-            sol_gap.saveAssignment("GAP_intern", "GAP");
+            // sol_gap.print();
+            // sol_gap.saveAssignment("GAP_intern", "GAP");
             setSolution(instance, sol_gap.get_pLocations(), sol_gap.getLocUsages(),
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
         }else{

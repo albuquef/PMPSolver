@@ -40,14 +40,14 @@ SERVICES=("mat" "urgenc")
 SUBAREAS=("arrond" "epci")
 
 ##### Values of p
-# p_values_mat_arrond=(26 30 34 38 42 46 50 54)
-p_values_mat_arrond=(26)
-# p_values_mat_epci=(51 54 58 62)
-p_values_mat_epci=(51)
-# p_values_urgenc_arrond=(42 48 54 60 66 72 78)
-p_values_urgenc_arrond=(42)
-# p_values_urgenc_epci=(54 60 66 72 78)
-p_values_urgenc_epci=(54)
+p_values_mat_arrond=(26 30 34 38 42 46 50 54)
+# p_values_mat_arrond=(26)
+p_values_mat_epci=(51 54 58 62)
+# p_values_mat_epci=(51)
+p_values_urgenc_arrond=(42 48 54 60 66 72 78)
+# p_values_urgenc_arrond=(42)
+p_values_urgenc_epci=(54 60 66 72 78)
+# p_values_urgenc_epci=(54)
 
 for serv in "${SERVICES[@]}"; do
   for subar in "${SUBAREAS[@]}"; do
