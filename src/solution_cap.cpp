@@ -238,7 +238,7 @@ void Solution_cap::print() {
     cout << setprecision(15) << "objective: " << objective << endl;
     cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
     if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";
-    }else{ cout << "cover mode: no" << "\n";}
+    }else{ cout << "cover mode: OFF" << "\n";}
     if(isSolutionFeasible()) cout << "Solution is Feasible\n";
     else cout << "Solution is Infeasible\n";
     

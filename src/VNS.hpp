@@ -26,11 +26,20 @@ private:
 public:
     explicit VNS(shared_ptr<Instance> instance, uint_t seed);
 
-    
+    template<typename SolutionType>
+    SolutionType Swap_Locations(SolutionType sol_current, unsigned int num_swaps, int seed, bool capac = false);
+    template<typename SolutionType>
+    SolutionType Swap_Locations_Cover(SolutionType sol_current, unsigned int num_swaps, int seed, bool capac = false);
+
 
     Solution_std rand_swap_Locations(Solution_std sol_current, unsigned int num_swaps, int seed);
+    Solution_std rand_swap_Locations_cover(Solution_std sol_current, unsigned int num_swaps, int seed);
     Solution_cap rand_swap_Locations_cap(Solution_cap sol_current, unsigned int num_swaps, int seed);
     Solution_cap rand_swap_Locations_cap_cover(Solution_cap sol_current, unsigned int num_swaps, int seed);
+
+    // template<typename SolutionType>
+    // SolutionType runVNS(SolutionType sol_current, bool verbose, int MAX_ITE, double EXTERNAL_TIME, bool capac = false);
+
     Solution_std runVNS_std(bool verbose, int MAX_ITE);
     Solution_cap runVNS_cap(string& Method, bool verbose, int MAX_ITE);
     bool isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best);    

@@ -36,6 +36,7 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
           loc_capacities(loc_capacities),dist_matrix(dist_matrix),
           p(p),loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service), 
           unique_subareas(unique_subareas), loc_coverages(loc_coverages), type_subarea(type_subarea){
+    cover_mode = true;
     total_demand = 0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);

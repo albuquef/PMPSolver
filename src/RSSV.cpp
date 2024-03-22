@@ -145,14 +145,10 @@ void RSSV::solveSubproblem(int seed) {
     auto start = tick();
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
-
+    // subInstance.setCoverModel(instance->isCoverMode(),instance->getTypeSubarea());
     // subInstance.print();
 
-
-    // int MAX_ITE = 1000;
-    // checkClock();
     Solution_std sol;
-
     if(checkClock()){
         if(method_RSSV_sp == "EXACT_PMP"){
             PMP pmp(make_shared<Instance>(subInstance), "PMP");
@@ -210,7 +206,7 @@ void RSSV::solveSubproblem_CAP(int seed) {
         }else if(method_RSSV_sp == "TB_CPMP"){
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
-            sol = heuristic.run_cap(false, UB_MAX_ITER);
+            sol = heuristic.run_cap(true, UB_MAX_ITER);
         }else if(method_RSSV_sp == "VNS_CPMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);

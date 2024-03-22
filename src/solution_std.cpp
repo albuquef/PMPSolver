@@ -48,12 +48,11 @@ void Solution_std::print() {
     for (auto p:p_locations) {
         cout << p << " ";
     }
-//    for (auto cust:instance->getCustomers()) {
-//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
-//    }
     cout << endl;
     cout << "p size: " << p_locations.size() << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
+    if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";
+    }else{ cout << "cover mode: OFF" << "\n";}
     cout << "\n";
 }
 

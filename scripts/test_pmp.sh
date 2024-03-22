@@ -8,146 +8,109 @@
 #SBATCH --array=0-23%3
 
 # Activate the conda env if needed
-#source /etc/profile.d/conda.sh # Required before using conda
-#conda activate myenv
+# source /etc/profile.d/conda.sh # Required before using conda
+# conda activate myenv
 
-# executable
+##### Executable
 CMD=./build/large_PMP
-# Data
+##### Data
 DIR_DATA=./data/filterData_PACA_may23/
 DIST_TYPE=minutes
-D_MATRIX=${DIR_DATA}dist_matrix_${DIST_TYPE}.txt
-WEIGHTS=${DIR_DATA}cust_weights.txt
-# Time
+D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}.txt"
+WEIGHTS="${DIR_DATA}cust_weights.txt"
+##### Time
 TIME_CPLEX=3600
-TIME_CLOCK=3600
-# Cover mode
-COVER_MODE=1
-# Number of threads (not used as parameter in the code)
-NUM_THREADS=4
+TIME_CLOCK=10
+# Number of threads default=4 (config.toml)
+NUM_THREADS=4  # Not used
 
 ##### Methods
-# METHOD="VNS_CPMP"
+# METHOD="TB_CPMP"
+METHOD="VNS_CPMP"
 # METHOD="EXACT_CPMP"
+# METHOD="RSSV"
 
-METHOD="RSSV"
 METHOD_RSSV_FINAL="VNS_CPMP"
 # METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
-##### Values of p
+##### SERVICES
+# SERVICES=("mat" "urgenc")
+SERVICES=("mat")
+
+##### NOT COVERAGES
+COVER_MODE=0
+SUBAREAS=("null")
+p_values_pmp=(26)
+
+##### COVERAGES
+# COVER_MODE=1
+# SUBAREAS=("arrond" "epci")
+# p_values_mat_arrond=(26)
+# p_values_mat_epci=()
+# p_values_urgenc_arrond=()
+# p_values_urgenc_epci=()
+
+##### Test values of p
 # p_values_mat_arrond=(26 30 34 38 42 46 50 54)
-p_values_mat_arrond=(26)
-
 # p_values_mat_epci=(51 54 58 62)
-p_values_mat_epci=()
-
 # p_values_urgenc_arrond=(42 48 54 60 66 72 78)
-p_values_urgenc_arrond=()
-
 # p_values_urgenc_epci=(54 60 66 72 78)
-p_values_urgenc_epci=()
+
+for serv in "${SERVICES[@]}"; do
+  for subar in "${SUBAREAS[@]}"; do
+    CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}.txt"
+    COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
+    OUTPUT="./solutions/test_paca_${serv}_${subar}"
 
 
-################################ TESTS ################################
+    if [ "$subar" = "null" ]; then
+      p_values=("${p_values_pmp[@]}")
+    fi
 
-# mat | arrond
-SERVICE=mat # lycee, mat, poste, urgenc
-SUBAREA=arrond # arrond  canton epci commune epci
-CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
-COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
-OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
+    if [ "$serv" = "mat" ] && [ "$subar" = "arrond" ]; then
+      p_values=("${p_values_mat_arrond[@]}")
+    elif [ "$serv" = "mat" ] && [ "$subar" = "epci" ]; then
+      p_values=("${p_values_mat_epci[@]}")
+    elif [ "$serv" = "urgenc" ] && [ "$subar" = "arrond" ]; then
+      p_values=("${p_values_urgenc_arrond[@]}")
+    elif [ "$serv" = "urgenc" ] && [ "$subar" = "epci" ]; then
+      p_values=("${p_values_urgenc_epci[@]}")
+    fi
 
-for p in "${p_values_mat_arrond[@]}"; do
-  
-  CONSOLE_NAME=console_${SERVICE}_${METHOD}_p_${p}.txt
-  if [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${SUBAREA}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ] && [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_${SUBAREA}_p_${p}.txt; fi
 
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee ./console/$CONSOLE_NAME")
+    for p in "${p_values[@]}"; do
+      CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.txt"
+      if [ "$subar" != "null" ] && [ "$COVER_MODE" = "1" ]; then
+        CONSOLE_NAME="console_${serv}_${METHOD}_${subar}_p_${p}.txt"
+      fi
+      if [ "$METHOD" = "RSSV" ]; then
+        CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt"
+      fi
+      if [ "$METHOD" = "RSSV" ] && [ "$subar" != "null" ] && [ "$COVER_MODE" = "1" ]; then
+        CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_${subar}_p_${p}.txt"
+      fi
+
+      arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv\
+            -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE\
+            -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+            -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
+            -o $OUTPUT | tee ./console/$CONSOLE_NAME")
+    done
+  done
 done
-
-# mat | epci
-SERVICE=mat # lycee, mat, poste, urgenc
-SUBAREA=epci # arrond  canton epci commune epci
-CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
-COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
-OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
-
-for p in "${p_values_mat_epci[@]}"; do  
-  
-  CONSOLE_NAME=console_${SERVICE}_${METHOD}_p_${p}.txt
-  if [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${SUBAREA}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ] && [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_${SUBAREA}_p_${p}.txt; fi
-
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee $CONSOLE_NAME")
-done
-
-
-# urgenc | arrond
-SERVICE=urgenc # lycee, mat, poste, urgenc
-SUBAREA=arrond # arrond  canton epci commune epci
-CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
-COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
-OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
-for p in "${p_values_urgenc_arrond[@]}"; do
-  
-  CONSOLE_NAME=console_${SERVICE}_${METHOD}_p_${p}.txt
-  if [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${SUBAREA}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ] && [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_${SUBAREA}_p_${p}.txt; fi
-
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee $CONSOLE_NAME")
-done
-
-
-# urgenc | epci
-SERVICE=urgenc # lycee, mat, poste, urgenc
-SUBAREA=epci # arrond  canton epci commune epci
-CAPACITIES=${DIR_DATA}loc_capacities_cap_${SERVICE}.txt
-COVERAGES=${DIR_DATA}loc_coverages_${SUBAREA}.txt
-OUTPUT=./solutions/test_paca_${SERVICE}_${SUBAREA}
-
-for p in "${p_values_urgenc_epci[@]}"; do
-  
-  CONSOLE_NAME=console_${SERVICE}_${METHOD}_p_${p}.txt
-  if [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${SUBAREA}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt; fi
-  if [ "$METHOD" = "RSSV" ] && [ "$SUBAREA" != "null" ] && [ "$COVER_MODE" == "1" ]; then CONSOLE_NAME=console_${SERVICE}_${METHOD}_${METHOD_RSSV_FINAL}_${SUBAREA}_p_${p}.txt; fi
-
-  arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
-        -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
-        -o $OUTPUT | tee $CONSOLE_NAME")
-done
-
 
 if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
-echo "Number of instances: ${#arr[@]}"
-
 # for element in "${arr[@]}"; do
-#     $element
+#     echo "$element"
 # done
+# echo "Number of instances: ${#arr[@]}"
+
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}
