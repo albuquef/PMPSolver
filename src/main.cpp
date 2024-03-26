@@ -275,7 +275,19 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    cout << "Loading instance...\n";
+//     cout << "Loading instance...\n";
+//     // Load instance
+//     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
+// //    omp_set_num_threads(1);
+//     if(!coverages_filename.empty() && cover_mode){
+//         // cover_mode = true;
+//         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
+//         instance.setCoverModel(true);
+//     }
+//     cout << "[INFO] Instance loaded\n";
+//     instance.print();
+
+     cout << "Loading instance...\n";
     // Load instance
     Instance instance_original(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);

@@ -531,26 +531,26 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     tb.setMethod("TB_");
     tb.setGenerateReports(true);
     
-    Solution_std sol_best = tb.initRandomSolution();
+    Solution_std sol_best;
     if (cover_mode) sol_best = tb.initRandomSolution_Cover();
-    // else sol_best = tb.initRandomSolution();
+    else sol_best = tb.initRandomSolution();
 
 
     cout << "\n[INFO] Initial solution: \n";
     sol_best.print();
     
 
-    Solution_std sol_swap;
-     if (cover_mode){
-            sol_swap = rand_swap_Locations_cover(sol_best,2, 1);
-    }else{
-        sol_swap = rand_swap_Locations(sol_best,2, 1);
-    }
+    // Solution_std sol_swap;
+    //  if (cover_mode){
+    //         sol_swap = rand_swap_Locations_cover(sol_best,2, 1);
+    // }else{
+    //     sol_swap = rand_swap_Locations(sol_best,2, 1);
+    // }
 
-    cout << "\n[INFO] Swap initial solution: \n";   
-    sol_swap.print();
+    // cout << "\n[INFO] Swap initial solution: \n";   
+    // sol_swap.print();
 
-    exit(0);
+    // exit(0);
 
 
     bool local_search_initial_sol = true;
@@ -718,24 +718,14 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
 
-    Solution_cap sol_best;
-    sol_best = tb.fixedCapSolution();
-    if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
-    else sol_best = tb.initHighestCapSolution();
-    
-    
-    // auto sol_best = tb.initCPLEXCapSolution(600,"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
+    // Solution_cap sol_best;
+    // sol_best = tb.fixedCapSolution();
+    // if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
+    // else sol_best = tb.initHighestCapSolution();
+        
+    auto sol_best = tb.initCPLEXCapSolution(600,"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
     // auto sol_best = tb.initSmartRandomCapSolution();
-    Solution_cap sol_swap;
-    if (cover_mode){
-        sol_swap = rand_swap_Locations_cap_cover(sol_best,2, 1);
-    }else{
-        sol_swap = rand_swap_Locations_cap(sol_best,2, 1);
-    }
-    cout << "\n[INFO] Swap initial solution: \n";
-    sol_swap.print();
-    
-    exit(0);
+    // exit(0);
 
     cout << "\n[INFO] Initial solution: \n";
     sol_best.print();

@@ -20,15 +20,15 @@ D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}.txt"
 WEIGHTS="${DIR_DATA}cust_weights.txt"
 ##### Time
 TIME_CPLEX=3600
-TIME_CLOCK=10
+TIME_CLOCK=3600
 # Number of threads default=4 (config.toml)
 NUM_THREADS=4  # Not used
 
 ##### Methods
 # METHOD="TB_CPMP"
-METHOD="VNS_CPMP"
+# METHOD="VNS_CPMP"
 # METHOD="EXACT_CPMP"
-# METHOD="RSSV"
+METHOD="RSSV"
 
 METHOD_RSSV_FINAL="VNS_CPMP"
 # METHOD_RSSV_FINAL="EXACT_CPMP"
@@ -39,14 +39,14 @@ metsp="TB_PMP" # Subproblem method
 SERVICES=("mat")
 
 ##### NOT COVERAGES
-COVER_MODE=0
-SUBAREAS=("null")
-p_values_pmp=(26)
+# COVER_MODE=0
+# SUBAREAS=("null")
+# p_values_pmp=(26)
 
 ##### COVERAGES
-# COVER_MODE=1
-# SUBAREAS=("arrond" "epci")
-# p_values_mat_arrond=(26)
+COVER_MODE=1
+SUBAREAS=("arrond" "epci")
+p_values_mat_arrond=(26)
 # p_values_mat_epci=()
 # p_values_urgenc_arrond=()
 # p_values_urgenc_epci=()

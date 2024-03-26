@@ -530,6 +530,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
         for (auto loc:locations_not_in_p) { // First improvement over locations
             // #pragma omp parallel for{ // #pragma omp parallel num_threads(4){
             for (auto p_loc:p_locations) { // Best improvement over p_locations
+                if (checkClock_TB(start_time_total, time_limit_seconds)) {return sol_best;}
                 Solution_cap sol_tmp = sol_best;    // N1 for sol_best
                 // sol_tmp.setCoverMode(cover_mode);
                 if (test_Capacity(sol_tmp, p_loc, loc) && test_Cover(p_loc, loc)){ 

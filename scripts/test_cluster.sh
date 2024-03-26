@@ -106,8 +106,8 @@ fi
 # done
 # echo "Number of instances: ${#arr[@]}"
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
-# srun ${arr[$SLURM_ARRAY_TASK_ID]}
+srun ${arr[$SLURM_ARRAY_TASK_ID]}
