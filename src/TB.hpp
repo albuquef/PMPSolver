@@ -27,6 +27,7 @@ private:
     string typeMethod="TB";
     double external_time=0;
     bool cover_mode=false;
+    double time_limit=CLOCK_LIMIT;
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
@@ -54,6 +55,7 @@ public:
     void setMethod(string Method);
     void setExternalTime(double time);
     void setCoverMode(bool cover_mode);
+    void setTimeLimit(double time_limit);
 };
 
 

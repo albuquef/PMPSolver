@@ -158,6 +158,7 @@ void RSSV::solveSubproblem(int seed) {
         }else if(method_RSSV_sp == "TB_PMP"){
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
+            // heuristic.setTimeLimit(60);
             sol = heuristic.run(false, UB_MAX_ITER);
         }else if(method_RSSV_sp == "VNS_PMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);

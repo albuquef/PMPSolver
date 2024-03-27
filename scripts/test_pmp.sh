@@ -104,13 +104,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
-# echo "Number of instances: ${#arr[@]}"
-
 for element in "${arr[@]}"; do
-    eval $element
+    echo "$element"
 done
+echo "Number of instances: ${#arr[@]}"
+
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

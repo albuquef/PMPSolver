@@ -19,8 +19,8 @@ using namespace std::chrono;
 
 int seed = 1;
 Solution_MAP solution_map;
-Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, bool cover_mode,  const string& output_filename);
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, bool cover_mode, const string& output_filename);
+Solution_std methods_PMP(const shared_ptr<Instance>& instance, const string typeMethod, bool cover_mode,  const string& output_filename, double external_time=0);
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typeMethod, bool cover_mode, const string& output_filename, double external_time=0);
 
 using namespace std;
 
@@ -275,40 +275,44 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-//     cout << "Loading instance...\n";
-//     // Load instance
-//     Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
-// //    omp_set_num_threads(1);
-//     if(!coverages_filename.empty() && cover_mode){
-//         // cover_mode = true;
-//         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
-//         instance.setCoverModel(true);
-//     }
-//     cout << "[INFO] Instance loaded\n";
-//     instance.print();
-
-     cout << "Loading instance...\n";
+// ----------------------------------------------------------------------------------------------------------------
+//                                          ORIGNAL INSTANCE
+    cout << "Loading instance...\n";
     // Load instance
-    Instance instance_original(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
+    Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
 //    omp_set_num_threads(1);
-    if(!coverages_filename.empty() && cover_mode){
-        // cover_mode = true;
-        instance_original.ReadCoverages(coverages_filename,TypeSubarea, ' ');
-        instance_original.setCoverModel(true);
-    }
-    cout << "[INFO] Instance loaded\n";
-    instance_original.print();
-
-    cout << "[INFO] Instance filtered\n";
-    Instance instance = instance_original.filterInstance(TypeService);
     if(!coverages_filename.empty() && cover_mode){
         // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
         instance.setCoverModel(true);
     }
-    cout << "[INFO] Instance filtered\n";
+    cout << "[INFO] Instance loaded\n";
     instance.print();
 
+// ----------------------------------------------------------------------------------------------------------------
+//                                          FILTERED INSTANCE
+//      cout << "Loading instance...\n";
+//     // Load instance
+//     Instance instance_original(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
+// //    omp_set_num_threads(1);
+//     if(!coverages_filename.empty() && cover_mode){
+//         // cover_mode = true;
+//         instance_original.ReadCoverages(coverages_filename,TypeSubarea, ' ');
+//         instance_original.setCoverModel(true);
+//     }
+//     cout << "[INFO] Instance loaded\n";
+//     instance_original.print();
+
+//     cout << "[INFO] Instance filtered\n";
+//     Instance instance = instance_original.filterInstance(TypeService);
+//     if(!coverages_filename.empty() && cover_mode){
+//         // cover_mode = true;
+//         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
+//         instance.setCoverModel(true);
+//     }
+//     cout << "[INFO] Instance filtered\n";
+//     instance.print();
+// ----------------------------------------------------------------------------------------------------------------
 
     auto start = tick();
     cout << "-------------------------------------------------\n";
@@ -366,7 +370,7 @@ int main(int argc, char *argv[]) {
         if(Method_RSSV_fp == "EXACT_PMP" || Method_RSSV_fp == "TB_PMP" || Method_RSSV_fp == "VNS_PMP"){
             
             auto start_time = high_resolution_clock::now();
-            Solution_std solution = methods_PMP(filtered_instance, Method_RSSV_fp,cover_mode, output_filename);
+            Solution_std solution = methods_PMP(filtered_instance, Method_RSSV_fp,cover_mode, output_filename, duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
 
@@ -378,7 +382,7 @@ int main(int argc, char *argv[]) {
             solution.saveResults(output_filename, elapsed_time,0,Method); 
         } else if(Method_RSSV_fp == "EXACT_CPMP" || Method_RSSV_fp == "EXACT_CPMP_BIN" || Method_RSSV_fp == "TB_CPMP" || Method_RSSV_fp == "VNS_CPMP"){
             auto start_time = high_resolution_clock::now();
-            Solution_cap solution = methods_CPMP(filtered_instance, "RSSV_" + Method_RSSV_fp, cover_mode, output_filename);
+            Solution_cap solution = methods_CPMP(filtered_instance, "RSSV_" + Method_RSSV_fp, cover_mode, output_filename, duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
             if (Method_RSSV_fp == "EXACT_CPMP") solution.objEval();
@@ -400,7 +404,7 @@ int main(int argc, char *argv[]) {
 }
 
 
-Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeMethod,bool cover_mode, const string& output_filename){
+Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeMethod,bool cover_mode, const string& output_filename, double external_time){
 
 
     Solution_std solution;
@@ -420,12 +424,14 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setTimeLimit(CLOCK_LIMIT);
         solution = heuristic.run(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_PMP"){
         cout << "VNS heuristic - PMP\n";
         cout << "-------------------------------------------------\n";
         VNS heuristic(instance, seed);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setExternalTime(external_time-external_time); // external time is not used in PMP
         solution = heuristic.runVNS_std(true,UB_MAX_ITER);
     }else{
         cout << "[ERROR] Method not found" << endl;
@@ -433,7 +439,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
     }
     return solution;
 }
-Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, bool cover_mode, const string& output_filename){
+Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMethod, bool cover_mode, const string& output_filename, double external_time){
 
     Solution_cap solution;
     Solution_MAP solution_map(instance);
@@ -467,6 +473,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setTimeLimit(CLOCK_LIMIT);
         solution = heuristic.run_cap(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_CPMP" || typeMethod == "RSSV_VNS_CPMP"){
         cout << "VNS heuristic - cPMP\n";
@@ -476,6 +483,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setExternalTime(external_time-external_time); // external time is not used in VNS
         solution = heuristic.runVNS_cap(typeMethod,true,UB_MAX_ITER);
     
         if (solution.isSolutionFeasible()){

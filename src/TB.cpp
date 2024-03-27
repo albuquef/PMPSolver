@@ -20,9 +20,9 @@ void tock_TB(double start) {
     auto end = get_wall_time_TB();
     cout << "Elapsed time: " << end - start << " seconds\n";
 }
-bool checkClock_TB(double start, double limit) {
+bool checkClock_TB(double start, double limit, double external_time = 0.0) {
     auto end = get_wall_time_TB();
-    if (end - start >= limit) {
+    if ((end - start) + external_time >= limit) {
         cout << "\n[INFO] Time limit reached. Stopping the algorithm.\n";
         cout << "TB elapsed time: " << end - start << " seconds\n";
         return true;
@@ -63,6 +63,10 @@ TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance))
 
 }
 
+
+void TB::setTimeLimit(double time_limit) {
+    this->time_limit = time_limit;
+}   
 
 Solution_std TB::initRandomSolution() {
     // Sample p distinct locations
@@ -368,7 +372,8 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
     cout << "uncapacitated TB local search started\n";
 
     //// time limit ////
-    auto time_limit_seconds = CLOCK_LIMIT;
+    // auto time_limit_seconds = CLOCK_LIMIT;
+    auto time_limit_seconds = time_limit;
     ///
 
     auto locations = instance->getLocations();
@@ -503,7 +508,8 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
     if(cover_mode) report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size()) + "_cover_" + instance->getTypeSubarea() +".csv";
 
     //// time limit ////
-    auto time_limit_seconds = CLOCK_LIMIT;
+    // auto time_limit_seconds = CLOCK_LIMIT;
+    auto time_limit_seconds = time_limit;
     ///
     auto locations = instance->getLocations();
     bool improved = true;
@@ -530,7 +536,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
         for (auto loc:locations_not_in_p) { // First improvement over locations
             // #pragma omp parallel for{ // #pragma omp parallel num_threads(4){
             for (auto p_loc:p_locations) { // Best improvement over p_locations
-                if (checkClock_TB(start_time_total, time_limit_seconds)) {return sol_best;}
+                if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
                 Solution_cap sol_tmp = sol_best;    // N1 for sol_best
                 // sol_tmp.setCoverMode(cover_mode);
                 if (test_Capacity(sol_tmp, p_loc, loc) && test_Cover(p_loc, loc)){ 
@@ -565,7 +571,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                         
                         }
 
-                        if (checkClock_TB(start_time_total, time_limit_seconds)) {return sol_best;}
+                        if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
                     }
                 }else if(!test_Capacity(sol_cand, p_loc, loc)){
                     // cout << "capacity constraint violated: yes\n";
@@ -591,13 +597,13 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             }
 
             if (generate_reports) {writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);}
-            if (checkClock_TB(start_time_total, time_limit_seconds)) {return sol_best;}
+            if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
 
             ite++;
             break;
         }
         
-        if (checkClock_TB(start_time_total, time_limit_seconds)) {return sol_best;}
+        if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
         if (verbose) {
             cout << "\n[INFO] Best TB solution: \n";
             printSolution_TB(sol_best, (get_wall_time_TB() - start_time_total) + external_time);

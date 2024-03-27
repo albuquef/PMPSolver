@@ -23,6 +23,7 @@ private:
     bool generate_reports=false;
     string typeMethod="VNS";
     bool cover_mode=false;
+    double external_time=0;
 public:
     explicit VNS(shared_ptr<Instance> instance, uint_t seed);
 
@@ -51,6 +52,7 @@ public:
     void setGenerateReports(bool generate_reports);
     void setMethod(string Method);
     void setCoverMode(bool cover_mode);
+    void setExternalTime(double time);
 };
 
 

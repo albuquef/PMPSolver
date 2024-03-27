@@ -520,7 +520,7 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     
     // limit of time and iterations
     // auto time_limit_seconds = 3600;
-    auto time_limit_seconds = CLOCK_LIMIT;
+    auto time_limit_seconds = CLOCK_LIMIT - external_time;
     cout << "Time Limit: " << time_limit_seconds << " seconds\n";
     if (cover_mode) cout << "Cover Mode: ON " << "\n";
 
@@ -708,7 +708,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     
     // limit of time and iterations
     // auto time_limit_seconds = 3600;
-    auto time_limit_seconds = CLOCK_LIMIT;
+    auto time_limit_seconds = CLOCK_LIMIT - external_time;
     cout << "Time Limit: " << time_limit_seconds << " seconds\n";
     if (cover_mode) cout << "Cover Mode: ON " << "\n";
 
@@ -876,4 +876,8 @@ void VNS::setMethod(string Method){
 
 void VNS::setCoverMode(bool cover_mode){
     this->cover_mode = cover_mode;
+}
+
+void VNS::setExternalTime(double time){
+    this->external_time = time;
 }

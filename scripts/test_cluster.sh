@@ -5,7 +5,8 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
-#SBATCH --array=0-23%3
+# #SBATCH --array=0-23%3
+#SBATCH --array=0-16%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -20,18 +21,18 @@ D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}.txt"
 WEIGHTS="${DIR_DATA}cust_weights.txt"
 # Time
 TIME_CPLEX=3600
-TIME_CLOCK=10
+TIME_CLOCK=3600
 # Number of threads (not used as parameter in the code)
 NUM_THREADS=4
 
 ##### Methods
-METHOD="TB_PMP"
+# METHOD="TB_PMP"
 # METHOD="VNS_CPMP"
 # METHOD="EXACT_CPMP"
-# METHOD="RSSV"
+METHOD="RSSV"
 
-METHOD_RSSV_FINAL="VNS_CPMP"
-# METHOD_RSSV_FINAL="EXACT_CPMP"
+# METHOD_RSSV_FINAL="VNS_CPMP"
+METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
 # SERVICES
@@ -39,19 +40,20 @@ metsp="TB_PMP" # Subproblem method
 SERVICES=("mat")
 
 # NOT COVERAGES
-# COVER_MODE=0
-# SUBAREAS=("null")
+COVER_MODE=0
+SUBAREAS=("null")
 # p_values_pmp=(26)
+p_values_pmp=(26 30 34 38 42 46 48 50 51 54 58 60 62 66 72 78)
 
 # COVERAGES
-COVER_MODE=1
-SUBAREAS=("arrond" "epci")
+# COVER_MODE=1
+# SUBAREAS=("arrond" "epci")
 
 ##### Values of p
-p_values_mat_arrond=(26 30 34 38 42 46 50 54)
-p_values_mat_epci=(51 54 58 62)
-p_values_urgenc_arrond=(42 48 54 60 66 72 78)
-p_values_urgenc_epci=(54 60 66 72 78)
+# p_values_mat_arrond=(26 30 34 38 42 46 50 54)
+# p_values_mat_epci=(51 54 58 62)
+# p_values_urgenc_arrond=(42 48 54 60 66 72 78)
+# p_values_urgenc_epci=(54 60 66 72 78)
 
 
 for serv in "${SERVICES[@]}"; do
@@ -101,10 +103,10 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
-# echo "Number of instances: ${#arr[@]}"
+for element in "${arr[@]}"; do
+    echo "$element"
+done
+echo "Number of instances: ${#arr[@]}"
 
 # for element in "${arr[@]}"; do
 #     eval $element
