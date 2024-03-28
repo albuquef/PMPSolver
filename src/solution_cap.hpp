@@ -28,6 +28,7 @@ private:
                     ,unordered_map<uint_t, assignment> assignments, dist_t objective);
     bool isFeasible=false;
     bool cover_mode=false;
+    double UpperBound=0;
 public:
 
     Solution_cap() = default;
@@ -63,7 +64,8 @@ public:
     bool getFeasibility();
     bool isSolutionFeasible();  
     bool isCoverMode();
-    void setCoverMode(bool cover_mode); 
+    void setCoverMode(bool cover_mode);
+    void add_UpperBound(double UB); 
 };
 
 

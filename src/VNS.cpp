@@ -558,7 +558,6 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
         cout << "\n[INFO] Local Search (initial solution)\n";
         sol_best = tb.localSearch_std(sol_best,true,DEFAULT_MAX_ITE);
         
-        
         cout << "\n[INFO] Initial solution to VNS: \n";
         sol_best.print();
     }
@@ -571,6 +570,14 @@ Solution_std VNS::runVNS_std(bool verbose, int MAX_ITE) {
     unsigned int k = 2; // initial neighborhood
     cout << "K initial: " << k << "\n";
     cout << "Kmax: " << Kmax << "\n";
+
+    if (get_wall_time_VNS() - start_time_total >= time_limit_seconds) {
+        cout << "\n[INFO] Time limit reached. Stopping the uncapacitated VNS algorithm.\n";
+        // auto p_loc =  sol_best.get_pLocations();
+        // sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
+        return sol_best;
+    }
+
 
     int ite = 1;
     while (ite <= MAX_ITE) {
@@ -718,12 +725,12 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
 
-    // Solution_cap sol_best;
+    Solution_cap sol_best;
     // sol_best = tb.fixedCapSolution();
-    // if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
-    // else sol_best = tb.initHighestCapSolution();
+    if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
+    else sol_best = tb.initHighestCapSolution();
         
-    auto sol_best = tb.initCPLEXCapSolution(600,"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
+    // auto sol_best = tb.initCPLEXCapSolution(600,"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
     // auto sol_best = tb.initSmartRandomCapSolution();
     // exit(0);
 
@@ -753,7 +760,17 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     unsigned int k = 2; // initial neighborhood
     cout << "K initial: " << k << "\n";
     cout << "Kmax: " << Kmax << "\n";
-   
+
+
+    if (get_wall_time_VNS() - start_time_total >= time_limit_seconds) {
+        cout << "\n[INFO] Time limit reached. Stopping the uncapacitated VNS algorithm.\n";
+        // auto p_loc =  sol_best.get_pLocations();
+        // sol_best = Solution_cap(instance, p_loc,"GAPrelax",cover_mode);
+        return sol_best;
+    }
+
+
+
     int ite = 1;
     while (ite <= MAX_ITE) {
     // while (ite <= 10) {

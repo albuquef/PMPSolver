@@ -294,11 +294,11 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
         // exit(1);
     }
 
-    if(!isSolutionFeasible()){
-        cerr << "ERROR: Solution is not feasible" << endl;
-        // objective = numeric_limits<dist_t>::max();    
-       // exit(1);
-    }
+    // if(!isSolutionFeasible()){
+    //     cerr << "ERROR: Solution is not feasible" << endl;
+    //     // objective = numeric_limits<dist_t>::max();    
+    //    // exit(1);
+    // }
 
 
 
@@ -461,6 +461,7 @@ void Solution_cap::GAP_eval(){
 
     if (strcmp(typeEval, "GAP") == 0){
         PMP pmp(instance, "GAP", true);
+        if (UpperBound > 0) pmp.setUpperBound(UpperBound);
         // pmp.setCoverMode(cover_mode);
         pmp.run_GAP(p_locations);
         // auto sol_gap = pmp.getSolution_cap();
@@ -479,6 +480,7 @@ void Solution_cap::GAP_eval(){
     if (strcmp(typeEval, "GAPrelax") == 0){
         PMP pmp(instance, "GAP", false);
         // pmp.setCoverMode(cover_mode);
+        if (UpperBound > 0) pmp.setUpperBound(UpperBound);
         pmp.run_GAP(p_locations);
         // auto sol_gap = pmp.getSolution_cap();
         if (pmp.getFeasibility_Solver()){
@@ -526,12 +528,13 @@ int getIndex(vector<uint_t> vec, uint_t val){
 bool Solution_cap::isSolutionFeasible(){
     
     isFeasible = true;
+    bool verb = false;
 
     uint_t total_capacity = 0;
     uint_t total_demand = instance->getTotalDemand();
     for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
     if (total_capacity < total_demand) {
-        fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
+        if (verb) fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
         isFeasible = false;
         // exit(1);
         return isFeasible;
@@ -546,33 +549,33 @@ bool Solution_cap::isSolutionFeasible(){
             satisfaction += a.usage;
             vector_capacities[getIndex(locations, a.node)] += a.usage;
             if (a.usage > instance->getLocCapacity(a.node)+0.01){
-                cout << "ERROR: usage > capacity" << endl;
-                cout << "usage: " << a.usage << "\n capacity: " << instance->getLocCapacity(a.node) << endl;
+                if (verb) cout << "ERROR: usage > capacity" << endl;
+                if (verb) cout << "usage: " << a.usage << "\n capacity: " << instance->getLocCapacity(a.node) << endl;
                 isFeasible = false;
-                // return isFeasible;
-                exit(1);
+                return isFeasible;
+                // exit(1);
             }
             if (a.usage > instance->getCustWeight(cust) + 0.01){
-                cout << "ERROR: satisfaction > weight" << endl;
-                cout << "satisfaction: " << a.usage << "\n weight: " << instance->getCustWeight(cust) << endl;
+                if (verb) cout << "ERROR: satisfaction > weight" << endl;
+                if (verb) cout << "satisfaction: " << a.usage << "\n weight: " << instance->getCustWeight(cust) << endl;
                 isFeasible = false;
-                // return isFeasible;
-                exit(1);
+                return isFeasible;
+                // exit(1);
             }
         }
         if (satisfaction + 0.1 < instance->getCustWeight(cust)){
-            cout << "ERROR: Cust= " <<  cust << " not satisfied" << endl;
-            cout << "satisfaction: " << satisfaction << "\n weight: " << instance->getCustWeight(cust) << endl;
+            if (verb) cout << "ERROR: Cust= " <<  cust << " not satisfied" << endl;
+            if (verb) cout << "satisfaction: " << satisfaction << "\n weight: " << instance->getCustWeight(cust) << endl;
             isFeasible = false;
-            // return isFeasible;
-            exit(1);
+            return isFeasible;
+            // exit(1);
         }
     }
 
 
     for (auto loc:instance->getLocations()) {
         if (vector_capacities[getIndex(locations,loc)] > instance->getLocCapacity(loc)){
-            cout << "ERROR: usage > capacity" << endl;
+            if (verb) cout << "ERROR: usage > capacity" << endl;
             isFeasible = false;
             return isFeasible;
             // exit(1);
@@ -590,8 +593,8 @@ bool Solution_cap::isSolutionFeasible(){
                 }
             }
             if (!covered){
-                cout << "ERROR: subarea not covered" << endl;
-                cout << "subarea: " << subarea << endl;
+                if (verb) cout << "ERROR: subarea not covered" << endl;
+                if (verb) cout << "subarea: " << subarea << endl;
                 isFeasible = false;
                 return isFeasible;
             }
@@ -609,3 +612,7 @@ bool Solution_cap::isCoverMode(){
 void Solution_cap::setCoverMode(bool cover_mode){
     this->cover_mode = cover_mode;
 }
+
+void Solution_cap::add_UpperBound(double UB){
+    this->UpperBound = UB;
+}   

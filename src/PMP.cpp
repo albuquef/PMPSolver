@@ -187,7 +187,7 @@ void PMP::run_GAP(unordered_set<uint_t> p_locations){
                 else {printSolution(cplex,x_cont,y);}
             }
         }else
-            cout << "Solution status = " << cplex.getStatus()   << endl;
+            if (verb) cout << "Solution status = " << cplex.getStatus()   << endl;
         // cplex.end();
         // env.end();
     } catch (IloException& e) {
@@ -279,6 +279,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if(strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0){constr_maxCapacity(model,x,y);}
     if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){constr_UBpmp(model,x,y);}
     if(CoverModel) {constr_Cover(model,y);}
+    if (UpperBound != 0) {constr_UpperBound(model,x);}
 }
 
 
@@ -429,6 +430,27 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
 
 }
 
+template <typename VarType>
+void PMP::constr_UpperBound (IloModel model, VarType x){
+    
+    if (VERBOSE){cout << "[INFO] Adding Upper Bound Constraint "<< endl;}
+
+    IloEnv env = model.getEnv();
+    IloExpr objExpr(env);
+    for(IloInt i = 0; i < num_customers; i++)
+        for(IloInt j = 0; j < num_facilities; j++){
+            // if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){objExpr += instance->getRealDist(j+1,i+1) * x[i][j];}
+            // else{objExpr += instance->getWeightedDist(j+1,i+1) * x[i][j];}
+            auto loc = instance->getLocations()[j];
+            auto cust = instance->getCustomers()[i];
+            objExpr += instance->getWeightedDist(loc,cust) * x[i][j];
+        }
+    model.add(objExpr <= UpperBound);
+    objExpr.end();
+
+
+}
+
 
 // void PMP::printSolution(IloCplex& cplex, BoolVarMatrix x, IloBoolVarArray y){
 template <typename VarType>  
@@ -473,7 +495,7 @@ void PMP::solveILP(){
     cpu0 = get_wall_time(); 
     if (!cplex.solve()){
         isFeasible_Solver = false;
-        env.error() << "Failed to optimize LP." << endl;
+        // env.error() << "Failed to optimize LP." << endl;
         // cout << "Solution status = " << cplex.getStatus()   << endl;
         // throw(-1);
     }
@@ -800,4 +822,6 @@ void PMP::setSolution_cap(Solution_cap sol){
 
 }
 
-
+void PMP::setUpperBound(double UB){
+    this->UpperBound = UB;
+}

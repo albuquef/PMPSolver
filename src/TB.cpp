@@ -484,9 +484,15 @@ int TB::isSolutionExistsinMap(Solution_cap sol, uint_t in_p, uint_t out_p) {
 bool  TB::test_LB_PMP(Solution_cap sol, uint_t in_p, uint_t out_p) {
     // test if the new solution is feasible
     if (sol.getTotalCapacity() - instance->getLocCapacity(in_p) + instance->getLocCapacity(out_p) < instance->getTotalDemand()) return false;
-    Solution_cap sol_tmp = sol;
-    sol_tmp.replaceLocation(in_p, out_p, "PMP");
-    if (sol.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB1
+    
+    // Solution_cap sol_tmp = sol;
+    // sol_tmp.replaceLocation(in_p, out_p, "PMP");
+    // if (sol.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB1
+    //     return true;
+    // }
+    
+    Solution_std sol_std = Solution_std(instance, sol.get_pLocations());
+    if (sol.get_objective() - sol_std.get_objective() > TOLERANCE_OBJ) { // LB1
         return true;
     }
  
@@ -549,6 +555,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                     }else if (test_LB_PMP(sol_tmp,p_loc,loc)) { // LB1
                         
                         // #pragma omp critical{
+                        sol_tmp.add_UpperBound(sol_best.get_objective());
                         sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
                         // }
                         if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);

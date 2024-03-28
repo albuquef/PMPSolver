@@ -5,57 +5,60 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
-#SBATCH --array=0-23%3
+# #SBATCH --array=0-23%3
+#SBATCH --array=0-16%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
 # conda activate myenv
 
-##### Executable
+# Executable
 CMD=./build/large_PMP
-##### Data
+# Data
 DIR_DATA=./data/filterData_PACA_may23/
 DIST_TYPE=minutes
 D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}.txt"
 WEIGHTS="${DIR_DATA}cust_weights.txt"
-##### Time
+# Time
 TIME_CPLEX=3600
 TIME_CLOCK=3600
-# Number of threads default=4 (config.toml)
-NUM_THREADS=4  # Not used
+# Number of threads (not used as parameter in the code)
+NUM_THREADS=4
 
 ##### Methods
-# METHOD="TB_CPMP"
-# METHOD="VNS_CPMP"
+# METHOD="TB_PMP"
+METHOD="VNS_CPMP"
 # METHOD="EXACT_CPMP"
-METHOD="RSSV"
+# METHOD="RSSV"
 
 METHOD_RSSV_FINAL="VNS_CPMP"
 # METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
-##### SERVICES
+# SERVICES
 # SERVICES=("mat" "urgenc")
 SERVICES=("mat")
 
-##### NOT COVERAGES
-# COVER_MODE=0
-# SUBAREAS=("null")
-# p_values_pmp=(26)
+# NOT COVERAGES
+COVER_MODE=0
+SUBAREAS=("null")
 
-##### COVERAGES
-COVER_MODE=1
-SUBAREAS=("arrond" "epci")
-p_values_mat_arrond=(26)
-# p_values_mat_epci=()
-# p_values_urgenc_arrond=()
-# p_values_urgenc_epci=()
+p_values_mat=(26)
+# p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
+# p_values_urgenc=(42 48 54 60 66 72 78)
 
-##### Test values of p
+# COVERAGES
+# COVER_MODE=1
+# SUBAREAS=("arrond" "epci")
+
+##### Values of p
+# p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
+# p_values_urgenc=(42 48 54 60 66 72 78)
 # p_values_mat_arrond=(26 30 34 38 42 46 50 54)
 # p_values_mat_epci=(51 54 58 62)
 # p_values_urgenc_arrond=(42 48 54 60 66 72 78)
 # p_values_urgenc_epci=(54 60 66 72 78)
+
 
 for serv in "${SERVICES[@]}"; do
   for subar in "${SUBAREAS[@]}"; do
@@ -64,8 +67,10 @@ for serv in "${SERVICES[@]}"; do
     OUTPUT="./solutions/test_paca_${serv}_${subar}"
 
 
-    if [ "$subar" = "null" ]; then
-      p_values=("${p_values_pmp[@]}")
+    if [ "$serv" = "mat" ] && [ "$subar" = "null" ]; then
+      p_values=("${p_values_mat[@]}")
+    elif [ "$serv" = "urgenc" ] && [ "$subar" = "null" ]; then
+      p_values=("${p_values_urgenc[@]}")
     fi
 
     if [ "$serv" = "mat" ] && [ "$subar" = "arrond" ]; then
@@ -104,13 +109,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
-echo "Number of instances: ${#arr[@]}"
-
 # for element in "${arr[@]}"; do
-#     eval $element
+#     echo "$element"
 # done
+# echo "Number of instances: ${#arr[@]}"
+
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

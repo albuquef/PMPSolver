@@ -65,6 +65,7 @@ class PMP
         bool CoverModel=false;
         string typeSubarea;
         void setCoverModel(bool CoverModel, string typeSubarea);
+        void setUpperBound(double UpperBound);
 
 
     private:
@@ -78,6 +79,7 @@ class PMP
         NumVarMatrix x_cont;
         bool isFeasible_Solver=false;
         bool generate_reports=false;
+        double UpperBound=0;
         // IloNumVarArray y_cont;
         uint_t p;
         uint_t num_facilities;
@@ -116,6 +118,12 @@ class PMP
         void constr_GAP (IloModel model, IloBoolVarArray y);
 
         void constr_Cover (IloModel model, IloBoolVarArray y);
+
+
+        template <typename VarType>
+        void constr_UpperBound (IloModel model, VarType x);
+
+        
 
 };
 

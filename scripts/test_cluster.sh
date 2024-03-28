@@ -36,14 +36,15 @@ METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
 # SERVICES
-# SERVICES=("mat" "urgenc")
-SERVICES=("mat")
+SERVICES=("mat" "urgenc")
+# SERVICES=("mat")
 
 # NOT COVERAGES
 COVER_MODE=0
 SUBAREAS=("null")
-# p_values_pmp=(26)
-p_values_pmp=(26 30 34 38 42 46 48 50 51 54 58 60 62 66 72 78)
+# p_values_mat=(26)
+p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
+p_values_urgenc=(42 48 54 60 66 72 78)
 
 # COVERAGES
 # COVER_MODE=1
@@ -63,8 +64,10 @@ for serv in "${SERVICES[@]}"; do
     OUTPUT="./solutions/test_paca_${serv}_${subar}"
 
 
-    if [ "$subar" = "null" ]; then
-      p_values=("${p_values_pmp[@]}")
+    if [ "$serv" = "mat" ] && [ "$subar" = "null" ]; then
+      p_values=("${p_values_mat[@]}")
+    elif [ "$serv" = "urgenc" ] && [ "$subar" = "null" ]; then
+      p_values=("${p_values_urgenc[@]}")
     fi
 
     if [ "$serv" = "mat" ] && [ "$subar" = "arrond" ]; then
