@@ -492,10 +492,22 @@ bool  TB::test_LB_PMP(Solution_cap sol, uint_t in_p, uint_t out_p) {
     // }
     
     Solution_std sol_std = Solution_std(instance, sol.get_pLocations());
-    if (sol.get_objective() - sol_std.get_objective() > TOLERANCE_OBJ) { // LB1
-        return true;
+    if (sol_std.get_objective() >= sol.get_objective() ) { // LB1
+        return false;
     }
  
+    return true;
+}
+
+bool TB::test_UB_heur(Solution_cap sol, uint_t in_p, uint_t out_p) {
+    // test if the new solution is feasible
+    if (sol.getTotalCapacity() - instance->getLocCapacity(in_p) + instance->getLocCapacity(out_p) < instance->getTotalDemand()) return false;
+ 
+    Solution_cap sol_tmp = sol;
+    sol_tmp.replaceLocation(in_p, out_p, "heuristic");
+    if (sol_tmp.get_objective()  <= sol_tmp.get_objective()) { // LB1
+        return true;
+    }
     return false;
 }
 
@@ -505,6 +517,8 @@ bool TB::test_Cover(uint_t in_p, uint_t out_p) {
     if (instance->isInTheSameSubarea(in_p, out_p)) return true;    
     return false;
 }
+
+
 
 Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
 
@@ -554,31 +568,34 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                         }
                     }else if (test_LB_PMP(sol_tmp,p_loc,loc)) { // LB1
                         
-                        // #pragma omp critical{
-                        sol_tmp.add_UpperBound(sol_best.get_objective());
-                        sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
-                        // }
-                        if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
-                        // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
+                        if (test_UB_heur(sol_tmp, p_loc, loc)) { // UB1
+                            // #pragma omp critical{
+                            sol_tmp.add_UpperBound(sol_best.get_objective());
+                            sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
+                            // }
+                            if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
+                            // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
-                        auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
-                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB2
-                
-                            if (verbose) {
-                                cout << "Improved solution (TB): \n";
-                                cout << "Interation: " << ite << "\n";
-                                printSolution_TB(sol_tmp, (get_wall_time_TB() - start_time) + external_time);
-                                cout << endl;
+                            auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
+                            if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB2
+                    
+                                if (verbose) {
+                                    cout << "Improved solution (TB): \n";
+                                    cout << "Interation: " << ite << "\n";
+                                    printSolution_TB(sol_tmp, (get_wall_time_TB() - start_time) + external_time);
+                                    cout << endl;
+                                }
+                                sol_cand = sol_tmp;
+                                improved = true;
+
+                                if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
+    
+                            
                             }
-                            sol_cand = sol_tmp;
-                            improved = true;
 
-                            if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
- 
-                        
+                            if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
                         }
 
-                        if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
                     }
                 }else if(!test_Capacity(sol_cand, p_loc, loc)){
                     // cout << "capacity constraint violated: yes\n";
