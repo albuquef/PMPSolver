@@ -715,7 +715,9 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     
     // limit of time and iterations
     // auto time_limit_seconds = 3600;
+    if (external_time > CLOCK_LIMIT) {cout << "Time limit reached. Stopping the capacitated VNS algorithm.\n"; return Solution_cap(); }
     auto time_limit_seconds = CLOCK_LIMIT - external_time;
+    cout << "External time: " << external_time << " seconds\n";
     cout << "Time Limit: " << time_limit_seconds << " seconds\n";
     if (cover_mode) cout << "Cover Mode: ON " << "\n";
 
@@ -727,16 +729,21 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     Solution_cap sol_best;
     // sol_best = tb.fixedCapSolution();
-    if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
-    else sol_best = tb.initHighestCapSolution();
-        
-    // auto sol_best = tb.initCPLEXCapSolution(600,"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
-    // auto sol_best = tb.initSmartRandomCapSolution();
-    // exit(0);
+    // if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
+    // else sol_best = tb.initHighestCapSolution();
+    
+    if (time_limit_seconds <= 0) {cout<<"Not enough time for VNS"<< endl; return sol_best;}
 
+    auto sol_best = tb.initCPLEXCapSolution(min(600,time_limit_seconds),"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
+    
     cout << "\n[INFO] Initial solution: \n";
     sol_best.print();
     
+    if (get_wall_time_VNS() - start_time_total >= time_limit_seconds) { 
+        cout << "\n[INFO] Time limit reached. Stopping the uncapacitated VNS algorithm.\n";
+        return sol_best;
+    }
+
     if (generate_reports) 
         writeReport(report_filename, sol_best.get_objective(), 0, tb.solutions_map.getNumSolutions(), get_wall_time_VNS() - start_time_total);  
     
@@ -822,11 +829,6 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
                 cout << "Num ite capacited VNS: " << ite << "\n";
                 cout << "capacitated VNS loop elapsed time: " << elapsed_time << " seconds\n";
                 cout << "elapsed time total: " << elapsed_time_total << " seconds\n";
-                if (sol_best.isSolutionFeasible()){
-                    cout << "Improved solution feasible \n";
-                }else{
-                    cout << "Improved solution not feasible\n";
-                }
                 cout << endl;
             }
 

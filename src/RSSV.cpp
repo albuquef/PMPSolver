@@ -147,6 +147,8 @@ void RSSV::solveSubproblem(int seed) {
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
     // subInstance.setCoverModel(instance->isCoverMode(),instance->getTypeSubarea());
     // subInstance.print();
+    // double time_limit_subproblem = 0; // off time limit
+    double time_limit_subproblem = 300; // 5 minutes
 
     Solution_std sol;
     if(checkClock()){
@@ -159,6 +161,7 @@ void RSSV::solveSubproblem(int seed) {
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
             // heuristic.setTimeLimit(60);
+            if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
             sol = heuristic.run(false, UB_MAX_ITER);
         }else if(method_RSSV_sp == "VNS_PMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);
@@ -192,6 +195,10 @@ void RSSV::solveSubproblem_CAP(int seed) {
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
     // checkClock();
+    // double time_limit_subproblem = 0; // off time limit
+    double time_limit_subproblem = 300; // 5 minutes
+
+
     Solution_cap sol;
     if(checkClock()){
         if(method_RSSV_sp == "EXACT_CPMP"){
@@ -207,6 +214,7 @@ void RSSV::solveSubproblem_CAP(int seed) {
         }else if(method_RSSV_sp == "TB_CPMP"){
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
+            if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
             sol = heuristic.run_cap(true, UB_MAX_ITER);
         }else if(method_RSSV_sp == "VNS_CPMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);

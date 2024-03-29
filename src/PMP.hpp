@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <string.h>
 #include <utility>
+#include <cmath>
 
 #include "instance.hpp"
 #include "globals.hpp"
@@ -66,6 +67,7 @@ class PMP
         string typeSubarea;
         void setCoverModel(bool CoverModel, string typeSubarea);
         void setUpperBound(double UpperBound);
+        void setTimeLimit(double timeLimit);
 
 
     private:
@@ -85,6 +87,7 @@ class PMP
         uint_t num_facilities;
         uint_t num_customers;
         uint_t num_subareas;
+        double timeLimit = CLOCK_LIMIT_CPLEX;
 
         void initVars();
         void initILP        (void);

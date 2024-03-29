@@ -1,5 +1,7 @@
 #include "PMP.hpp"
 
+
+
 double get_wall_time(){
     struct timeval time;
     if(gettimeofday(&time,nullptr)){
@@ -102,7 +104,8 @@ void PMP::run(){
 
 
         // if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT_CPLEX);
-        if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::Param::TimeLimit, CLOCK_LIMIT_CPLEX);
+        // if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::Param::TimeLimit, CLOCK_LIMIT_CPLEX);
+        if (timeLimit != 0) cplex.setParam(IloCplex::Param::TimeLimit, timeLimit);
 
         // cplex.setParam(IloCplex::TiLim, 60);
         // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
@@ -824,4 +827,9 @@ void PMP::setSolution_cap(Solution_cap sol){
 
 void PMP::setUpperBound(double UB){
     this->UpperBound = UB;
+}
+
+void PMP::setTimeLimit(double CLOCK_LIMIT){
+    // this->timeLimit =  static_cast<int>(ceil(CLOCK_LIMIT));
+    this->timeLimit =  CLOCK_LIMIT;
 }

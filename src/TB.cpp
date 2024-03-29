@@ -505,7 +505,7 @@ bool TB::test_UB_heur(Solution_cap sol, uint_t in_p, uint_t out_p) {
  
     Solution_cap sol_tmp = sol;
     sol_tmp.replaceLocation(in_p, out_p, "heuristic");
-    if (sol_tmp.get_objective()  <= sol_tmp.get_objective()) { // LB1
+    if (sol_tmp.get_objective() <= sol_tmp.get_objective()) { // UB1
         return true;
     }
     return false;
@@ -569,11 +569,9 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                     }else if (test_LB_PMP(sol_tmp,p_loc,loc)) { // LB1
                         
                         if (test_UB_heur(sol_tmp, p_loc, loc)) { // UB1
-                            // #pragma omp critical{
+                            
                             sol_tmp.add_UpperBound(sol_best.get_objective());
-                            sol_tmp.replaceLocation(p_loc, loc, "GAPrelax");
-                            // }
-                            if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
+                            sol_tmp.replaceLocation(p_loc, loc, "GAPrelax"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
                             // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
                             auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
@@ -590,6 +588,9 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
                                 if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
     
+                                if (sol_cand.get_objective() < sol_best.get_objective()) {
+                                    sol_best = sol_cand;
+                                }
                             
                             }
 

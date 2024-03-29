@@ -40,16 +40,17 @@ metsp="TB_PMP" # Subproblem method
 SERVICES=("mat")
 
 # NOT COVERAGES
-COVER_MODE=0
-SUBAREAS=("null")
+# COVER_MODE=0
+# SUBAREAS=("null")
+# p_values_mat=(26)
+# p_values_urgenc=(26)
 
-p_values_mat=(26)
-# p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
-# p_values_urgenc=(42 48 54 60 66 72 78)
 
 # COVERAGES
-# COVER_MODE=1
-# SUBAREAS=("arrond" "epci")
+COVER_MODE=1
+SUBAREAS=("arrond" "epci")
+p_values_mat_arrond=(26)
+
 
 ##### Values of p
 # p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
@@ -109,13 +110,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
-# echo "Number of instances: ${#arr[@]}"
-
 for element in "${arr[@]}"; do
-    eval $element
+    echo "$element"
 done
+echo "Number of instances: ${#arr[@]}"
+
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

@@ -431,7 +431,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "-------------------------------------------------\n";
         VNS heuristic(instance, seed);
         heuristic.setCoverMode(cover_mode);
-        heuristic.setExternalTime(external_time-external_time); // external time is not used in PMP
+        heuristic.setExternalTime(external_time); // external time is not used in PMP
         solution = heuristic.runVNS_std(true,UB_MAX_ITER);
     }else{
         cout << "[ERROR] Method not found" << endl;
@@ -451,6 +451,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         pmp.setGenerateReports(true);
         pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
         // cout << "cover model: " << pmp.CoverModel << "\n";
+        pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -461,6 +462,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         PMP pmp(instance, "CPMP", true);
         pmp.setGenerateReports(true);
         pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
+        pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
         pmp.run();
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -483,7 +485,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
         heuristic.setCoverMode(cover_mode);
-        heuristic.setExternalTime(external_time-external_time); // external time is not used in VNS
+        heuristic.setExternalTime(external_time); 
         solution = heuristic.runVNS_cap(typeMethod,true,UB_MAX_ITER);
     
         if (solution.isSolutionFeasible()){
