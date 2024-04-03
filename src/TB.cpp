@@ -330,7 +330,7 @@ Solution_cap TB::initCPLEXCapSolution(double time_limit, const char* typeProb) {
     PMP pmp(instance, typeProb);
     pmp.setGenerateReports(true);
     pmp.setCoverModel(cover_mode, instance->getTypeSubarea());
-    pmp.run();
+    pmp.run("TB_initial");
     // pmp.saveVars("cplex_inirmtial_sol_vars", "CPLEX");
     auto sol = pmp.getSolution_cap();
     // sol.saveAssignment("cplex_initial_sol", "CPLEX");

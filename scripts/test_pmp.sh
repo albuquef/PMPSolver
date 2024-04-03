@@ -28,8 +28,8 @@ NUM_THREADS=4
 ##### Methods
 # METHOD="TB_PMP"
 # METHOD="VNS_CPMP"
-# METHOD="EXACT_CPMP"
-METHOD="RSSV"
+METHOD="EXACT_CPMP"
+# METHOD="RSSV"
 
 # METHOD_RSSV_FINAL="VNS_CPMP"
 METHOD_RSSV_FINAL="EXACT_CPMP"
@@ -72,8 +72,10 @@ for serv in "${SERVICES[@]}"; do
   for subar in "${SUBAREAS[@]}"; do
     CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}.txt"
     COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
-    OUTPUT="./solutions/test_paca_${serv}_${subar}"
-
+    
+    if [ "$subar" = "null" ]; then
+      COVERAGES="${DIR_DATA}loc_coverages.txt"
+    fi
 
     if [ "$serv" = "mat" ] && [ "$subar" = "null" ]; then
       p_values=("${p_values_mat[@]}")
@@ -121,13 +123,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
-echo "Number of instances: ${#arr[@]}"
-
 # for element in "${arr[@]}"; do
-#     eval $element
+#     echo "$element"
 # done
+# echo "Number of instances: ${#arr[@]}"
+
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

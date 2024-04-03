@@ -72,6 +72,10 @@ for serv in "${SERVICES[@]}"; do
     COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
     OUTPUT="./solutions/test_paca_${serv}_${subar}"
 
+    if [ "$subar" = "null" ]; then
+      COVERAGES="${DIR_DATA}loc_coverages.txt"
+    fi
+
 
     if [ "$serv" = "mat" ] && [ "$subar" = "null" ]; then
       p_values=("${p_values_mat[@]}")

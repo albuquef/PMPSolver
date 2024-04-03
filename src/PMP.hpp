@@ -42,7 +42,7 @@ class PMP
         ~PMP();
         void exportILP      (IloCplex& cplex);
         void solveILP       (void);
-        void run           (void);
+        void run           (string Method_name="void");
         void run_GAP       (unordered_set<uint_t> p_locations);
         template <typename VarType>  
         void printSolution  (IloCplex& cplex,
@@ -64,7 +64,7 @@ class PMP
         void setGenerateReports(bool generate_reports);
         // void setVerbose(bool VERBOSE);
         bool CoverModel=false;
-        string typeSubarea;
+        string typeSubarea="null";
         void setCoverModel(bool CoverModel, string typeSubarea);
         void setUpperBound(double UpperBound);
         void setTimeLimit(double timeLimit);

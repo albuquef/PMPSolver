@@ -415,7 +415,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "PMP");
         pmp.setCoverModel(cover_mode, instance->getTypeSubarea());
-        pmp.run();
+        pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
         solution = pmp.getSolution_std();
@@ -452,7 +452,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
         // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
-        pmp.run();
+        pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
         solution = pmp.getSolution_cap();
@@ -463,7 +463,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         pmp.setGenerateReports(true);
         pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
-        pmp.run();
+        pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
         solution = pmp.getSolution_cap();

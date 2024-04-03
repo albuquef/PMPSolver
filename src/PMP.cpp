@@ -91,6 +91,8 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
         else cout << "Capacity Model: false" << endl;
         if (is_BinModel == true) cout << "Binary Model: true" << endl;
         else cout << "Binary Model: false" << endl;
+        if (CoverModel) cout << "Cover Model: true" << endl;
+        else cout << "Cover Model: false" << endl;
     }
 }
 PMP::~PMP()
@@ -98,7 +100,7 @@ PMP::~PMP()
     env.end();
 }
 
-void PMP::run(){
+void PMP::run(string Method_name){
     try{
         initILP();
 
@@ -121,11 +123,12 @@ void PMP::run(){
         string gap_outputFilename_part1;
         if (!is_BinModel){
             gap_outputFilename_part1 = "gap_Cont_service_" + instance->getTypeService() +
-                "_p_" + to_string(p); 
+                "_p_" + to_string(p) + "_" + Method_name; 
                 // ".csv";
         }else{
+            
             gap_outputFilename_part1 = "gap_Bin_service_" + instance->getTypeService() +
-                "_p_" + to_string(p); 
+                "_p_" + to_string(p) + "_" + Method_name; 
                 // ".csv";
         }
         string gap_outputFilename_part2;
