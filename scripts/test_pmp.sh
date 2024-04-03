@@ -5,8 +5,8 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
-# #SBATCH --array=0-23%3
-#SBATCH --array=0-16%5
+# #SBATCH --array=0-17%5
+#SBATCH --array=0-20%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -31,26 +31,33 @@ NUM_THREADS=4
 # METHOD="EXACT_CPMP"
 METHOD="RSSV"
 
-METHOD_RSSV_FINAL="VNS_CPMP"
-# METHOD_RSSV_FINAL="EXACT_CPMP"
+# METHOD_RSSV_FINAL="VNS_CPMP"
+METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
 # SERVICES
+# SERVICES=("mat" "urgenc" "lycee" "poste")
+# SERVICES=("mat" "lycee" "poste")
 # SERVICES=("mat" "urgenc")
 SERVICES=("mat")
 
 # NOT COVERAGES
 # COVER_MODE=0
 # SUBAREAS=("null")
+
 # p_values_mat=(26)
-# p_values_urgenc=(26)
+# p_values_mat=(33 37 41 44 48 51 54)
+# p_values_urgenc=()
+# # p_values_urgenc=(42 48 54 60 66 72 78)
+# p_values_lycee=(246 281 316 352 387 422 457)
+# p_values_poste=(476 544 612 681 749 817 885)
 
 
 # COVERAGES
 COVER_MODE=1
-SUBAREAS=("arrond" "epci")
+# SUBAREAS=("arrond" "epci")
+SUBAREAS=("arrond")
 p_values_mat_arrond=(26)
-
 
 ##### Values of p
 # p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
@@ -72,6 +79,10 @@ for serv in "${SERVICES[@]}"; do
       p_values=("${p_values_mat[@]}")
     elif [ "$serv" = "urgenc" ] && [ "$subar" = "null" ]; then
       p_values=("${p_values_urgenc[@]}")
+    elif [ "$serv" = "lycee" ] && [ "$subar" = "null" ]; then
+      p_values=("${p_values_lycee[@]}")
+    elif [ "$serv" = "poste" ] && [ "$subar" = "null" ]; then
+      p_values=("${p_values_poste[@]}")
     fi
 
     if [ "$serv" = "mat" ] && [ "$subar" = "arrond" ]; then

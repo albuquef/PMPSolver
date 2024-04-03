@@ -5,6 +5,7 @@
 #include <utility>
 #include <string>
 #include <sys/time.h>
+#include <algorithm>
 
 #include "instance.hpp"
 #include "solution_std.hpp"

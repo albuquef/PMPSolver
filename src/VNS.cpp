@@ -734,7 +734,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     
     if (time_limit_seconds <= 0) {cout<<"Not enough time for VNS"<< endl; return sol_best;}
 
-    auto sol_best = tb.initCPLEXCapSolution(min(600,time_limit_seconds),"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
+    sol_best = tb.initCPLEXCapSolution(min(static_cast<double>(600),time_limit_seconds),"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
     
     cout << "\n[INFO] Initial solution: \n";
     sol_best.print();
