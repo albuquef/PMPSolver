@@ -85,6 +85,11 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
     this->method_RSSV_sp = method_sp;
     cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
 
+    if (instance->get_p < min(n,N)){
+        cout << "The number of facilities is less than the number of locations to be selected" << endl;
+        exit(1);
+    } 
+
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
     cout << "thread cnt:  " << thread_cnt << endl;
     cout << "\n\n";
