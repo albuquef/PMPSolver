@@ -411,28 +411,53 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
 
     num_subareas = instance->getSubareasSet().size();   
 
-    for (IloInt s = 0; s <= num_subareas; s++){
-        IloExpr expr(env);
-        // auto subarea = instance->getSubareasSet()[s];
-        auto subarea = instance->getLocationsSubarea(s);
-        bool y_exist = false;
-        for(IloInt j = 0; j < num_facilities; j++){
-            auto loc = instance->getLocations()[j];
-            if (find(subarea.begin(), subarea.end(), loc) != subarea.end()){
-                expr += y[j];
-                y_exist = true;
+    if (p >= num_subareas){
+
+        for (IloInt s = 0; s <= num_subareas; s++){
+            IloExpr expr(env);
+            // auto subarea = instance->getSubareasSet()[s];
+            auto subarea = instance->getLocationsSubarea(s);
+            bool y_exist = false;
+            for(IloInt j = 0; j < num_facilities; j++){
+                auto loc = instance->getLocations()[j];
+                if (find(subarea.begin(), subarea.end(), loc) != subarea.end()){
+                    expr += y[j];
+                    y_exist = true;
+                }
             }
+            if(!subarea.empty() && y_exist)
+                model.add(expr >= 1);
+            // if(!subarea.empty() && y_exist){
+            //     model.add(expr >= 1);
+            //     cout << "subarea: " << s << " size: " << subarea.size() << endl;
+            // }
+            expr.end();
         }
-        if(!subarea.empty() && y_exist)
-            model.add(expr >= 1);
 
-        if(!subarea.empty() && y_exist){
-            model.add(expr >= 1);
-            cout << "subarea: " << s << " size: " << subarea.size() << endl;
+    }else{
+
+        for (IloInt s = 0; s < num_subareas; s++){
+            IloExpr expr(env);
+            // auto subarea = instance->getSubareasSet()[s];
+            auto subarea = instance->getLocationsSubarea(s);
+            bool y_exist = false;
+            for(IloInt j = 0; j < num_facilities; j++){
+                auto loc = instance->getLocations()[j];
+                if (find(subarea.begin(), subarea.end(), loc) != subarea.end()){
+                    expr += y[j];
+                    y_exist = true;
+                }
+            }
+            if(!subarea.empty() && y_exist)
+                model.add(expr <= 1);
+            expr.end();
         }
 
-        expr.end();
+
     }
+
+
+
 
 }
 
