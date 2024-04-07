@@ -23,7 +23,7 @@ WEIGHTS="${DIR_DATA}cust_weights.txt"
 TIME_CPLEX=3600
 TIME_CLOCK=3600
 # Number of threads (not used as parameter in the code)
-NUM_THREADS=4
+NUM_THREADS=8
 
 ##### Methods
 # METHOD="TB_PMP"
@@ -42,10 +42,10 @@ metsp="TB_PMP" # Subproblem method
 SERVICES=("mat")
 
 # NOT COVERAGES
-# COVER_MODE=0
-# SUBAREAS=("null")
+COVER_MODE=0
+SUBAREAS=("null")
 
-# p_values_mat=(26)
+p_values_mat=(48)
 # p_values_mat=(33 37 41 44 48 51 54)
 # p_values_urgenc=()
 # # p_values_urgenc=(42 48 54 60 66 72 78)
@@ -54,10 +54,10 @@ SERVICES=("mat")
 
 
 # COVERAGES
-COVER_MODE=1
+# COVER_MODE=1
 # SUBAREAS=("arrond" "epci")
-SUBAREAS=("arrond")
-p_values_mat_arrond=(26)
+# SUBAREAS=("arrond")
+# p_values_mat_arrond=(48)
 
 ##### Values of p
 # p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
@@ -72,9 +72,11 @@ for serv in "${SERVICES[@]}"; do
   for subar in "${SUBAREAS[@]}"; do
     CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}.txt"
     COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
+    OUTPUT="./solutions/test_paca_${serv}_${subar}"
     
     if [ "$subar" = "null" ]; then
       COVERAGES="${DIR_DATA}loc_coverages.txt"
+      OUTPUT="./solutions/test_paca_${serv}"
     fi
 
     if [ "$serv" = "mat" ] && [ "$subar" = "null" ]; then
@@ -112,7 +114,7 @@ for serv in "${SERVICES[@]}"; do
 
       arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv\
             -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE\
-            -time_cplex $TIME_CPLEX -time $TIME_CLOCK\
+            -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS\
             -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp\
             -o $OUTPUT | tee ./console/$CONSOLE_NAME")
     done
@@ -123,13 +125,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
+for element in "${arr[@]}"; do
+    echo "$element"
+done
 # echo "Number of instances: ${#arr[@]}"
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

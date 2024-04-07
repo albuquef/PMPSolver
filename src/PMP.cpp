@@ -33,7 +33,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
                 // return;
             }else{
                 // outputTable << fixed << setprecision(15) << cplex.getObjValue() << ";"; // obj value
-                outputTable << fixed << setprecision(15) << getBestObjValue() << ";"; // obj value
+                outputTable << fixed << setprecision(15) << getBestObjValue() << ";"; // bound obj value
                 outputTable << fixed << setprecision(15) << getIncumbentObjValue() << ";"; // obj value
                 outputTable << getNnodes() << ";"; // num nodes
                 outputTable << getMIPRelativeGap() <<";"; // relative gap

@@ -1,7 +1,8 @@
 # Path: scripts/send_code_to_cluster.sh
 # Compare this snippet from scripts/send_code_to_cluster.sh:
 PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp/test_exact/
-PATH_LOCAL=//home/falbuquerque/Documents/projects/Project_PMP/Cluster_tests_saved/PACA_cyrille/original_instance/CPMP/test_exats_complement/
+# PATH_LOCAL=//home/falbuquerque/Documents/projects/Project_PMP/Cluster_tests_saved/PACA_cyrille/original_instance/CPMP/test_exats_complement/
+PATH_LOCAL=/home/felipe/Documents/Projects/GeoAvigon/save_cluster/test_exact/
 
 # Save the outputs to the local machine
 eval "scp -r $PATH_CLUSTER/slurm* $PATH_LOCAL"
