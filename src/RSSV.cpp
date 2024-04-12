@@ -191,7 +191,7 @@ void RSSV::solveSubproblem(int seed) {
 
 /*
  * Solve sub-PMP of the original problem by the TB heuristic.
- * sub-PMP considers only n locations and customers.
+ * sub-PMP capacitated considers only n locations and customers.
  */
 void RSSV::solveSubproblem_CAP(int seed) {
     sem.wait(seed);
