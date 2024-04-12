@@ -70,6 +70,7 @@ public:
     unordered_set<uint_t>  getSubareasSet();
     void setCoverModel(bool cover_mode);
     bool isCoverMode();
+    bool isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand);
 
 
 };

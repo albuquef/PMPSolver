@@ -49,7 +49,7 @@ public:
     bool test_Capacity(Solution_cap sol, uint_t in_p, uint_t out_p);
     bool test_LB_PMP(Solution_cap sol, uint_t in_p, uint_t out_p);
     bool test_UB_heur(Solution_cap sol, uint_t in_p, uint_t out_p);
-    bool test_Cover(uint_t in_p, uint_t out_p);
+    bool test_Cover(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p);
     Solution_MAP solutions_map;
     void setSolutionMap(Solution_MAP sol_map);
     void setGenerateReports(bool generate_reports);

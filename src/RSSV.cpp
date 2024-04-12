@@ -143,7 +143,7 @@ void RSSV::solveSubproblem(int seed) {
 
 
     // // Use the seed for random number generation
-    // std::mt19937 gen(seed);
+    std::mt19937 gen(seed);
 
     sem.wait(seed);
     cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;

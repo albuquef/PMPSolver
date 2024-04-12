@@ -410,6 +410,27 @@ bool Instance::isCoverMode() {
     return cover_mode;
 }
 
+bool Instance::isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand){
+    bool verb = false;
+    for(auto subarea:unique_subareas){
+            auto loc_subarea = getLocationsSubarea(subarea);
+            bool covered = false;
+            for(auto loc:loc_subarea){
+                if (p_loc_cand.find(loc) != p_loc_cand.end()){
+                    covered = true;
+                }
+            }
+            if (!covered){
+                if (verb) cout << "ERROR: subarea not covered" << endl;
+                if (verb) cout << "subarea: " << subarea << endl;
+                return false;
+            }
+
+        }
+    return true;
+}
+
+
 
 uint_t Instance::getLocIndex(uint_t loc){
 

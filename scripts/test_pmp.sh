@@ -28,8 +28,8 @@ NUM_THREADS=8
 ##### Methods
 # METHOD="TB_PMP"
 # METHOD="VNS_CPMP"
-METHOD="EXACT_CPMP"
-# METHOD="RSSV"
+# METHOD="EXACT_CPMP"
+METHOD="RSSV"
 
 # METHOD_RSSV_FINAL="VNS_CPMP"
 METHOD_RSSV_FINAL="EXACT_CPMP"
@@ -42,10 +42,10 @@ metsp="TB_PMP" # Subproblem method
 SERVICES=("mat")
 
 # NOT COVERAGES
-COVER_MODE=0
-SUBAREAS=("null")
+# COVER_MODE=0
+# SUBAREAS=("null")
 
-p_values_mat=(48)
+# p_values_mat=(48)
 # p_values_mat=(33 37 41 44 48 51 54)
 # p_values_urgenc=()
 # # p_values_urgenc=(42 48 54 60 66 72 78)
@@ -54,10 +54,10 @@ p_values_mat=(48)
 
 
 # COVERAGES
-# COVER_MODE=1
+COVER_MODE=1
 # SUBAREAS=("arrond" "epci")
-# SUBAREAS=("arrond")
-# p_values_mat_arrond=(48)
+SUBAREAS=("arrond")
+p_values_mat_arrond=(26)
 
 ##### Values of p
 # p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
@@ -125,13 +125,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
+# for element in "${arr[@]}"; do
+#     echo "$element"
+# done
 # echo "Number of instances: ${#arr[@]}"
 
-# for element in "${arr[@]}"; do
-#     eval $element
-# done
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

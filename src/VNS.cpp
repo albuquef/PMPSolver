@@ -729,12 +729,16 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     Solution_cap sol_best;
     // sol_best = tb.fixedCapSolution();
-    // if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
-    // else sol_best = tb.initHighestCapSolution();
-    
+    if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
+    else sol_best = tb.initHighestCapSolution();
+
+
+    // exit(0);    
+
+
     if (time_limit_seconds <= 0) {cout<<"Not enough time for VNS"<< endl; return sol_best;}
 
-    sol_best = tb.initCPLEXCapSolution(min(static_cast<double>(600),time_limit_seconds),"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
+    // sol_best = tb.initCPLEXCapSolution(min(static_cast<double>(600),time_limit_seconds),"CPMP"); if(sol_best.isSolutionFeasible()) tb.solutions_map.addUniqueSolution(sol_best);
     
     cout << "\n[INFO] Initial solution: \n";
     sol_best.print();

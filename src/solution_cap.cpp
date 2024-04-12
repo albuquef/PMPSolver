@@ -286,21 +286,20 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
         // exit(1);
     } 
     // is in the same subarea
-    if(cover_mode && instance->getSubareaLocation(loc_old) != instance->getSubareaLocation(loc_new))
-    {
-        cerr << "ERROR: loc_old and loc_new are not in the same subarea" << endl;
-        cout << "loc_old: " << loc_old << " loc_new: " << loc_new << endl;
-        cout << "subarea_old: " << instance->getSubareaLocation(loc_old) << " subarea_new: " << instance->getSubareaLocation(loc_new) << endl;
-        // exit(1);
+    auto p_loc_cand = p_locations;
+    p_loc_cand.erase(loc_old);
+    p_loc_cand.insert(loc_new);
+    if(instance->isCoverMode()){
+        if(!instance->isPcoversAllSubareas(p_loc_cand)){
+            cerr << "ERROR: p_locations do not cover all subareas" << endl;
+            // cout << "p_locations: ";
+            // for (auto p:p_locations) {
+            //     cout << p << " ";
+            // }
+            // cout << endl;
+            // exit(1);
+        }
     }
-
-    // if(!isSolutionFeasible()){
-    //     cerr << "ERROR: Solution is not feasible" << endl;
-    //     // objective = numeric_limits<dist_t>::max();    
-    //    // exit(1);
-    // }
-
-
 
 }
 

@@ -395,7 +395,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
             // if (!p_locations.contains(loc)) {
             if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
-                    if(test_Cover(p_loc, loc)){
+                    if(test_Cover(sol_cand.get_pLocations(), p_loc, loc)){
                         sol_tmp = sol_best;
                         sol_tmp.replaceLocation(p_loc, loc);
                         
@@ -511,10 +511,15 @@ bool TB::test_UB_heur(Solution_cap sol, uint_t in_p, uint_t out_p) {
     return false;
 }
 
-bool TB::test_Cover(uint_t in_p, uint_t out_p) {
+bool TB::test_Cover(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p) {
     // test if the new solution is feasible
     if(!cover_mode) return true;
-    if (instance->isInTheSameSubarea(in_p, out_p)) return true;    
+
+    auto p_loc_cand = p_loc;
+    p_loc_cand.erase(in_p);
+    p_loc_cand.insert(out_p);
+    if (instance->isPcoversAllSubareas(p_loc_cand)) return true;
+   
     return false;
 }
 
@@ -551,7 +556,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
         for (auto loc : locations) 
             if (find(p_locations.begin(), p_locations.end(), loc) == p_locations.end())                 // loc is not in p_locations, so add it to locations_not_in_p
                 locations_not_in_p.push_back(loc);
-            
+
         auto start_time = get_wall_time_TB();
         for (auto loc:locations_not_in_p) { // First improvement over locations
             // #pragma omp parallel for{ // #pragma omp parallel num_threads(4){
@@ -559,7 +564,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
                 Solution_cap sol_tmp = sol_best;    // N1 for sol_best
                 // sol_tmp.setCoverMode(cover_mode);
-                if (test_Capacity(sol_tmp, p_loc, loc) && test_Cover(p_loc, loc)){ 
+                if (test_Capacity(sol_tmp, p_loc, loc) && test_Cover(sol_tmp.get_pLocations(),p_loc, loc)){ 
                     int index = isSolutionExistsinMap(sol_tmp, p_loc, loc);
                     if (index != -1){
                         if(solutions_map.getObjectiveByIndex(index)  < sol_cand.get_objective()){
@@ -588,13 +593,16 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
                                 if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
     
-                                if (sol_cand.get_objective() < sol_best.get_objective()) {
-                                    sol_best = sol_cand;
-                                }
-                            
                             }
 
-                            if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
+                            if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {
+                                if(sol_cand.isSolutionFeasible() && sol_cand.get_objective() < sol_best.get_objective()){
+                                    sol_best = sol_cand;    
+                                    return sol_best;
+                                }else{
+                                    return sol_best;
+                                }
+                            }
                         }
 
                     }
