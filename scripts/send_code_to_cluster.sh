@@ -1,6 +1,6 @@
 
-path="/"
-# path="/src/"
+# path="/"
+path="/src/"
 # path="/scripts/"
 
 # PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}

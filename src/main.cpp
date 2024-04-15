@@ -505,7 +505,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
 
     solution.setCoverMode(cover_mode);
     auto p_loc = solution.get_pLocations();
-    sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
+    auto sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
     sol_best.setCoverMode(cover_mode);
 
     return sol_best;
