@@ -28,42 +28,41 @@ NUM_THREADS=8
 ##### Methods
 # METHOD="TB_PMP"
 # METHOD="VNS_CPMP"
-METHOD="EXACT_CPMP"
-# METHOD="RSSV"
+# METHOD="EXACT_CPMP"
+METHOD="RSSV"
 
-# METHOD_RSSV_FINAL="VNS_CPMP"
-METHOD_RSSV_FINAL="EXACT_CPMP"
+METHOD_RSSV_FINAL="VNS_CPMP"
+# METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
 # SERVICES
-# SERVICES=("mat" "urgenc" "lycee" "poste")
+SERVICES=("mat" "urgenc" "lycee" "poste")
 # SERVICES=("mat" "lycee" "poste")
-SERVICES=("mat" "urgenc")
+# SERVICES=("mat" "urgenc")
 # SERVICES=("urgenc")
 
 # NOT COVERAGES
-# COVER_MODE=0
-# SUBAREAS=("null")
+COVER_MODE=0
+SUBAREAS=("null")
 
 # p_values_mat=(26)
-p_values_mat=(33 37 41 44 48 51 54)
-p_values_urgenc=()
-# p_values_urgenc=(42 48 54 60 66 72 78)
+p_values_mat=(26 30 33 37 41 44 48)
+p_values_urgenc=(42 48 54 60 66 72 78)
 p_values_lycee=(246 281 316 352 387 422 457)
 p_values_poste=(476 544 612 681 749 817 885)
 
 
 # COVERAGES
-COVER_MODE=1
-SUBAREAS=("arrond" "epci")
+# COVER_MODE=1
+# SUBAREAS=("arrond" "epci")
 
 ##### Values of p
 # p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)
 # p_values_urgenc=(42 48 54 60 66 72 78)
-p_values_mat_arrond=(33 37 41 44 48 51 54)
-p_values_mat_epci=(33 37 41 44 48 51 54)
-p_values_urgenc_arrond=(42 48 54 60 66 72 78)
-p_values_urgenc_epci=(42 48 54 60 66 72 78)
+# p_values_mat_arrond=(33 37 41 44 48 51 54)
+# p_values_mat_epci=(33 37 41 44 48 51 54)
+# p_values_urgenc_arrond=(42 48 54 60 66 72 78)
+# p_values_urgenc_epci=(42 48 54 60 66 72 78)
 
 
 for serv in "${SERVICES[@]}"; do

@@ -411,8 +411,19 @@ bool Instance::isCoverMode() {
 }
 
 bool Instance::isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand){
+
     bool verb = false;
-    for(auto subarea:unique_subareas){
+
+
+    if (p_loc_cand.size() != p) {
+        if (verb) cout << "ERROR: number of locations is different from p" << endl;
+        return false;
+    }
+
+    int num_subareas = unique_subareas.size();
+
+    if (p_loc_cand.size() >= static_cast<std::unordered_set<unsigned int>::size_type>(num_subareas)) {
+        for(auto subarea:unique_subareas){
             auto loc_subarea = getLocationsSubarea(subarea);
             bool covered = false;
             for(auto loc:loc_subarea){
@@ -427,6 +438,29 @@ bool Instance::isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand){
             }
 
         }
+    }else{
+
+        int cont_cover=0;
+        for(auto subarea:unique_subareas){
+            auto loc_subarea = getLocationsSubarea(subarea);
+            for(auto loc:loc_subarea){
+                if (p_loc_cand.find(loc) != p_loc_cand.end()){
+                    cont_cover++;
+                    break;
+                }
+            }
+        }
+
+        if (verb) cout << "Number of subareas covered: " << cont_cover << " of " << num_subareas << endl;
+        if (verb) cout << "Number of locations: " << p_loc_cand.size() << endl;
+        // if (cont_cover < std::min(p_loc_cand.size(), static_cast<std::unordered_set<unsigned int>::<size_type>(num_subareas))){ 
+        if (static_cast<std::unordered_set<unsigned int>::size_type>(cont_cover) < p) {
+            if (verb) cout << "ERROR: max number of subareas not covered" << endl;
+            return false;
+        }
+
+    }
+
     return true;
 }
 

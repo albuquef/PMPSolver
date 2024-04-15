@@ -3,9 +3,10 @@ path="/"
 # path="/src/"
 # path="/scripts/"
 
-PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
-PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp_cover/test_coverages_exact${path}
-# PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/test_code${path}
+# PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
+PATH_ORIGIN=/home/falbuquerque/Documents/projects/Project_PMP/large-PMP${path}
+# PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp_cover/test_coverages_exact${path}
+PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/test_code${path}
 
 
 

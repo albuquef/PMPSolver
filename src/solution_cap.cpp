@@ -160,6 +160,7 @@ void Solution_cap::fullCapEval() {
                     infeasible = true;
                     cont++; 
                     cout << "cont: " << cont << endl;
+                    objective = numeric_limits<dist_t>::max();
                     // exit(1);
                     // break;
                 }else{
@@ -209,7 +210,7 @@ void Solution_cap::fullCapEval() {
 
     isFeasible = !infeasible;
     // cout << "fullCapEval: " << objective << endl;
-    objEval();
+    if (isFeasible) objEval();
 
 }
 
@@ -581,25 +582,7 @@ bool Solution_cap::isSolutionFeasible(){
         }
     }
 
-    if(cover_mode){
-        // auto coverages = instance->getSubareasSet();
-        for(auto subarea:instance->getSubareasSet()){
-            auto loc_subarea = instance->getLocationsSubarea(subarea);
-            bool covered = false;
-            for(auto loc:loc_subarea){
-                if (p_locations.find(loc) != p_locations.end()){
-                    covered = true;
-                }
-            }
-            if (!covered){
-                if (verb) cout << "ERROR: subarea not covered" << endl;
-                if (verb) cout << "subarea: " << subarea << endl;
-                isFeasible = false;
-                return isFeasible;
-            }
-
-        }
-    }
+    if(cover_mode){isFeasible = instance->isPcoversAllSubareas(p_locations);}
  
     return isFeasible;
 }

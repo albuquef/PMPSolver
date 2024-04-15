@@ -364,7 +364,7 @@ int main(int argc, char *argv[]) {
         cout << "Final instance parameters:\n";
         filtered_instance->print();
 
-        exit(1);
+        // exit(1);
 
         cout << "-------------------------------------------------\n";
         cout << "Final Problem RSSV heuristic \n";
@@ -501,6 +501,12 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "[ERROR] Method not found" << endl;
         exit(1);
     }
+
+
     solution.setCoverMode(cover_mode);
-    return solution;
+    auto p_loc = solution.get_pLocations();
+    sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
+    sol_best.setCoverMode(cover_mode);
+
+    return sol_best;
 }

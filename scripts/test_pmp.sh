@@ -26,10 +26,10 @@ TIME_CLOCK=3600
 NUM_THREADS=8
 
 ##### Methods
-# METHOD="TB_PMP"
-# METHOD="VNS_CPMP"
+# METHOD="TB_CPMP"
+METHOD="VNS_CPMP"
 # METHOD="EXACT_CPMP"
-METHOD="RSSV"
+# METHOD="RSSV"
 
 METHOD_RSSV_FINAL="VNS_CPMP"
 # METHOD_RSSV_FINAL="EXACT_CPMP"
@@ -57,7 +57,7 @@ SERVICES=("mat")
 COVER_MODE=1
 # SUBAREAS=("arrond" "epci")
 SUBAREAS=("arrond")
-p_values_mat_arrond=(26)
+p_values_mat_arrond=(15)
 
 ##### Values of p
 # p_values_mat=(26 30 34 38 42 46 50 51 54 58 62)

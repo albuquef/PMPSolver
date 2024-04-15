@@ -10,6 +10,8 @@
 #include <utility>
 #include <random>
 #include <limits.h>
+#include <algorithm>
+#include <math.h>
 #include "utils.hpp"
 #include "globals.hpp"
 

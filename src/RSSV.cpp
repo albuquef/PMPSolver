@@ -111,7 +111,7 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
     }
     cout << "[INFO] All subproblems solved."  << endl << endl;
 
-    auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
+    auto filtered_cnt = min(max(n, FILTERING_SIZE * instance->get_p()), N);
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
     cout << "Filtered " << filtered_cnt << " locations: ";
     for (auto fl:filtered_locations) cout << fl << " ";
