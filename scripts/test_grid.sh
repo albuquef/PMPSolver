@@ -1,4 +1,18 @@
 #!/bin/bash
+#SBATCH --job-name=pmpGrid
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --partition=cpuonly
+#SBATCH --mem=64G
+#SBATCH --time=100:00:00 
+# #SBATCH --array=0-17%5
+#SBATCH --array=0-31%5
+
+# Activate the conda env if needed
+# source /etc/profile.d/conda.sh # Required before using conda
+# conda activate myenv
+
+#!/bin/bash
 CMD=./build/large_PMP
 
 # Time
@@ -13,9 +27,9 @@ SUBAREA=grids # arrond  canton epci commune epci
 COVER_MODE=true
 
 
-list_indicies=(0 1)
-NUM_CUSTOMERS=(144 256)
-NUM_LOCATIONS=(216 384)
+list_indicies=(0 1 2 3 4 5 6 7)
+NUM_CUSTOMERS=(144 256 400 576 784 1296 1600 1936)
+NUM_LOCATIONS=(216 384 600 864 1176 1944 2400 2904)
 # DIR_DATA=./data/Random/random_${NUM_CUSTOMERS}_${NUM_LOCATIONS}/
 # D_MATRIX=${DIR_DATA}dist_matrix.txt
 # WEIGHTS=${DIR_DATA}cust_weights_3.txt
@@ -35,8 +49,6 @@ metsp="TB_PMP" # Subproblem method
 
 for indice in "${list_indicies[@]}"; do
 
-  echo "Indice: $indice"
-
   num_cust=${NUM_CUSTOMERS[$indice]}
   num_loc=${NUM_LOCATIONS[$indice]}
   DIR_DATA=./data/Random/random_${num_cust}_${num_loc}/
@@ -46,8 +58,8 @@ for indice in "${list_indicies[@]}"; do
   for typediv in "${TYPEDIV[@]}"; do
     CAPACITIES=${DIR_DATA}loc_capacities_${typediv}_ratio.txt
     COVERAGES=${DIR_DATA}loc_coverages_${typediv}.txt
-    CONSOLE_NAME="console_${SERVICE}_${num_cust}_${num_loc}_${typediv}_{METHOD}_p_${p}.txt"
-    OUTPUT=./solutions/test_random_${TYPEDIV}
+    CONSOLE_NAME="console_${SERVICE}_${num_cust}_${num_loc}_${typediv}_${METHOD}_p_${p}.txt"
+    OUTPUT=./solutions/test_${SERVICE}_${num_cust}_${num_loc}_${typediv}_${METHOD}_p_${p}
     
     p=0
     if [ "$typediv" = "2x2" ]; then
@@ -59,8 +71,6 @@ for indice in "${list_indicies[@]}"; do
     elif [ "$typediv" = "8x8" ]; then
       p=$((num_cust / 64))
     fi
-
-
 
     arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $SERVICE\
             -cover $COVERAGES -subarea $SUBAREA -cover_mode $COVER_MODE\
@@ -77,13 +87,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
+# for element in "${arr[@]}"; do
+#     echo "$element"
+# done
 echo "Number of instances: ${#arr[@]}"
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}
