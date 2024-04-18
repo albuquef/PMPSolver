@@ -141,6 +141,16 @@ Solution_std TB::initRandomSolution_Cover() {
 }
 
 
+Solution_cap TB::copySolution_cap(Solution_cap sol, bool createGAPeval) {
+
+    if (!createGAPeval) return sol;
+    else {
+        Solution_cap sol_tmp(instance, sol.get_pLocations());
+        sol_tmp.setCoverMode(cover_mode);
+        return sol_tmp;
+    }
+}
+
 Solution_cap TB::initRandomCapSolution() {
     // Sample p distinct locations
     unordered_set<uint_t> p_locations;
@@ -405,10 +415,8 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
             // if (!p_locations.contains(loc)) {
             if (std::find(p_locations.begin(), p_locations.end(), loc) == p_locations.end()){
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
-                    if(test_Cover(sol_cand.get_pLocations(), p_loc, loc)){
+                    if(test_Cover(sol_cand.get_pLocations(), p_loc, loc) && test_SizeofP(sol_cand.get_pLocations(), p_loc, loc)){
 
-                        cout << "entrou" << "\n";
-                        cout << "la ele" << "\n";
                         sol_tmp = sol_best;
                         sol_tmp.replaceLocation(p_loc, loc);
                         
@@ -525,9 +533,11 @@ bool TB::test_UB_heur(Solution_cap sol, uint_t in_p, uint_t out_p) {
     // test if the new solution is feasible
     if (sol.getTotalCapacity() - instance->getLocCapacity(in_p) + instance->getLocCapacity(out_p) < instance->getTotalDemand()) return false;
  
+    double PERCENTAGE_SOLUTION = 0.05;
+
     Solution_cap sol_tmp = sol;
     sol_tmp.replaceLocation(in_p, out_p, "heuristic");
-    if (sol_tmp.get_objective() <= sol_tmp.get_objective()) { // UB1
+    if (sol_tmp.get_objective() <= sol.get_objective() + PERCENTAGE_SOLUTION*sol.get_objective()) { // UB1
         return true;
     }
     return false;
@@ -550,8 +560,19 @@ bool TB::test_SizeofP(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p) {
     p_loc.erase(in_p);
     p_loc.insert(out_p);
     if (p_loc.size() == instance->get_p()) return true;
+    else cout << "[ERROR] Size of p in TB search is not equal to p\n";
     return false;
 }
+
+bool TB::test_basic_Solution_cap(Solution_cap sol, uint_t in_p, uint_t out_p) {
+    // test if the new solution is feasible
+    if (!test_SizeofP(sol.get_pLocations(),in_p, out_p)) return false;
+    if (!test_Capacity(sol, in_p, out_p)) return false;
+    if (!test_Cover(sol.get_pLocations(),in_p, out_p)) return false;
+    return true;
+}
+
+
 
 Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
 
@@ -587,12 +608,10 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
         auto start_time = get_wall_time_TB();
         for (auto loc:locations_not_in_p) { // First improvement over locations
-            // #pragma omp parallel for{ // #pragma omp parallel num_threads(4){
+            // #pragma omp parallel for 
             for (auto p_loc:p_locations) { // Best improvement over p_locations
-                if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
                 Solution_cap sol_tmp = sol_best;    // N1 for sol_best
-                // sol_tmp.setCoverMode(cover_mode);
-                if (test_Capacity(sol_tmp, p_loc, loc) && test_Cover(sol_tmp.get_pLocations(),p_loc, loc) && test_SizeofP(sol_tmp.get_pLocations(),p_loc, loc)){ 
+                if (test_basic_Solution_cap(sol_tmp, p_loc, loc)){ 
                     int index = isSolutionExistsinMap(sol_tmp, p_loc, loc);
                     if (index != -1){
                         if(solutions_map.getObjectiveByIndex(index)  < sol_cand.get_objective()){
@@ -601,23 +620,21 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                         }
                     }else if (test_LB_PMP(sol_tmp,p_loc,loc)) { // LB1
                         
-                        // if (test_UB_heur(sol_tmp, p_loc, loc)) { // UB1
+                        if (test_UB_heur(sol_tmp, p_loc, loc)) { // UB1
                             
                             sol_tmp.add_UpperBound(sol_best.get_objective());
-                            // sol_tmp.replaceLocation(p_loc, loc, "GAPrelax"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
-                            
-                            sol_tmp.replaceLocation(p_loc, loc, "heuristic");
+                            sol_tmp.replaceLocation(p_loc, loc, "GAPrelax"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
+                            // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
                             auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
+                            #pragma omp critical
                             if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB2
                     
                                 if (verbose) {
-                                    cout << "Improved solution (TB): \n";
-                                    cout << "Interation: " << ite << "\n";
-                                    printSolution_TB(sol_tmp, (get_wall_time_TB() - start_time) + external_time);
-                                    cout << endl;
+                                    cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
+                                    printSolution_TB(sol_tmp, (get_wall_time_TB() - start_time) + external_time); cout << endl;
                                 }
-                                sol_cand = sol_tmp;
+                                sol_best = copySolution_cap(sol_cand, 0);
                                 improved = true;
 
                                 if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
@@ -627,35 +644,28 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
                             // check time limit
                             if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {
-                                if(sol_cand.isSolutionFeasible() && sol_cand.get_objective() < sol_best.get_objective()){
-                                    sol_best = sol_cand;    
-                                    return sol_best;
-                                }else{
-                                    return sol_best;
-                                }
+                                if(sol_cand.isSolutionFeasible() && sol_cand.get_objective() < sol_best.get_objective()){sol_best = copySolution_cap(sol_cand);}
+                                return sol_best;
+                                // break;  
                             }
-                        // }
+                        }
 
                     }
-                }else if(!test_Capacity(sol_cand, p_loc, loc)){
-                    // cout << "capacity constraint violated: yes\n";
                 }
             }
+            // check time limit
+            // if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {
+            //     break;  
             // }
         }
 
         auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
         if (improved) {
 
-            sol_best = sol_cand;
-
-            // auto p_loc = sol_cand.get_pLocations();
-            // sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
-            // solutions_map.addUniqueSolution(sol_best);
+            sol_best = copySolution_cap(sol_cand, 0);
 
             if (verbose) {
-                cout << "\n[INFO] Improved global TB solution: \n";
-                cout << "Interation: " << ite << "\n";  
+                cout << "\n[INFO] Improved global TB solution: \n" << "Interation: " << ite << "\n";
                 printSolution_TB(sol_best, elapsed_time_total);
                 cout << endl;
             }

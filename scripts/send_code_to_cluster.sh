@@ -9,7 +9,6 @@ PATH_ORIGIN=/home/falbuquerque/Documents/projects/Project_PMP/large-PMP${path}
 PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/test_code${path}
 
 
-
 # Copy the code to the cluster
 eval "rsync -av --exclude='.git' $PATH_ORIGIN $PATH_DEST"
 

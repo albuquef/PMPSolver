@@ -51,6 +51,8 @@ public:
     bool test_UB_heur(Solution_cap sol, uint_t in_p, uint_t out_p);
     bool test_Cover(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p);
     bool test_SizeofP(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p);
+    bool test_basic_Solution_cap(Solution_cap sol, uint_t in_p, uint_t out_p);
+    Solution_cap copySolution_cap(Solution_cap sol, bool createGAPeval=0);
     Solution_MAP solutions_map;
     void setSolutionMap(Solution_MAP sol_map);
     void setGenerateReports(bool generate_reports);
