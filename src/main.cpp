@@ -43,6 +43,8 @@ int main(int argc, char *argv[]) {
     string Method_RSSV_sp;
     string Method_RSSV_fp;
     bool cover_mode = false;
+    uint_t cust_max_id = 0;
+    uint_t loc_max_id = 0;
 
 
     // default config path
@@ -81,12 +83,22 @@ int main(int argc, char *argv[]) {
                 threads_cnt = stoi(argv[i + 1]);
                 configOverride.insert("threads");
 
-            } else if (strcmp(argv[i], "--mode") == 0) {
+            } else if (strcmp(argv[i], "-cust_max_id") == 0) {
+
+                cust_max_id = stoi(argv[i + 1]);
+                configOverride.insert("cust_max_id");
+            
+            } else if (strcmp(argv[i], "-loc_max_id") == 0) {
+
+                loc_max_id = stoi(argv[i + 1]);
+                configOverride.insert("loc_max_id");
+
+            }else if (strcmp(argv[i], "--mode") == 0) {
 
                 mode = stoi(argv[i + 1]);
                 configOverride.insert("mode");
 
-            } else if (strcmp(argv[i], "--seed") == 0) {
+            }else if (strcmp(argv[i], "--seed") == 0) {
 
                 seed = stoi(argv[i + 1]);
                 configOverride.insert("seed");
@@ -242,6 +254,8 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&labeled_weights_filename, "weights");
     config.setFromConfig(&threads_cnt, "threads");
     config.setFromConfig(&mode, "mode");
+    config.setFromConfig(&cust_max_id, "cust_max_id");
+    config.setFromConfig(&loc_max_id, "loc_max_id");
     config.setFromConfig(&seed, "seed");
     config.setFromConfig(&CLOCK_LIMIT, "time");
     config.setFromConfig(&CLOCK_LIMIT_CPLEX, "time_cplex");
@@ -279,8 +293,8 @@ int main(int argc, char *argv[]) {
 //                                          ORIGNAL INSTANCE
     cout << "Loading instance...\n";
     // Load instance
-    Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService);
-//    omp_set_num_threads(1);
+    Instance instance(dist_matrix_filename, labeled_weights_filename, capacities_filename, p, ' ',TypeService,cust_max_id,loc_max_id);
+    
     if(!coverages_filename.empty() && cover_mode){
         // cover_mode = true;
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');

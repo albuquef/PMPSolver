@@ -55,30 +55,168 @@ vector<string> tokenize(const string& input, char delim) {
     return tokens;
 }
 
-Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service) : p(p), type_service(type_service) {
+Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service, uint_t cust_max_id, uint_t loc_max_id) : p(p), type_service(type_service) {
+
+    if (strcmp(dist_matrix_filename.c_str(), "euclidian") == 0) {
+        new (this) Instance(cust_max_id, loc_max_id, weights_filename, capacities_filename, p, delim, type_service);
+        return;
+    }else{
+        // Open streams
+        fstream dist_matrix_file(dist_matrix_filename);
+        fstream weights_file(weights_filename);
+        fstream capacities_file(capacities_filename);
+        //
+        if (dist_matrix_file.is_open() && weights_file.is_open() && capacities_file.is_open()) {
+            loc_max_id = 0;
+            cust_max_id = 0;
+            string line;
+            // Scan data to determine distance matrix dimensions
+            cout << "Scanning input data...\n";
+            auto start = tick();
+            getline(dist_matrix_file, line); // skip first line
+            cout << "Skipped line: " << line << endl;
+            while (getline(dist_matrix_file, line)) {
+                auto tokens = tokenize(line, delim);
+                cust_max_id = max(cust_max_id, (uint_t) stoi(tokens[0]));
+                loc_max_id = max(loc_max_id, (uint_t) stoi(tokens[1]));
+            }
+            this->cust_max_id = cust_max_id;
+            this->loc_max_id = loc_max_id;
+            // Clear eof and fail flags, go to beginning
+            dist_matrix_file.clear();
+            dist_matrix_file.seekg(0);
+            uint_t size = (loc_max_id + 1) * (cust_max_id + 1);
+            cout << "Distance matrix dimensions: " << loc_max_id + 1 << " x " << cust_max_id + 1 << " = " << size << "\n";
+            tock(start);
+            // Load weights
+            start = tick();
+            cout << "Loading weights...\n";
+            total_demand = 0;
+            cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
+            for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
+            // Predefine the size of cust_coordinates to match cust_weights and initialize with default value (0,0)
+            cust_coordinates.assign(cust_max_id + 1, std::make_pair(0, 0));
+            getline(weights_file, line); // skip first line
+            cout << "Skipped line: " << line << endl;
+            uint_t w_cnt = 0;
+            uint_t coord_cnt = 0;
+            while (getline(weights_file, line)) {
+                auto tokens = tokenize(line, delim);
+                auto cust = stoi(tokens[0]);
+                auto weight = stod(tokens[1]);
+                cust_weights[cust] = weight;
+                total_demand += weight;
+                w_cnt++;
+            }
+            cout << "Loaded " << w_cnt << " weights\n";
+            cout << "Total customer demand: " << total_demand << endl;
+            tock(start);
+            // Load capacities
+            start = tick();
+            cout << "Loading capacities...\n";
+            loc_capacities = shared_ptr<dist_t[]>(new dist_t[loc_max_id + 1], std::default_delete<dist_t[]>());
+            for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_capacities[loc] = DEFAULT_CAPACITY;
+            // Predefine the size of cust_coordinates to match cust_weights and initialize with default value (0,0)
+            loc_coordinates.assign(loc_max_id + 1, std::make_pair(0, 0));
+            getline(capacities_file, line); // skip first line
+            cout << "Skipped line: " << line << endl;
+            uint_t cap_cnt = 0;
+            coord_cnt = 0;
+            while (getline(capacities_file, line)) {
+                auto tokens = tokenize(line, delim);
+                auto loc = stoi(tokens[0]);
+                auto cap = stod(tokens[1]);
+                loc_capacities[loc] = cap;
+                cap_cnt++;
+            }
+            cout << "Loaded " << cap_cnt << " capacities\n";
+            tock(start);
+
+            // Preallocate distance matrix and loc, cust flag vectors
+            start = tick();
+            dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());
+            for (uint_t i = 0; i < size; i++) {
+                dist_matrix[i] = DEFAULT_DISTANCE;
+            }
+            vector<bool> loc_flags(loc_max_id + 1, false);
+            vector<bool> cust_flags(cust_max_id + 1, false);
+            // Fill it
+            cout << "Loading distance matrix...\n";
+            dist_t sum = 0; // sum of distances
+            dist_t sum_sq = 0; // sum of squared distances
+            uint_t cnt = 0;
+            getline(dist_matrix_file, line); // skip first line
+            cout << "Skipped line: " << line << endl;
+            while (getline(dist_matrix_file, line)) {
+                auto tokens = tokenize(line, delim);
+                auto cust = stoi(tokens[0]);
+                auto loc = stoi(tokens[1]);
+                dist_t dist = stod(tokens[2]);
+                setDist(loc, cust, dist);
+                loc_flags[loc] = true;
+                cust_flags[cust] = true;
+                sum += dist;
+                sum_sq += dist * dist;
+                cnt++;
+            }
+            // Determine stdev and bandwidth
+            dist_t mean = sum / cnt;
+            dist_t variance = sum_sq / cnt - mean * mean;
+            dist_t stdev = sqrt(variance);
+            dist_t a = (4 * pow(stdev, 5)) / (3 * cnt);
+            dist_t b = 0.2;
+            h = pow(a, b);
+            cout << "Loaded " << cnt << " distances\n";
+            cout << "dists stdev: " << stdev << endl;
+            cout << "bandwidth h: " << h << endl;
+            // Extract unique locations and customers
+            for (uint_t loc = 0; loc < loc_flags.size(); loc++) {
+                if (loc_flags[loc]) locations.push_back(loc);
+            }
+            for (uint_t cust = 0; cust < cust_flags.size(); cust++) {
+                if (cust_flags[cust]) customers.push_back(cust);
+            }
+            cout << "locations: " << locations.size() << endl;
+            cout << "customers: " << customers.size() << endl;
+            cout << "p: " << p << endl;
+            tock(start);
+            
+
+
+        } else {
+            cerr << "Error while trying to open the following input files :\n";
+
+            if(!dist_matrix_file) cerr << "- Distance matrix" << endl;
+            if(!weights_file) cerr << "- Weights file" << endl;
+            if(!capacities_file) cerr << "- Capacities file" << endl;
+            
+            cerr << "Check if the path is correct and/or the correct name was given for the concerned files." << endl;
+            exit(-1);
+
+        }
+    }
+}
+
+
+// Instane construtor and dist matrix with euclidian distances
+Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_filename, const string &capacities_filename, uint_t p, char delim, string type_service) : p(p), type_service(type_service) {
+
+    this->cust_max_id = cust_max_id;
+    this->loc_max_id = loc_max_id;
 
     // Open streams
-    fstream dist_matrix_file(dist_matrix_filename);
     fstream weights_file(weights_filename);
     fstream capacities_file(capacities_filename);
     //
-    if (dist_matrix_file.is_open() && weights_file.is_open() && capacities_file.is_open()) {
-        loc_max_id = 0;
-        cust_max_id = 0;
+    if (weights_file.is_open() && capacities_file.is_open()) {
+        if (loc_max_id == 0 || cust_max_id == 0) {
+            cerr << "Error: loc_max_id or cust_max_id not set\n";
+            exit(-1);
+        }
         string line;
         // Scan data to determine distance matrix dimensions
         cout << "Scanning input data...\n";
         auto start = tick();
-        getline(dist_matrix_file, line); // skip first line
-        cout << "Skipped line: " << line << endl;
-        while (getline(dist_matrix_file, line)) {
-            auto tokens = tokenize(line, delim);
-            cust_max_id = max(cust_max_id, (uint_t) stoi(tokens[0]));
-            loc_max_id = max(loc_max_id, (uint_t) stoi(tokens[1]));
-        }
-        // Clear eof and fail flags, go to beginning
-        dist_matrix_file.clear();
-        dist_matrix_file.seekg(0);
         uint_t size = (loc_max_id + 1) * (cust_max_id + 1);
         cout << "Distance matrix dimensions: " << loc_max_id + 1 << " x " << cust_max_id + 1 << " = " << size << "\n";
         tock(start);
@@ -88,9 +226,12 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         total_demand = 0;
         cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
         for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
+        // Predefine the size of cust_coordinates to match cust_weights and initialize with default value (0,0)
+        cust_coordinates.assign(cust_max_id + 1, std::make_pair(0, 0));
         getline(weights_file, line); // skip first line
         cout << "Skipped line: " << line << endl;
         uint_t w_cnt = 0;
+        uint_t coord_cnt = 0;
         while (getline(weights_file, line)) {
             auto tokens = tokenize(line, delim);
             auto cust = stoi(tokens[0]);
@@ -98,8 +239,15 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             cust_weights[cust] = weight;
             total_demand += weight;
             w_cnt++;
+            if (tokens.size() >= 4) {
+                auto x_coord = stod(tokens[2]);
+                auto y_coord = stod(tokens[3]);
+                cust_coordinates[cust] = std::make_pair(x_coord, y_coord);
+                coord_cnt++;
+            }
         }
         cout << "Loaded " << w_cnt << " weights\n";
+        if (coord_cnt > 0) cout << "Loaded " << coord_cnt << " coordinates\n";
         cout << "Total customer demand: " << total_demand << endl;
         tock(start);
         // Load capacities
@@ -107,21 +255,33 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         cout << "Loading capacities...\n";
         loc_capacities = shared_ptr<dist_t[]>(new dist_t[loc_max_id + 1], std::default_delete<dist_t[]>());
         for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_capacities[loc] = DEFAULT_CAPACITY;
+        // Predefine the size of cust_coordinates to match cust_weights and initialize with default value (0,0)
+        loc_coordinates.assign(loc_max_id + 1, std::make_pair(0, 0));
         getline(capacities_file, line); // skip first line
         cout << "Skipped line: " << line << endl;
         uint_t cap_cnt = 0;
+        coord_cnt = 0;
         while (getline(capacities_file, line)) {
             auto tokens = tokenize(line, delim);
             auto loc = stoi(tokens[0]);
             auto cap = stod(tokens[1]);
             loc_capacities[loc] = cap;
             cap_cnt++;
+
+            if (tokens.size() >= 4) {
+                auto x_coord = stod(tokens[2]);
+                auto y_coord = stod(tokens[3]);
+                loc_coordinates[loc] = std::make_pair(x_coord, y_coord);
+                coord_cnt++;
+            }
         }
         cout << "Loaded " << cap_cnt << " capacities\n";
+        if (coord_cnt > 0) cout << "Loaded " << coord_cnt << " coordinates\n";
         tock(start);
 
-        // Preallocate distance matrix and loc, cust flag vectors
+        // dist matrix using euclidian distances
         start = tick();
+        cout << "Loading distance matrix...\n";
         dist_matrix = shared_ptr<dist_t[]>(new dist_t[size], std::default_delete<dist_t[]>());
         for (uint_t i = 0; i < size; i++) {
             dist_matrix[i] = DEFAULT_DISTANCE;
@@ -129,24 +289,38 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         vector<bool> loc_flags(loc_max_id + 1, false);
         vector<bool> cust_flags(cust_max_id + 1, false);
         // Fill it
-        cout << "Loading distance matrix...\n";
+        cout << "Computing euclidian distances...\n";
         dist_t sum = 0; // sum of distances
         dist_t sum_sq = 0; // sum of squared distances
         uint_t cnt = 0;
-        getline(dist_matrix_file, line); // skip first line
-        cout << "Skipped line: " << line << endl;
-        while (getline(dist_matrix_file, line)) {
-            auto tokens = tokenize(line, delim);
-            auto cust = stoi(tokens[0]);
-            auto loc = stoi(tokens[1]);
-            dist_t dist = stod(tokens[2]);
-            setDist(loc, cust, dist);
-            loc_flags[loc] = true;
-            cust_flags[cust] = true;
-            sum += dist;
-            sum_sq += dist * dist;
-            cnt++;
+        // Loop through all pairs of locations and customers
+
+
+
+        for (uint_t i = 1; i < cust_max_id+1; i++) {
+            for (uint_t j = i; j < loc_max_id+1; j++) {
+                if (i >= cust_coordinates.size() || j >= loc_coordinates.size()) {
+                    cerr << "Error: loc or cust coordinates not found\n";
+                    exit(-1);
+                } else {
+                    uint_t cust =i;
+                    uint_t loc = j;
+                    auto x_diff = loc_coordinates[loc].first - cust_coordinates[cust].first;
+                    auto y_diff = loc_coordinates[loc].second - cust_coordinates[cust].second;
+                    dist_t euclidean_dist = sqrt(x_diff * x_diff + y_diff * y_diff);
+                    setDist(loc, cust, euclidean_dist);
+                    setDist(cust, loc, euclidean_dist); // Set symmetric distance
+                    loc_flags[loc] = true;
+                    loc_flags[cust] = true; // Set flags for both loc and cust
+                    cust_flags[cust] = true;
+                    cust_flags[loc] = true; // Set flags for both cust and loc
+                    sum += euclidean_dist * 2; // Adding twice the distance since it's symmetric
+                    sum_sq += euclidean_dist * euclidean_dist * 2; // Adding squared distance twice
+                    cnt += 2; // Incrementing count by 2 since each distance is added twice
+                }
+            }
         }
+
         // Determine stdev and bandwidth
         dist_t mean = sum / cnt;
         dist_t variance = sum_sq / cnt - mean * mean;
@@ -168,10 +342,10 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         cout << "customers: " << customers.size() << endl;
         cout << "p: " << p << endl;
         tock(start);
+
     } else {
         cerr << "Error while trying to open the following input files :\n";
 
-        if(!dist_matrix_file) cerr << "- Distance matrix" << endl;
         if(!weights_file) cerr << "- Weights file" << endl;
         if(!capacities_file) cerr << "- Capacities file" << endl;
         
@@ -179,8 +353,8 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         exit(-1);
 
     }
-}
 
+}
 
 uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
 //    return loc * cust_max_id + cust;    // faster extraction of cust values
@@ -256,6 +430,22 @@ void Instance::print() {
     }
     cout << "p: " << p << endl;
     cout << "total_demand: " << total_demand << endl << endl;
+
+    // print cust, loc, dist value for ten pairs
+    for (uint_t i = 0; i < 4; i++) {
+        auto cust = customers[i];
+        for (uint_t j = 0; j < 4; j++) {
+            auto loc = locations[j];
+            cout << cust << " " << loc << " " << getRealDist(locations[j], customers[i]) << endl;
+        }
+    }
+    // for (auto cust:customers) {
+    //     for (auto loc:locations) {
+    //         cout << cust << " " << loc << " " << getRealDist(loc, cust) << endl;
+    //     }
+    // }
+
+
 }
 
 const vector<uint_t> &Instance::getCustomers() const {

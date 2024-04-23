@@ -36,12 +36,17 @@ private:
     string type_subarea="null";
     bool cover_mode=false;
 
+    vector<pair<dist_t, dist_t>> loc_coordinates;
+    vector<pair<dist_t, dist_t>> cust_coordinates;
+
+
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
     // Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p, uint_t loc_max, uint_t cust_max, string type_service);    
     Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> loc_capacities,shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max, uint_t cust_max, string type_service);    
     Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> loc_capacities,shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max, uint_t cust_max, string type_service, unordered_set<uint_t> unique_subareas, shared_ptr<uint_t[]> loc_coverages, string type_subarea);
-    Instance(const string& dist_matrix_filename, const string& weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service="null");
+    Instance(const string& dist_matrix_filename, const string& weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service="null",uint_t cust_max_id=0, uint_t loc_max_id=0);
+    Instance(uint_t cust_max_id, uint_t loc_max_id, const string& weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service="null");
     
     dist_t getWeightedDist(uint_t loc, uint_t cust);
     dist_t getRealDist(uint_t loc, uint_t cust);
@@ -73,7 +78,6 @@ public:
     void setCoverModel(bool cover_mode);
     bool isCoverMode();
     bool isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand);
-
 
 };
 
