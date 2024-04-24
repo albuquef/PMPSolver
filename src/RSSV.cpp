@@ -10,7 +10,7 @@ void printDDE(void){
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
     N = instance->getLocations().size();
-    M = LOC_FREQUENCY*N/n;
+    M = max(static_cast<uint_t>(1), (LOC_FREQUENCY*N/n));
 
     for (auto loc : instance->getLocations()) {
         weights[loc] = DEFAULT_WEIGHT;
@@ -27,6 +27,11 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
     cout << "Subproblems cnt (M): " << M << endl << endl;
     this->method_RSSV_sp = method_sp;
     cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
+
+    if (instance->get_p() > min(n,N)){
+        cout << "[INFO] The number of facilities is smaller than the number of locations to be selected" << endl;
+        exit(1);
+    }
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
     cout << "thread cnt:  " << thread_cnt << endl;

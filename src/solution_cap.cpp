@@ -39,9 +39,9 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance,
     this->loc_usages = std::move(loc_usages);
     this->cust_satisfactions = std::move(cust_satisfactions);
     this->assignments = std::move(assignments);
-    this->objective = objective;
+    // this->objective = objective;
     this->typeEval = "CPLEX";
-    // objEval();
+    objEval();
     // GAP_eval();
 }
 
@@ -504,6 +504,7 @@ void Solution_cap::objEval(){
     this->objective = 0;
     for (auto cust:instance->getCustomers()) {
         for (auto a:assignments[cust]) this->objective += a.usage * instance->getRealDist(a.node, cust);
+        // for (auto a:assignments[cust]) this->objective += instance->getRealDist(a.node, cust);
     }
 
     // cout << "objective Eval: " << objective << endl;

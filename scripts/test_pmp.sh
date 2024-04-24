@@ -39,15 +39,15 @@ metsp="TB_PMP" # Subproblem method
 # SERVICES=("mat" "urgenc" "lycee" "poste")
 # SERVICES=("mat" "lycee" "poste")
 # SERVICES=("mat" "urgenc")
-SERVICES=("urgenc")
+SERVICES=("mat")
 
 # NOT COVERAGES
 COVER_MODE=0
 SUBAREAS=("null")
 
-# p_values_mat=(48)
+p_values_mat=(26)
 # p_values_mat=(33 37 41 44 48 51 54)
-p_values_urgenc=(54)
+# p_values_urgenc=(26)
 # # p_values_urgenc=(42 48 54 60 66 72 78)
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
@@ -125,13 +125,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
-echo "Number of instances: ${#arr[@]}"
-
 # for element in "${arr[@]}"; do
-#     eval $element
+#     echo "$element"
 # done
+# echo "Number of instances: ${#arr[@]}"
+
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

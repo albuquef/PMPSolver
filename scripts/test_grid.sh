@@ -6,7 +6,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-31%5
+#SBATCH --array=0-9%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -27,13 +27,14 @@ SUBAREA=grids # arrond  canton epci commune epci
 COVER_MODE=true
 
 
-list_indicies=(0 1 2 3 4 5 6 7)
-NUM_CUSTOMERS=(144 256 400 576 784 1296 1600 1936)
-NUM_LOCATIONS=(216 384 600 864 1176 1944 2400 2904)
+list_indicies=(0 1 2 3 4)
+NUM_CUSTOMERS=(576 784 1296 1600 1936)
+NUM_LOCATIONS=(864 1176 1944 2400 2904)
 # DIR_DATA=./data/Random/random_${NUM_CUSTOMERS}_${NUM_LOCATIONS}/
 # D_MATRIX=${DIR_DATA}dist_matrix.txt
 # WEIGHTS=${DIR_DATA}cust_weights_3.txt
-TYPEDIV=("2x2" "4x4" "6x6" "8x8")
+# TYPEDIV=("2x2" "4x4" "6x6" "8x8")
+TYPEDIV=("2x2" "4x4")
 
 
 ##### METHODS
@@ -43,7 +44,7 @@ METHOD="EXACT_CPMP"
 # METHOD="RSSV"
 
 # METHOD_RSSV_FINAL="VNS_CPMP"
-# METHOD_RSSV_FINAL="EXACT_CPMP"
+METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
 
@@ -90,10 +91,10 @@ fi
 # for element in "${arr[@]}"; do
 #     echo "$element"
 # done
-echo "Number of instances: ${#arr[@]}"
+# echo "Number of instances: ${#arr[@]}"
 
 # for element in "${arr[@]}"; do
 #     eval $element
 # done
 
-# srun ${arr[$SLURM_ARRAY_TASK_ID]}
+srun ${arr[$SLURM_ARRAY_TASK_ID]}

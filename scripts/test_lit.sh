@@ -24,6 +24,7 @@ NUM_THREADS=8
 
 # Methods
 METHOD="EXACT_CPMP"
+METHOD="EXACT_CPMP_BIN"
 METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
@@ -70,8 +71,8 @@ for ((i = 0; i < 5; i++)); do
     N_values_group5+=(724)
 done
 # Define INSTANCE_GROUPS
-INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
-# INSTANCE_GROUPS=("group1/")
+# INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
+INSTANCE_GROUPS=("group1/")
 
 # Iterate over each INSTANCE_GROUP
 for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
@@ -88,7 +89,7 @@ for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
     # Get list of instance filenames in alphabetical order
     INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
     # INSTANCE_FILENAMES="p3038_1000.txt"
-    # INSTANCE_FILENAMES="cpmp01.txt"
+    INSTANCE_FILENAMES="cpmp01.txt"
 
 
     # Select p values corresponding to the group
@@ -154,13 +155,13 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
-echo "Number of instances: ${#arr[@]}"
-
 # for element in "${arr[@]}"; do
-#     eval $element
+#     echo "$element"
 # done
+# echo "Number of instances: ${#arr[@]}"
+
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}
