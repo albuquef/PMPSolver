@@ -7,7 +7,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-60%5
+#SBATCH --array=0-39%4
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -23,9 +23,10 @@ TIME_CLOCK=3600
 NUM_THREADS=8
 
 # Methods
-METHOD="EXACT_CPMP"
-METHOD="EXACT_CPMP_BIN"
-METHOD_RSSV_FINAL="EXACT_CPMP"
+# METHOD="EXACT_CPMP"
+METHOD="RSSV"
+
+# METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
 # Executable
@@ -71,85 +72,115 @@ for ((i = 0; i < 5; i++)); do
     N_values_group5+=(724)
 done
 # Define INSTANCE_GROUPS
-# INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
-INSTANCE_GROUPS=("group1/")
+INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
+# INSTANCE_GROUPS=("group1/")
 
-# Iterate over each INSTANCE_GROUP
-for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
-    DIR_DATA_GROUP="${DIR_DATA}${INSTANCE_GROUP}"
-
-    # Check if the directory exists
-    if [ ! -d "$DIR_DATA_GROUP" ]; then
-        echo "Error: Directory $DIR_DATA_GROUP does not exist."
-        exit 1
-    fi
-
-    # # Get list of instance filenames
-    # INSTANCE_FILENAMES=$(ls "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
-    # Get list of instance filenames in alphabetical order
-    INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
-    # INSTANCE_FILENAMES="p3038_1000.txt"
-    INSTANCE_FILENAMES="cpmp01.txt"
+mapfile -t filters < ./scripts/filter_lit.txt
+#print filters
+# echo "Filters: ${filters[@]}"
 
 
-    # Select p values corresponding to the group
-    case "$INSTANCE_GROUP" in
-        "group1/")
-            p_values=("${p_values_group1[@]}")
-            N_values=("${N_values_group1[@]}")
-            ;;
-        "group2/")
-            p_values=("${p_values_group2[@]}")
-            N_values=("${N_values_group2[@]}")
-            ;;
-        "group3/")
-            p_values=($(printf "%s\n" "${p_values_group3[@]}" | sort))
-            N_values=("${N_values_group3[@]}")
-            ;;
-        "group5/")
-            # p_values=($(printf "%s\n" "${p_values_group5[@]}" | sort))
-            p_values=("${p_values_group5[@]}")
-            N_values=("${N_values_group5[@]}")
-            ;;
-        *)
-            echo "Error: Unknown INSTANCE_GROUP $INSTANCE_GROUP."
+for METHOD_RSSV_FINAL in "VNS_CPMP" "TB_CPMP"; do
+    # Iterate over each INSTANCE_GROUP
+    echo "Method RSSV FINAL: $METHOD_RSSV_FINAL"
+    for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
+        DIR_DATA_GROUP="${DIR_DATA}${INSTANCE_GROUP}"
+
+        # Check if the directory exists
+        if [ ! -d "$DIR_DATA_GROUP" ]; then
+            echo "Error: Directory $DIR_DATA_GROUP does not exist."
             exit 1
-            ;;
-    esac
-
-    # Iterate over files and corresponding p values
-    index=0
-    for file in $INSTANCE_FILENAMES; do
-        # D_MATRIX="${DIR_DATA_GROUP}dist_matrix_${file//.dat/.txt}"
-        D_MATRIX="euclidian"
-        WEIGHTS="${DIR_DATA_GROUP}cust_weights_${file//.dat/.txt}"
-        CAPACITIES="${DIR_DATA_GROUP}loc_capacities_${file//.dat/.txt}"
-        COVERAGES="${DIR_DATA_GROUP}loc_coverages_${file//.dat/.txt}"
-        serv="${file%.txt}"  # Corrected variable assignment
-        subar="null"
-        p="${p_values[$index]}"
-        N="${N_values[$index]}"
-        CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.txt"
-        if [ "$METHOD" = "RSSV" ]; then
-            CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt"
         fi
 
-        # echo "Instance: $file"
-        # echo "N: $N"
-        # echo "p: $p"
+        # # Get list of instance filenames
+        # INSTANCE_FILENAMES=$(ls "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
+        # Get list of instance filenames in alphabetical order
+        INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
+        # INSTANCE_FILENAMES="p3038_1000.txt"
+        # INSTANCE_FILENAMES="cpmp01.txt"
 
-        OUTPUT="./solutions/test_lit_${serv}_p_${p}"
 
-        arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
-        -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS \
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp \
-        -o $OUTPUT | tee ./console/$CONSOLE_NAME")
+        # Select p values corresponding to the group
+        case "$INSTANCE_GROUP" in
+            "group1/")
+                p_values=("${p_values_group1[@]}")
+                N_values=("${N_values_group1[@]}")
+                ;;
+            "group2/")
+                p_values=("${p_values_group2[@]}")
+                N_values=("${N_values_group2[@]}")
+                ;;
+            "group3/")
+                p_values=($(printf "%s\n" "${p_values_group3[@]}" | sort))
+                N_values=("${N_values_group3[@]}")
+                ;;
+            "group5/")
+                # p_values=($(printf "%s\n" "${p_values_group5[@]}" | sort))
+                p_values=("${p_values_group5[@]}")
+                N_values=("${N_values_group5[@]}")
+                ;;
+            *)
+                echo "Error: Unknown INSTANCE_GROUP $INSTANCE_GROUP."
+                exit 1
+                ;;
+        esac
 
-        ((index++))  # Increment index for next iteration
+        # Iterate over files and corresponding p values
+        index=0
+        for file in $INSTANCE_FILENAMES; do
+
+                    # D_MATRIX="${DIR_DATA_GROUP}dist_matrix_${file//.dat/.txt}"
+                    D_MATRIX="euclidian"
+                    file=${file//.dat/.txt}
+                    WEIGHTS="${DIR_DATA_GROUP}cust_weights_${file//.dat/.txt}"
+                    CAPACITIES="${DIR_DATA_GROUP}loc_capacities_${file//.dat/.txt}"
+                    COVERAGES="${DIR_DATA_GROUP}loc_coverages_${file//.dat/.txt}"
+                    serv="${file%.txt}"  # Corrected variable assignment
+                    subar="null"
+                    p="${p_values[$index]}"
+                    N="${N_values[$index]}"
+                    CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.txt"
+                    if [ "$METHOD" = "RSSV" ]; then
+                        CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt"
+                    fi
+
+
+                    OUTPUT="./solutions/test_lit_${serv}_p_${p}"
+
+                    # Flag to check if the file matches any filter
+                    match_filter=false
+                    # Loop over filters and check if the file matches
+                    for filter in "${filters[@]}"; do
+                        # Check if the filter is non-empty before processing
+                        if [[ -n $filter ]]; then
+                            if [[ $file == *$filter* ]]; then
+                                # echo "Filter: $filter"
+                                match_filter=true
+                                break  # No need to continue checking if matched
+                            fi
+                        fi
+                    done
+
+                    # If the file doesn't match any filter, add it to arr
+                    if $match_filter; then
+                    # for filter in "${filters[@]}"; do
+                    # # If the filename contains any filter pattern, set match to true
+                    #     if [[ $file == *$filter* ]]; then
+                        # echo "Instance: $file"
+                        # echo "N: $N"
+                        # echo "p: $p"
+                        arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
+                        -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
+                        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS \
+                        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp \
+                        -o $OUTPUT | tee ./console/$CONSOLE_NAME")
+                    fi
+                    # done
+
+            ((index++))  # Increment index for next iteration
+        done
     done
 done
-
 
 if [ -z "$arr" ]; then
     echo "No instances"
@@ -158,10 +189,10 @@ fi
 # for element in "${arr[@]}"; do
 #     echo "$element"
 # done
-# echo "Number of instances: ${#arr[@]}"
+echo "Number of instances: ${#arr[@]}"
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}

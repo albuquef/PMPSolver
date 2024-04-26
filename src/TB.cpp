@@ -606,14 +606,14 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                         }
                     }else if (test_LB_PMP(sol_tmp,p_loc,loc)) { // LB1
                         
-                        if (test_UB_heur(sol_tmp, p_loc, loc)) { // UB1
+                        // if (test_UB_heur(sol_tmp, p_loc, loc)) { // UB1
                             
-                            sol_tmp.add_UpperBound(sol_best.get_objective());
-                            sol_tmp.replaceLocation(p_loc, loc, "GAPrelax"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
-                            // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
+                            // sol_tmp.add_UpperBound(sol_best.get_objective());
+                            // sol_tmp.replaceLocation(p_loc, loc, "GAPrelax"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
+                            sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
                             auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
-                            #pragma omp critical
+                            // #pragma omp critical
                             if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB2
                     
                                 if (verbose) {
@@ -634,7 +634,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 return sol_best;
                                 // break;  
                             }
-                        }
+                        // }
 
                     }
                 }

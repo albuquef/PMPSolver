@@ -359,8 +359,8 @@ int main(int argc, char *argv[]) {
     } else if(Method == "RSSV"){
         cout << "RSSV heuristic \n";
         cout << "-------------------------------------------------\n";
-        if (SUB_PMP_SIZE < instance.get_p()){
-            SUB_PMP_SIZE = min(1.5*instance.get_p(),0.75*instance.getLocations().size());
+        if (SUB_PMP_SIZE <= instance.get_p()){
+            SUB_PMP_SIZE = min(static_cast<uint_t>(1.5 * instance.get_p()), static_cast<uint_t>(0.75 * instance.getLocations().size()));
         }
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
         metaheuristic.setCoverMode(cover_mode);
@@ -519,10 +519,13 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         exit(1);
     }
 
+    if (typeMethod != "EXACT_CPMP" && typeMethod != "EXACT_CPMP_BIN" && typeMethod != "RSSV_EXACT_CPMP" && typeMethod != "RSSV_EXACT_CPMP_BIN"){
+        solution.setCoverMode(cover_mode);
+        auto p_loc = solution.get_pLocations();
+        auto sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
+        return sol_best;
+    }
 
-    // solution.setCoverMode(cover_mode);
-    // auto p_loc = solution.get_pLocations();
-    // auto sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
     auto sol_best = solution;
     sol_best.setCoverMode(cover_mode);
 

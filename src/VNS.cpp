@@ -383,7 +383,8 @@ Solution_cap VNS::rand_swap_Locations_cap(Solution_cap sol_current, unsigned int
             // sol_current.replaceLocation(p_swap_loc[i], out_swap_loc[i]);
             // cout << "p_swap_loc: " << p_swap_loc[i] << " out_swap_loc: " << out_swap_loc[i] << "\n";
         }
-        sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
+        // sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
+        sol_current = Solution_cap(instance, p_locations_final,"heuristic",cover_mode);
     }else{
         cout << "[WARN] Not enough capacity new swap solution\n";
     }
@@ -457,7 +458,8 @@ Solution_cap VNS::rand_swap_Locations_cap_cover(Solution_cap sol_current, unsign
             p_locations_final.erase(p_swap_loc[i]);
             p_locations_final.insert(out_swap_loc[i]);
         }
-        sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
+        // sol_current = Solution_cap(instance, p_locations_final,"GAPrelax",cover_mode);
+        sol_current = Solution_cap(instance, p_locations_final,"heuristic",cover_mode);
     }else{  
         cout << "[WARN] Not enough capacity in swap cover\n";
     }
@@ -784,7 +786,6 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     int ite = 1;
     while (ite <= MAX_ITE) {
-    // while (ite <= 10) {
         // auto start_time = high_resolution_clock::now();
         auto start_time = get_wall_time_VNS();
         cout << "\n[INFO] Neighborhood(swap): " << k << "\n";
@@ -797,8 +798,8 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
             new_sol = rand_swap_Locations_cap(sol_best,k, ite);
         }
 
-        if(new_sol.isSolutionFeasible()) 
-            tb.solutions_map.addUniqueSolution(sol_best);
+        // if(new_sol.isSolutionFeasible()) 
+        //     tb.solutions_map.addUniqueSolution(sol_best);
         new_sol.print();
         
         tb.setExternalTime(get_wall_time_VNS() - start_time_total);

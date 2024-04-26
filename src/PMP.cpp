@@ -146,7 +146,7 @@ void PMP::run(string Method_name){
             cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
         }
 
-        cplex.exportModel("./model.lp");
+        // cplex.exportModel("./model.lp");
 
         solveILP();
 

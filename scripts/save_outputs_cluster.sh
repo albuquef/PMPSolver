@@ -1,10 +1,16 @@
+
 # Path: scripts/send_code_to_cluster.sh
 # Compare this snippet from scripts/send_code_to_cluster.sh:
-# PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp/test_exact/
-PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit/
-# PATH_LOCAL=//home/falbuquerque/Documents/projects/Project_PMP/Cluster_tests_saved/PACA_cyrille/original_instance/CPMP/test_exats_complement/
-PATH_LOCAL=/home/falbuquerque/Documents/projects/Project_PMP/SaveCluster/savecluster_Literature/
-# PATH_LOCAL=//home/falbuquerque/Documents/projects/Project_PMP/Cluster_tests_saved/PACA_cyrille/original_instance/CPMP_cover/test_coverages_exact/
+
+DATE=$(date +"%y-%m-%d")
+# TYPEINSTANCE=Random_Grid
+TYPEINSTANCE=PACA_instance
+
+
+
+PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp/test_exact
+# PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/${TYPEINSTANCE}/
+PATH_LOCAL=/home/falbuquerque/Documents/projects/save_old_test_cluster/${DATE}_save_cluster/${TYPEINSTANCE}/
 
 
 # Save the outputs to the local machine

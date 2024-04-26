@@ -1,13 +1,15 @@
 
 # path="/"
-path="/src/"
-# path="/scripts/"
+# path="/src/"
+path="/scripts/"
+# path="/data/"
 
 # PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
 PATH_ORIGIN=/home/falbuquerque/Documents/projects/Project_PMP/large-PMP${path}
-# PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp_cover/test_coverages_exact${path}
-PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
+PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp/test_exact${path}
+# PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
 # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Random_Grid${path}
+
 
 
 # Copy the code to the cluster

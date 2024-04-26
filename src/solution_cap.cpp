@@ -39,9 +39,9 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance,
     this->loc_usages = std::move(loc_usages);
     this->cust_satisfactions = std::move(cust_satisfactions);
     this->assignments = std::move(assignments);
-    // this->objective = objective;
+    this->objective = objective;
     this->typeEval = "CPLEX";
-    objEval();
+    // objEval();
     // GAP_eval();
 }
 
@@ -128,8 +128,17 @@ void Solution_cap::fullCapEval() {
     uint_t total_demand = instance->getTotalDemand();
     for (auto p_loc:p_locations) total_capacity += instance->getLocCapacity(p_loc);
     if (total_capacity < total_demand) {
-        fprintf(stderr, "Total capacity (%i) < total demand (%i)\n", total_capacity, total_demand);
+        cout << "[ERROR] Total capacity < total demand" << endl;
         isFeasible = false;
+        objective = numeric_limits<dist_t>::max();
+        // exit(1);
+        return;
+    }
+
+    if (p_locations.size() != instance->get_p()) {
+        cout << "[ERROR] p_locations.size() != instance->get_p()" << endl;
+        isFeasible = false;
+        objective = numeric_limits<dist_t>::max();
         // exit(1);
         return;
     }
@@ -211,6 +220,15 @@ void Solution_cap::fullCapEval() {
     isFeasible = !infeasible;
     // cout << "fullCapEval: " << objective << endl;
     if (isFeasible) objEval();
+    
+
+    if (p_locations.size() != instance->get_p()) {
+        cout << "[ERROR] p_locations.size() != instance->get_p()" << endl;
+        isFeasible = false;
+        objective = numeric_limits<dist_t>::max();
+        // exit(1);
+        return;
+    }
 
 }
 
