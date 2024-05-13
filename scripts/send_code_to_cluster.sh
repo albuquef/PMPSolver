@@ -1,12 +1,16 @@
 
-# path="/"
+path="/"
 # path="/src/"
-path="/scripts/"
+# path="/scripts/"
 # path="/data/"
 
+
+BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+# BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+
 # PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
-PATH_ORIGIN=/home/falbuquerque/Documents/projects/Project_PMP/large-PMP${path}
-PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp/test_exact${path}
+PATH_ORIGIN=${BASE_PATH}${path}
+PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp_cover/test_coverages_exact${path}
 # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
 # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Random_Grid${path}
 
@@ -19,5 +23,5 @@ eval "rsync -av --exclude='.git' $PATH_ORIGIN $PATH_DEST"
 # eval "rsync -av $PATH_ORIGIN/data/filterData_PACA_may23/ $PATH_DEST/data/filterData_PACA_may23/"
 
 
-#  rm -r build/ 
-#  mkdir build && cd build/ && cmake -DUSE_CLUSTER=ON .. && make -j && cd ..
+# rm -r build/ 
+# mkdir build && cd build/ && cmake -DUSE_CLUSTER=ON .. && make -j && cd ..
