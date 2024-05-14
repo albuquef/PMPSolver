@@ -53,6 +53,8 @@ void Solution_std::print() {
     cout << setprecision(15) << "objective: " << objective << endl;
     if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";
     }else{ cout << "cover mode: OFF" << "\n";}
+    if(cover_mode_n2){ cout << "cover mode n2: " <<  instance->getTypeSubarea_n2() << "\n";
+    }else{ cout << "cover mode n2: OFF" << "\n";}
     // solution feasible
     if(isSolutionFeasible()) cout << "Solution is Feasible\n";
     else cout << "Solution is Infeasible\n";
@@ -191,9 +193,10 @@ void Solution_std::saveResults(string output_filename, double timeFinal, int num
 
 
 bool Solution_std::isSolutionFeasible() {
-    // bool verb = false;
+    bool feas = true;
     if (p_locations.size() != instance->get_p()) return false;
-    if(cover_mode) return instance->isPcoversAllSubareas(p_locations);
+    if(cover_mode) feas = instance->isPcoversAllSubareas(p_locations);
+    if(feas && cover_mode_n2) return instance->isPcoversAllSubareas_n2(p_locations);
 
-    return true;
+    return feas;
 }

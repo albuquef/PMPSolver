@@ -44,6 +44,25 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
     this->cover_max_id = unique_subareas.size();
 }
 
+Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
+                   shared_ptr<dist_t[]> loc_capacities, shared_ptr<dist_t[]> dist_matrix, uint_t p,
+                   uint_t loc_max, uint_t cust_max, string type_service, unordered_set<uint_t> unique_subareas, shared_ptr<uint_t[]> loc_coverages, string type_subarea, unordered_set<uint_t> unique_subareas_n2, shared_ptr<uint_t[]> loc_coverages_n2, string type_subarea_n2)
+        : locations(locations), customers(customers), cust_weights(cust_weights),
+          loc_capacities(loc_capacities),dist_matrix(dist_matrix),
+          p(p),loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service), 
+          unique_subareas(unique_subareas), loc_coverages(loc_coverages), type_subarea(type_subarea),
+          unique_subareas_n2(unique_subareas_n2), loc_coverages_n2(loc_coverages_n2), type_subarea_n2(type_subarea_n2){
+    cover_mode = true;
+    cover_mode_n2 = true;
+    total_demand = 0;
+    for (auto cust:this->customers) {
+        total_demand += this->getCustWeight(cust);
+    }
+    this->cover_max_id = unique_subareas.size();
+    this->cover_n2_max_id = unique_subareas_n2.size();
+    cout << "type subarea n2: " << type_subarea_n2 << endl;
+}
+
 vector<string> tokenize(const string& input, char delim) {
     vector <string> tokens;
     stringstream check1(input);
@@ -99,7 +118,6 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             getline(weights_file, line); // skip first line
             cout << "Skipped line: " << line << endl;
             uint_t w_cnt = 0;
-            uint_t coord_cnt = 0;
             while (getline(weights_file, line)) {
                 auto tokens = tokenize(line, delim);
                 auto cust = stoi(tokens[0]);
@@ -121,7 +139,6 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             getline(capacities_file, line); // skip first line
             cout << "Skipped line: " << line << endl;
             uint_t cap_cnt = 0;
-            coord_cnt = 0;
             while (getline(capacities_file, line)) {
                 auto tokens = tokenize(line, delim);
                 auto loc = stoi(tokens[0]);
@@ -401,9 +418,15 @@ Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_ne
         customers_new = customers;
     }
 
+    
 
     if (!cover_mode) {
         return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service);
+    }
+
+    if (cover_mode_n2){
+        cout << "cover_mode_n2" << endl;
+        return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea, unique_subareas_n2, loc_coverages_n2, type_subarea_n2);
     }
 
     return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
@@ -428,17 +451,22 @@ void Instance::print() {
         cout << "subareas_cnt: " << unique_subareas.size() << endl;
         cout << "subareas: "<< type_subarea << endl;
     }
+    if (cover_mode_n2) {
+        cout << "cover_max_id_n2: " << cover_n2_max_id << endl;
+        cout << "subareas_n2 cnt: " << unique_subareas_n2.size() << endl;
+        cout << "subareas n2: "<< type_subarea_n2 << endl;
+    }
     cout << "p: " << p << endl;
     cout << "total_demand: " << total_demand << endl << endl;
 
     // print cust, loc, dist value for ten pairs
-    for (uint_t i = 0; i < 4; i++) {
-        auto cust = customers[i];
-        for (uint_t j = 0; j < 4; j++) {
-            auto loc = locations[j];
-            cout << cust << " " << loc << " " << getRealDist(locations[j], customers[i]) << endl;
-        }
-    }
+    // for (uint_t i = 0; i < 4; i++) {
+    //     auto cust = customers[i];
+    //     for (uint_t j = 0; j < 4; j++) {
+    //         auto loc = locations[j];
+    //         cout << cust << " " << loc << " " << getRealDist(locations[j], customers[i]) << endl;
+    //     }
+    // }
     // for (auto cust:customers) {
     //     for (auto loc:locations) {
     //         cout << cust << " " << loc << " " << getRealDist(loc, cust) << endl;
@@ -489,6 +517,10 @@ Instance Instance::getReducedSubproblem(const vector<uint_t> &locations_new, str
         return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service);
     }
 
+    if (cover_mode_n2){
+        return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea, unique_subareas_n2, loc_coverages_n2, type_subarea_n2);
+    }
+
     return Instance(locations_new, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
 
 
@@ -506,6 +538,9 @@ string Instance::getTypeService() const {
     return type_service;
 }
 
+string Instance::getTypeSubarea_n2() const {
+    return type_subarea_n2;
+}
 
 void Instance::ReadCoverages(const string& coverages_filename,string type_subarea,char delim){
     this->type_subarea = type_subarea;
@@ -567,6 +602,66 @@ void Instance::ReadCoverages(const string& coverages_filename,string type_subare
     }
 }
 
+void Instance::ReadCoverages_n2(const string& coverages_filename,string type_subarea_n2,char delim){
+    this->type_subarea_n2 = type_subarea_n2;
+    fstream coverages_file(coverages_filename);
+    cover_n2_max_id = 0;
+    if (coverages_file.is_open()) {
+        string line;
+        // Load coverages
+        auto start = tick();
+        cout << "Loading coverages...\n";
+        loc_coverages_n2 = shared_ptr<uint_t[]>(new uint_t[loc_max_id + 1], default_delete<uint_t[]>());
+        for (uint_t loc = 0; loc < loc_max_id + 1; loc++) loc_coverages_n2[loc] = 0;
+        getline(coverages_file, line); // skip first line
+        cout << "Skipped line: " << line << endl;
+        uint_t cover_cnt = 0; 
+        vector<uint_t> qtd_coverages; // to store the number of coverages per subarea
+        while (getline(coverages_file, line)) {
+            auto tokens = tokenize(line, delim);
+            auto loc = stoi(tokens[0]);
+            auto subarea = stoi(tokens[1]);
+            cover_n2_max_id = max(cover_n2_max_id, (uint_t) subarea);
+            loc_coverages_n2[loc] = subarea;
+            unique_subareas_n2.insert(subarea);
+            cover_cnt++;
+        }
+        cout << "Loaded " << cover_cnt << " locations covered\n";
+        cout << "Number of subareas: " << unique_subareas_n2.size() << endl;
+
+        // Sttistics about the number of coverages per subarea
+        for (auto subarea:unique_subareas_n2) {
+            // cout << "Subarea " << subarea << " has " << count(loc_coverages.get(), loc_coverages.get() + loc_max_id + 1, subarea) << " locations" << endl;
+            qtd_coverages.push_back(count(loc_coverages_n2.get(), loc_coverages_n2.get() + loc_max_id + 1, subarea));
+        }
+        // Initialize max and min with the first element of the vector
+        uint_t max = qtd_coverages[0];
+        uint_t min = qtd_coverages[0];
+        uint_t sum = 0.0;
+        // Find max, min, and sum of elements
+        for (uint_t num : qtd_coverages) {
+            if (num > max) {
+                max = num;
+            }
+            if (num < min) {
+                min = num;
+            }
+            sum += num;
+        }
+        // Calculate average    
+        double average = sum / qtd_coverages.size();
+        cout << "Average number of locations for subarea: " << average << endl;
+        cout << "Max qte locations for one subarea: " << max << endl;
+        cout << "Min qte locations for one subarea: " << min << endl;
+
+        tock(start);   
+    }else{
+        cerr << "Error while trying to open the subareas file" << endl;
+        cout << "subareas filename: " << coverages_filename << endl;
+    }
+}
+
+
 string Instance::getTypeSubarea() const {
     return type_subarea;
 }
@@ -575,8 +670,16 @@ uint_t Instance::getSubareaLocation(uint_t loc){
     return loc_coverages[loc];
 }
 
+uint_t Instance::getSubareaLocation_n2(uint_t loc){
+    return loc_coverages_n2[loc];
+}
+
 unordered_set<uint_t> Instance::getSubareasSet(){
     return unique_subareas;
+}
+
+unordered_set<uint_t> Instance::getSubareasSet_n2(){
+    return unique_subareas_n2;
 }
 
 const vector<uint_t> Instance::getLocationsSubarea(uint_t subarea){
@@ -588,16 +691,37 @@ const vector<uint_t> Instance::getLocationsSubarea(uint_t subarea){
     return vet;
 }
 
+const vector<uint_t> Instance::getLocationsSubarea_n2(uint_t subarea){
+    vector<uint_t> vet;
+    for(uint_t loc = 0; loc < loc_max_id + 1; loc++){
+        if(loc_coverages_n2[loc] == subarea)
+            vet.push_back(loc);
+    }
+    return vet;
+}
+
+
 bool Instance::isInTheSameSubarea(uint_t loc1, uint_t loc2){
     return loc_coverages[loc1] == loc_coverages[loc2];
+}
+
+bool Instance::isInTheSameSubarea_n2(uint_t loc1, uint_t loc2){
+    return loc_coverages_n2[loc1] == loc_coverages_n2[loc2];
 }
 
 void Instance::setCoverModel(bool cover_mode){
     this->cover_mode = cover_mode;
 }
 
+void Instance::setCoverModel_n2(bool cover_mode_n2){
+    this->cover_mode_n2 = cover_mode_n2;
+}
+
 bool Instance::isCoverMode() {
     return cover_mode;
+}
+bool Instance::isCoverMode_n2() {
+    return cover_mode_n2;
 }
 
 bool Instance::isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand){
@@ -654,7 +778,58 @@ bool Instance::isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand){
     return true;
 }
 
+bool Instance::isPcoversAllSubareas_n2(unordered_set<uint_t> p_loc_cand){
 
+    bool verb = false;
+    if (p_loc_cand.size() != p) {
+        if (verb) cout << "ERROR: number of locations is different from p" << endl;
+        return false;
+    }
+    int num_subareas = unique_subareas_n2.size();
+
+    if (p_loc_cand.size() >= static_cast<std::unordered_set<unsigned int>::size_type>(num_subareas)) {
+        for(auto subarea:unique_subareas_n2){
+            auto loc_subarea = getLocationsSubarea_n2(subarea);
+            bool covered = false;
+            for(auto loc:loc_subarea){
+                if (p_loc_cand.find(loc) != p_loc_cand.end()){
+                    covered = true;
+                }
+            }
+            if (!covered){
+                if (verb) cout << "ERROR: subarea_n2 not covered" << endl;
+                if (verb) cout << "subarea_n2: " << subarea << endl;
+                if (verb) cout << "type subarea n2: " << type_subarea_n2 << endl;
+                return false;
+            }
+
+        }
+    }else{
+
+        int cont_cover=0;
+        for(auto subarea:unique_subareas_n2){
+            auto loc_subarea = getLocationsSubarea_n2(subarea);
+            for(auto loc:loc_subarea){
+                if (p_loc_cand.find(loc) != p_loc_cand.end()){
+                    cont_cover++;
+                    break;
+                }
+            }
+        }
+
+        if (verb) cout << "Number of subareas covered: " << cont_cover << " of " << num_subareas << endl;
+        if (verb) cout << "Number of locations: " << p_loc_cand.size() << endl;
+        // if (cont_cover < std::min(p_loc_cand.size(), static_cast<std::unordered_set<unsigned int>::<size_type>(num_subareas))){ 
+        if (static_cast<std::unordered_set<unsigned int>::size_type>(cont_cover) < p) {
+            if (verb) cout << "ERROR: max number of subareas not covered" << endl;
+            return false;
+        }
+
+    }
+
+    return true;
+
+}
 
 uint_t Instance::getLocIndex(uint_t loc){
 
@@ -701,5 +876,10 @@ Instance Instance::filterInstance(string type_service) {
     if (!cover_mode) {
         return Instance(locations_filtered, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service);
     }
+
+    if (cover_mode_n2){
+        return Instance(locations_filtered, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea, unique_subareas_n2, loc_coverages_n2, type_subarea_n2);
+    }
+
     return Instance(locations_filtered, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
 }

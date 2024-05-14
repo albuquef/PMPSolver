@@ -64,8 +64,11 @@ class PMP
         void setGenerateReports(bool generate_reports);
         // void setVerbose(bool VERBOSE);
         bool CoverModel=false;
+        bool CoverModel_n2=false;
         string typeSubarea="null";
+        string typeSubarea_n2="null";
         void setCoverModel(bool CoverModel, string typeSubarea);
+        void setCoverModel_n2(bool CoverModel_n2, string typeSubarea_n2);
         void setUpperBound(double UpperBound);
         void setTimeLimit(double timeLimit);
 
@@ -121,6 +124,7 @@ class PMP
         void constr_GAP (IloModel model, IloBoolVarArray y);
 
         void constr_Cover (IloModel model, IloBoolVarArray y);
+        void constr_Cover_n2 (IloModel model, IloBoolVarArray y);
 
 
         template <typename VarType>

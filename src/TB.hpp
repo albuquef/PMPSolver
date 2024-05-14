@@ -27,6 +27,7 @@ private:
     string typeMethod="TB";
     double external_time=0;
     bool cover_mode=false;
+    bool cover_mode_n2=false;
     double time_limit=CLOCK_LIMIT;
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
@@ -50,6 +51,7 @@ public:
     bool test_LB_PMP(Solution_cap sol, uint_t in_p, uint_t out_p);
     bool test_UB_heur(Solution_cap sol, uint_t in_p, uint_t out_p);
     bool test_Cover(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p);
+    bool test_CoverN2(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p);
     bool test_SizeofP(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p);
     bool test_basic_Solution_cap(Solution_cap sol, uint_t in_p, uint_t out_p);
     Solution_cap copySolution_cap(Solution_cap sol, bool createGAPeval=0);
@@ -59,6 +61,7 @@ public:
     void setMethod(string Method);
     void setExternalTime(double time);
     void setCoverMode(bool cover_mode);
+    void setCoverMode_n2(bool cover_mode_n2);
     void setTimeLimit(double time_limit);
 };
 

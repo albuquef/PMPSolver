@@ -20,6 +20,7 @@ private:
     unordered_map<uint_t, my_pair> assignment; // customer -> p location, distance to it
 
     bool cover_mode = false;
+    bool cover_mode_n2 = false;
 public:
 
     Solution_std() = default;
@@ -39,6 +40,9 @@ public:
 
     void setCoverMode(bool mode) {
         cover_mode = mode;
+    }
+    void setCoverMode_n2(bool mode) {
+        cover_mode_n2 = mode;
     }
 };
 

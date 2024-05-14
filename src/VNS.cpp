@@ -725,6 +725,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     TB tb(instance, engine());
     tb.setCoverMode(cover_mode);
+    tb.setCoverMode_n2(cover_mode_n2);
     tb.setSolutionMap(solutions_map);
     tb.setMethod("TB_" + Method);
     tb.setGenerateReports(true);
@@ -732,6 +733,7 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     Solution_cap sol_best;
     // sol_best = tb.fixedCapSolution();
     if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
+    // initial solution add cover n2
     else sol_best = tb.initHighestCapSolution();
 
 
@@ -900,6 +902,9 @@ void VNS::setMethod(string Method){
 
 void VNS::setCoverMode(bool cover_mode){
     this->cover_mode = cover_mode;
+}
+void VNS::setCoverMode_n2(bool cover_mode_n2){
+    this->cover_mode_n2 = cover_mode_n2;
 }
 
 void VNS::setExternalTime(double time){

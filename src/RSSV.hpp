@@ -26,6 +26,7 @@ private:
     string method_RSSV_sp;
     int DEFAULT_MAX_NUM_ITER = 10000000;
     bool cover_mode = false;
+    bool cover_mode_n2 = false;
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
     shared_ptr<Instance> run(uint_t thread_cnt, string& method_sp);
@@ -39,6 +40,9 @@ public:
 
     void setCoverMode(bool mode) {
         cover_mode = mode;
+    }
+    void setCoverMode_n2(bool mode) {
+        cover_mode_n2 = mode;
     }
 };
 

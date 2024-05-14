@@ -285,6 +285,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if(strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0){constr_maxCapacity(model,x,y);}
     if(strcmp(typeProb,"PMP") == 0 || strcmp(typeProb,"pmp") == 0  ){constr_UBpmp(model,x,y);}
     if(CoverModel) {constr_Cover(model,y);}
+    if(CoverModel_n2) {constr_Cover_n2(model,y);}
     if (UpperBound != 0) {constr_UpperBound(model,x);}
 }
 
@@ -328,7 +329,6 @@ void PMP::constr_DemandSatif(IloModel model, VarType x){
     }
 
 }
-
 
 void PMP::constr_pLocations(IloModel model, IloBoolVarArray y){
 
@@ -457,11 +457,58 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
 
 
     }
-
-
-
-
 }
+
+void PMP::constr_Cover_n2(IloModel model, IloBoolVarArray y){
+
+    if (VERBOSE){cout << "[INFO] Adding Cover Constraints "<< endl;}
+
+    num_subareas = instance->getSubareasSet_n2().size();   
+
+    if (p >= num_subareas){
+
+        for (IloInt s = 0; s <= num_subareas; s++){
+            IloExpr expr(env);
+            // auto subarea = instance->getSubareasSet()[s];
+            auto subarea = instance->getLocationsSubarea_n2(s);
+            bool y_exist = false;
+            for(IloInt j = 0; j < num_facilities; j++){
+                auto loc = instance->getLocations()[j];
+                if (find(subarea.begin(), subarea.end(), loc) != subarea.end()){
+                    expr += y[j];
+                    y_exist = true;
+                }
+            }
+            if(!subarea.empty() && y_exist)
+                model.add(expr >= 1);
+            // if(!subarea.empty() && y_exist){
+            //     model.add(expr >= 1);
+            //     cout << "subarea: " << s << " size: " << subarea.size() << endl;
+            // }
+            expr.end();
+        }
+
+    }else{
+
+        for (IloInt s = 0; s < num_subareas; s++){
+            IloExpr expr(env);
+            // auto subarea = instance->getSubareasSet()[s];
+            auto subarea = instance->getLocationsSubarea_n2(s);
+            bool y_exist = false;
+            for(IloInt j = 0; j < num_facilities; j++){
+                auto loc = instance->getLocations()[j];
+                if (find(subarea.begin(), subarea.end(), loc) != subarea.end()){
+                    expr += y[j];
+                    y_exist = true;
+                }
+            }
+            if(!subarea.empty() && y_exist)
+                model.add(expr <= 1);
+            expr.end();
+        }
+    }
+}
+
 
 template <typename VarType>
 void PMP::constr_UpperBound (IloModel model, VarType x){
@@ -756,7 +803,10 @@ void PMP::setCoverModel(bool CoverModel, string typeSubarea){
     this->typeSubarea = typeSubarea;
 }
 
-
+void PMP::setCoverModel_n2(bool CoverModel_n2, string typeSubarea_n2){
+    this->CoverModel_n2 = CoverModel_n2;
+    this->typeSubarea_n2 = typeSubarea_n2;
+}
 // not wotking
 void PMP::setSolution_cap(Solution_cap sol){
         

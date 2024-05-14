@@ -258,6 +258,8 @@ void Solution_cap::print() {
     cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
     if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";
     }else{ cout << "cover mode: OFF" << "\n";}
+    if(cover_mode_n2){ cout << "cover mode n2: " <<  instance->getTypeSubarea_n2() << "\n";
+    }else{ cout << "cover mode n2: OFF" << "\n";}
     if(isSolutionFeasible()) cout << "Solution is Feasible\n";
     else cout << "Solution is Infeasible\n";
     
@@ -602,6 +604,8 @@ bool Solution_cap::isSolutionFeasible(){
     }
 
     if(cover_mode){isFeasible = instance->isPcoversAllSubareas(p_locations);}
+
+    if(cover_mode_n2){isFeasible = instance->isPcoversAllSubareas_n2(p_locations);}
  
     return isFeasible;
 }
@@ -609,10 +613,17 @@ bool Solution_cap::isSolutionFeasible(){
 bool Solution_cap::isCoverMode(){
     return cover_mode;
 }
+bool Solution_cap::isCoverModeN2(){
+    return cover_mode_n2;
+}
 
 void Solution_cap::setCoverMode(bool cover_mode){
     this->cover_mode = cover_mode;
 }
+void Solution_cap::setCoverMode_n2(bool cover_mode_n2){
+    this->cover_mode_n2 = cover_mode_n2;
+}
+
 
 void Solution_cap::add_UpperBound(double UB){
     this->UpperBound = UB;

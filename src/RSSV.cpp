@@ -169,17 +169,20 @@ void RSSV::solveSubproblem(int seed) {
         if(method_RSSV_sp == "EXACT_PMP"){
             PMP pmp(make_shared<Instance>(subInstance), "PMP");
             pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
+            pmp.setCoverModel_n2(cover_mode_n2,instance->getTypeSubarea_n2());
             pmp.run();
             sol = pmp.getSolution_std();
         }else if(method_RSSV_sp == "TB_PMP"){
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
+            heuristic.setCoverMode_n2(cover_mode_n2);   
             // heuristic.setTimeLimit(60);
             if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
             sol = heuristic.run(false, UB_MAX_ITER);
         }else if(method_RSSV_sp == "VNS_PMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
+            heuristic.setCoverMode_n2(cover_mode_n2);
             sol = heuristic.runVNS_std(false,UB_MAX_ITER);
         }else{
             cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
@@ -218,21 +221,25 @@ void RSSV::solveSubproblem_CAP(int seed) {
         if(method_RSSV_sp == "EXACT_CPMP"){
             PMP pmp(make_shared<Instance>(subInstance), "CPMP");
             pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
+            pmp.setCoverModel_n2(cover_mode_n2,instance->getTypeSubarea_n2());
             pmp.run();
             sol = pmp.getSolution_cap();
         }else if(method_RSSV_sp == "EXACT_CPMP_BIN"){
             PMP pmp(make_shared<Instance>(subInstance), "CPMP", true);
             pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
+            pmp.setCoverModel_n2(cover_mode_n2,instance->getTypeSubarea_n2());
             pmp.run();
             sol = pmp.getSolution_cap();
         }else if(method_RSSV_sp == "TB_CPMP"){
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
+            heuristic.setCoverMode_n2(cover_mode_n2);
             if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
             sol = heuristic.run_cap(true, UB_MAX_ITER);
         }else if(method_RSSV_sp == "VNS_CPMP"){
             VNS heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
+            heuristic.setCoverMode_n2(cover_mode_n2);
             sol = heuristic.runVNS_cap(method_RSSV_sp,false,UB_MAX_ITER);
         }else{
             cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;

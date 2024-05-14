@@ -33,7 +33,9 @@ int main(int argc, char *argv[]) {
     string capacities_filename;
     string TypeService;
     string coverages_filename;
+    string coverages_filename_n2;
     string TypeSubarea;
+    string TypeSubarea_n2;
     // Optional parameters
     uint_t threads_cnt = (uint_t) getAvailableThreads();
     int mode = 0;
@@ -43,6 +45,7 @@ int main(int argc, char *argv[]) {
     string Method_RSSV_sp;
     string Method_RSSV_fp;
     bool cover_mode = false;
+    bool cover_mode_n2 = false;
     uint_t cust_max_id = 0;
     uint_t loc_max_id = 0;
 
@@ -130,7 +133,12 @@ int main(int argc, char *argv[]) {
                 coverages_filename = argv[i + 1];
                 configOverride.insert("coverages");
 
-            } else if (strcmp(argv[i], "-toleranceCpt") == 0){
+            } else if (strcmp(argv[i], "-cover_n2") == 0) {
+
+                coverages_filename_n2 = argv[i + 1];
+                configOverride.insert("coverages_n2");
+
+            }else if (strcmp(argv[i], "-toleranceCpt") == 0){
                 
                 TOLERANCE_CPT = stoi(argv[i + 1]);
                 configOverride.insert("toleranceCpt");
@@ -152,6 +160,10 @@ int main(int argc, char *argv[]) {
                 
                 TypeSubarea = argv[i + 1];
                 configOverride.insert("subarea");                
+            }else if (strcmp(argv[i], "-subarea_n2") == 0){
+                
+                TypeSubarea_n2 = argv[i + 1];
+                configOverride.insert("subarea_n2");                
             } else if (strcmp(argv[i], "-method") == 0){
                 
                 Method = argv[i + 1];
@@ -175,6 +187,17 @@ int main(int argc, char *argv[]) {
                 }
                 // cover_mode = argv[i + 1];
                 configOverride.insert("cover_mode");                
+            } else if (strcmp(argv[i], "-cover_mode_n2") == 0){
+                if (strcmp(argv[i + 1], "true") == 0 || strcmp(argv[i + 1], "1") == 0){
+                    cover_mode_n2 = true;
+                } else if (strcmp(argv[i + 1], "false") == 0 || strcmp(argv[i + 1], "0") == 0){
+                    cover_mode_n2 = false;
+                } else {
+                    cerr << "Unknown parameter [cover mode]: " << argv[i] << endl;
+                    // exit(1);
+                }
+                // cover_mode = argv[i + 1];
+                configOverride.insert("cover_mode_n2");                
             } else if (argv[i][0] == '?' || (strcmp(argv[i],"--help")==0)) {
             
                 cout << 
@@ -300,6 +323,11 @@ int main(int argc, char *argv[]) {
         instance.ReadCoverages(coverages_filename,TypeSubarea, ' ');
         instance.setCoverModel(true);
     }
+    if(!coverages_filename_n2.empty() && cover_mode_n2){
+        // cover_mode = true;
+        instance.ReadCoverages_n2(coverages_filename_n2,TypeSubarea_n2, ' ');
+        instance.setCoverModel_n2(true);
+    }
     cout << "[INFO] Instance loaded\n";
     instance.print();
 
@@ -364,6 +392,7 @@ int main(int argc, char *argv[]) {
         }
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
         metaheuristic.setCoverMode(cover_mode);
+        metaheuristic.setCoverMode_n2(cover_mode_n2);
         CLOCK_THREADED = true;
         auto start_time_total = high_resolution_clock::now();
         
@@ -433,7 +462,8 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "Exact method PMP\n";
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "PMP");
-        pmp.setCoverModel(cover_mode, instance->getTypeSubarea());
+        pmp.setCoverModel(instance->isCoverMode(),instance->getTypeSubarea());
+        pmp.setCoverModel_n2(instance->isCoverMode_n2(), instance->getTypeSubarea_n2());
         pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -443,6 +473,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setCoverMode_n2(instance->isCoverMode_n2());
         heuristic.setTimeLimit(CLOCK_LIMIT);
         solution = heuristic.run(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_PMP"){
@@ -450,6 +481,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance,const string typeM
         cout << "-------------------------------------------------\n";
         VNS heuristic(instance, seed);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setCoverMode_n2(instance->isCoverMode_n2());
         heuristic.setExternalTime(external_time); // external time is not used in PMP
         solution = heuristic.runVNS_std(true,UB_MAX_ITER);
     }else{
@@ -468,7 +500,8 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";    
         PMP pmp(instance, "CPMP");
         pmp.setGenerateReports(true);
-        pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
+        pmp.setCoverModel(instance->isCoverMode(),instance->getTypeSubarea());
+        pmp.setCoverModel_n2(instance->isCoverMode_n2(), instance->getTypeSubarea_n2());
         // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
         pmp.run(typeMethod);
@@ -480,7 +513,8 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         cout << "-------------------------------------------------\n";
         PMP pmp(instance, "CPMP", true);
         pmp.setGenerateReports(true);
-        pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
+        pmp.setCoverModel(instance->isCoverMode(),instance->getTypeSubarea());
+        pmp.setCoverModel_n2(instance->isCoverMode_n2(), instance->getTypeSubarea_n2());
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
         pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
@@ -494,6 +528,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setCoverMode_n2(instance->isCoverMode_n2());
         heuristic.setTimeLimit(CLOCK_LIMIT);
         solution = heuristic.run_cap(true,UB_MAX_ITER);
     }else if (typeMethod == "VNS_CPMP" || typeMethod == "RSSV_VNS_CPMP"){
@@ -504,6 +539,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setGenerateReports(true);
         heuristic.setMethod(typeMethod);
         heuristic.setCoverMode(cover_mode);
+        heuristic.setCoverMode_n2(instance->isCoverMode_n2());
         heuristic.setExternalTime(external_time); 
         solution = heuristic.runVNS_cap(typeMethod,true,UB_MAX_ITER);
     
@@ -528,6 +564,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
 
     auto sol_best = solution;
     sol_best.setCoverMode(cover_mode);
+    sol_best.setCoverMode_n2(instance->isCoverMode_n2());   
 
     return sol_best;
 }

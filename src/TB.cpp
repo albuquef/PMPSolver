@@ -83,7 +83,7 @@ Solution_std TB::initRandomSolution() {
     Solution_std sol(instance, p_locations);
 
     sol.setCoverMode(cover_mode);
-
+    sol.setCoverMode_n2(cover_mode_n2);
     return sol;
 }
 
@@ -136,6 +136,7 @@ Solution_std TB::initRandomSolution_Cover() {
 
     Solution_std sol(instance, p_locations);
     sol.setCoverMode(cover_mode);
+    sol.setCoverMode_n2(cover_mode_n2);
     return sol;
 
 }
@@ -147,6 +148,7 @@ Solution_cap TB::copySolution_cap(Solution_cap sol, bool createGAPeval) {
     else {
         Solution_cap sol_tmp(instance, sol.get_pLocations());
         sol_tmp.setCoverMode(cover_mode);
+        sol_tmp.setCoverMode_n2(cover_mode_n2);
         return sol_tmp;
     }
 }
@@ -248,6 +250,7 @@ Solution_cap TB::initSmartRandomCapSolution(){
     }
 
     solut.setCoverMode(cover_mode);
+    solut.setCoverMode_n2(cover_mode_n2);
     return solut;
 
 
@@ -323,7 +326,7 @@ Solution_cap TB::initHighestCapSolution_Cover() {
 
     Solution_cap solut(instance, p_locations);
     solut.setCoverMode(cover_mode);
-
+    solut.setCoverMode_n2(cover_mode_n2);
     return solut;
 }
 
@@ -339,6 +342,7 @@ Solution_cap TB::fixedCapSolution(){
 
     Solution_cap solut(instance, p_locations);
     solut.setCoverMode(cover_mode);
+    solut.setCoverMode_n2(cover_mode_n2);
     return solut;
 }
 
@@ -356,6 +360,7 @@ Solution_cap TB::initCPLEXCapSolution(double time_limit, const char* typeProb) {
     // sol.saveAssignment("cplex_initial_sol", "CPLEX");
     // auto sol = Solution_cap(instance, pmp.getSolution_cap().get_pLocations());
     sol.setCoverMode(cover_mode);
+    sol.setCoverMode_n2(cover_mode_n2);
     // sol.saveAssignment("cplex_initial_sol", "CPLEX");
     return sol;
 }
@@ -369,6 +374,7 @@ Solution_std TB::run(bool verbose, int MAX_ITE) {
     if (!cover_mode) sol_best = initRandomSolution();
     if (cover_mode) sol_best = initRandomSolution_Cover();
     sol_best.setCoverMode(cover_mode);
+    sol_best.setCoverMode_n2(cover_mode_n2);
     sol_best.print();
 
     sol_best = localSearch_std(sol_best, verbose, MAX_ITE);
@@ -420,7 +426,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
             
                 for (auto p_loc:p_locations) { // Best improvement over p_locations
                     Solution_std sol_tmp = sol_best; 
-                    if(test_Cover(sol_tmp.get_pLocations(), p_loc, loc) && test_SizeofP(sol_tmp.get_pLocations(), p_loc, loc)){
+                    if(test_Cover(sol_tmp.get_pLocations(), p_loc, loc) && test_CoverN2(sol_tmp.get_pLocations(), p_loc, loc) && test_SizeofP(sol_tmp.get_pLocations(), p_loc, loc)){
 
                         sol_tmp = sol_best;
                         sol_tmp.replaceLocation(p_loc, loc);
@@ -535,6 +541,18 @@ bool TB::test_Cover(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p) {
     return false;
 }
 
+bool TB::test_CoverN2(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p) {
+    // test if the new solution is feasible
+    if(!cover_mode_n2) return true;
+
+    auto p_loc_cand = p_loc;
+    p_loc_cand.erase(in_p);
+    p_loc_cand.insert(out_p);
+    if (instance->isPcoversAllSubareas_n2(p_loc_cand)) return true;
+   
+    return false;
+}
+
 bool TB::test_SizeofP(unordered_set<uint_t> p_loc, uint_t in_p, uint_t out_p) {
     // test if the new solution is feasible
 
@@ -555,6 +573,7 @@ bool TB::test_basic_Solution_cap(Solution_cap sol, uint_t in_p, uint_t out_p) {
     if (!test_SizeofP(sol.get_pLocations(),in_p, out_p)) return false;
     if (!test_Capacity(sol, in_p, out_p)) return false;
     if (!test_Cover(sol.get_pLocations(),in_p, out_p)) return false;
+    if (!test_CoverN2(sol.get_pLocations(),in_p, out_p)) return false;
     return true;
 }
 
@@ -692,4 +711,7 @@ void TB::setExternalTime(double time) {
 }
 void TB::setCoverMode(bool cover_mode) {
     this->cover_mode = cover_mode;
+}
+void TB::setCoverMode_n2(bool cover_mode_n2) {
+    this->cover_mode_n2 = cover_mode_n2;
 }

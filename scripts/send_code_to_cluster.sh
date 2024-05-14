@@ -1,6 +1,6 @@
 
-path="/"
-# path="/src/"
+# path="/"
+path="/src/"
 # path="/scripts/"
 # path="/data/"
 
@@ -10,7 +10,8 @@ BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
 # PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
 PATH_ORIGIN=${BASE_PATH}${path}
-PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp_cover/test_coverages_exact${path}
+# PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/cpmp_cover/test_coverages_exact${path}
+PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/multiechelle${path}
 # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
 # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Random_Grid${path}
 
