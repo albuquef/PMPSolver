@@ -331,6 +331,7 @@ int main(int argc, char *argv[]) {
     cout << "[INFO] Instance loaded\n";
     instance.print();
 
+    // exit(1);
 // ----------------------------------------------------------------------------------------------------------------
 //                                          FILTERED INSTANCE
 //      cout << "Loading instance...\n";

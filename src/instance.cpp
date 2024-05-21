@@ -597,7 +597,7 @@ void Instance::ReadCoverages(const string& coverages_filename,string type_subare
 
         tock(start);
     }else{
-        cerr << "Error while trying to open the subareas file" << endl;
+        cout << "Error] while trying to open the subareas file" << endl;
         cout << "subareas filename: " << coverages_filename << endl;
     }
 }

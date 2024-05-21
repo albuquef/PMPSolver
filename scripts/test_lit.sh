@@ -1,5 +1,5 @@
 #!/bin/bash
-# emoji=🍀
+# #emoji=🍀
 #SBATCH --job-name=pmpLIT
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
@@ -7,7 +7,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-39%4
+#SBATCH --array=0-39%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -31,7 +31,8 @@ metsp="TB_PMP" # Subproblem method
 
 # Executable
 CMD="./build/large_PMP"
-COVER_MODE=0
+COVER_MODE=1
+subar="kmeans"
 
 # Define p values for each group
 for ((i = 0; i < 10; i++)); do
@@ -40,18 +41,19 @@ done
 for ((i = 0; i < 10; i++)); do
     p_values_group1+=(10)
 done
-p_values_group2=(10 15 25 30 30 40)
+# p_values_group2=(10 15 25 30 30 40)
 p_values_group3=(600 700 800 900 1000)
+# p_values_group3=(600)
 p_values_group5=(5 25 50 100 150 20 100 250 500 1000 5 15 40 70 100 20 75 150 300 500 10 50 100 200 300 10 30 75 125 200)
 
 # Define N values for each group
-for ((i = 0; i < 10; i++)); do
-    N_values_group1+=(50)
-done
-for ((i = 0; i < 10; i++)); do
-    N_values_group1+=(100)
-done
-N_values_group2=(100 200 300 300 402 402)
+# for ((i = 0; i < 10; i++)); do
+#     N_values_group1+=(50)
+# done
+# for ((i = 0; i < 10; i++)); do
+#     N_values_group1+=(100)
+# done
+# N_values_group2=(100 200 300 300 402 402)
 N_values_group3=(3038 3038 3038 3038 3038)
 for ((i = 0; i < 5; i++)); do
     N_values_group5+=(535)
@@ -71,18 +73,20 @@ done
 for ((i = 0; i < 5; i++)); do
     N_values_group5+=(724)
 done
+
+
 # Define INSTANCE_GROUPS
-INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
-# INSTANCE_GROUPS=("group1/")
+# INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
+INSTANCE_GROUPS=("group3/" "group5/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
 # echo "Filters: ${filters[@]}"
 
-
-for METHOD_RSSV_FINAL in "VNS_CPMP" "TB_CPMP"; do
+for METHOD in "EXACT_CPMP" "RSSV"; do
     # Iterate over each INSTANCE_GROUP
-    echo "Method RSSV FINAL: $METHOD_RSSV_FINAL"
+    METHOD_RSSV_FINAL="EXACT_CPMP"
+    # echo "Method RSSV FINAL: $METHOD_RSSV_FINAL"
     for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
         DIR_DATA_GROUP="${DIR_DATA}${INSTANCE_GROUP}"
 
@@ -96,7 +100,7 @@ for METHOD_RSSV_FINAL in "VNS_CPMP" "TB_CPMP"; do
         # INSTANCE_FILENAMES=$(ls "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
         # Get list of instance filenames in alphabetical order
         INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
-        # INSTANCE_FILENAMES="p3038_1000.txt"
+        # INSTANCE_FILENAMES="p3038_600.txt"
         # INSTANCE_FILENAMES="cpmp01.txt"
 
 
@@ -134,9 +138,11 @@ for METHOD_RSSV_FINAL in "VNS_CPMP" "TB_CPMP"; do
                     file=${file//.dat/.txt}
                     WEIGHTS="${DIR_DATA_GROUP}cust_weights_${file//.dat/.txt}"
                     CAPACITIES="${DIR_DATA_GROUP}loc_capacities_${file//.dat/.txt}"
-                    COVERAGES="${DIR_DATA_GROUP}loc_coverages_${file//.dat/.txt}"
+                    filename_without_extension="${file%.dat}"
+                    filename_without_extension="${file%.txt}"
+                    COVERAGES="${DIR_DATA_GROUP}loc_coverages_kmeans_${filename_without_extension}.txt"
                     serv="${file%.txt}"  # Corrected variable assignment
-                    subar="null"
+                    # subar="null"
                     p="${p_values[$index]}"
                     N="${N_values[$index]}"
                     CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.txt"
@@ -191,8 +197,8 @@ fi
 # done
 echo "Number of instances: ${#arr[@]}"
 
-# for element in "${arr[@]}"; do
-#     eval $element
-# done
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 # srun ${arr[$SLURM_ARRAY_TASK_ID]}
