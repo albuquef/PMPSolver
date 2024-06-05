@@ -5,7 +5,8 @@
         "bitset": "cpp",
         "string_view": "cpp",
         "chrono": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "iomanip": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

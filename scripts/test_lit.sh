@@ -7,7 +7,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-39%5
+#SBATCH --array=0-64%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -31,8 +31,11 @@ metsp="TB_PMP" # Subproblem method
 
 # Executable
 CMD="./build/large_PMP"
-COVER_MODE=1
-subar="kmeans"
+
+# Cover mode:
+# COVER_MODE=1
+# subar="kmeans"
+COVER_MODE=0
 
 # Define p values for each group
 for ((i = 0; i < 10; i++)); do
@@ -74,10 +77,38 @@ for ((i = 0; i < 5; i++)); do
     N_values_group5+=(724)
 done
 
+# N_values_GB21=()
+# p_values_GB21=()
+for ((i = 0; i < 3; i++)); do
+    N_values_GB21+=(52057)
+done
+p_values_GB21+=(1000)
+p_values_GB21+=(100)
+p_values_GB21+=(2000)
+for ((i = 0; i < 3; i++)); do
+    N_values_GB21+=(498378)
+done
+p_values_GB21+=(1000)
+p_values_GB21+=(100)
+p_values_GB21+=(2000)
+for ((i = 0; i < 3; i++)); do
+    N_values_GB21+=(104814)
+done
+p_values_GB21+=(1000)
+p_values_GB21+=(100)
+p_values_GB21+=(2000)
+for ((i = 0; i < 3; i++)); do
+    N_values_GB21+=(10150)
+done
+p_values_GB21+=(1000)
+p_values_GB21+=(100)
+p_values_GB21+=(2000)
+
+
 
 # Define INSTANCE_GROUPS
 # INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
-INSTANCE_GROUPS=("group3/" "group5/")
+INSTANCE_GROUPS=("group3/" "group5/" "GB21/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -123,11 +154,22 @@ for METHOD in "EXACT_CPMP" "RSSV"; do
                 p_values=("${p_values_group5[@]}")
                 N_values=("${N_values_group5[@]}")
                 ;;
+            "GB21/")
+                # p_values=($(printf "%s\n" "${p_values_GB21[@]}" | sort))
+                p_values=("${p_values_GB21[@]}")
+                N_values=("${N_values_GB21[@]}")
+                ;;
             *)
                 echo "Error: Unknown INSTANCE_GROUP $INSTANCE_GROUP."
                 exit 1
                 ;;
         esac
+
+
+        # print filenames line by line
+        # echo "Instance filenames:"
+        # echo "$INSTANCE_FILENAMES"
+
 
         # Iterate over files and corresponding p values
         index=0
@@ -150,8 +192,14 @@ for METHOD in "EXACT_CPMP" "RSSV"; do
                         CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt"
                     fi
 
+                    # SUB PRO SIZE IS N/2 
+                    SUB_PROB_SIZE=$((N / 2)) 
 
-                    OUTPUT="./solutions/test_lit_${serv}_p_${p}"
+                    #create a dir with date and time
+                    NEW_DIR="./solutions/$(date '+%Y-%m-%d_%H-%M-%S')"
+                    mkdir -p $NEW_DIR
+                    # mkdir -p ./solutions/$(date '+%Y-%m-%d_%H-%M-%S')
+                    OUTPUT="${NEW_DIR}/test_lit_${serv}"
 
                     # Flag to check if the file matches any filter
                     match_filter=false
@@ -178,7 +226,7 @@ for METHOD in "EXACT_CPMP" "RSSV"; do
                         arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
                         -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
                         -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS \
-                        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp \
+                        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
                         -o $OUTPUT | tee ./console/$CONSOLE_NAME")
                     fi
                     # done

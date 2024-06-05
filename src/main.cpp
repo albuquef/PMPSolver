@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
     bool cover_mode_n2 = false;
     uint_t cust_max_id = 0;
     uint_t loc_max_id = 0;
+    uint_t size_subproblems_rssv = 800;
 
 
     // default config path
@@ -176,6 +177,12 @@ int main(int argc, char *argv[]) {
                 
                 Method_RSSV_fp = argv[i + 1];
                 configOverride.insert("method_rssv_fp");                
+            } else if (strcmp(argv[i], "-size_subproblems_rssv") == 0){
+            
+                size_subproblems_rssv = stoi(argv[i + 1]);
+                configOverride.insert("size_subproblems_rssv");
+                SUB_PMP_SIZE = static_cast<uint_t>(size_subproblems_rssv);
+
             } else if (strcmp(argv[i], "-cover_mode") == 0){
                 if (strcmp(argv[i + 1], "true") == 0 || strcmp(argv[i + 1], "1") == 0){
                     cover_mode = true;
@@ -289,6 +296,8 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&Method, "method");
     config.setFromConfig(&Method_RSSV_sp, "method_rssv_sp");
     config.setFromConfig(&Method_RSSV_fp, "method_rssv_fp");
+    config.setFromConfig(&coverages_filename_n2, "coverages_n2");
+    config.setFromConfig(&size_subproblems_rssv, "size_subproblems_rssv");
 
 
     setThreadNumber(threads_cnt);
@@ -331,7 +340,6 @@ int main(int argc, char *argv[]) {
     cout << "[INFO] Instance loaded\n";
     instance.print();
 
-    // exit(1);
 // ----------------------------------------------------------------------------------------------------------------
 //                                          FILTERED INSTANCE
 //      cout << "Loading instance...\n";
@@ -388,15 +396,17 @@ int main(int argc, char *argv[]) {
     } else if(Method == "RSSV"){
         cout << "RSSV heuristic \n";
         cout << "-------------------------------------------------\n";
-        if (SUB_PMP_SIZE <= instance.get_p()){
-            SUB_PMP_SIZE = min(static_cast<uint_t>(1.5 * instance.get_p()), static_cast<uint_t>(0.75 * instance.getLocations().size()));
-        }
+        // if (SUB_PMP_SIZE <= instance.get_p()){
+        //     SUB_PMP_SIZE = min(static_cast<uint_t>(1.5 * instance.get_p()), static_cast<uint_t>(0.6 * instance.getLocations().size()));
+        // }
+        // SUB_PMP_SIZE = static_cast<uint_t>(0.5 * instance.getLocations().size());
+        cout << "RSSV subproblem size (N/2): " << SUB_PMP_SIZE << endl;
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
         metaheuristic.setCoverMode(cover_mode);
         metaheuristic.setCoverMode_n2(cover_mode_n2);
         CLOCK_THREADED = true;
         auto start_time_total = high_resolution_clock::now();
-        
+
         // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance);
         shared_ptr<Instance> filtered_instance;
         if(Method_RSSV_sp == "EXACT_PMP" || Method_RSSV_sp == "TB_PMP" || Method_RSSV_sp == "VNS_PMP"){
@@ -505,6 +515,10 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         pmp.setCoverModel_n2(instance->isCoverMode_n2(), instance->getTypeSubarea_n2());
         // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
+
+
+        // exit(1);
+
         pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);

@@ -71,7 +71,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = false;    
+    VERBOSE = true;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -150,7 +150,7 @@ void PMP::run(string Method_name){
 
         solveILP();
 
-        bool verb = true;
+        bool verb = false;
         if (cplex.getStatus() == IloAlgorithm::Optimal || cplex.getStatus() == IloAlgorithm::Feasible){
             isFeasible_Solver = true;
             if (verb){

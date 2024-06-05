@@ -25,3 +25,4 @@ subarea_n2 = "null"
 method = "TB_PMP"
 method_rssv_sp = "TB_PMP"
 method_rssv_fp = "TB_PMP"
+size_subproblems_rssv=800

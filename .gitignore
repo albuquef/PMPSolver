@@ -8,6 +8,7 @@
 /data/paca_v4/
 /data/Literature/dist_*_*.txt
 /data/Random/dist_*.txt
+/data/Literature/GB21/*
 /provided/
 /results/*
 !results/

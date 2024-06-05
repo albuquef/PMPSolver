@@ -394,25 +394,67 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
     outputTable.open(output_filename_final,ios:: app);
 
     if (!outputTable.is_open()) {
-        cerr << "Error opening file: " << output_filename << endl;
+        cerr << "Error opening file: " << output_filename_final << endl;
         // return;
     }else{
         outputTable << instance->getCustomers().size() << ";";
         outputTable << instance->getLocations().size() << ";";
         outputTable << instance->get_p() << ";";
-        outputTable << Method << ";";
+        outputTable << instance->isCoverMode() << ";";
+        outputTable << instance->isCoverMode_n2() << ";";
+        outputTable << instance->getTypeService() << ";";
+        outputTable << instance->getTypeSubarea() << ";";
         outputTable << typeEval << ";"; 
+        outputTable << Method << ";";
         outputTable << fixed << setprecision(15) << get_objective() << ";"; // obj value
-        outputTable << numIter << ";"; // 
         outputTable << fixed << setprecision(15) << timeFinal <<  ";"; // time cplex
+        outputTable << numIter << ";"; //
         outputTable << Method_sp << ";";
-        outputTable << Method_fp << ";";
-        outputTable << "\n";
+        outputTable << Method_fp << ";"; 
+        outputTable << SUB_PMP_SIZE << ";";
         // if (Method_sp != "null") {outputTable << Method_sp << ";";}
         // if (Method_fp != "null") {outputTable << Method_fp << ";";}
-        // outputTable << "\n";
+        outputTable << "\n";
     }
     outputTable.close();
+
+
+    // SAVE RESULTS ALL VALUES OF P
+
+    string output_table_all = "./solutions/test_all_results.csv";
+
+    ofstream outputTable_all;
+    outputTable_all.open(output_table_all,ios:: app);
+
+    if (!outputTable.is_open()) {
+        cerr << "Error opening file: " << output_table_all << endl;
+        // return;
+    }else{
+        // add the date and hour of the execution
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        outputTable_all << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << " ";
+        outputTable_all << instance->getCustomers().size() << ";";
+        outputTable_all << instance->getLocations().size() << ";";
+        outputTable_all << instance->get_p() << ";";
+        outputTable << instance->isCoverMode() << ";";
+        outputTable << instance->isCoverMode_n2() << ";";
+        outputTable_all << instance->getTypeService() << ";";
+        outputTable_all << instance->getTypeSubarea() << ";";
+        outputTable_all << typeEval << ";"; 
+        outputTable_all << Method << ";";
+        outputTable_all << fixed << setprecision(15) << get_objective() << ";"; // obj value
+        outputTable_all << fixed << setprecision(15) << timeFinal <<  ";"; // time cplex
+        outputTable_all << numIter << ";"; //
+        outputTable_all << Method_sp << ";";
+        outputTable_all << Method_fp << ";"; 
+        outputTable_all << SUB_PMP_SIZE << ";";
+        // if (Method_sp != "null") {outputTable_all << Method_sp << ";";}
+        // if (Method_fp != "null") {outputTable_all << Method_fp << ";";}
+        outputTable_all << "\n";
+    }
+    outputTable_all.close();
+
 
 }
 
