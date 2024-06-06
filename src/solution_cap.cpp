@@ -572,7 +572,9 @@ void Solution_cap::objEval(){
     dist_t obj_value = 0.0;
     for (auto cust:instance->getCustomers()) {
         for (auto a:assignments[cust]){ 
+            // a.usage = wi * xij 
             if(is_weighted_obj_func){obj_value += a.usage * instance->getRealDist(a.node, cust);}
+            // xi = a.usage/wi
             else{obj_value += (a.usage/instance->getCustWeight(cust)) * instance->getRealDist(a.node, cust);}
         }
     }
