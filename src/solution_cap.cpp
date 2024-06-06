@@ -33,15 +33,14 @@ Solution_cap::Solution_cap(shared_ptr<Instance> instance,
                  unordered_set<uint_t> p_locations,
                  unordered_map<uint_t, dist_t> loc_usages, 
                  unordered_map<uint_t, dist_t> cust_satisfactions, 
-                 unordered_map<uint_t, assignment> assignments, dist_t objective) {
+                 unordered_map<uint_t, assignment> assignments) {
     this->instance = std::move(instance);
     this->p_locations = std::move(p_locations);
     this->loc_usages = std::move(loc_usages);
     this->cust_satisfactions = std::move(cust_satisfactions);
     this->assignments = std::move(assignments);
-    this->objective = objective;
     this->typeEval = "CPLEX";
-    // objEval();
+    objEval();
     // GAP_eval();
 }
 
@@ -116,6 +115,7 @@ vector<pair<uint_t, dist_t>> Solution_cap::getUrgencies() {
 
 void Solution_cap::fullCapEval() {
     // Initialize all fields
+    bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
     objective = 0;
     for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
     for (auto cust:this->instance->getCustomers()) {
@@ -177,33 +177,25 @@ void Solution_cap::fullCapEval() {
                     if (dem_rem > cap_rem) { // assign all remaining location capacity
                         loc_usages[loc] += cap_rem;
                         cust_satisfactions[cust] += cap_rem;
-                        auto obj_increment = cap_rem * instance->getRealDist(loc, cust);
+                        
+                        
+                        auto obj_increment =  instance->getRealDist(loc, cust);
+                        if(is_weighted_obj_func){obj_increment =  cap_rem * instance->getRealDist(loc, cust);}
+
                         // objective += obj_increment;
                         assignments[cust].emplace_back(my_tuple{loc, cap_rem, obj_increment});
                         dem_rem -= cap_rem;
                         location_full = true;
 
-                    //     cout << "Finish all capacited\n";
-                    //    cout << "cust: " << cust << " dem_rem: " << dem_rem << endl;
-                    //     cout << "loc: " << loc << " cap_rem: " << cap_rem << endl;
-                    //     cout << "loc_usages[" << loc << "]: " << loc_usages[loc] << endl;
-                    //     cout << "cust_satisfactions[" << cust << "]: " << cust_satisfactions[cust] << endl;
-                    //     cout << "\n";
-
                         break;
                     } else { // assign dem_rem
                         loc_usages[loc] += dem_rem;
                         cust_satisfactions[cust] += dem_rem;
-                        auto obj_increment = dem_rem * instance->getRealDist(loc, cust);
+                        auto obj_increment = instance->getRealDist(loc, cust);
+                        if(is_weighted_obj_func){obj_increment =  dem_rem * instance->getRealDist(loc, cust);}
                         // objective += obj_increment;
                         assignments[cust].emplace_back(my_tuple{loc, dem_rem, obj_increment});
                         dem_rem = 0;
-                    //    cout << "Finish all demand\n";
-                    //    cout << "cust: " << cust << " dem_rem: " << dem_rem << endl;
-                    //     cout << "loc: " << loc << " cap_rem: " << cap_rem << endl;
-                    //     cout << "loc_usages[" << loc << "]: " << loc_usages[loc] << endl;
-                    //     cout << "cust_satisfactions[" << cust << "]: " << cust_satisfactions[cust] << endl;
-                    //     cout << "\n";
                     }
                 }
             }
@@ -220,6 +212,7 @@ void Solution_cap::fullCapEval() {
     isFeasible = !infeasible;
     // cout << "fullCapEval: " << objective << endl;
     if (isFeasible) objEval();
+    else objective = numeric_limits<dist_t>::max();
     
 
     if (p_locations.size() != instance->get_p()) {
@@ -255,11 +248,17 @@ void Solution_cap::print() {
     }
     cout << "\np size: " << p_locations.size() << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
+    if(instance->get_isWeightedObjFunc()){
+        cout << "sum (wi * dij * xij) " << endl;
+    }else{
+        cout << "sum (dij * xij) " << endl;
+    }
     cout << "demand/capacity: " << instance->getTotalDemand() << "/" << getTotalCapacity() << endl;
-    if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";
-    }else{ cout << "cover mode: OFF" << "\n";}
-    if(cover_mode_n2){ cout << "cover mode n2: " <<  instance->getTypeSubarea_n2() << "\n";
-    }else{ cout << "cover mode n2: OFF" << "\n";}
+
+    if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";}
+    // else{ cout << "cover mode: OFF" << "\n";}
+    if(cover_mode_n2){ cout << "cover mode n2: " <<  instance->getTypeSubarea_n2() << "\n";}
+    // else{ cout << "cover mode n2: OFF" << "\n";}
     if(isSolutionFeasible()) cout << "Solution is Feasible\n";
     else cout << "Solution is Infeasible\n";
     
@@ -306,21 +305,22 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
         cout << endl;
         // exit(1);
     } 
-    // is in the same subarea
-    auto p_loc_cand = p_locations;
-    p_loc_cand.erase(loc_old);
-    p_loc_cand.insert(loc_new);
-    if(instance->isCoverMode()){
-        if(!instance->isPcoversAllSubareas(p_loc_cand)){
-            cerr << "ERROR: p_locations do not cover all subareas" << endl;
-            // cout << "p_locations: ";
-            // for (auto p:p_locations) {
-            //     cout << p << " ";
-            // }
-            // cout << endl;
-            // exit(1);
-        }
-    }
+
+    // test is in the same subarea
+    // auto p_loc_cand = p_locations;
+    // p_loc_cand.erase(loc_old);
+    // p_loc_cand.insert(loc_new);
+    // if(instance->isCoverMode()){
+    //     if(!instance->isPcoversAllSubareas(p_loc_cand)){
+    //         cerr << "ERROR: p_locations do not cover all subareas" << endl;
+    //         // cout << "p_locations: ";
+    //         // for (auto p:p_locations) {
+    //         //     cout << p << " ";
+    //         // }
+    //         // cout << endl;
+    //         // exit(1);
+    //     }
+    // }
 
 }
 
@@ -378,7 +378,6 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
 
 void Solution_cap::saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp, string Method_fp){
 
-    cout << "[INFO] Saving results" << endl;
 
     string output_filename_final = output_filename + 
     "_results_" + Method +
@@ -389,6 +388,8 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
         "_results_" + Method + "_cover_" + instance->getTypeSubarea() +
         ".csv";
     }
+
+    cout << "[INFO] Saving results: "  << output_filename_final << endl;
 
     ofstream outputTable;
     outputTable.open(output_filename_final,ios:: app);
@@ -412,33 +413,32 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
         outputTable << Method_sp << ";";
         outputTable << Method_fp << ";"; 
         outputTable << SUB_PMP_SIZE << ";";
-        // if (Method_sp != "null") {outputTable << Method_sp << ";";}
-        // if (Method_fp != "null") {outputTable << Method_fp << ";";}
         outputTable << "\n";
     }
-    outputTable.close();
+    // outputTable.close();
 
 
-    // SAVE RESULTS ALL VALUES OF P
-
-    string output_table_all = "./solutions/test_all_results.csv";
-
+    // SAVE RESULTS ALL 
+    string output_all_filename = "./solutions/test_all_results.csv";
+    cout << "[INFO] Saving all results: "  << output_all_filename << endl;
+    
     ofstream outputTable_all;
-    outputTable_all.open(output_table_all,ios:: app);
+    outputTable_all.open(output_all_filename,ios:: app);
 
     if (!outputTable.is_open()) {
-        cerr << "Error opening file: " << output_table_all << endl;
+        cerr << "Error opening file: " << output_all_filename << endl;
         // return;
     }else{
         // add the date and hour of the execution
         time_t now = time(0);
         tm *ltm = localtime(&now);
-        outputTable_all << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << " ";
+        outputTable_all << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << ";";
         outputTable_all << instance->getCustomers().size() << ";";
         outputTable_all << instance->getLocations().size() << ";";
         outputTable_all << instance->get_p() << ";";
-        outputTable << instance->isCoverMode() << ";";
-        outputTable << instance->isCoverMode_n2() << ";";
+        outputTable_all << instance->get_isWeightedObjFunc() << ";";
+        outputTable_all << instance->isCoverMode() << ";";
+        outputTable_all << instance->isCoverMode_n2() << ";";
         outputTable_all << instance->getTypeService() << ";";
         outputTable_all << instance->getTypeSubarea() << ";";
         outputTable_all << typeEval << ";"; 
@@ -446,13 +446,15 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
         outputTable_all << fixed << setprecision(15) << get_objective() << ";"; // obj value
         outputTable_all << fixed << setprecision(15) << timeFinal <<  ";"; // time cplex
         outputTable_all << numIter << ";"; //
-        outputTable_all << Method_sp << ";";
-        outputTable_all << Method_fp << ";"; 
-        outputTable_all << SUB_PMP_SIZE << ";";
-        // if (Method_sp != "null") {outputTable_all << Method_sp << ";";}
-        // if (Method_fp != "null") {outputTable_all << Method_fp << ";";}
+        if (strcmp(Method.c_str(), "RSSV") == 0){
+            outputTable_all << Method_sp << ";";
+            outputTable_all << Method_fp << ";"; 
+            outputTable_all << SUB_PMP_SIZE << ";";
+        }
         outputTable_all << "\n";
     }
+
+    outputTable.close();
     outputTable_all.close();
 
 
@@ -514,6 +516,7 @@ void Solution_cap::setSolution(shared_ptr<Instance> instance, unordered_set<uint
 
 void Solution_cap::GAP_eval(){
     // Initialize all fields
+    // bool is_weighted_obj_func = instance->get_isWeightedObjFunc();;
     objective = 0;
     for (auto p_loc:this->p_locations) loc_usages[p_loc] = 0;
     for (auto cust:this->instance->getCustomers()) {
@@ -534,7 +537,7 @@ void Solution_cap::GAP_eval(){
                 sol_gap.getCustSatisfactions(), sol_gap.getAssignments(), sol_gap.get_objective());
         }else{
             objective=numeric_limits<dist_t>::max();
-            cout << "GAP not feasible" << endl;
+            // cout << "GAP not feasible" << endl;
             auto sol_gap = Solution_cap();
             isFeasible = false;
         }
@@ -563,13 +566,19 @@ void Solution_cap::GAP_eval(){
 }
 
 void Solution_cap::objEval(){
+    bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
+    cout << "is_weighted_obj_func: " << is_weighted_obj_func << endl;
     this->objective = 0;
+    dist_t obj_value = 0.0;
     for (auto cust:instance->getCustomers()) {
-        for (auto a:assignments[cust]) this->objective += a.usage * instance->getRealDist(a.node, cust);
-        // for (auto a:assignments[cust]) this->objective += instance->getRealDist(a.node, cust);
+        for (auto a:assignments[cust]){ 
+            if(is_weighted_obj_func){obj_value += a.usage * instance->getRealDist(a.node, cust);}
+            else{obj_value += (a.usage/instance->getCustWeight(cust)) * instance->getRealDist(a.node, cust);}
+        }
     }
 
-    // cout << "objective Eval: " << objective << endl;
+    cout << "objective Eval: " << obj_value << endl;
+    this->objective = obj_value;
 
 }
 
@@ -646,7 +655,6 @@ bool Solution_cap::isSolutionFeasible(){
     }
 
     if(cover_mode){isFeasible = instance->isPcoversAllSubareas(p_locations);}
-
     if(cover_mode_n2){isFeasible = instance->isPcoversAllSubareas_n2(p_locations);}
  
     return isFeasible;

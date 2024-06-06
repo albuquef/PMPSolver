@@ -7,12 +7,14 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-64%5
+#SBATCH --array=0-5%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
 # conda activate myenv
 
+# Executable
+CMD="./build/large_PMP"
 
 # Define directory path
 DIR_DATA="./data/Literature/"
@@ -23,19 +25,21 @@ TIME_CLOCK=3600
 NUM_THREADS=8
 
 # Methods
-# METHOD="EXACT_CPMP"
-METHOD="RSSV"
+# FOR_METHODS=("EXACT_CPMP" "RSSV")
+# FOR_METHODS=("EXACT_CPMP")
+FOR_METHODS=("EXACT_CPMP")
+# FOR_METHODS=("RSSV")
+
+METHOD_RSSV_FINAL="EXACT_CPMP"
 
 # METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
-
-# Executable
-CMD="./build/large_PMP"
 
 # Cover mode:
 # COVER_MODE=1
 # subar="kmeans"
 COVER_MODE=0
+
 
 # Define p values for each group
 for ((i = 0; i < 10; i++)); do
@@ -44,7 +48,7 @@ done
 for ((i = 0; i < 10; i++)); do
     p_values_group1+=(10)
 done
-# p_values_group2=(10 15 25 30 30 40)
+p_values_group2=(10 15 25 30 30 40)
 p_values_group3=(600 700 800 900 1000)
 # p_values_group3=(600)
 p_values_group5=(5 25 50 100 150 20 100 250 500 1000 5 15 40 70 100 20 75 150 300 500 10 50 100 200 300 10 30 75 125 200)
@@ -56,7 +60,7 @@ p_values_group5=(5 25 50 100 150 20 100 250 500 1000 5 15 40 70 100 20 75 150 30
 # for ((i = 0; i < 10; i++)); do
 #     N_values_group1+=(100)
 # done
-# N_values_group2=(100 200 300 300 402 402)
+N_values_group2=(100 200 300 300 402 402)
 N_values_group3=(3038 3038 3038 3038 3038)
 for ((i = 0; i < 5; i++)); do
     N_values_group5+=(535)
@@ -108,15 +112,17 @@ p_values_GB21+=(2000)
 
 # Define INSTANCE_GROUPS
 # INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
-INSTANCE_GROUPS=("group3/" "group5/" "GB21/")
+# INSTANCE_GROUPS=("group3/" "group5/" "GB21/")
+INSTANCE_GROUPS=("group2/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
 # echo "Filters: ${filters[@]}"
 
-for METHOD in "EXACT_CPMP" "RSSV"; do
+for METHOD in "${FOR_METHODS[@]}"; do
     # Iterate over each INSTANCE_GROUP
-    METHOD_RSSV_FINAL="EXACT_CPMP"
+    # METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
+
     # echo "Method RSSV FINAL: $METHOD_RSSV_FINAL"
     for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
         DIR_DATA_GROUP="${DIR_DATA}${INSTANCE_GROUP}"
@@ -167,8 +173,8 @@ for METHOD in "EXACT_CPMP" "RSSV"; do
 
 
         # print filenames line by line
-        # echo "Instance filenames:"
-        # echo "$INSTANCE_FILENAMES"
+        echo "Instance filenames:"
+        echo "$INSTANCE_FILENAMES"
 
 
         # Iterate over files and corresponding p values
@@ -196,9 +202,11 @@ for METHOD in "EXACT_CPMP" "RSSV"; do
                     SUB_PROB_SIZE=$((N / 2)) 
 
                     #create a dir with date and time
-                    NEW_DIR="./solutions/$(date '+%Y-%m-%d_%H-%M-%S')"
+                    NEW_DIR="./solutions/$(date '+%Y-%m-%d')_LIT"
                     mkdir -p $NEW_DIR
-                    # mkdir -p ./solutions/$(date '+%Y-%m-%d_%H-%M-%S')
+                    mkdir -p $NEW_DIR/VarsValues_cplex/
+                    mkdir -p $NEW_DIR/Results_cplex/
+                    # OUTPUT="${NEW_DIR}/test_${SLURM_JOB_NAME}_${serv}"
                     OUTPUT="${NEW_DIR}/test_lit_${serv}"
 
                     # Flag to check if the file matches any filter
@@ -243,7 +251,7 @@ fi
 # for element in "${arr[@]}"; do
 #     echo "$element"
 # done
-echo "Number of instances: ${#arr[@]}"
+# echo "Number of instances: ${#arr[@]}"
 
 for element in "${arr[@]}"; do
     eval $element

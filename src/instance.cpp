@@ -373,6 +373,14 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
 
 }
 
+bool Instance::get_isWeightedObjFunc() {
+    return is_weighted_obj_func;
+}
+void Instance::set_isWeightedObjFunc(bool isWeightedObjFunc) {
+    is_weighted_obj_func = isWeightedObjFunc;
+}
+
+
 uint_t Instance::getDistIndex(uint_t loc, uint_t cust) {
 //    return loc * cust_max_id + cust;    // faster extraction of cust values
     return cust * loc_max_id + loc;    // faster extraction of loc values
@@ -446,6 +454,11 @@ void Instance::print() {
     cout << "service: " << type_service << endl;
     cout << "cust_max_id: " << cust_max_id << endl;
     cout << "cust_cnt: " << customers.size() << endl;
+    if (get_isWeightedObjFunc()){
+        cout << "weighted obj function" << endl;
+    } else {
+        cout << "unweighted obj function" << endl;
+    }
     if (cover_mode) {
         cout << "cover_max_id: " << cover_max_id << endl;
         cout << "subareas_cnt: " << unique_subareas.size() << endl;

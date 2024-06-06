@@ -44,6 +44,7 @@ private:
     vector<pair<dist_t, dist_t>> loc_coordinates;
     vector<pair<dist_t, dist_t>> cust_coordinates;
 
+    bool is_weighted_obj_func = true;
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
 public:
@@ -93,6 +94,9 @@ public:
     bool isCoverMode_n2();
     bool isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand);
     bool isPcoversAllSubareas_n2(unordered_set<uint_t> p_loc_cand);
+    bool get_isWeightedObjFunc();
+    void set_isWeightedObjFunc(bool is_weighted_obj_func);
+
 };
 
 

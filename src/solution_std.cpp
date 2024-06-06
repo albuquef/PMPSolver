@@ -15,11 +15,14 @@ Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> 
 
 void Solution_std::naiveEval() {
 //    assert(p_locations.size() == instance->get_p());
-
+    bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
-        auto dist = instance->getWeightedDist(loc, cust);
+        // auto dist = instance->getWeightedDist(loc, cust);
+        // auto dist = instance->getRealDist(loc, cust);
+        auto dist = instance->getRealDist(loc, cust);
+        if (is_weighted_obj_func){dist = instance->getWeightedDist(loc, cust);}
         // cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
         objective += dist;
         assignment[cust] = my_pair{loc, dist};
@@ -51,6 +54,12 @@ void Solution_std::print() {
     cout << endl;
     cout << "p size: " << p_locations.size() << endl;
     cout << setprecision(15) << "objective: " << objective << endl;
+    if(instance->get_isWeightedObjFunc()){
+        cout << "sum (wi * dij * xij) " << endl;
+    }else{
+        cout << "sum (dij * xij) " << endl;
+    }
+    
     if(cover_mode){ cout << "cover mode: " <<  instance->getTypeSubarea() << "\n";
     }else{ cout << "cover mode: OFF" << "\n";}
     if(cover_mode_n2){ cout << "cover mode n2: " <<  instance->getTypeSubarea_n2() << "\n";

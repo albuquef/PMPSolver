@@ -1,12 +1,12 @@
 
 # path="/"
-path="/src/"
-# path="/scripts/"
+# path="/src/"
+path="/scripts/"
 # path="/data/"
 
 
-BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
-# BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+# BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
 
 # PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
 PATH_ORIGIN=${BASE_PATH}${path}
@@ -20,6 +20,9 @@ PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Large_I
 
 # Copy the code to the cluster
 eval "rsync -av --exclude='.git' $PATH_ORIGIN $PATH_DEST"
+# copy the code to the cluster using scp
+# eval "scp -r $PATH_ORIGIN $PATH_DEST"
+
 
 # Copy the data to the cluster
 # eval "rsync -av $PATH_ORIGIN/data/filterData_PACA_may23/ $PATH_DEST/data/filterData_PACA_may23/"

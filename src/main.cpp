@@ -24,6 +24,19 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const string typ
 
 using namespace std;
 
+
+double get_wall_time_main(){
+    struct timeval time;
+    if(gettimeofday(&time,nullptr)){
+        // HANDLE ERROR
+        return 0;
+    }else{
+        return static_cast<double>(time.tv_sec) + static_cast<double>(time.tv_usec*0.000001); //microsegundos
+    }
+}
+
+
+
 int main(int argc, char *argv[]) {
 
     // Required parameters
@@ -338,6 +351,7 @@ int main(int argc, char *argv[]) {
         instance.setCoverModel_n2(true);
     }
     cout << "[INFO] Instance loaded\n";
+    instance.set_isWeightedObjFunc(false);
     instance.print();
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -379,7 +393,7 @@ int main(int argc, char *argv[]) {
         cout << "Final total elapsed time: " << elapsed_time << "s\n";
         solution.saveAssignment(output_filename,Method);
         solution.saveResults(output_filename, elapsed_time,0,Method);   
-    } else if(Method == "EXACT_CPMP" || Method == "EXACT_CPMP_BIN" || Method == "TB_CPMP" || Method == "VNS_CPMP"){
+    } else if(Method == "EXACT_CPMP" || Method == "EXACT_CPMP_BIN" || Method == "TB_CPMP" || Method == "VNS_CPMP" || Method == "GAPrelax"){
         
         
         auto start_time = high_resolution_clock::now();
@@ -418,6 +432,8 @@ int main(int argc, char *argv[]) {
             exit(1);
         }
         filtered_instance->setCoverModel(cover_mode);
+        filtered_instance->setCoverModel_n2(cover_mode_n2);
+        filtered_instance->set_isWeightedObjFunc(instance.get_isWeightedObjFunc());
         cout << "Final instance parameters:\n";
         filtered_instance->print();
 
@@ -515,10 +531,6 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         pmp.setCoverModel_n2(instance->isCoverMode_n2(), instance->getTypeSubarea_n2());
         // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
-
-
-        // exit(1);
-
         pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -565,12 +577,24 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         }
         
 
+    } else if (typeMethod == "GAPrelax"){
+        cout << "GAPrelax - cPMP\n";
+        cout << "-------------------------------------------------\n";
+        TB heuristic(instance, seed);
+        heuristic.setMethod(typeMethod);
+        heuristic.setCoverMode(cover_mode);
+        heuristic.setCoverMode_n2(instance->isCoverMode_n2());
+        auto solution = heuristic.fixedCapSolution();
+        cout << "Final solution:\n";
+        solution.print();
+        exit(1);
+    
     }else{
         cout << "[ERROR] Method not found" << endl;
         exit(1);
     }
 
-    if (typeMethod != "EXACT_CPMP" && typeMethod != "EXACT_CPMP_BIN" && typeMethod != "RSSV_EXACT_CPMP" && typeMethod != "RSSV_EXACT_CPMP_BIN"){
+    if (typeMethod != "EXACT_CPMP" && typeMethod != "EXACT_CPMP_BIN" && typeMethod != "RSSV_EXACT_CPMP" && typeMethod != "RSSV_EXACT_CPMP_BIN" && typeMethod != "GAPrelax"){
         solution.setCoverMode(cover_mode);
         auto p_loc = solution.get_pLocations();
         auto sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);

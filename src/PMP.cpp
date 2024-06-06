@@ -296,6 +296,14 @@ void PMP::objFunction(IloModel model, VarType x){
 
     if (VERBOSE){cout << "[INFO] Adding Objective Function "<< endl;}
     
+    // bool is_weighted_obj_func = false;
+    bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
+    
+    if (VERBOSE){
+        if (is_weighted_obj_func){cout << "SUM (wi * dij * xij)" << endl;}
+        else{cout << "SUM (dij * xij)" << endl;}
+    }
+    
     IloEnv env = model.getEnv();
     IloExpr objExpr(env);
     for(IloInt i = 0; i < num_customers; i++)
@@ -304,7 +312,11 @@ void PMP::objFunction(IloModel model, VarType x){
             // else{objExpr += instance->getWeightedDist(j+1,i+1) * x[i][j];}
             auto loc = instance->getLocations()[j];
             auto cust = instance->getCustomers()[i];
-            objExpr += instance->getWeightedDist(loc,cust) * x[i][j];
+
+            if (is_weighted_obj_func){objExpr += instance->getWeightedDist(loc,cust) * x[i][j];
+            }else{objExpr += instance->getRealDist(loc,cust) * x[i][j];}
+
+            // objExpr += instance->getWeightedDist(loc,cust) * x[i][j];
             // objExpr += instance->getRealDist(loc,cust) * x[i][j];
             // objExpr +=  x[i][j];
         }
@@ -609,10 +621,12 @@ Solution_cap PMP::getSolution_cap(){
 
         cout << "p_loc = ";
         for(auto p_loc:p_locations)
-            cout << p_loc << ", ";
+            cout << p_loc << " ";
         cout << endl;   
 
-        dist_t objtest = 0;
+        bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
+        cout << "is_weighted_obj_func: " << is_weighted_obj_func << endl;
+        dist_t objtest = 0.00000001;
 
         for(IloInt j = 0; j < num_facilities; j++){
             if (cplex.getValue(y[j]) > 0.5){
@@ -620,45 +634,40 @@ Solution_cap PMP::getSolution_cap(){
                 auto loc = instance->getLocations()[j];
                 for(IloInt i = 0; i < num_customers; i++){
                     auto cust = instance->getCustomers()[i];
-                    if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0){
-                        auto dem_used = cplex.getValue(x_bin[i][j])* instance->getCustWeight(cust);//instance->getWeightedDist(loc,cust);
-                        loc_usages[loc] += dem_used;
-                        cust_satisfactions[cust] += dem_used;
-                        auto obj_increment = dem_used * instance->getRealDist(loc, cust);
-                        assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
-                        objtest += obj_increment;
-                        // objtest += instance->getRealDist(loc, cust);
-                        // cout << "cust = " << cust << " dem_used = " << dem_used << " obj_increment = " << obj_increment << endl;
+                    
+                    auto qtde_used = 0.0;
+                    if (is_BinModel && cplex.getValue(x_bin[i][j]) > 0.5){
+                        qtde_used = cplex.getValue(x_bin[i][j]);
                     }else if (!is_BinModel && cplex.getValue(x_cont[i][j]) > 0){
-                        auto dem_used = cplex.getValue(x_cont[i][j])* instance->getCustWeight(cust);
+                        qtde_used = cplex.getValue(x_cont[i][j]);
+                    }
+
+                    if (qtde_used > 0.0001) {
+                        auto dem_used = qtde_used*instance->getCustWeight(cust);
                         loc_usages[loc] += dem_used;
                         cust_satisfactions[cust] += dem_used;
-                        auto obj_increment = dem_used * instance->getRealDist(loc, cust);
-                        assignments[cust].emplace_back(my_tuple{loc, dem_used, obj_increment});
-                        objtest += obj_increment;
-                        // objtest += cplex.getValue(x_cont[i][j]);
-                        // objtest += instance->getRealDist(loc, cust);
-                        // cout << "cust = " << cust << " dem_used = " << dem_used << " obj_increment = " << obj_increment << endl;
-                    }
-
-
-                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.0001){
+                        assignments[cust].emplace_back(my_tuple{loc, dem_used, instance->getRealDist(loc, cust)});
                         
-                            cerr << "ERROR: usage > capacity" << endl;    
-                            exit(1);
-                    }
-                    if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){
+                        auto obj_increment =  instance->getRealDist(loc, cust) * qtde_used;
+                        if (is_weighted_obj_func) obj_increment = dem_used * instance->getRealDist(loc, cust);
+                        objtest += obj_increment;
 
-                        cerr << "ERROR: satisfaction > weight" << endl;
-                        exit(1);
+
+                        // cout << "loc: " << loc << " cust: " << cust << " qtde_used: " << qtde_used << " dem_used: " << dem_used << " dist: " << instance->getRealDist(loc, cust) << " obj_increment: " << obj_increment << endl;
                     }
+                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.0001){ cerr << "ERROR: usage > capacity" << endl;  exit(1);}
+                    if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){ cerr << "ERROR: satisfaction > weight" << endl; exit(1);}
 
                     
                 }
             }
+
+
         }
 
-        Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments, objtest);
+        cout << "objtest: " << objtest << endl;
+
+        Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments);
         return sol;
 
     } catch (IloException& e) {
@@ -691,24 +700,38 @@ Solution_std PMP::getSolution_std(){
 
 void PMP::saveVars(const std::string& filename,const string& Method){
 
-    cout << "[INFO] Saving variables" << endl;
+    cout << "[INFO] Saving variables:" << endl;
+
+    string delimiter = "/";
+    string directory;
+    string rem_filename;
+
+    // Find the last occurrence of the delimiter
+    size_t pos = filename.find_last_of(delimiter);
+    if (pos != std::string::npos) {
+        // Extract the substring up to and including the last delimiter
+        directory = filename.substr(0, pos + 1);
+        rem_filename = filename.substr(pos + 1);
+    } else {
+        std::cerr << "[WARN] Delimiter not found in the filename string" << std::endl;
+    }
+
+
+    string output_filename = directory + "VarsValues_cplex/" + rem_filename + "_" + typeProb +
+    "_Vars";
+    if (is_BinModel){output_filename += "_Bin"; }
+
+    output_filename += "_p_" + to_string(p) + "_"+ Method;
+    
+    if (CoverModel) output_filename += "_cover_" + typeSubarea;
+
+    output_filename += ".txt";
+
+    cout << output_filename  << endl;
+
 
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
-
-    string output_filename = "TEST.txt";
-    if (!is_BinModel){
-        output_filename = filename + "_" + typeProb +
-            "_Vars_Cont_p_" + to_string(p) + 
-            "_" + Method +
-            ".txt";
-    }else{
-        output_filename = filename + "_" + typeProb +
-            "_Vars_Bin_p_" + to_string(p) + 
-            "_" + Method +
-            ".txt";
-    }
-
     // Open file if output_filename is not empty
     if (!output_filename.empty()) {
         file.open(output_filename, ios::out);
@@ -749,7 +772,7 @@ void PMP::saveVars(const std::string& filename,const string& Method){
 
 void PMP::saveResults(const string& filename,const string& Method){
 
-    cout << "[INFO] Saving results" << endl;
+    // cout << "[INFO] Saving results" << endl;
 
     string output_filename = "TEST.txt";
     if (!is_BinModel){
@@ -761,6 +784,8 @@ void PMP::saveResults(const string& filename,const string& Method){
             "_Bin_" + Method +
             ".csv";
     }
+
+    cout << "[INFO] Saving results: " << output_filename << endl;
 
     ofstream outputTable;
     outputTable.open(output_filename,ios:: app);

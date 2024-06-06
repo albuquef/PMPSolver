@@ -155,6 +155,7 @@ void RSSV::solveSubproblem(int seed) {
     auto start = tick();
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
+    subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
     if (instance->get_p() > n) {
         cout << "[ERROR] The number of facilities is greater than the number of locations to be selected" << endl;
         exit(1);

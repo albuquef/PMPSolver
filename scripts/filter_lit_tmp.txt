@@ -38,3 +38,8 @@ SJC3b.dat
 SJC4a.dat
 SJC4b.dat
 SJC1
+SJC2
+SJC3a
+SJC3b
+SJC4a
+SJC4b
