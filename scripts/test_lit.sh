@@ -6,7 +6,7 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
-# #SBATCH --array=0-17%5
+# #SBATCH --array=0-75%6
 #SBATCH --array=0-5%5
 
 # Activate the conda env if needed
@@ -25,12 +25,11 @@ TIME_CLOCK=3600
 NUM_THREADS=8
 
 # Methods
-# FOR_METHODS=("EXACT_CPMP" "RSSV")
+FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
 # FOR_METHODS=("EXACT_CPMP")
-FOR_METHODS=("EXACT_CPMP")
 # FOR_METHODS=("RSSV")
 
-METHOD_RSSV_FINAL="EXACT_CPMP"
+METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 
 # METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
@@ -40,6 +39,8 @@ metsp="TB_PMP" # Subproblem method
 # subar="kmeans"
 COVER_MODE=0
 
+# Weighted sum of distances
+IsWeighted_OBJ=false
 
 # Define p values for each group
 for ((i = 0; i < 10; i++)); do
@@ -113,6 +114,7 @@ p_values_GB21+=(2000)
 # Define INSTANCE_GROUPS
 # INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
 # INSTANCE_GROUPS=("group3/" "group5/" "GB21/")
+# INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 INSTANCE_GROUPS=("group2/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
@@ -173,8 +175,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
 
         # print filenames line by line
-        echo "Instance filenames:"
-        echo "$INSTANCE_FILENAMES"
+        # echo "Instance filenames:"
+        # echo "$INSTANCE_FILENAMES"
 
 
         # Iterate over files and corresponding p values
@@ -183,6 +185,13 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
                     # D_MATRIX="${DIR_DATA_GROUP}dist_matrix_${file//.dat/.txt}"
                     D_MATRIX="euclidian"
+
+                    # Check if the file contains the word "spain": this case is not euclidian distances
+                    if [[ "$file" == *"spain"* ]]; then
+                        # Assign a specific name for files containing the word "spain"
+                        D_MATRIX="spain_matrix_${file//.dat/.txt}"
+                    fi
+
                     file=${file//.dat/.txt}
                     WEIGHTS="${DIR_DATA_GROUP}cust_weights_${file//.dat/.txt}"
                     CAPACITIES="${DIR_DATA_GROUP}loc_capacities_${file//.dat/.txt}"
@@ -233,7 +242,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                         # echo "p: $p"
                         arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
                         -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
-                        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS \
+                        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
                         -o $OUTPUT | tee ./console/$CONSOLE_NAME")
                     fi
@@ -251,7 +260,7 @@ fi
 # for element in "${arr[@]}"; do
 #     echo "$element"
 # done
-# echo "Number of instances: ${#arr[@]}"
+echo "Number of instances: ${#arr[@]}"
 
 for element in "${arr[@]}"; do
     eval $element

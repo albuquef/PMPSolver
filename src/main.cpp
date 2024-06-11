@@ -62,6 +62,7 @@ int main(int argc, char *argv[]) {
     uint_t cust_max_id = 0;
     uint_t loc_max_id = 0;
     uint_t size_subproblems_rssv = 800;
+    bool IsWeighted_ObjFunc = false;
 
 
     // default config path
@@ -114,6 +115,19 @@ int main(int argc, char *argv[]) {
 
                 mode = stoi(argv[i + 1]);
                 configOverride.insert("mode");
+
+            }else if (strcmp(argv[i], "-IsWeighted_ObjFunc") == 0) {
+
+                if (strcmp(argv[i + 1], "true") == 0 || strcmp(argv[i + 1], "1") == 0){
+                    IsWeighted_ObjFunc = true;
+                } else if (strcmp(argv[i + 1], "false") == 0 || strcmp(argv[i + 1], "0") == 0){
+                    IsWeighted_ObjFunc = false;
+                } else {
+                    cerr << "Unknown parameter [IsWeighted_ObjFunc]: " << argv[i] << endl;
+                    // exit(1);
+                }
+                // IsWeighted_ObjFunc = argv[i + 1];
+                configOverride.insert("IsWeighted_ObjFunc");
 
             }else if (strcmp(argv[i], "--seed") == 0) {
 
@@ -311,6 +325,11 @@ int main(int argc, char *argv[]) {
     config.setFromConfig(&Method_RSSV_fp, "method_rssv_fp");
     config.setFromConfig(&coverages_filename_n2, "coverages_n2");
     config.setFromConfig(&size_subproblems_rssv, "size_subproblems_rssv");
+    config.setFromConfig(&TypeSubarea, "subarea");
+    config.setFromConfig(&TypeSubarea_n2, "subarea_n2");
+    config.setFromConfig(&cover_mode, "cover_mode");
+    config.setFromConfig(&cover_mode_n2, "cover_mode_n2");
+    config.setFromConfig(&IsWeighted_ObjFunc, "IsWeighted_ObjFunc");
 
 
     setThreadNumber(threads_cnt);
@@ -351,7 +370,7 @@ int main(int argc, char *argv[]) {
         instance.setCoverModel_n2(true);
     }
     cout << "[INFO] Instance loaded\n";
-    instance.set_isWeightedObjFunc(false);
+    instance.set_isWeightedObjFunc(IsWeighted_ObjFunc);
     instance.print();
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -388,7 +407,7 @@ int main(int argc, char *argv[]) {
         auto current_time = high_resolution_clock::now();
         auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
             
-        cout << "\nFinal solution:\n";
+        cout << "\nFinal solution std:\n";
         solution.print();
         cout << "Final total elapsed time: " << elapsed_time << "s\n";
         solution.saveAssignment(output_filename,Method);
@@ -414,7 +433,7 @@ int main(int argc, char *argv[]) {
         //     SUB_PMP_SIZE = min(static_cast<uint_t>(1.5 * instance.get_p()), static_cast<uint_t>(0.6 * instance.getLocations().size()));
         // }
         // SUB_PMP_SIZE = static_cast<uint_t>(0.5 * instance.getLocations().size());
-        cout << "RSSV subproblem size (N/2): " << SUB_PMP_SIZE << endl;
+        // cout << "RSSV subproblem size (N/2): " << SUB_PMP_SIZE << endl;
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
         metaheuristic.setCoverMode(cover_mode);
         metaheuristic.setCoverMode_n2(cover_mode_n2);
@@ -449,7 +468,7 @@ int main(int argc, char *argv[]) {
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
 
-            cout << "\nFinal solution:\n";
+            cout << "\nFinal solution std:\n";
             solution.print();
             cout << "Final problem elapsed time: " << elapsed_time << "s\n";
             cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
@@ -600,6 +619,9 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         auto sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);
         return sol_best;
     }
+
+
+    // return solution;
 
     auto sol_best = solution;
     sol_best.setCoverMode(cover_mode);

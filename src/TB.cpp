@@ -388,7 +388,7 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
     Solution_cap sol_best;
     if (cover_mode) sol_best = initHighestCapSolution_Cover();
     else sol_best = initHighestCapSolution();
-    sol_best = initCPLEXCapSolution(3, "CPMP");
+    // sol_best = initCPLEXCapSolution(3, "CPMP");
     sol_best.print();
 
     sol_best = localSearch_cap(sol_best, verbose, MAX_ITE);
@@ -585,8 +585,13 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
 
     cout << "\n[INFO] Local Search cap (TB)\n";
     
-    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size()) + ".csv";
-    if(cover_mode) report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size()) + "_cover_" + instance->getTypeSubarea() +".csv";
+
+
+    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size());
+    // if (instance->is_BinModel()) report_filename += "_Bin_";
+    if(cover_mode) report_filename += "_cover_" + instance->getTypeSubarea();
+    report_filename += ".csv";
+
 
     //// time limit ////
     // auto time_limit_seconds = CLOCK_LIMIT;

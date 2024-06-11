@@ -71,7 +71,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = true;    
+    VERBOSE = false;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -86,6 +86,8 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
         cout << "Value of p: " << this->p << endl;
         cout << "Number of facilities: " << num_facilities << endl;
         cout << "Number of customers: " << num_customers << endl;
+        if (instance->get_isWeightedObjFunc()) cout << "Weighted Objective Function: true" << endl;
+        else cout << "Weighted Objective Function: false" << endl;
         // cout << "Type of problem: " << typeProb << endl;
         if (strcmp(typeProb,"CPMP") == 0 || strcmp(typeProb,"cPMP") == 0 || strcmp(typeProb,"GAP") == 0) cout << "Capacity Model: true" << endl;
         else cout << "Capacity Model: false" << endl;
@@ -625,8 +627,7 @@ Solution_cap PMP::getSolution_cap(){
         cout << endl;   
 
         bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
-        cout << "is_weighted_obj_func: " << is_weighted_obj_func << endl;
-        dist_t objtest = 0.00000001;
+        dist_t objtest = 0.0;
 
         for(IloInt j = 0; j < num_facilities; j++){
             if (cplex.getValue(y[j]) > 0.5){
@@ -664,9 +665,6 @@ Solution_cap PMP::getSolution_cap(){
 
 
         }
-
-        cout << "objtest: " << objtest << endl;
-
         Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments);
         return sol;
 

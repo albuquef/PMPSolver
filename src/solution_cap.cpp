@@ -149,7 +149,6 @@ void Solution_cap::fullCapEval() {
     bool location_full = false;
     bool infeasible = false;
     int cont = 0;
-
     int cont_iter = 0;
 
     while (!urgencies_vec.empty() && !infeasible) {
@@ -240,7 +239,7 @@ uint_t Solution_cap::getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc) {
 }
 
 void Solution_cap::print() {
-    if (!VERBOSE) return;
+    // if (!VERBOSE) return;
     
     cout << "p locations: ";
     for (auto p:p_locations) {
@@ -566,20 +565,19 @@ void Solution_cap::GAP_eval(){
 }
 
 void Solution_cap::objEval(){
+
     bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
-    cout << "is_weighted_obj_func: " << is_weighted_obj_func << endl;
+
     this->objective = 0;
     dist_t obj_value = 0.0;
     for (auto cust:instance->getCustomers()) {
         for (auto a:assignments[cust]){ 
             // a.usage = wi * xij 
             if(is_weighted_obj_func){obj_value += a.usage * instance->getRealDist(a.node, cust);}
-            // xi = a.usage/wi
+            // xij = a.usage/wi
             else{obj_value += (a.usage/instance->getCustWeight(cust)) * instance->getRealDist(a.node, cust);}
         }
     }
-
-    cout << "objective Eval: " << obj_value << endl;
     this->objective = obj_value;
 
 }

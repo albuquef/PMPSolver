@@ -29,7 +29,7 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
     cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
 
     if (instance->get_p() > min(n,N)){
-        cout << "[INFO] The number of facilities is smaller than the number of locations to be selected" << endl;
+        cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
         exit(1);
     }
 
@@ -86,12 +86,15 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
     cout << "RSSV running...\n";
     cout << "cPMP size (N): " << N << endl;
     cout << "sub-cPMP size (n): " << min(n,N) << endl;
-    cout << "Subproblems cnt (M): " << M << endl << endl;
+    cout << "Subproblems cnt (M): " << M << endl;
+    cout << "p: " << instance->get_p() << endl << endl;
     this->method_RSSV_sp = method_sp;
     cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
 
-    if (instance->get_p() < min(n,N)){
-        cout << "The number of facilities is less than the number of locations to be selected" << endl;
+
+
+    if (instance->get_p() > min(n,N)){
+        cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
         exit(1);
     } 
 
@@ -99,10 +102,8 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
     cout << "thread cnt:  " << thread_cnt << endl;
     cout << "\n\n";
 
+    auto start_time = tick();
     vector<thread> threads; // spawn M threads
-    // for (uint_t i = 1; i <= M; i++) {
-    //     threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i);
-    // }
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
             threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j);
@@ -114,7 +115,10 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
         // Clear the threads vector for the next batch
         threads.clear();
     }
+
+
     cout << "[INFO] All subproblems solved."  << endl << endl;
+    tock(start_time);
 
     auto filtered_cnt = min(max(n, FILTERING_SIZE * instance->get_p()), N);
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
@@ -212,6 +216,7 @@ void RSSV::solveSubproblem_CAP(int seed) {
     auto start = tick();
     // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
     Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
+    subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
     // checkClock();
     // double time_limit_subproblem = 0; // off time limit
     double time_limit_subproblem = 300; // 5 minutes

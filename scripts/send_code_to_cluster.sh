@@ -1,7 +1,7 @@
 
 # path="/"
-# path="/src/"
-path="/scripts/"
+path="/src/"
+# path="/scripts/"
 # path="/data/"
 
 
