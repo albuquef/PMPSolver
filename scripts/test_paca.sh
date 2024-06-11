@@ -88,7 +88,7 @@ for METHOD in "EXACT_CPMP" "RSSV"; do
         subar="kmeans_${subar}"
       fi
       COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}.txt"
-      OUTPUT="./solutions/test_paca_${serv}_${subar}"
+      OUTPUT="./outputs/solutions/test_paca_${serv}_${subar}"
 
       # if [ $kmeans_cover = 1 ]; then
       #   OUTPUT="./solutions/test_paca_${serv}_kmeans_${subar}"
@@ -96,12 +96,12 @@ for METHOD in "EXACT_CPMP" "RSSV"; do
 
 
       if [ "$SUBAREAS_N2" != "null" ]; then
-          OUTPUT="./solutions/test_paca_${serv}_${subar}_${SUBAREAS_N2}"
+          OUTPUT="./outputs/solutions/test_paca_${serv}_${subar}_${SUBAREAS_N2}"
       fi
 
       if [ "$subar" = "null" ]; then
         COVERAGES="${DIR_DATA}loc_coverages.txt"
-        OUTPUT="./solutions/test_paca_${serv}"
+        OUTPUT="./outputs/solutions/test_paca_${serv}"
       fi
 
 

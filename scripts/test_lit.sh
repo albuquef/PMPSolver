@@ -211,7 +211,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     SUB_PROB_SIZE=$((N / 2)) 
 
                     #create a dir with date and time
-                    NEW_DIR="./solutions/$(date '+%Y-%m-%d')_LIT"
+                    NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_LIT"
                     mkdir -p $NEW_DIR
                     mkdir -p $NEW_DIR/VarsValues_cplex/
                     mkdir -p $NEW_DIR/Results_cplex/

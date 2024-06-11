@@ -72,11 +72,11 @@ for serv in "${SERVICES[@]}"; do
   for subar in "${SUBAREAS[@]}"; do
     CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}.txt"
     COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
-    OUTPUT="./solutions/test_paca_${serv}_${subar}"
+    OUTPUT="./outputs/solutions/test_paca_${serv}_${subar}"
     
     if [ "$subar" = "null" ]; then
       COVERAGES="${DIR_DATA}loc_coverages.txt"
-      OUTPUT="./solutions/test_paca_${serv}"
+      OUTPUT="./outputs/solutions/test_paca_${serv}"
     fi
 
     if [ "$serv" = "mat" ] && [ "$subar" = "null" ]; then

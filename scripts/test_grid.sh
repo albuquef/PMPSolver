@@ -71,7 +71,7 @@ for METHOD_RSSV_FINAL in "VNS_CPMP" "TB_CPMP"; do
       CAPACITIES=${DIR_DATA}loc_capacities_${typediv}_ratio.txt
       COVERAGES=${DIR_DATA}loc_coverages_${typediv}.txt
       CONSOLE_NAME="console_${SERVICE}_${num_cust}_${num_loc}_${typediv}_${METHOD}_p_${p}.txt"
-      OUTPUT=./solutions/test_${SERVICE}_${num_cust}_${num_loc}_${typediv}_${METHOD}_p_${p}
+      OUTPUT=./outputs/solutions/test_${SERVICE}_${num_cust}_${num_loc}_${typediv}_${METHOD}_p_${p}
       
       # echo "typediv: $typediv"
       # echo "num_cust: $num_cust"
