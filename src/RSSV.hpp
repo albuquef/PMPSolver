@@ -23,6 +23,7 @@ private:
     Semaphore sem;
     mutex weights_mutex;
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
+    // vector<uint_t> filtered_locs; // locations that are filtered 
     string method_RSSV_sp;
     int DEFAULT_MAX_NUM_ITER = 10000000;
     bool cover_mode = false;
@@ -37,6 +38,7 @@ public:
     void processSubsolution_CAP(shared_ptr<Solution_cap> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
+
 
     void setCoverMode(bool mode) {
         cover_mode = mode;

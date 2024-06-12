@@ -24,7 +24,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
         if (cplex.getCplexTime() - lastPrintTime >= interval_time) {
 
             ofstream outputTable;
-            outputTable.open("./reports/"+gap_outputFilename,ios:: app);
+            outputTable.open("./outputs/reports/"+gap_outputFilename,ios:: app);
 
             
             if (!outputTable.is_open()) {
@@ -40,7 +40,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
                 outputTable << cplex.getCplexTime() - startTime <<  ";"; // time cplex
                 outputTable << "\n";
             }
-            outputTable.close();
+            // outputTable.close();
 
 
             // print the y values
@@ -116,34 +116,23 @@ void PMP::run(string Method_name){
         // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
         // cplex.setParam(IloCplex::Threads, 8); // use 8 threads
 
+
+        if(useMIPStart) addMIPStartSolution();
+
+
         // Set up the MIP callback
         IloNum startTime = cplex.getCplexTime();
         IloNum lastPrintTime = startTime;
         IloNum lastBestBound = cplex.getBestObjValue();
         // gap_outputFilename = "gap.csv";
 
-        string gap_outputFilename_part1;
-        if (!is_BinModel){
-            gap_outputFilename_part1 = "gap_Cont_service_" + instance->getTypeService() +
-                "_p_" + to_string(p) + "_" + Method_name; 
-                // ".csv";
-        }else{
-            
-            gap_outputFilename_part1 = "gap_Bin_service_" + instance->getTypeService() +
-                "_p_" + to_string(p) + "_" + Method_name; 
-                // ".csv";
-        }
-        string gap_outputFilename_part2;
-        if(instance->isCoverMode())
-            gap_outputFilename_part2 = "_cover_"+ typeSubarea +".csv";
-        else
-            gap_outputFilename_part2 = ".csv";
-
-        gap_outputFilename = gap_outputFilename_part1 + gap_outputFilename_part2;
-
-        cout << "gap reports: " << gap_outputFilename << endl;
-
-
+        gap_outputFilename="";
+        if (!is_BinModel){gap_outputFilename += "gap_Cont";}
+        else{ gap_outputFilename += "gap_Bin";}
+        gap_outputFilename += "_service_" + instance->getTypeService() + "_p_" + to_string(p) + "_" + Method_name;
+        if(instance->isCoverMode()) gap_outputFilename += "_cover_"+ typeSubarea;
+        gap_outputFilename += ".csv";
+        cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
         if (generate_reports){
             cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
         }
@@ -245,6 +234,59 @@ void PMP::initVars(){
                 model.add(this->x_cont[i][j]);
             }
     }
+
+}
+
+void PMP::addMIPStartSolution(){
+
+    cout << "[INFO] Adding MIP start solution" << endl;
+    // add initial_solution to cplex
+    auto sol = this->initial_solution;
+
+    IloEnv env = model.getEnv();
+    // IloBoolVarArray startVar_y(env);
+    IloNumVarArray startVar_y(env);
+    // IloBoolArray startVal_y(env);
+    IloNumArray startVal_y(env);
+
+    auto p_locations = sol.get_pLocations();
+    auto assignments = sol.getAssignments();
+
+    for(IloInt j = 0; j < num_facilities; j++){
+        auto loc = instance->getLocations()[j];
+        if (p_locations.find(loc) != p_locations.end()){
+            startVar_y.add(y[j]);
+            startVal_y.add(1);
+        }else{
+            startVar_y.add(y[j]);
+            startVal_y.add(0);
+        }
+    }
+
+    // cplex.addMIPStart(startVar_y, startVal_y);
+
+    IloNumVarArray startVar_x(env);
+    IloNumArray startVal_x(env);
+
+    for (auto cust:instance->getCustomers()) {
+        for (auto a:assignments[cust]){ 
+            auto loc = a.node;
+            auto dem_used = a.usage;
+
+            if (is_BinModel){
+                startVar_x.add(x_bin[instance->getCustIndex(cust)][instance->getLocIndex(loc)]);
+                startVal_x.add(dem_used);
+            }else{
+                startVar_x.add(x_cont[instance->getCustIndex(cust)][instance->getLocIndex(loc)]);
+                startVal_x.add(dem_used / instance->getCustWeight(cust));
+            }
+        }
+    }
+
+
+    cplex.addMIPStart(startVar_y, startVal_y);
+    cplex.addMIPStart(startVar_x, startVal_x);
+
 
 }
 
@@ -621,10 +663,10 @@ Solution_cap PMP::getSolution_cap(){
             assignments[cust] = assignment{};
         }
 
-        cout << "p_loc = ";
-        for(auto p_loc:p_locations)
-            cout << p_loc << " ";
-        cout << endl;   
+        // cout << "p_loc = ";
+        // for(auto p_loc:p_locations)
+        //     cout << p_loc << " ";
+        // cout << endl;   
 
         bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
         dist_t objtest = 0.0;
@@ -755,10 +797,10 @@ void PMP::saveVars(const std::string& filename,const string& Method){
     }else{
         for(IloInt j = 0; j < num_facilities; j++){
         auto loc = instance->getLocations()[j];
-            for(IloInt i = 0; i < num_customers; i++){
-                auto cust = instance->getCustomers()[i];
-                if (cplex.getValue(x_bin[i][j]) > 0.001)
-                    cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x_bin[i][j]) << endl;
+        for(IloInt i = 0; i < num_customers; i++){
+            auto cust = instance->getCustomers()[i];
+            if (cplex.getValue(x_bin[i][j]) > 0.001)
+                cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x_bin[i][j]) << endl;
             }
         }
     }
@@ -767,6 +809,13 @@ void PMP::saveVars(const std::string& filename,const string& Method){
     file.close();
 
 }
+
+void PMP::setMIPStartSolution(Solution_cap solut){
+    this->useMIPStart = true;
+    this->initial_solution = solut;
+}
+
+
 
 void PMP::saveResults(const string& filename,const string& Method){
 

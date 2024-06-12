@@ -4,9 +4,6 @@ p3038_700
 p3038_800
 p3038_900
 spain737_148_1.txt
-spain737_148_2.txt
-spain737_74_1.txt
-spain737_74_2.txt
 ali535_005.txt
 ali535_025.txt
 ali535_050.txt
@@ -37,3 +34,4 @@ u724_030.txt
 u724_075.txt
 u724_125.txt
 u724_200.txt
+SJC3a

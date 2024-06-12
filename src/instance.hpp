@@ -31,6 +31,7 @@ private:
     dist_t h; // bandwidth
     uint_t total_demand;
     const string type_service;
+    vector<uint_t> voted_locs;
 
     unordered_set<uint_t> unique_subareas;
     shared_ptr<uint_t[]> loc_coverages;
@@ -74,7 +75,8 @@ public:
     dist_t getLocCapacity(uint_t loc);
     dist_t getTotalDemand() const;
     string getTypeService() const;
-    
+    void setVotedLocs(vector<uint_t> voted_locs);
+    vector<uint_t> getVotedLocs();
 
     void ReadCoverages(const string& coverages_filename, const string type_subarea,char delim);
     void ReadCoverages_n2(const string& coverages_filename_n2, const string type_subarea_n2,char delim);

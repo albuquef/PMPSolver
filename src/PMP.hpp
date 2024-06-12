@@ -71,7 +71,9 @@ class PMP
         void setCoverModel_n2(bool CoverModel_n2, string typeSubarea_n2);
         void setUpperBound(double UpperBound);
         void setTimeLimit(double timeLimit);
-
+        void setMIPStartSolution(Solution_cap sol);
+        void setUseMIPStart(bool useMIPStart);
+        // void setInitialSolution(Solution_cap sol);
 
     private:
         shared_ptr<Instance> instance; // original PMP instance
@@ -91,6 +93,8 @@ class PMP
         uint_t num_customers;
         uint_t num_subareas;
         double timeLimit = CLOCK_LIMIT_CPLEX;
+        bool useMIPStart=false;
+        Solution_cap initial_solution;
 
         void initVars();
         void initILP        (void);
@@ -130,6 +134,7 @@ class PMP
         template <typename VarType>
         void constr_UpperBound (IloModel model, VarType x);
 
+        void addMIPStartSolution();
         
 
 };

@@ -405,6 +405,12 @@ dist_t Instance::getRealDist(uint_t loc, uint_t cust) {
     return dist_matrix[index];
 }
 
+void Instance::setVotedLocs(vector<uint_t> voted_locs) {
+    this->voted_locs = voted_locs;
+}
+vector<uint_t> Instance::getVotedLocs() {
+    return this->voted_locs;
+}
 
 Instance Instance::sampleSubproblem(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t seed) {
     

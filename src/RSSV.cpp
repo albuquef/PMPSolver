@@ -72,10 +72,13 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
     for (auto fl:filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
+
     // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     // cout << "\n\nFinal instance parameters:\n";
     // filtered_instance->print();
+
+    filtered_instance->setVotedLocs(filtered_locations);
 
     atexit(printDDE);
 
@@ -98,7 +101,9 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
 
     if (instance->get_p() > min(n,N)){
         cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
-        exit(1);
+        cout << "[WARN]  Setting n = min(1.5 * p, N)" << endl;
+        n = min(static_cast<uint_t>(1.5*instance->get_p()), N);
+        // exit(1);
     } 
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
@@ -123,11 +128,13 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
     cout << "[INFO] All subproblems solved."  << endl << endl;
     tock(start_time);
 
-    auto filtered_cnt = min(max(n, FILTERING_SIZE * instance->get_p()), N);
+    // auto filtered_cnt = min(max(n, FILTERING_SIZE * instance->get_p()), N);
+    auto filtered_cnt = n;
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
     cout << "Filtered " << filtered_cnt << " locations: ";
     for (auto fl:filtered_locations) cout << fl << " ";
     cout << endl << endl;
+
 
     auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
     cout << "Extracted " << prioritized_locations.size() << " prioritized locations: ";
@@ -140,6 +147,8 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, string& method_sp) {
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     // cout << "Final instance parameters:\n";
     // filtered_instance->print();
+
+    filtered_instance->setVotedLocs(filtered_locations);
 
     atexit(printDDE);
 

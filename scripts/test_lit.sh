@@ -25,7 +25,7 @@ TIME_CLOCK=3600
 NUM_THREADS=8
 
 # Methods
-FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
+FOR_METHODS=("EXACT_CPMP" "RSSV")
 # FOR_METHODS=("EXACT_CPMP")
 # FOR_METHODS=("RSSV")
 
@@ -115,9 +115,9 @@ p_values_GB21+=(2000)
 
 # Define INSTANCE_GROUPS
 # INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
-# INSTANCE_GROUPS=("group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
-INSTANCE_GROUPS=("group3/" "group4/" "group5/")
+# INSTANCE_GROUPS=("group3/" "group4/" "group5/")
+INSTANCE_GROUPS=("group4/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -195,8 +195,9 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     # Check if the file contains the word "spain": this case is not euclidian distances
                     if [[ "$file" == *"spain"* ]]; then
                         # Assign a specific name for files containing the word "spain"
-                        D_MATRIX="spain_matrix_${file//.dat/.txt}"
+                        D_MATRIX="./data/Literature/group4/dist_matrix_spain.txt"
                     fi
+                    echo "D_MATRIX: $D_MATRIX"
 
                     file=${file//.dat/.txt}
                     WEIGHTS="${DIR_DATA_GROUP}cust_weights_${file//.dat/.txt}"
@@ -272,8 +273,8 @@ fi
 # done
 # echo "Number of instances: ${#arr[@]}"
 
-# for element in "${arr[@]}"; do
-#     eval $element
-# done
+for element in "${arr[@]}"; do
+    eval $element
+done
 
-srun ${arr[$SLURM_ARRAY_TASK_ID]}
+# srun ${arr[$SLURM_ARRAY_TASK_ID]}

@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     string Method_RSSV_sp;
     string Method_RSSV_fp;
     bool cover_mode = false;
-    bool cover_mode_n2 = false;
+    bool cover_mode_n2 = false; 
     uint_t cust_max_id = 0;
     uint_t loc_max_id = 0;
     uint_t size_subproblems_rssv = 800;
@@ -456,6 +456,13 @@ int main(int argc, char *argv[]) {
         cout << "Final instance parameters:\n";
         filtered_instance->print();
 
+        
+        // auto filtered_locations = filtered_instance->getVotedLocs();
+        // cout << "\n\nFiltered " << filtered_locations.size() << " locations: ";
+        // for (auto fl:filtered_locations) cout << fl << " ";
+        // cout << endl << endl;
+        
+
         // exit(1);
 
         cout << "-------------------------------------------------\n";
@@ -475,7 +482,7 @@ int main(int argc, char *argv[]) {
             solution.saveAssignment(output_filename,Method);
             solution.saveResults(output_filename, elapsed_time,0,Method); 
         } else if(Method_RSSV_fp == "EXACT_CPMP" || Method_RSSV_fp == "EXACT_CPMP_BIN" || Method_RSSV_fp == "TB_CPMP" || Method_RSSV_fp == "VNS_CPMP"){
-            auto start_time = high_resolution_clock::now();
+            auto start_time = high_resolution_clock::now();        
             Solution_cap solution = methods_CPMP(filtered_instance, "RSSV_" + Method_RSSV_fp, cover_mode, output_filename, duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
             auto current_time = high_resolution_clock::now();
             auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
@@ -540,6 +547,8 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
 
     Solution_cap solution;
     Solution_MAP solution_map(instance);
+    bool add_InitialSolution_RSSV = true;
+
     cout << "-------------------------------------------------\n";
     if (typeMethod == "EXACT_CPMP" || typeMethod == "RSSV_EXACT_CPMP"){
         cout << "Exact method cPMP continuos\n";
@@ -550,6 +559,16 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         pmp.setCoverModel_n2(instance->isCoverMode_n2(), instance->getTypeSubarea_n2());
         // cout << "cover model: " << pmp.CoverModel << "\n";
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
+
+        if (add_InitialSolution_RSSV && typeMethod == "RSSV_EXACT_CPMP"){
+            auto vet_locs = instance->getVotedLocs();
+            unordered_set<uint_t> init_p(vet_locs.begin(), vet_locs.begin() + instance->get_p());
+            Solution_cap init_sol(instance,init_p,"GAPrelax");
+            if (init_sol.getFeasibility()){pmp.setMIPStartSolution(init_sol); init_sol.print();}
+            else {cout << "Initial solution not feasible\n";}
+        }
+
+
         pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
@@ -562,6 +581,15 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         pmp.setCoverModel(instance->isCoverMode(),instance->getTypeSubarea());
         pmp.setCoverModel_n2(instance->isCoverMode_n2(), instance->getTypeSubarea_n2());
         pmp.setTimeLimit(CLOCK_LIMIT_CPLEX - external_time);
+
+        if (add_InitialSolution_RSSV && typeMethod == "RSSV_EXACT_CPMP_BIN"){
+            auto vet_locs = instance->getVotedLocs();
+            unordered_set<uint_t> init_p(vet_locs.begin(), vet_locs.begin() + instance->get_p());
+            Solution_cap init_sol(instance,init_p,"GAP");
+            if (init_sol.getFeasibility()){pmp.setMIPStartSolution(init_sol); init_sol.print();}
+            else {cout << "Initial solution not feasible\n";}
+        }
+
         pmp.run(typeMethod);
         pmp.saveVars(output_filename,typeMethod);
         pmp.saveResults(output_filename,typeMethod);
