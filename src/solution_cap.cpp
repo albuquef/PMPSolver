@@ -329,22 +329,32 @@ dist_t Solution_cap::get_objective() const {
 
 void Solution_cap::saveAssignment(string output_filename,string Method) {
     
-    cout << "[INFO] Saving assignment" << endl;
+    // cout << "[INFO] Saving assignment" << endl;
     
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
 
-    string output_filename_final = output_filename + 
-        "_p_" + to_string(p_locations.size()) + 
-        "_" + Method +
-        ".txt";
+    string delimiter = "/";
+    string directory;
+    string rem_filename;
 
-    if(cover_mode){
-        output_filename_final = output_filename + 
-        "_p_" + to_string(p_locations.size()) + 
-        "_" + Method + "_cover_" + instance->getTypeSubarea() +
-        ".txt";
+    // Find the last occurrence of the delimiter
+    size_t pos = output_filename.find_last_of(delimiter);
+    if (pos != std::string::npos) {
+        // Extract the substring up to and including the last delimiter
+        directory = output_filename.substr(0, pos + 1);
+        rem_filename = output_filename.substr(pos + 1);
+    } else {
+        std::cerr << "[WARN] Delimiter not found in the filename string" << std::endl;
     }
+
+    string output_filename_final = directory + "Assignments/" + rem_filename + 
+        "_p_" + to_string(p_locations.size()) + 
+        "_" + Method;
+    if(cover_mode){output_filename_final +=  "_cover_" + instance->getTypeSubarea();}
+    output_filename_final += ".txt";
+
+    cout << "[INFO] Saving assignment: " << output_filename_final << endl;
 
     // Open file if output_filename is not empty
     if (!output_filename_final.empty()) {
@@ -378,15 +388,9 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
 void Solution_cap::saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp, string Method_fp){
 
 
-    string output_filename_final = output_filename + 
-    "_results_" + Method +
-    ".csv";
-
-    if(cover_mode){
-        output_filename_final = output_filename + 
-        "_results_" + Method + "_cover_" + instance->getTypeSubarea() +
-        ".csv";
-    }
+    string output_filename_final = output_filename + "_results_" + Method;
+    if(cover_mode){output_filename_final += "_cover_" + instance->getTypeSubarea();}
+    output_filename_final += ".csv";
 
     cout << "[INFO] Saving results: "  << output_filename_final << endl;
 
@@ -418,7 +422,7 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
 
 
     // SAVE RESULTS ALL 
-    string output_all_filename = "./solutions/test_all_results.csv";
+    string output_all_filename = "./outputs/solutions/test_all_results.csv";
     cout << "[INFO] Saving all results: "  << output_all_filename << endl;
     
     ofstream outputTable_all;

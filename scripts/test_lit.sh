@@ -7,7 +7,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-75%6
-#SBATCH --array=0-5%5
+#SBATCH --array=0-77%8
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -51,6 +51,7 @@ for ((i = 0; i < 10; i++)); do
 done
 p_values_group2=(10 15 25 30 30 40)
 p_values_group3=(600 700 800 900 1000)
+p_values_group4=(74 74 148 148)
 # p_values_group3=(600)
 p_values_group5=(5 25 50 100 150 20 100 250 500 1000 5 15 40 70 100 20 75 150 300 500 10 50 100 200 300 10 30 75 125 200)
 
@@ -63,6 +64,7 @@ p_values_group5=(5 25 50 100 150 20 100 250 500 1000 5 15 40 70 100 20 75 150 30
 # done
 N_values_group2=(100 200 300 300 402 402)
 N_values_group3=(3038 3038 3038 3038 3038)
+N_values_group4=(737 737 737 737)
 for ((i = 0; i < 5; i++)); do
     N_values_group5+=(535)
 done
@@ -115,7 +117,7 @@ p_values_GB21+=(2000)
 # INSTANCE_GROUPS=("group1/" "group2/" "group3/" "group5/")
 # INSTANCE_GROUPS=("group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
-INSTANCE_GROUPS=("group2/")
+INSTANCE_GROUPS=("group3/" "group4/" "group5/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -138,7 +140,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
         # # Get list of instance filenames
         # INSTANCE_FILENAMES=$(ls "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
         # Get list of instance filenames in alphabetical order
-        INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist')
+        INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist|\.grd$')
         # INSTANCE_FILENAMES="p3038_600.txt"
         # INSTANCE_FILENAMES="cpmp01.txt"
 
@@ -156,6 +158,10 @@ for METHOD in "${FOR_METHODS[@]}"; do
             "group3/")
                 p_values=($(printf "%s\n" "${p_values_group3[@]}" | sort))
                 N_values=("${N_values_group3[@]}")
+                ;;
+            "group4/")
+                p_values=($(printf "%s\n" "${p_values_group4[@]}" | sort))
+                N_values=("${N_values_group4[@]}")
                 ;;
             "group5/")
                 # p_values=($(printf "%s\n" "${p_values_group5[@]}" | sort))
@@ -202,19 +208,23 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     # subar="null"
                     p="${p_values[$index]}"
                     N="${N_values[$index]}"
-                    CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.txt"
+                    export CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.log"
                     if [ "$METHOD" = "RSSV" ]; then
-                        CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt"
+                        export CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.log"
                     fi
 
                     # SUB PRO SIZE IS N/2 
                     SUB_PROB_SIZE=$((N / 2)) 
-
+                    if [ "$N" -gt 1000 ]; then
+                        SUB_PROB_SIZE=$((N / 3))
+                    fi
+                    
                     #create a dir with date and time
                     NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_LIT"
                     mkdir -p $NEW_DIR
                     mkdir -p $NEW_DIR/VarsValues_cplex/
                     mkdir -p $NEW_DIR/Results_cplex/
+                    mkdir -p $NEW_DIR/Assignments/
                     # OUTPUT="${NEW_DIR}/test_${SLURM_JOB_NAME}_${serv}"
                     OUTPUT="${NEW_DIR}/test_lit_${serv}"
 
@@ -260,10 +270,10 @@ fi
 # for element in "${arr[@]}"; do
 #     echo "$element"
 # done
-echo "Number of instances: ${#arr[@]}"
+# echo "Number of instances: ${#arr[@]}"
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
-# srun ${arr[$SLURM_ARRAY_TASK_ID]}
+srun ${arr[$SLURM_ARRAY_TASK_ID]}

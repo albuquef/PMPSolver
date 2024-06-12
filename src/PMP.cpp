@@ -698,7 +698,7 @@ Solution_std PMP::getSolution_std(){
 
 void PMP::saveVars(const std::string& filename,const string& Method){
 
-    cout << "[INFO] Saving variables:" << endl;
+    cout << "[INFO] Saving variables cplex:" << endl;
 
     string delimiter = "/";
     string directory;
@@ -770,20 +770,28 @@ void PMP::saveVars(const std::string& filename,const string& Method){
 
 void PMP::saveResults(const string& filename,const string& Method){
 
-    // cout << "[INFO] Saving results" << endl;
+    cout << "[INFO] Saving results cplex: " << endl;
 
-    string output_filename = "TEST.txt";
-    if (!is_BinModel){
-        output_filename = filename +
-            "_Cont_" + Method +
-            ".csv";
-    }else{
-        output_filename = filename +
-            "_Bin_" + Method +
-            ".csv";
+    string delimiter = "/";
+    string directory;
+    string rem_filename;
+
+    // Find the last occurrence of the delimiter
+    size_t pos = filename.find_last_of(delimiter);
+    if (pos != std::string::npos) {
+        // Extract the substring up to and including the last delimiter
+        directory = filename.substr(0, pos + 1);
+        rem_filename = filename.substr(pos + 1);
+    } else {
+        std::cerr << "[WARN] Delimiter not found in the filename string" << std::endl;
     }
 
-    cout << "[INFO] Saving results: " << output_filename << endl;
+    string output_filename = directory + "Results_cplex/" + rem_filename;
+    if (!is_BinModel){output_filename += "_Cont_";}
+    else{output_filename += "_Bin_";}
+    output_filename += Method + ".csv";
+
+    cout << output_filename << endl;
 
     ofstream outputTable;
     outputTable.open(output_filename,ios:: app);

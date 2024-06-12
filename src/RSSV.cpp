@@ -30,7 +30,9 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
 
     if (instance->get_p() > min(n,N)){
         cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
-        exit(1);
+        cout << "[WARN]  Setting n = min(1.5 * p, N)" << endl;
+        n = min(static_cast<uint_t>(1.5*instance->get_p()), N);
+        // exit(1);
     }
 
     sem.setCount(thread_cnt); // limit max no. of threads run in parallel
@@ -55,7 +57,8 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, string& method_sp) {
     cout << "[INFO] All subproblems solved."  << endl << endl;
     tock(start_time);
 
-    auto filtered_cnt = max(n, FILTERING_SIZE * instance->get_p());
+    // auto filtered_cnt = max(n, FILETRING_SIZE * instance->get_p());
+    auto filtered_cnt = n;
     auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
     cout << "\n\nFiltered " << filtered_cnt << " locations: ";
     for (auto fl:filtered_locations) cout << fl << " ";
