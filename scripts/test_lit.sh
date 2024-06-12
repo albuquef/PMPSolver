@@ -7,7 +7,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-75%6
-#SBATCH --array=0-77%8
+#SBATCH --array=0-38%8
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -19,18 +19,16 @@ CMD="./build/large_PMP"
 # Define directory path
 DIR_DATA="./data/Literature/"
 
-# Define time settings
-TIME_CPLEX=3600
-TIME_CLOCK=3600
+# ---------------------------------------- Machine configuration ----------------------------------------
 NUM_THREADS=8
 
+
+# ----------------------------------------- Methods configuration -----------------------------------------
 # Methods
 FOR_METHODS=("EXACT_CPMP" "RSSV")
 # FOR_METHODS=("EXACT_CPMP")
 # FOR_METHODS=("RSSV")
-
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
-
 # METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
@@ -41,6 +39,13 @@ COVER_MODE=0
 
 # Weighted sum of distances
 IsWeighted_OBJ=false
+
+# Define time settings
+TIME_CPLEX=3600
+TIME_CLOCK=3600
+
+
+# ----------------------------------------- Instance configuration -----------------------------------------
 
 # Define p values for each group
 for ((i = 0; i < 10; i++)); do
@@ -56,12 +61,12 @@ p_values_group4=(74 74 148 148)
 p_values_group5=(5 25 50 100 150 20 100 250 500 1000 5 15 40 70 100 20 75 150 300 500 10 50 100 200 300 10 30 75 125 200)
 
 # Define N values for each group
-# for ((i = 0; i < 10; i++)); do
-#     N_values_group1+=(50)
-# done
-# for ((i = 0; i < 10; i++)); do
-#     N_values_group1+=(100)
-# done
+for ((i = 0; i < 10; i++)); do
+    N_values_group1+=(50)
+done
+for ((i = 0; i < 10; i++)); do
+    N_values_group1+=(100)
+done
 N_values_group2=(100 200 300 300 402 402)
 N_values_group3=(3038 3038 3038 3038 3038)
 N_values_group4=(737 737 737 737)
@@ -122,6 +127,10 @@ INSTANCE_GROUPS=("group4/")
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
 # echo "Filters: ${filters[@]}"
+
+
+# ----------------------------------------- Main loop -----------------------------------------
+
 
 for METHOD in "${FOR_METHODS[@]}"; do
     # Iterate over each INSTANCE_GROUP
@@ -263,6 +272,10 @@ for METHOD in "${FOR_METHODS[@]}"; do
         done
     done
 done
+
+
+
+# ----------------------------------------- Run the instances -----------------------------------------
 
 if [ -z "$arr" ]; then
     echo "No instances"
