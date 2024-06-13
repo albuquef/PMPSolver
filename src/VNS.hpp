@@ -26,6 +26,8 @@ private:
     bool cover_mode=false;
     bool cover_mode_n2=false;   
     double external_time=0;
+    bool useInitSol=false;
+    Solution_cap initial_solution;
 public:
     explicit VNS(shared_ptr<Instance> instance, uint_t seed);
 
@@ -56,6 +58,9 @@ public:
     void setCoverMode(bool cover_mode);
     void setCoverMode_n2(bool cover_mode_n2);
     void setExternalTime(double time);
+
+    void setInitialSolution(Solution_cap sol);
+    void setUseInitialSol(bool useInitSol);
 };
 
 

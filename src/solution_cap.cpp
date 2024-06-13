@@ -404,16 +404,16 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
     }else{
         time_t now = time(0);
         tm *ltm = localtime(&now);
-        outputTable_all << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << ";";
+        outputTable << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << ";";
         outputTable << instance->getCustomers().size() << ";";
         outputTable << instance->getLocations().size() << ";";
         outputTable << instance->get_p() << ";";
-        if (instance->get_isWeightedObjFunc()) outputTable_all << "weighted_obj" << ";";
-        else outputTable_all << "non-weighted_obj" << ";";
-        if (cover_mode) outputTable_all << instance->getTypeSubarea() << ";";
-        else outputTable_all << "non-cover_mode" << ";";
-        if (cover_mode_n2) outputTable_all << instance->getTypeSubarea_n2() << ";";
-        else outputTable_all << "non-cover_mode_n2" << ";";
+        if (instance->get_isWeightedObjFunc()) outputTable << "weighted_obj" << ";";
+        else outputTable << "non-weighted_obj" << ";";
+        if (cover_mode) outputTable << instance->getTypeSubarea() << ";";
+        else outputTable << "non-cover_mode" << ";";
+        if (cover_mode_n2) outputTable << instance->getTypeSubarea_n2() << ";";
+        else outputTable << "non-cover_mode_n2" << ";";
         outputTable << instance->getTypeService() << ";";
         outputTable << instance->getTypeSubarea() << ";";
         outputTable << typeEval << ";"; 

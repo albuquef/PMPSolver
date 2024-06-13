@@ -587,7 +587,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
     
 
 
-    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size());
+    string report_filename = "./outputs/reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size());
     // if (instance->is_BinModel()) report_filename += "_Bin_";
     if(cover_mode) report_filename += "_cover_" + instance->getTypeSubarea();
     report_filename += ".csv";
@@ -638,7 +638,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                             sol_tmp.add_UpperBound(sol_best.get_objective());
                             sol_tmp.replaceLocation(p_loc, loc, "GAP"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
                             // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
-                            sol_tmp.print();
+                            // sol_tmp.print();
 
                             auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
                             // #pragma omp critical
@@ -651,6 +651,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                                 sol_cand = copySolution_cap(sol_tmp, 0);
                                 improved = true;
                                 cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
+                                sol_cand.print();
 
                                 if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
     

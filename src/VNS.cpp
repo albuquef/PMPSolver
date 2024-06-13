@@ -691,6 +691,7 @@ void writeReport(const string& filename, dist_t objective, int num_ite, int num_
         return;
     }
 
+
     outputFile << fixed << setprecision(15) << objective << ";"; // obj value
     outputFile << num_ite << ";";
     outputFile << num_solutions << ";";
@@ -709,8 +710,8 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
 
     cout << "\n[INFO] Capacitated VNS heuristic started\n";
     int p = instance->get_p();
-    string report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
-    if (cover_mode) report_filename = "./reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + "_cover_"+ instance->getTypeSubarea() +".csv";
+    string report_filename = "./outputs/reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + ".csv";
+    if (cover_mode) report_filename = "./outputs/reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(p) + "_cover_"+ instance->getTypeSubarea() +".csv";
 
     // auto start_time_total = high_resolution_clock::now();
     auto start_time_total = get_wall_time_VNS();
@@ -734,7 +735,10 @@ Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
     // sol_best = tb.fixedCapSolution();
     if (cover_mode) sol_best = tb.initHighestCapSolution_Cover();
     // initial solution add cover n2
-    else sol_best = tb.initHighestCapSolution();
+    // else sol_best = tb.initHighestCapSolution();
+    else sol_best = initial_solution;
+
+
 
 
     // exit(0);    
@@ -909,4 +913,13 @@ void VNS::setCoverMode_n2(bool cover_mode_n2){
 
 void VNS::setExternalTime(double time){
     this->external_time = time;
+}
+
+
+void VNS::setInitialSolution(Solution_cap sol){
+    this->useInitSol = true;
+    this->initial_solution = sol;
+}
+void VNS::setUseInitialSol(bool use_initial_solution){
+    this->useInitSol = use_initial_solution;
 }

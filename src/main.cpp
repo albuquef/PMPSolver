@@ -615,6 +615,15 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         heuristic.setCoverMode(cover_mode);
         heuristic.setCoverMode_n2(instance->isCoverMode_n2());
         heuristic.setExternalTime(external_time); 
+
+        if (add_InitialSolution_RSSV && typeMethod == "RSSV_VNS_CPMP"){
+            auto vet_locs = instance->getVotedLocs();
+            unordered_set<uint_t> init_p(vet_locs.begin(), vet_locs.begin() + instance->get_p());
+            Solution_cap init_sol(instance,init_p,"GAP");
+            if (init_sol.getFeasibility()){heuristic.setInitialSolution(init_sol); init_sol.print();}
+            else {cout << "Initial solution not feasible\n";}
+        }
+
         solution = heuristic.runVNS_cap(typeMethod,true,UB_MAX_ITER);
     
         if (solution.isSolutionFeasible()){
