@@ -4,6 +4,7 @@
 #include "PMP.hpp"
 #include <iomanip>
 #include <utility>
+#include <filesystem>
 
 
 Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval, bool cover_mode) {
@@ -401,11 +402,18 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
         cerr << "Error opening file: " << output_filename_final << endl;
         // return;
     }else{
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        outputTable_all << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << ";";
         outputTable << instance->getCustomers().size() << ";";
         outputTable << instance->getLocations().size() << ";";
         outputTable << instance->get_p() << ";";
-        outputTable << instance->isCoverMode() << ";";
-        outputTable << instance->isCoverMode_n2() << ";";
+        if (instance->get_isWeightedObjFunc()) outputTable_all << "weighted_obj" << ";";
+        else outputTable_all << "non-weighted_obj" << ";";
+        if (cover_mode) outputTable_all << instance->getTypeSubarea() << ";";
+        else outputTable_all << "non-cover_mode" << ";";
+        if (cover_mode_n2) outputTable_all << instance->getTypeSubarea_n2() << ";";
+        else outputTable_all << "non-cover_mode_n2" << ";";
         outputTable << instance->getTypeService() << ";";
         outputTable << instance->getTypeSubarea() << ";";
         outputTable << typeEval << ";"; 
@@ -428,6 +436,19 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
     ofstream outputTable_all;
     outputTable_all.open(output_all_filename,ios:: app);
 
+    bool fileIsEmpty = false;
+    if (!filesystem::exists(output_all_filename)) {
+        fileIsEmpty = true;
+    } else {
+        // Check if the file is empty
+        fileIsEmpty = (filesystem::file_size(output_all_filename) == 0);
+    }
+
+    if (fileIsEmpty) {
+        outputTable_all << "date;num_cust;num_loc;p;isWeightedObjFunc;cover_mode;cover_mode_n2;type_service;type_subarea;typeEval;Method;solution;time;numIter;Method_sp;Method_fp;SUB_PMP_SIZE\n";
+    }
+
+
     if (!outputTable.is_open()) {
         cerr << "Error opening file: " << output_all_filename << endl;
         // return;
@@ -439,9 +460,15 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
         outputTable_all << instance->getCustomers().size() << ";";
         outputTable_all << instance->getLocations().size() << ";";
         outputTable_all << instance->get_p() << ";";
-        outputTable_all << instance->get_isWeightedObjFunc() << ";";
-        outputTable_all << instance->isCoverMode() << ";";
-        outputTable_all << instance->isCoverMode_n2() << ";";
+        if (instance->get_isWeightedObjFunc()) outputTable_all << "weighted_obj" << ";";
+        else outputTable_all << "non-weighted_obj" << ";";
+        if (cover_mode) outputTable_all << instance->getTypeSubarea() << ";";
+        else outputTable_all << "non-cover_mode" << ";";
+        if (cover_mode_n2) outputTable_all << instance->getTypeSubarea_n2() << ";";
+        else outputTable_all << "non-cover_mode_n2" << ";";
+        // outputTable_all << instance->get_isWeightedObjFunc() << ";";
+        // outputTable_all << instance->isCoverMode() << ";";
+        // outputTable_all << instance->isCoverMode_n2() << ";";
         outputTable_all << instance->getTypeService() << ";";
         outputTable_all << instance->getTypeSubarea() << ";";
         outputTable_all << typeEval << ";"; 
