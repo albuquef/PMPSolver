@@ -10,7 +10,8 @@ PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Larg
 # PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/PACA_cyrille/originial_instance/test_all_coverages/
 # PATH_CLUSTER=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/${TYPEINSTANCE}/
 # PATH_LOCAL=/home/falbuquerque/Documents/projects/save_old_test_cluster/${DATE}_save_cluster/${TYPEINSTANCE}/
-PATH_LOCAL=/home/falbuquerque/Documents/projects/Project_PMP/saves/SaveCluster/savecluster_Literature/2024-06-13_save-cluster
+mkdir -p /home/falbuquerque/Documents/projects/Project_PMP/saves/SaveCluster/savecluster_Literature/2024-06-14_save-cluster
+PATH_LOCAL=/home/falbuquerque/Documents/projects/Project_PMP/saves/SaveCluster/savecluster_Literature/2024-06-14_save-cluster
 
 
 # Save the outputs to the local machine

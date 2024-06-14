@@ -4,7 +4,7 @@
 #include "PMP.hpp"
 #include <iomanip>
 #include <utility>
-#include <filesystem>
+#include <experimental/filesystem>
 
 
 Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval, bool cover_mode) {
@@ -436,17 +436,17 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
     ofstream outputTable_all;
     outputTable_all.open(output_all_filename,ios:: app);
 
-    bool fileIsEmpty = false;
-    if (!filesystem::exists(output_all_filename)) {
-        fileIsEmpty = true;
-    } else {
-        // Check if the file is empty
-        fileIsEmpty = (filesystem::file_size(output_all_filename) == 0);
-    }
+    // bool fileIsEmpty = false;
+    // if (!filesystem::exists(output_all_filename)) {
+    //     fileIsEmpty = true;
+    // } else {
+    //     // Check if the file is empty
+    //     fileIsEmpty = (filesystem::file_size(output_all_filename) == 0);
+    // }
 
-    if (fileIsEmpty) {
-        outputTable_all << "date;num_cust;num_loc;p;isWeightedObjFunc;cover_mode;cover_mode_n2;type_service;type_subarea;typeEval;Method;solution;time;numIter;Method_sp;Method_fp;SUB_PMP_SIZE\n";
-    }
+    // if (fileIsEmpty) {
+    //     outputTable_all << "date;num_cust;num_loc;p;isWeightedObjFunc;cover_mode;cover_mode_n2;type_service;type_subarea;typeEval;Method;solution;time;numIter;Method_sp;Method_fp;SUB_PMP_SIZE\n";
+    // }
 
 
     if (!outputTable.is_open()) {

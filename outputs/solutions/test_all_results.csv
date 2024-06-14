@@ -9,3 +9,4 @@ date;num_cust;num_loc;p;isWeightedObjFunc;cover_mode;cover_mode_n2;type_service;
 2024-6-13;100;80;10;non-weighted_obj_func;non-cover_mode;non-cover_mode_n2;SJC1;null;CPLEX;RSSV;17288.993108328832022;2.000000000000000;0;TB_PMP;EXACT_CPMP_BIN;80;
 2024-6-13;200;200;15;non-weighted_obj;non-cover_mode;non-cover_mode_n2;SJC2;null;CPLEX;EXACT_CPMP_BIN;33270.943993742803286;11.000000000000000;0;
 2024-6-13;200;160;15;non-weighted_obj;non-cover_mode;non-cover_mode_n2;SJC2;null;CPLEX;RSSV;33270.943993742796010;8.000000000000000;0;TB_PMP;EXACT_CPMP_BIN;160;
+2024-6-14;318;318;40;non-weighted_obj;non-cover_mode;non-cover_mode_n2;lin318_040;null;CPLEX;EXACT_CPMP_BIN;47988.376921349074109;1487.000000000000000;0;
