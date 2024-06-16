@@ -430,18 +430,18 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
 
 
     // SAVE RESULTS ALL 
-    string output_all_filename = "./outputs/solutions/test_all_results.csv";
-    cout << "[INFO] Saving all results: "  << output_all_filename << endl;
+    string output_filename_all = "./outputs/solutions/test_all_results.csv";
+    cout << "[INFO] Saving all results: "  << output_filename_all << endl;
     
     ofstream outputTable_all;
-    outputTable_all.open(output_all_filename,ios:: app);
+    outputTable_all.open(output_filename_all,ios:: app);
 
     // bool fileIsEmpty = false;
-    // if (!filesystem::exists(output_all_filename)) {
+    // if (!filesystem::exists(output_filename_all)) {
     //     fileIsEmpty = true;
     // } else {
     //     // Check if the file is empty
-    //     fileIsEmpty = (filesystem::file_size(output_all_filename) == 0);
+    //     fileIsEmpty = (filesystem::file_size(output_filename_all) == 0);
     // }
 
     // if (fileIsEmpty) {
@@ -449,8 +449,8 @@ void Solution_cap::saveResults(string output_filename, double timeFinal, int num
     // }
 
 
-    if (!outputTable.is_open()) {
-        cerr << "Error opening file: " << output_all_filename << endl;
+    if (!outputTable_all.is_open()) {
+        cerr << "Error opening file: " << output_filename_all << endl;
         // return;
     }else{
         // add the date and hour of the execution

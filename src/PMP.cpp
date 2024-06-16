@@ -867,7 +867,57 @@ void PMP::saveResults(const string& filename,const string& Method){
         outputTable << this->timeSolver <<  ";"; // solver local time
         outputTable << "\n";
     }
+    // outputTable.close();
+
+    // save results all cplex
+
+    string output_filename_all = directory + "Results_cplex/results_all_cplex.csv";
+    ofstream outputTable_all;
+    outputTable_all.open(output_filename_all,ios:: app);
+
+    if (!outputTable.is_open()) {
+        cerr << "Error opening file: " << output_filename_all << endl;
+        // return;
+    }else{
+        // add the date and hour of the execution
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        outputTable_all << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << ";";
+        outputTable_all << typeProb << ";"; 
+        if(is_BinModel == true)
+            outputTable_all << "Bin" << ";";
+        else
+            outputTable_all << "Cont" << ";"; 
+        outputTable_all << num_customers << ";";
+        outputTable_all << num_facilities << ";";
+        outputTable_all << p << ";";
+        outputTable_all << Method << ";";
+        if (instance->get_isWeightedObjFunc()) outputTable_all << "weighted_obj" << ";";
+        else outputTable_all << "non-weighted_obj" << ";";
+        if (CoverModel) outputTable_all << instance->getTypeSubarea() << ";";
+        else outputTable_all << "non-cover_mode" << ";";
+        if (CoverModel_n2) outputTable_all << instance->getTypeSubarea_n2() << ";";
+        else outputTable_all << "non-cover_mode_n2" << ";";
+        // outputTable_all << instance->get_isWeightedObjFunc() << ";";
+        // outputTable_all << instance->isCoverMode() << ";";
+        // outputTable_all << instance->isCoverMode_n2() << ";";
+        outputTable_all << instance->getTypeService() << ";";
+        outputTable_all << instance->getTypeSubarea() << ";"; 
+        outputTable_all << cplex.getStatus() << ";"; // Status cplex
+        // double objectiveValue = cplex.getObjValue();
+        outputTable_all << fixed << setprecision(15) << cplex.getObjValue() << ";"; // obj value
+        outputTable_all << cplex.getNnodes() << ";"; // num nodes
+        outputTable_all << cplex.getMIPRelativeGap() <<";"; // relative gap
+        outputTable_all << cplex.getTime() <<  ";"; // time cplex
+        outputTable_all << this->timeSolver <<  ";"; // solver local time
+        outputTable_all << "\n";
+    }
+
     outputTable.close();
+    outputTable_all.close();
+
+
+
 }
 
 bool PMP::getFeasibility_Solver(){

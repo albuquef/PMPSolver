@@ -8,7 +8,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-75%6
-#SBATCH --array=0-11%6
+#SBATCH --array=0-44%7
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -31,7 +31,7 @@ NUM_THREADS=8
 FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
-metsp="TB_CPMP" # Subproblem method
+metsp="TB_PMP" # Subproblem method
 
 # Cover mode:
 # COVER_MODE=1
@@ -120,10 +120,10 @@ p_values_GB21+=(2000)
 
 
 # Define INSTANCE_GROUPS
-# INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
+INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-INSTANCE_GROUPS=("group5/")
+# INSTANCE_GROUPS=("group2/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -131,7 +131,8 @@ mapfile -t filters < ./scripts/filter_lit.txt
 
 
 # ----------------------------------------- Main loop -----------------------------------------
-
+arr=()
+console_names=()
 
 for METHOD in "${FOR_METHODS[@]}"; do
     # Iterate over each INSTANCE_GROUP
@@ -265,11 +266,13 @@ for METHOD in "${FOR_METHODS[@]}"; do
                         # echo "Instance: $file"
                         # echo "N: $N"
                         # echo "p: $p"
+                        console_names+=("$CONSOLE_NAME")
                         arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
                         -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
                         -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
                         -o $OUTPUT | tee ./console/$CONSOLE_NAME")
+
                     fi
                     # done
 
@@ -286,13 +289,16 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
-echo "Number of instances: ${#arr[@]}"
+# for element in "${arr[@]}"; do
+#     echo "$element"
+# done
+# echo "Number of instances: ${#arr[@]}"
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
-# srun ${arr[$SLURM_ARRAY_TASK_ID]}
+#create a dir with date and time
+NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
+mkdir -p $NEW_DIR
+srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}

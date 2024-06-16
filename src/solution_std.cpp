@@ -19,10 +19,13 @@ void Solution_std::naiveEval() {
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
-        // auto dist = instance->getWeightedDist(loc, cust);
+        
         // auto dist = instance->getRealDist(loc, cust);
-        auto dist = instance->getRealDist(loc, cust);
-        if (is_weighted_obj_func){dist = instance->getWeightedDist(loc, cust);}
+        // if (is_weighted_obj_func){dist = instance->getWeightedDist(loc, cust);}
+
+
+        auto dist = instance->getWeightedDist(loc, cust);
+
         // cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
         objective += dist;
         assignment[cust] = my_pair{loc, dist};

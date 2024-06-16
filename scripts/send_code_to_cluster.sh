@@ -1,12 +1,12 @@
 
 # path="/"
-path="/src/"
-# path="/scripts/"
+# path="/src/"
+path="/scripts/"
 # path="/data/"
 
 
-# BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
-BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+# BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
 
 # PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
 PATH_ORIGIN=${BASE_PATH}${path}
