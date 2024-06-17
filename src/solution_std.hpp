@@ -21,6 +21,7 @@ private:
 
     bool cover_mode = false;
     bool cover_mode_n2 = false;
+    bool is_weighted_obj_func;
 public:
 
     Solution_std() = default;

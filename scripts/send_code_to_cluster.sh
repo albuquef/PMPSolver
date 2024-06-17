@@ -5,8 +5,8 @@ path="/scripts/"
 # path="/data/"
 
 
-BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
-# BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+# BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
 
 # PATH_ORIGIN=/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP${path}
 PATH_ORIGIN=${BASE_PATH}${path}
@@ -15,7 +15,9 @@ PATH_ORIGIN=${BASE_PATH}${path}
 # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
 # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Random_Grid${path}
 
-PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Large_Instances${path}
+
+
+PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Literature_test${path}
 
 
 # Copy the code to the cluster

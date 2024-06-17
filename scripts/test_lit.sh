@@ -4,11 +4,11 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --partition=cpuonly
-#SBATCH --exclusive
+# #SBATCH --exclusive
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-75%6
-#SBATCH --array=0-44%7
+#SBATCH --array=0-4%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -32,6 +32,8 @@ FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
 metsp="TB_PMP" # Subproblem method
+
+# FOR_METHODS=("GAP")
 
 # Cover mode:
 # COVER_MODE=1
@@ -120,10 +122,10 @@ p_values_GB21+=(2000)
 
 
 # Define INSTANCE_GROUPS
-INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
+# INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-# INSTANCE_GROUPS=("group2/")
+INSTANCE_GROUPS=("group5/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -192,8 +194,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
 
         # print filenames line by line
-        echo "Instance filenames:"
-        echo "$INSTANCE_FILENAMES"
+        # echo "Instance filenames:"
+        # echo "$INSTANCE_FILENAMES"
 
 
         # Iterate over files and corresponding p values
@@ -289,9 +291,9 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
+for element in "${arr[@]}"; do
+    echo "$element"
+done
 # echo "Number of instances: ${#arr[@]}"
 
 # for element in "${arr[@]}"; do
@@ -299,6 +301,6 @@ fi
 # done
 
 #create a dir with date and time
-NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
-mkdir -p $NEW_DIR
-srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}
+# NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
+# mkdir -p $NEW_DIR
+# srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./console/${console_names[$SLURM_ARRAY_TASK_ID]}

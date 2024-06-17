@@ -3,6 +3,9 @@
 #include "utils.hpp"
 #include <iomanip>
 #include <utility>
+#include <regex>
+#include <dirent.h> // For directory operations
+namespace fs = filesystem;
 
 #include <chrono> // for time-related functions
 using namespace std::chrono;
@@ -330,7 +333,42 @@ Solution_cap TB::initHighestCapSolution_Cover() {
     return solut;
 }
 
-Solution_cap TB::fixedCapSolution(){
+
+std::unordered_set<uint_t> extract_unique_values_until_duplicated(const std::string& file_path) {
+    std::unordered_set<uint_t> unique_values; // Set to store unique values
+    std::unordered_set<int> seen_values; // Set to track seen values
+    std::ifstream file(file_path);
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << file_path << std::endl;
+        return unique_values;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string value;
+
+        while (iss >> value) {
+            try {
+                uint_t numeric_value = std::stoul(value); // Convert to unsigned int
+
+                if (seen_values.find(numeric_value) != seen_values.end()) {
+                    return unique_values; // Return if numeric_value is duplicated
+                } else {
+                    unique_values.insert(numeric_value); // Add to result set
+                    seen_values.insert(numeric_value); // Mark as seen
+                }
+            } catch (const std::invalid_argument& e) {
+                // Handle non-numeric values if needed
+                continue;
+            }
+        }
+    }
+
+    return unique_values;
+}
+Solution_cap TB::fixedCapSolution(string eval_Method){
 
     cout << "Initial Solution Fixed Cap\n";
 
@@ -339,9 +377,33 @@ Solution_cap TB::fixedCapSolution(){
     // p_locations = {469,1050, 602, 663, 23, 214, 897, 872, 927, 1038, 842, 213, 156, 637, 359, 951, 952, 878, 414, 1302, 1197, 283, 801, 246, 949, 1245};
     // p_locations = {469,787,602,663,23,214,897,872,927,1038,842,213,156,637,359,951,952,878,414,1302,1197,283,801,246,949,1245};
     // p_locations = {1206, 482, 1074, 1342, 1345, 516, 243, 432, 511, 474, 1325, 1214, 772, 884, 842 ,689 ,1318, 1011, 665, 951, 302, 637, 1414, 1269, 414, 525};
-    p_locations = {3,15,29,21,75,50,55,62,90,97};
+    // p_locations = {3,15,29,21,75,50,55,62,90,97};
 
-    Solution_cap solut(instance, p_locations);
+    // p_locations = {2338,1316,1247,159,209,318,1114,430,522,730,795,1784,855,1447,1519,1641,2186,2083,1859,1945};
+    // p_locations = {6,19,44,66,79,104,219,193,156,1187,243,282,302,328,1100,359,968,438,921,462,942,501,515,546,576,599,721,635,1790,685,1744,850,715,776,803,826,866,1561,993,1003,1455,1062,1039,1116,1165,1254,1388,1373,1350,1310,2300,1410,1470,1514,2218,1571,1591,1601,2114,2056,1636,2043,1725,1767,1838,1976,1889,1938,2018,1990,2181,2166,2234,2350,2372};
+    string name_file="";
+    if (instance->getTypeService() == "pr2392_020")
+        name_file = "solucao.pr2392_020_2235376.txt";
+    if (instance->getTypeService() == "pr2392_075")
+        name_file = "solucao.pr2392_075_1092294.txt";
+    if (instance->getTypeService() == "pr2392_150")
+        name_file = "solucao.pr2392_150_711111.txt";
+    if (instance->getTypeService() == "pr2392_300")
+        name_file = "solucao.pr2392_300_458145.txt";
+    if (instance->getTypeService() == "pr2392_500")
+        name_file = "solucao.pr2392_500_316042.txt";
+    string path_sols_lit = "./data/Literature/solutions_lit/" + name_file;
+    // cout << "path_sols_lit: " << path_sols_lit << "\n";
+    p_locations = extract_unique_values_until_duplicated(path_sols_lit);
+    // print p _locations
+    // cout << "p_locations: ";
+    // for (auto loc:p_locations) cout << loc << " ";
+    // cout << "\n";
+
+    cout << "service: " << instance->getTypeService() << "\n";
+
+
+    Solution_cap solut(instance, p_locations, eval_Method.c_str());
     solut.setCoverMode(cover_mode);
     solut.setCoverMode_n2(cover_mode_n2);
     return solut;

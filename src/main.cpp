@@ -412,7 +412,7 @@ int main(int argc, char *argv[]) {
         cout << "Final total elapsed time: " << elapsed_time << "s\n";
         solution.saveAssignment(output_filename,Method);
         solution.saveResults(output_filename, elapsed_time,0,Method);   
-    } else if(Method == "EXACT_CPMP" || Method == "EXACT_CPMP_BIN" || Method == "TB_CPMP" || Method == "VNS_CPMP" || Method == "GAPrelax"){
+    } else if(Method == "EXACT_CPMP" || Method == "EXACT_CPMP_BIN" || Method == "TB_CPMP" || Method == "VNS_CPMP" || Method == "GAPrelax" || Method == "GAP"){
         
         
         auto start_time = high_resolution_clock::now();
@@ -633,14 +633,14 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         }
         
 
-    } else if (typeMethod == "GAPrelax"){
-        cout << "GAPrelax - cPMP\n";
+    } else if (typeMethod == "GAPrelax" || typeMethod == "GAP"){
+        cout << typeMethod <<" - cPMP\n";
         cout << "-------------------------------------------------\n";
         TB heuristic(instance, seed);
         heuristic.setMethod(typeMethod);
         heuristic.setCoverMode(cover_mode);
         heuristic.setCoverMode_n2(instance->isCoverMode_n2());
-        auto solution = heuristic.fixedCapSolution();
+        auto solution = heuristic.fixedCapSolution(typeMethod);
         cout << "Final solution:\n";
         solution.print();
         exit(1);
@@ -650,7 +650,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, string typeMetho
         exit(1);
     }
 
-    if (typeMethod != "EXACT_CPMP" && typeMethod != "EXACT_CPMP_BIN" && typeMethod != "RSSV_EXACT_CPMP" && typeMethod != "RSSV_EXACT_CPMP_BIN" && typeMethod != "GAPrelax"){
+    if (typeMethod != "EXACT_CPMP" && typeMethod != "EXACT_CPMP_BIN" && typeMethod != "RSSV_EXACT_CPMP" && typeMethod != "RSSV_EXACT_CPMP_BIN" && typeMethod != "GAPrelax" && typeMethod != "GAP"){
         solution.setCoverMode(cover_mode);
         auto p_loc = solution.get_pLocations();
         auto sol_best = Solution_cap(instance, p_loc,"GAPrelax", cover_mode);

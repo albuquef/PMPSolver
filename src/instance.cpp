@@ -325,6 +325,9 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
                     auto x_diff = loc_coordinates[loc].first - cust_coordinates[cust].first;
                     auto y_diff = loc_coordinates[loc].second - cust_coordinates[cust].second;
                     dist_t euclidean_dist = sqrt(x_diff * x_diff + y_diff * y_diff);
+                    // Round euclidean_dist to two decimal places
+                    // euclidean_dist = round(euclidean_dist * 1000) / 1000; // Rounds to two decimal places
+
                     setDist(loc, cust, euclidean_dist);
                     setDist(cust, loc, euclidean_dist); // Set symmetric distance
                     loc_flags[loc] = true;

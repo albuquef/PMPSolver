@@ -38,7 +38,7 @@ public:
     Solution_cap initHighestCapSolution_Cover();
     Solution_cap initSmartRandomCapSolution();
     Solution_cap initCPLEXCapSolution(double time_limit, const char* typeProb);
-    Solution_cap fixedCapSolution();
+    Solution_cap fixedCapSolution(string eval_Method);
 
     Solution_std run(bool verbose, int MAX_ITE);
     Solution_cap run_cap(bool verbose, int MAX_ITE);

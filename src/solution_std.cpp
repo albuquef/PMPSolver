@@ -10,34 +10,39 @@ Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> 
 
     // instance->print();
 
+    is_weighted_obj_func = instance->get_isWeightedObjFunc();
+
+
     naiveEval();
 }
 
 void Solution_std::naiveEval() {
 //    assert(p_locations.size() == instance->get_p());
-    bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
+    
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
         
-        // auto dist = instance->getRealDist(loc, cust);
-        // if (is_weighted_obj_func){dist = instance->getWeightedDist(loc, cust);}
+        auto dist = instance->getRealDist(loc, cust);
+        if (is_weighted_obj_func){dist = instance->getWeightedDist(loc, cust);}
 
+        // auto dist = instance->getWeightedDist(loc, cust);
 
-        auto dist = instance->getWeightedDist(loc, cust);
-
-        // cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
         objective += dist;
         assignment[cust] = my_pair{loc, dist};
-//        cout << cust << " " << assignment[cust].node << " " << assignment[cust].dist << endl;
     }
 }
 
 uint_t Solution_std::getClosestpLoc(uint_t cust) {
+
     dist_t dist_min = numeric_limits<dist_t>::max();
     uint_t loc_closest=numeric_limits<uint_t>::max();
     for (auto loc:p_locations) {
-        dist_t dist = instance->getWeightedDist(loc, cust);
+        
+        dist_t dist =  instance->getRealDist(loc, cust);
+        if (is_weighted_obj_func){dist = instance->getWeightedDist(loc, cust);}
+
+
         if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;
