@@ -46,7 +46,7 @@ public:
     // SolutionType runVNS(SolutionType sol_current, bool verbose, int MAX_ITE, double EXTERNAL_TIME, bool capac = false);
 
     Solution_std runVNS_std(bool verbose, int MAX_ITE);
-    Solution_cap runVNS_cap(string& Method, bool verbose, int MAX_ITE);
+    Solution_cap runVNS_cap(const string& Method, bool verbose, int MAX_ITE);
     bool isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best);    
     // to do: add time limit
     // Solution_std runVNS_std(bool verbose, int MAX_ITE, int MAX_TIME);

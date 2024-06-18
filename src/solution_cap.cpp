@@ -63,7 +63,8 @@ uint_t Solution_cap::getClosestpLoc(uint_t cust) {
     dist_t dist_min = numeric_limits<dist_t>::max();
     uint_t loc_closest = numeric_limits<uint_t>::max();
     for (auto loc:p_locations) {
-        dist_t dist = instance->getWeightedDist(loc, cust);
+        dist_t dist =  instance->getRealDist(loc, cust);
+        if(instance->get_isWeightedObjFunc()) dist = instance->getWeightedDist(loc, cust);
         if (dist <= dist_min) {
             dist_min = dist;
             loc_closest = loc;

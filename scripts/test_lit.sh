@@ -21,14 +21,14 @@ CMD="./build/large_PMP"
 DIR_DATA="./data/Literature/"
 
 # ---------------------------------------- Machine configuration ----------------------------------------
-NUM_THREADS=8
+NUM_THREADS=10
 
 
 # ----------------------------------------- Methods configuration -----------------------------------------
 # Methods
-# FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
+FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
 # FOR_METHODS=("EXACT_CPMP_BIN")
-FOR_METHODS=("RSSV")
+# FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
 metsp="TB_PMP" # Subproblem method
@@ -38,7 +38,7 @@ metsp="TB_PMP" # Subproblem method
 # Cover mode:
 # COVER_MODE=1
 # subar="kmeans"
-COVER_MODE=0
+COVER_MODE=false 
 
 # Weighted sum of distances
 IsWeighted_OBJ=false
@@ -125,7 +125,7 @@ p_values_GB21+=(2000)
 # INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-INSTANCE_GROUPS=("group5/")
+INSTANCE_GROUPS=("group2/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -228,14 +228,14 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     fi
 
                     # SUB PRO SIZE IS N/2 
-                    # SUB_PROB_SIZE=$((N / 2)) 
-                    if [ "$N" -lt 500 ]; then
-                        SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-                    elif [ "$N" -le 3000 ]; then
-                        SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
-                    else
-                        SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
-                    fi
+                    SUB_PROB_SIZE=$((N / 4)) 
+                    # if [ "$N" -lt 500 ]; then
+                    #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+                    # elif [ "$N" -le 3000 ]; then
+                    #     SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
+                    # else
+                    #     SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
+                    # fi
                     
                     #create a dir with date and time
                     NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_LIT"
@@ -275,6 +275,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
                         -o $OUTPUT | tee ./console/$CONSOLE_NAME")
 
+
                     fi
                     # done
 
@@ -291,14 +292,14 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
+# for element in "${arr[@]}"; do
+#     echo "$element"
+# done
 # echo "Number of instances: ${#arr[@]}"
 
-# for element in "${arr[@]}"; do
-#     eval $element
-# done
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 #create a dir with date and time
 # NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"

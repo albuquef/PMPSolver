@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 
+
 using namespace std;
 
 typedef unsigned int uint_t;
@@ -40,5 +41,6 @@ extern uint_t TOLERANCE_CPT;
 extern uint_t K;
 extern uint_t PERCENTAGE;
 extern uint_t UB_MAX_ITER;
+
 
 #endif //LARGE_PMP_GLOBALS_HPP

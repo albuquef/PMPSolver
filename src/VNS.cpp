@@ -706,7 +706,7 @@ bool VNS::isBetter_cap(Solution_cap sol_cand, Solution_cap sol_best){
     if (sol_cand.get_objective() < sol_best.get_objective()) return true;
     return false;
 }
-Solution_cap VNS::runVNS_cap(string& Method, bool verbose, int MAX_ITE) {
+Solution_cap VNS::runVNS_cap(const string& Method, bool verbose, int MAX_ITE) {
 
     cout << "\n[INFO] Capacitated VNS heuristic started\n";
     int p = instance->get_p();
