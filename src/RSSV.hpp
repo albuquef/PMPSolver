@@ -39,6 +39,7 @@ public:
     void processSubsolution_CAP(shared_ptr<Solution_cap> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
+    vector<uint_t> extractFixedLocations(vector<uint_t> vet_locs);
 
 
     void setCoverMode(bool mode) {

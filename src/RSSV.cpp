@@ -75,11 +75,19 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
 
+    cout << "Add fixed locations: ";
+    final_locations = extractFixedLocations(final_locations);
+
+    // print final locations
+    cout << "Final locations: ";
+    for (auto fl:final_locations) cout << fl << " ";
+    cout << endl;
+
+
     // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     // cout << "\n\nFinal instance parameters:\n";
-    // filtered_instance->print();
-
+    // filtered_instance->print()
     filtered_instance->setVotedLocs(filtered_locations);
 
     atexit(printDDE);
@@ -147,11 +155,16 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
     for (auto fl:filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
+
+    // cout << "Add fixed locations: ";
+    // final_locations = extractFixedLocations(final_locations);
+
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     // cout << "Final instance parameters:\n";
     // filtered_instance->print();
 
-    filtered_instance->setVotedLocs(filtered_locations);
+
+    filtered_instance->setVotedLocs(final_locations);
 
     atexit(printDDE);
 
@@ -366,4 +379,82 @@ unordered_set<uint_t> RSSV::extractPrioritizedLocations(uint_t min_cnt) {
         }
     }
     return locations;
+}
+
+unordered_set<uint_t> get_p_values_solution(const std::string& file_path) {
+        std::unordered_set<uint_t> unique_values; // Set to store unique values
+        std::unordered_set<int> seen_values; // Set to track seen values
+        std::ifstream file(file_path);
+
+        if (!file.is_open()) {
+            std::cerr << "Error opening file: " << file_path << std::endl;
+            return unique_values;
+        }
+
+        std::string line;
+        while (std::getline(file, line)) {
+            std::istringstream iss(line);
+            std::string value;
+
+            while (iss >> value) {
+                try {
+                    uint_t numeric_value = std::stoul(value); // Convert to unsigned int
+
+                    if (seen_values.find(numeric_value) != seen_values.end()) {
+                        return unique_values; // Return if numeric_value is duplicated
+                    } else {
+                        unique_values.insert(numeric_value); // Add to result set
+                        seen_values.insert(numeric_value); // Mark as seen
+                    }
+                } catch (const std::invalid_argument& e) {
+                    // Handle non-numeric values if needed
+                    continue;
+                }
+            }
+        }
+
+        return unique_values;
+    }
+vector<uint_t> RSSV::extractFixedLocations(vector<uint_t> vet_locs) {
+
+    auto final_locs = vet_locs;
+
+    string name_file="";
+    if (instance->getTypeService() == "pr2392_020")
+        name_file = "solucao.pr2392_020_2235376.txt";
+    if (instance->getTypeService() == "pr2392_075")
+        name_file = "solucao.pr2392_075_1092294.txt";
+    if (instance->getTypeService() == "pr2392_150")
+        name_file = "solucao.pr2392_150_711111.txt";
+    if (instance->getTypeService() == "pr2392_300")
+        name_file = "solucao.pr2392_300_458145.txt";
+    if (instance->getTypeService() == "pr2392_500")
+        name_file = "solucao.pr2392_500_316042.txt";
+    string path_sols_lit = "./data/Literature/solutions_lit/" + name_file;
+    // cout << "path_sols_lit: " << path_sols_lit << "\n";
+    auto p_locations = get_p_values_solution(path_sols_lit);
+
+
+    // add p locations if doesn't exist in final_locs
+    vector<uint_t> not_in_final_locs;
+    int cont = 0;
+    for (auto p_loc:p_locations) {
+        if (find(final_locs.begin(), final_locs.end(), p_loc) == final_locs.end()) {
+            not_in_final_locs.push_back(p_loc);
+            cont++;
+        }
+    }
+
+    // eliminate cont last ellements in locations and add the not_in_final_locs
+    for (int i = 0; i < cont; i++) {
+        final_locs.pop_back();
+    }
+    for (auto loc:not_in_final_locs) {
+        final_locs.push_back(loc);
+    }
+
+    cout << "Added " << cont << " fixed locations" << endl;
+
+    return final_locs;
+
 }

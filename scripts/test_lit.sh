@@ -22,7 +22,7 @@ DIR_DATA="./data/Literature/"
 
 # ---------------------------------------- Machine configuration ----------------------------------------
 SEED=0
-NUM_THREADS=2
+NUM_THREADS=10
 
 
 # ----------------------------------------- Methods configuration -----------------------------------------
@@ -126,7 +126,7 @@ p_values_GB21+=(2000)
 # INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-INSTANCE_GROUPS=("group2/")
+INSTANCE_GROUPS=("group5/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -229,8 +229,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     fi
 
                     # SUB PRO SIZE IS N/2 
-                    # SUB_PROB_SIZE=$((N / 4)) 
-                    SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+                    SUB_PROB_SIZE=$((N / 4)) 
+                    # SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     # if [ "$N" -lt 500 ]; then
                     #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     # elif [ "$N" -le 3000 ]; then
