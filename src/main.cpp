@@ -375,6 +375,9 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << "Final instance parameters:\n";
         filtered_instance->print();
 
+        exit(1);
+
+
         cout << "-------------------------------------------------\n";
         cout << "Final Problem RSSV heuristic \n";
         cout << "-------------------------------------------------\n";

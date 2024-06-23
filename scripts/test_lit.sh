@@ -21,14 +21,15 @@ CMD="./build/large_PMP"
 DIR_DATA="./data/Literature/"
 
 # ---------------------------------------- Machine configuration ----------------------------------------
-NUM_THREADS=10
+SEED=0
+NUM_THREADS=2
 
 
 # ----------------------------------------- Methods configuration -----------------------------------------
 # Methods
-FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
+# FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
 # FOR_METHODS=("EXACT_CPMP_BIN")
-# FOR_METHODS=("RSSV")
+FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
 metsp="TB_PMP" # Subproblem method
@@ -228,7 +229,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     fi
 
                     # SUB PRO SIZE IS N/2 
-                    SUB_PROB_SIZE=$((N / 4)) 
+                    # SUB_PROB_SIZE=$((N / 4)) 
+                    SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     # if [ "$N" -lt 500 ]; then
                     #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     # elif [ "$N" -le 3000 ]; then
@@ -273,7 +275,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                         -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
                         -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
-                        -o $OUTPUT | tee ./console/$CONSOLE_NAME")
+                        -o $OUTPUT --seed $SEED | tee ./console/$CONSOLE_NAME")
 
 
                     fi

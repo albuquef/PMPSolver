@@ -17,6 +17,7 @@ class RSSV {
 private:
     shared_ptr<Instance> instance; // original PMP instance
     default_random_engine engine;
+    int seed_rssv;
     uint_t N; // original PMP size (no. of locations)
     uint_t M; // no. of sub-PMPs
     uint_t n; // sub-PMP size

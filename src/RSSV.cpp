@@ -9,6 +9,7 @@ void printDDE(void){
 
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
     engine.seed(seed);
+    seed_rssv = seed;
     N = instance->getLocations().size();
     M = max(static_cast<uint_t>(1), (LOC_FREQUENCY*N/n));
 
@@ -43,7 +44,8 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
     vector<thread> threads; // spawn M threads
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
-            threads.emplace_back(&RSSV::solveSubproblem, this, i + j);
+            // cout << "Thread " << i + j << " created with seed " << i+j + seed_rssv << endl;
+            threads.emplace_back(&RSSV::solveSubproblem, this, i+j + seed_rssv);
         }
         // Wait for the current batch of threads to finish before starting the next batch
         for (auto &th : threads) {
@@ -114,7 +116,8 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
     vector<thread> threads; // spawn M threads
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
-            threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j);
+            // cout << "Thread " << i + j << " created with seed " << i+j + seed_rssv << endl;
+            threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j + seed_rssv);
         }
         // Wait for the current batch of threads to finish before starting the next batch
         for (auto &th : threads) {
