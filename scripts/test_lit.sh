@@ -8,7 +8,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-75%6
-#SBATCH --array=0-4%5
+#SBATCH --array=0-0%1
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -22,14 +22,14 @@ DIR_DATA="./data/Literature/"
 
 # ---------------------------------------- Machine configuration ----------------------------------------
 SEED=0
-NUM_THREADS=10
+NUM_THREADS=20
 
 
 # ----------------------------------------- Methods configuration -----------------------------------------
 # Methods
 # FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
-# FOR_METHODS=("EXACT_CPMP_BIN")
-FOR_METHODS=("RSSV")
+FOR_METHODS=("EXACT_CPMP_BIN")
+# FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
 metsp="TB_PMP" # Subproblem method
@@ -45,7 +45,7 @@ COVER_MODE=false
 IsWeighted_OBJ=false
 
 # Define time settings
-TIME_CPLEX=3600
+TIME_CPLEX=0
 TIME_CLOCK=3600
 
 
@@ -294,9 +294,9 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
+for element in "${arr[@]}"; do
+    echo "$element"
+done
 # echo "Number of instances: ${#arr[@]}"
 
 # for element in "${arr[@]}"; do
@@ -304,6 +304,6 @@ fi
 # done
 
 #create a dir with date and time
-NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
-mkdir -p $NEW_DIR
-srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./$NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}
+# NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
+# mkdir -p $NEW_DIR
+# srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./$NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}

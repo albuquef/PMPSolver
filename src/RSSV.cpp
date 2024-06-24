@@ -80,9 +80,12 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
     cout << endl << endl;
 
     // print final locations
-    cout << "Final locations: ";
+    cout << "\n\nFinal " << filtered_cnt << " locations: ";
     for (auto fl:final_locations) cout << fl << " ";
     cout << endl << endl;
+
+    // size of final locations
+    cout << "Size of final locations: " << final_locations.size() << endl;
 
 
     // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
@@ -439,24 +442,76 @@ vector<uint_t> RSSV::extractFixedLocations(vector<uint_t> vet_locs) {
 
     // add p locations if doesn't exist in final_locs
     vector<uint_t> not_in_final_locs;
+    vector<uint_t> in_final_locs;
     int cont = 0;
     for (auto p_loc:p_locations) {
         if (find(final_locs.begin(), final_locs.end(), p_loc) == final_locs.end()) {
             not_in_final_locs.push_back(p_loc);
             cont++;
+        } else{
+            in_final_locs.push_back(p_loc);
         }
+
     }
 
-    // eliminate cont last ellements in locations and add the not_in_final_locs
-    for (int i = 0; i < cont; i++) {
+    // ellimante all ellement in p_locations that are in final_locs
+    for (auto loc:in_final_locs) {
+        final_locs.erase(remove(final_locs.begin(), final_locs.end(), loc), final_locs.end());
+    }
+
+    // ellimine cont ellements in final_locs that are not in p_locations
+    for (int i=0;i<cont;i++){ 
         final_locs.pop_back();
     }
-    for (auto loc:not_in_final_locs) {
+            
+    // add all ellements in p locations that are not in final_locs
+    for (auto loc:p_locations) {
         final_locs.push_back(loc);
     }
+
+
+
+
+    cout << "\n p solution: ";
+    for (auto loc:p_locations) {
+        cout << loc << " ";
+    }
+    cout << endl;
+    cout << "\nellements already in voting locations: ";
+    for (auto loc:in_final_locs) {
+        cout << loc << " ";
+    }
+    cout << endl;
+    cout << "\nellements not in voting locations: ";
+    for (auto loc:not_in_final_locs) {
+        cout << loc << " ";
+    }
+    cout << endl;
+
+
+    // eliminate cont last ellements in locations and add the not_in_final_locs
+
+    // elimine last ellements in final locs wich is not in in_final_locs
+
+
+
+    // for (int i = 0; i < cont; i++) {
+    //     // check if the last element is in in_final_locs
+    //     if (find(in_final_locs.begin(), in_final_locs.end(), final_locs.back()) == in_final_locs.end()) {
+    //         not_in_final_locs.push_back(final_locs.back()); // add the last element in not_in_final_locs
+    //         final_locs.pop_back(); // remove the last element
+    //         i = i - 1; // decrement the counter
+    //         if (final_locs.size() == 0) break;
+    //     }else{
+    //         final_locs.pop_back();
+    //     }
+    // }
+    // for (auto loc:p_locations) {
+    //     final_locs.push_back(loc);
+    // }
 
     cout << "Replaced " << cont << " fixed locations" << endl;
 
     return final_locs;
-
+    
 }

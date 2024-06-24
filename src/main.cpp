@@ -456,7 +456,7 @@ Solution_std methods_PMP(const shared_ptr<Instance>& instance, const Config& con
 Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const Config& config, double external_time) {
     Solution_cap solution;
     Solution_MAP solution_map(instance);
-    bool add_InitialSolution_RSSV = true;
+    bool add_InitialSolution_RSSV = false;
 
     string Method = config.Method;
     if (Method == "RSSV") {
@@ -473,6 +473,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const Config& co
         pmp.setCoverModel(config.cover_mode, instance->getTypeSubarea());
         pmp.setCoverModel_n2(config.cover_mode_n2, instance->getTypeSubarea_n2());
         pmp.setTimeLimit(config.CLOCK_LIMIT_CPLEX - external_time);
+        if (config.CLOCK_LIMIT_CPLEX == 0) {pmp.setTimeLimit(0);} // no time limit
 
         if (add_InitialSolution_RSSV && Method == "RSSV_EXACT_CPMP") {
             auto vet_locs = instance->getVotedLocs();
@@ -498,6 +499,7 @@ Solution_cap methods_CPMP(const shared_ptr<Instance>& instance, const Config& co
         pmp.setCoverModel(config.cover_mode, instance->getTypeSubarea());
         pmp.setCoverModel_n2(config.cover_mode_n2, instance->getTypeSubarea_n2());
         pmp.setTimeLimit(config.CLOCK_LIMIT_CPLEX - external_time);
+        if (config.CLOCK_LIMIT_CPLEX == 0) {pmp.setTimeLimit(0);} // no time limit
 
         if (add_InitialSolution_RSSV && Method == "RSSV_EXACT_CPMP_BIN") {
             auto vet_locs = instance->getVotedLocs();
