@@ -135,6 +135,9 @@ class PMP
         void constr_UpperBound (IloModel model, VarType x);
 
         void addMIPStartSolution();
+
+        template <typename VarType>
+        void constr_MaxDistance (IloModel model, VarType x);
         
 
 };

@@ -479,7 +479,11 @@ void Instance::print() {
         cout << "subareas n2: "<< type_subarea_n2 << endl;
     }
     cout << "p: " << p << endl;
-    cout << "total_demand: " << total_demand << endl << endl;
+    cout << "total_demand: " << total_demand << endl;
+    if(threshold_dist > 0){
+        cout << "threshold_dist: " << threshold_dist << endl;
+    }
+    cout << endl << endl;
 
     // print cust, loc, dist value for ten pairs
     // for (uint_t i = 0; i < 4; i++) {
@@ -904,4 +908,11 @@ Instance Instance::filterInstance(string type_service) {
     }
 
     return Instance(locations_filtered, customers, cust_weights, loc_capacities, dist_matrix, p, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
+}
+
+void Instance::set_ThresholdDist(dist_t threshold_dist){
+    this->threshold_dist = threshold_dist;
+}
+dist_t Instance::get_ThresholdDist(){
+    return threshold_dist;
 }

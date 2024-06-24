@@ -8,7 +8,9 @@ MACHINE_CLUSTER=poseidon
 USER_CLUSTER=falbuquerque
 CLUSTER_SERVER="${USER_CLUSTER}@${MACHINE_CLUSTER}"
 
-BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+# BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+
 
 reload_utils() {
     # add permissions to the file
@@ -31,7 +33,7 @@ send_code_to_cluster() {
 
     PATH_ORIGIN=${BASE_PATH}${path}
 
-    DIR_DEST=Literature_nolimit
+    DIR_DEST=Literature_test_limit_distance
     # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
     PATH_DEST="${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST}/${path}"
 

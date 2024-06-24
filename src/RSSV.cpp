@@ -107,7 +107,7 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
     // filtered_instance->print()
     filtered_instance->setVotedLocs(filtered_locations);
 
-    
+    filtered_instance->set_ThresholdDist(subSols_max_dist);
 
 
     atexit(printDDE);
@@ -206,6 +206,8 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
 
 
     filtered_instance->setVotedLocs(final_locations);
+
+    filtered_instance->set_ThresholdDist(subSols_max_dist);
 
     atexit(printDDE);
 

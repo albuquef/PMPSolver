@@ -5,10 +5,10 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --partition=cpuonly
 # #SBATCH --exclusive
-#SBATCH --mem=64G
+#SBATCH --mem=128G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-75%6
-#SBATCH --array=0-0%1
+#SBATCH --array=0-4%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -29,7 +29,6 @@ NUM_THREADS=20
 # Methods
 # FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
 # FOR_METHODS=("EXACT_CPMP_BIN")
-# FOR_METHODS=("EXACT_PMP")
 FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
@@ -298,7 +297,7 @@ fi
 # for element in "${arr[@]}"; do
 #     echo "$element"
 # done
-# echo "Number of instances: ${#arr[@]}"
+echo "Number of instances: ${#arr[@]}"
 
 for element in "${arr[@]}"; do
     eval $element

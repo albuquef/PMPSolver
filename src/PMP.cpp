@@ -331,6 +331,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if(CoverModel) {constr_Cover(model,y);}
     if(CoverModel_n2) {constr_Cover_n2(model,y);}
     if (UpperBound != 0) {constr_UpperBound(model,x);}
+    if (instance->get_ThresholdDist() > 0) {constr_MaxDistance(model,x);}
 }
 
 
@@ -585,6 +586,20 @@ void PMP::constr_UpperBound (IloModel model, VarType x){
     objExpr.end();
 
 
+}
+
+template <typename VarType>
+void PMP::constr_MaxDistance(IloModel model, VarType x){
+
+    if (VERBOSE){cout << "[INFO] Adding Max Distance Constraints "<< endl; cout << "Threshold Distance: " << instance->get_ThresholdDist() << endl;}
+
+    for(IloInt i = 0; i < num_customers; i++)
+        for(IloInt j = 0; j < num_facilities; j++){
+            auto loc = instance->getLocations()[j];
+            auto cust = instance->getCustomers()[i];
+            if (instance->getRealDist(loc,cust) > instance->get_ThresholdDist())
+                model.add(x[i][j] == 0);
+        }
 }
 
 
