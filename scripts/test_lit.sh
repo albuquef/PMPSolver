@@ -28,7 +28,8 @@ NUM_THREADS=20
 # ----------------------------------------- Methods configuration -----------------------------------------
 # Methods
 # FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
-FOR_METHODS=("EXACT_CPMP_BIN")
+# FOR_METHODS=("EXACT_CPMP_BIN")
+FOR_METHODS=("EXACT_PMP")
 # FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
@@ -126,7 +127,7 @@ p_values_GB21+=(2000)
 # INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-INSTANCE_GROUPS=("group5/")
+INSTANCE_GROUPS=("group2/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 #print filters
@@ -294,14 +295,14 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-for element in "${arr[@]}"; do
-    echo "$element"
-done
+# for element in "${arr[@]}"; do
+#     echo "$element"
+# done
 # echo "Number of instances: ${#arr[@]}"
 
-# for element in "${arr[@]}"; do
-#     eval $element
-# done
+for element in "${arr[@]}"; do
+    eval $element
+done
 
 #create a dir with date and time
 # NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"

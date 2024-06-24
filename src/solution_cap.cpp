@@ -9,16 +9,12 @@
 
 Solution_cap::Solution_cap(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations, const char* typeEval, bool cover_mode) {
     
+    
     this->instance = instance;
     this->p_locations = p_locations;
-    // print p_locations    
-
-    // cover_mode = instance->isCoverMode();
-
-    // Initialize all fields
-    // this->cover_mode = instance->isCoverMode();
     this->cover_mode = cover_mode;
     this->typeEval = typeEval;
+
     // cout << "typeEval: " << typeEval << endl;
     if (strcmp(typeEval, "GAP") == 0 || strcmp(typeEval, "GAPrelax") == 0){
         GAP_eval(); 
@@ -224,6 +220,8 @@ void Solution_cap::fullCapEval() {
         return;
     }
 
+
+
 }
 
 uint_t Solution_cap::getClosestOpenpLoc(uint_t cust, uint_t forbidden_loc) {
@@ -307,21 +305,6 @@ void Solution_cap::replaceLocation(uint_t loc_old, uint_t loc_new, const char* t
         // exit(1);
     } 
 
-    // test is in the same subarea
-    // auto p_loc_cand = p_locations;
-    // p_loc_cand.erase(loc_old);
-    // p_loc_cand.insert(loc_new);
-    // if(instance->isCoverMode()){
-    //     if(!instance->isPcoversAllSubareas(p_loc_cand)){
-    //         cerr << "ERROR: p_locations do not cover all subareas" << endl;
-    //         // cout << "p_locations: ";
-    //         // for (auto p:p_locations) {
-    //         //     cout << p << " ";
-    //         // }
-    //         // cout << endl;
-    //         // exit(1);
-    //     }
-    // }
 
 }
 
@@ -382,6 +365,13 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
         for (auto a:assignments[cust]) cout << a.node << " (" << a.usage << ") ";
         cout << endl;
     }
+
+    // stats
+    cout << "STATS\n";
+    cout << "max_dist: " << max_dist << endl;
+    cout << "min_dist: " << min_dist << endl;
+    cout << "avg_dist: " << avg_dist << endl;
+    cout << "std_dev_dist: " << std_dev_dist << endl;
 
     cout.rdbuf(stream_buffer_cout);
     file.close();
@@ -593,7 +583,6 @@ void Solution_cap::GAP_eval(){
             isFeasible = false;
         }
     }
-   
 }
 
 void Solution_cap::objEval(){
@@ -611,7 +600,6 @@ void Solution_cap::objEval(){
         }
     }
     this->objective = obj_value;
-
 }
 
 bool Solution_cap::getFeasibility(){
@@ -710,3 +698,50 @@ void Solution_cap::setCoverMode_n2(bool cover_mode_n2){
 void Solution_cap::add_UpperBound(double UB){
     this->UpperBound = UB;
 }   
+
+
+void Solution_cap::statsDistances(){
+    dist_t max_dist = 0;
+    dist_t min_dist = numeric_limits<dist_t>::max();
+    dist_t avg_dist = 0;
+    dist_t dist;
+    uint_t cont = 0;
+    
+    for (auto cust:instance->getCustomers()) {
+        for (auto a:assignments[cust]) {
+            dist = instance->getRealDist(a.node, cust);
+            if (dist > max_dist) max_dist = dist;
+            if (dist < min_dist) min_dist = dist;
+            avg_dist += dist;
+            cont++;
+        }
+    }
+    avg_dist = avg_dist/cont;
+    this->max_dist = max_dist;
+    this->min_dist = min_dist;
+    this->avg_dist = avg_dist;
+    // standard deviation
+    dist_t std_dev_dist = 0;
+    dist_t sum = 0;
+    for (auto cust:instance->getCustomers()) {
+        for (auto a:assignments[cust]) {
+            dist = instance->getRealDist(a.node, cust);
+            sum += pow(dist - avg_dist, 2);
+        }
+    }
+    std_dev_dist = sqrt(sum/cont);
+    this->std_dev_dist = std_dev_dist;
+}
+
+dist_t Solution_cap::getMaxDist(){
+    return max_dist;
+}
+dist_t Solution_cap::getMinDist(){
+    return min_dist;
+}
+dist_t Solution_cap::getAvgDist(){
+    return avg_dist;
+}
+dist_t Solution_cap::getStdDevDist(){
+    return std_dev_dist;
+}

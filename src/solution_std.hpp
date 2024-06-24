@@ -22,11 +22,16 @@ private:
     bool cover_mode = false;
     bool cover_mode_n2 = false;
     bool is_weighted_obj_func;
+    double UpperBound=0;
+    dist_t max_dist=0;
+    dist_t min_dist=numeric_limits<dist_t>::max();;
+    dist_t avg_dist=0;
+    dist_t std_dev_dist=0; 
 public:
 
     Solution_std() = default;
     Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations);
-    Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations,unordered_map<uint_t, my_pair> assignment);
+    // Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations,unordered_map<uint_t, my_pair> assignment);
     void naiveEval();
     uint_t getClosestpLoc(uint_t cust);
     const unordered_set<uint_t>& get_pLocations() const;
@@ -45,6 +50,11 @@ public:
     void setCoverMode_n2(bool mode) {
         cover_mode_n2 = mode;
     }
+    void statsDistances();
+    dist_t getMaxDist();
+    dist_t getMinDist();
+    dist_t getAvgDist();
+    dist_t getStdDevDist();
 };
 
 

@@ -169,7 +169,13 @@ void Solution_std::saveAssignment(string output_filename,string Method) {
         }
         cout << endl;
     }
-
+    cout << endl;
+    // stats
+    cout << "STATS\n";
+    cout << "max dist: " << max_dist << endl;
+    cout << "min dist: " << min_dist << endl;
+    cout << "avg dist: " << avg_dist << endl;
+    cout << "std dev dist: " << std_dev_dist << endl;
 
     cout.rdbuf(stream_buffer_cout);
     file.close();
@@ -216,4 +222,36 @@ bool Solution_std::isSolutionFeasible() {
     if(feas && cover_mode_n2) return instance->isPcoversAllSubareas_n2(p_locations);
 
     return feas;
+}
+
+void Solution_std::statsDistances() {
+    dist_t sum = 0;
+    for (auto cust:instance->getCustomers()) {
+        sum += assignment[cust].dist;
+        if (assignment[cust].dist > max_dist) max_dist = assignment[cust].dist;
+        if (assignment[cust].dist < min_dist) min_dist = assignment[cust].dist;
+    }
+    avg_dist = sum / instance->getCustomers().size();
+    for (auto cust:instance->getCustomers()) {
+        std_dev_dist += pow(assignment[cust].dist - avg_dist, 2);
+    }
+    std_dev_dist = sqrt(std_dev_dist / instance->getCustomers().size());
+
+    this->max_dist = max_dist;
+    this->min_dist = min_dist;
+    this->avg_dist = avg_dist;
+    this->std_dev_dist = std_dev_dist;
+}
+
+dist_t Solution_std::getMaxDist() {
+    return max_dist;
+}
+dist_t Solution_std::getMinDist() {
+    return min_dist;
+}
+dist_t Solution_std::getAvgDist() {
+    return avg_dist;
+}
+dist_t Solution_std::getStdDevDist() {
+    return std_dev_dist;
 }

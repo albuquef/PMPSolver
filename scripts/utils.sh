@@ -15,7 +15,7 @@ reload_utils() {
     # chmod +x ./scripts/utils.sh
     # bash ./scripts/utils.sh
     source ./scripts/utils.sh
-    echo "Reloaded utils"
+    echo "Reloaded utils.sh"
 }
 
 send_code_to_cluster() {
@@ -90,7 +90,7 @@ reecompile_code () {
     eval "cd build/ && make -j && cd .."
 }
 
-test_literatue() {
+test_literature() {
     # Run the code
     eval "bash ./scripts/test_lit.sh"
 }
@@ -103,7 +103,7 @@ test_paca() {
     eval "bash ./scripts/test_paca.sh"
 }
 
-slurm_test_literatue() {
+slurm_test_literature() {
     # Run the code
     eval "sbatch ./scripts/test_lit.sh"
 }

@@ -327,6 +327,13 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         
         cout << "\nFinal solution std:\n";
         solution.print();
+        solution.statsDistances();
+        cout << "Statistics:\n";
+        cout << "Max distance: " << solution.getMaxDist() << endl;
+        cout << "Min distance: " << solution.getMinDist() << endl;
+        cout << "Avg distance: " << solution.getAvgDist() << endl;
+        cout << "Std deviation distance: " << solution.getStdDevDist() << endl;
+        cout << endl << endl;
         cout << "Final total elapsed time: " << elapsed_time << "s\n";
         solution.saveAssignment(config.output_filename, config.Method);
         solution.saveResults(config.output_filename, elapsed_time, 0, config.Method);   
@@ -341,6 +348,13 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
 
         cout << "\nFinal solution:\n";
         solution.print();
+        solution.statsDistances();
+        cout << "Statistics:\n";
+        cout << "Max distance: " << solution.getMaxDist() << endl;
+        cout << "Min distance: " << solution.getMinDist() << endl;
+        cout << "Avg distance: " << solution.getAvgDist() << endl;
+        cout << "Std deviation distance: " << solution.getStdDevDist() << endl;
+        cout << endl << endl;
         cout << "Final total elapsed time: " << elapsed_time << "s\n";  
         solution.saveAssignment(config.output_filename, config.Method);
         solution.saveResults(config.output_filename, elapsed_time, 0, config.Method); 
