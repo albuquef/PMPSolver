@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <thread>
+#include <mutex>
 #include "TB.hpp"
 #include "VNS.hpp"
 #include "PMP.hpp"
@@ -29,6 +30,11 @@ private:
     int DEFAULT_MAX_NUM_ITER = 10000000;
     bool cover_mode = false;
     bool cover_mode_n2 = false;
+    mutex mtx;
+    dist_t subSols_max_dist=0;
+    dist_t subSols_min_dist=numeric_limits<dist_t>::max();;
+    dist_t subSols_avg_dist=0;
+    dist_t subSols_std_dev_dist=0; 
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
     shared_ptr<Instance> run(uint_t thread_cnt, const string& method_sp);

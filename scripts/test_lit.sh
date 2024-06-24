@@ -29,8 +29,8 @@ NUM_THREADS=20
 # Methods
 # FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
 # FOR_METHODS=("EXACT_CPMP_BIN")
-FOR_METHODS=("EXACT_PMP")
-# FOR_METHODS=("RSSV")
+# FOR_METHODS=("EXACT_PMP")
+FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="VNS_CPMP"
 metsp="TB_PMP" # Subproblem method
@@ -230,8 +230,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     fi
 
                     # SUB PRO SIZE IS N/2 
-                    SUB_PROB_SIZE=$((N / 4)) 
-                    # SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+                    # SUB_PROB_SIZE=$((N / 4)) 
+                    SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     # if [ "$N" -lt 500 ]; then
                     #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     # elif [ "$N" -le 3000 ]; then

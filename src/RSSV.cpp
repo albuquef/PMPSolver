@@ -75,17 +75,30 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
 
-    cout << "Replace with fixed locations: ";
-    final_locations = extractFixedLocations(final_locations);
-    cout << endl << endl;
 
-    // print final locations
-    cout << "\n\nFinal " << filtered_cnt << " locations: ";
-    for (auto fl:final_locations) cout << fl << " ";
-    cout << endl << endl;
+    bool extract_fixed_locations = false;
+    if (extract_fixed_locations){
+        cout << "Replace with fixed locations: ";
+        final_locations = extractFixedLocations(final_locations);
+        cout << endl << endl;
+        cout << "\n\nFinal " << filtered_cnt << " locations: ";
+        for (auto fl:final_locations) cout << fl << " ";
+        cout << endl << endl;
+        // size of final locations
+        cout << "Size of final locations: " << final_locations.size() << endl << endl;
+    }
 
-    // size of final locations
-    cout << "Size of final locations: " << final_locations.size() << endl;
+
+    //stats
+    subSols_avg_dist = subSols_avg_dist/M;
+    // subSols_std_dev_dist = sqrt(subSols_std_dev_dist/M - subSols_avg_dist*subSols_avg_dist);
+    subSols_std_dev_dist = subSols_std_dev_dist/M;
+    cout << "\nStats: \n";
+    cout << "Max dist: " << subSols_max_dist << endl;
+    cout << "Min dist: " << subSols_min_dist << endl;
+    cout << "avg of Avg dists: " << subSols_avg_dist << endl;
+    cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
+    cout << "\n\n";
 
 
     // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
@@ -93,6 +106,9 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
     // cout << "\n\nFinal instance parameters:\n";
     // filtered_instance->print()
     filtered_instance->setVotedLocs(filtered_locations);
+
+    
+
 
     atexit(printDDE);
 
@@ -160,9 +176,29 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
     
 
-    // cout << "Replace with fixed locations: ";
-    // final_locations = extractFixedLocations(final_locations);
-    // cout << endl << endl;
+    bool extract_fixed_locations = false;
+    if (extract_fixed_locations){
+        cout << "Replace with fixed locations: ";
+        final_locations = extractFixedLocations(final_locations);
+        cout << endl << endl;
+        cout << "\n\nFinal " << filtered_cnt << " locations: ";
+        for (auto fl:final_locations) cout << fl << " ";
+        cout << endl << endl;
+        // size of final locations
+        cout << "Size of final locations: " << final_locations.size() << endl << endl;
+    }
+
+
+    //stats
+    subSols_avg_dist = subSols_avg_dist/M;
+    // subSols_std_dev_dist = sqrt(subSols_std_dev_dist/M - subSols_avg_dist*subSols_avg_dist);
+    subSols_std_dev_dist = subSols_std_dev_dist/M;
+    cout << "\nStats: \n";
+    cout << "Max dist: " << subSols_max_dist << endl;
+    cout << "Min dist: " << subSols_min_dist << endl;
+    cout << "avg of Avg dists: " << subSols_avg_dist << endl;
+    cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
+    cout << "\n\n";
 
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     // cout << "Final instance parameters:\n";
@@ -234,6 +270,27 @@ void RSSV::solveSubproblem(int seed) {
     }else{
         cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
     }
+
+
+    sol.statsDistances();
+    dist_t max_dist_local = sol.getMaxDist();
+    dist_t min_dist_local = sol.getMinDist();
+    dist_t avg_dist_local = sol.getAvgDist();
+    dist_t std_dev_dist_local = sol.getStdDevDist();
+    cout << "Max dist: " << max_dist_local << endl;
+    cout << "Min dist: " << min_dist_local << endl;
+    cout << "Avg dist: " << avg_dist_local << endl;
+    cout << "Std dev dist: " << std_dev_dist_local << endl;
+
+    mtx.lock();
+        subSols_max_dist = max(subSols_max_dist,max_dist_local);
+        subSols_min_dist = min(subSols_min_dist,min_dist_local);
+        subSols_avg_dist += avg_dist_local;
+        subSols_std_dev_dist += std_dev_dist_local;
+    mtx.unlock();
+
+
+
     // checkClock();
 }
 
@@ -293,6 +350,26 @@ void RSSV::solveSubproblem_CAP(int seed) {
     }else{
         cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
     }
+
+    sol.statsDistances();
+    dist_t max_dist_local = sol.getMaxDist();
+    dist_t min_dist_local = sol.getMinDist();
+    dist_t avg_dist_local = sol.getAvgDist();
+    dist_t std_dev_dist_local = sol.getStdDevDist();
+
+    //PRINT
+    cout << "Max dist: " << max_dist_local << endl;
+    cout << "Min dist: " << min_dist_local << endl;
+    cout << "Avg dist: " << avg_dist_local << endl;
+    cout << "Std dev dist: " << std_dev_dist_local << endl;
+
+    mtx.lock();
+    subSols_max_dist = max(subSols_max_dist,max_dist_local);
+    subSols_min_dist = min(subSols_min_dist,min_dist_local);
+    subSols_avg_dist += avg_dist_local;
+    subSols_std_dev_dist += std_dev_dist_local;
+    mtx.unlock();
+
 
     // checkClock();
 }
