@@ -299,11 +299,11 @@ fi
 # done
 # echo "Number of instances: ${#arr[@]}"
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# for element in "${arr[@]}"; do
+#     eval $element
+# done
 
 #create a dir with date and time
-# NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
-# mkdir -p $NEW_DIR
-# srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./console/${console_names[$SLURM_ARRAY_TASK_ID]}
+NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
+mkdir -p $NEW_DIR
+srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./$NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}

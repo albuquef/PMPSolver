@@ -75,13 +75,14 @@ shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
 
 
-    cout << "Add fixed locations: ";
+    cout << "Replace with fixed locations: ";
     final_locations = extractFixedLocations(final_locations);
+    cout << endl << endl;
 
     // print final locations
     cout << "Final locations: ";
     for (auto fl:final_locations) cout << fl << " ";
-    cout << endl;
+    cout << endl << endl;
 
 
     // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
@@ -154,10 +155,11 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
 
     for (auto fl:filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
+    
 
-
-    // cout << "Add fixed locations: ";
+    // cout << "Replace with fixed locations: ";
     // final_locations = extractFixedLocations(final_locations);
+    // cout << endl << endl;
 
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
     // cout << "Final instance parameters:\n";
@@ -453,7 +455,7 @@ vector<uint_t> RSSV::extractFixedLocations(vector<uint_t> vet_locs) {
         final_locs.push_back(loc);
     }
 
-    cout << "Added " << cont << " fixed locations" << endl;
+    cout << "Replaced " << cont << " fixed locations" << endl;
 
     return final_locs;
 

@@ -5,7 +5,6 @@
 #include <utility>
 #include <regex>
 #include <dirent.h> // For directory operations
-namespace fs = filesystem;
 
 #include <chrono> // for time-related functions
 using namespace std::chrono;
