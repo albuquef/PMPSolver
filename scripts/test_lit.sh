@@ -276,7 +276,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                         -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
                         -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
-                        -o $OUTPUT --seed $SEED | tee ./console/$CONSOLE_NAME")
+                        -o $OUTPUT --seed $SEED --verbose| tee ./console/$CONSOLE_NAME")
 
 
                     fi

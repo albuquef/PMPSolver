@@ -1,6 +1,7 @@
 #include <iomanip>
 #include <utility>
 #include <experimental/filesystem>
+#include <cstring>
 #include "solution_std.hpp"
 
 Solution_std::Solution_std(shared_ptr<Instance> instance, unordered_set<uint_t> p_locations) {
@@ -124,14 +125,30 @@ dist_t Solution_std::get_objective() {
 
 void Solution_std::saveAssignment(string output_filename,string Method) {
 
-    cout << "[INFO] Saving Assignment pmp" << endl;
-
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
-    string output_filename_final = output_filename + 
+
+    string delimiter = "/";
+    string directory;
+    string rem_filename;
+
+    // Find the last occurrence of the delimiter
+    size_t pos = output_filename.find_last_of(delimiter);
+    if (pos != std::string::npos) {
+        // Extract the substring up to and including the last delimiter
+        directory = output_filename.substr(0, pos + 1);
+        rem_filename = output_filename.substr(pos + 1);
+    } else {
+        std::cerr << "[WARN] Delimiter not found in the filename string" << std::endl;
+    }
+
+    string output_filename_final = directory + "Assignments/" + rem_filename + 
         "_p_" + to_string(p_locations.size()) + 
-        "_" + Method +
-        ".txt";
+        "_" + Method;
+    if(cover_mode){output_filename_final +=  "_cover_" + instance->getTypeSubarea();}
+    output_filename_final += ".txt";
+
+    cout << "[INFO] Saving assignment: " << output_filename_final << endl;
 
     // Open file if output_filename is not empty
     if (!output_filename_final.empty()) {
@@ -186,9 +203,9 @@ void Solution_std::saveResults(string output_filename, double timeFinal, int num
 
     cout << "[INFO] Saving results pmp" << endl;
 
-    string output_filename_final = output_filename + 
-    "_results_" + Method +
-    ".csv";
+    string output_filename_final = output_filename + "_results_" + Method;
+    if(cover_mode){output_filename_final += "_cover_" + instance->getTypeSubarea();}
+    output_filename_final += ".csv";
 
     ofstream outputTable;
     outputTable.open(output_filename_final,ios:: app);
@@ -211,7 +228,50 @@ void Solution_std::saveResults(string output_filename, double timeFinal, int num
         // if (Method_fp != "null") {outputTable << Method_fp << ";";}
         // outputTable << "\n";
     }
+    // outputTable.close();
+
+    string output_filename_all = "./outputs/solutions/test_all_results.csv";
+    cout << "[INFO] Saving all results: "  << output_filename_all << endl;
+    
+    ofstream outputTable_all;
+    outputTable_all.open(output_filename_all,ios:: app);
+    
+    if (!outputTable_all.is_open()) {
+        cerr << "Error opening file: " << output_filename_all << endl;
+        // return;
+    }else{
+        // add the date and hour of the execution
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        outputTable_all << 1900 + ltm->tm_year << "-" << 1 + ltm->tm_mon << "-" << ltm->tm_mday << ";";
+        outputTable_all << instance->getCustomers().size() << ";";
+        outputTable_all << instance->getLocations().size() << ";";
+        outputTable_all << instance->get_p() << ";";
+        if (instance->get_isWeightedObjFunc()) outputTable_all << "weighted_obj" << ";";
+        else outputTable_all << "non-weighted_obj" << ";";
+        if (cover_mode) outputTable_all << instance->getTypeSubarea() << ";";
+        else outputTable_all << "non-cover_mode" << ";";
+        if (cover_mode_n2) outputTable_all << instance->getTypeSubarea_n2() << ";";
+        else outputTable_all << "non-cover_mode_n2" << ";";
+        // outputTable_all << instance->get_isWeightedObjFunc() << ";";
+        // outputTable_all << instance->isCoverMode() << ";";
+        // outputTable_all << instance->isCoverMode_n2() << ";";
+        outputTable_all << instance->getTypeService() << ";";
+        outputTable_all << instance->getTypeSubarea() << ";"; 
+        outputTable_all << Method << ";";
+        outputTable_all << fixed << setprecision(15) << get_objective() << ";"; // obj value
+        outputTable_all << fixed << setprecision(15) << timeFinal <<  ";"; // time cplex
+        outputTable_all << numIter << ";"; //
+        if (strcmp(Method.c_str(), "RSSV") == 0){
+            outputTable_all << Method_sp << ";";
+            outputTable_all << Method_fp << ";"; 
+            outputTable_all << SUB_PMP_SIZE << ";";
+        }
+        outputTable_all << "\n";
+    }
+
     outputTable.close();
+    outputTable_all.close();
 }
 
 

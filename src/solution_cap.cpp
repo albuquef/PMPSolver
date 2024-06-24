@@ -365,7 +365,7 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
         for (auto a:assignments[cust]) cout << a.node << " (" << a.usage << ") ";
         cout << endl;
     }
-
+    cout << endl;
     // stats
     cout << "STATS\n";
     cout << "max_dist: " << max_dist << endl;
