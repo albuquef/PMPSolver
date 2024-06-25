@@ -18,202 +18,94 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance
     }
 }
 
-/*
- * RSSV metaheuristic implementation.
- */
 shared_ptr<Instance> RSSV::run(uint_t thread_cnt, const string& method_sp) {
-    cout << "RSSV running...\n";
-    cout << "cPMP size (N): " << N << endl;
-    cout << "sub-cPMP size (n): " << min(n,N) << endl;
-    cout << "Subproblems cnt (M): " << M << endl << endl;
-    this->method_RSSV_sp = method_sp;
-    cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
-
-    if (instance->get_p() > min(n,N)){
-        cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
-        cout << "[WARN]  Setting n = min(1.5 * p, N)" << endl;
-        n = min(static_cast<uint_t>(1.5*instance->get_p()), N);
-        // exit(1);
-    }
-
-    sem.setCount(thread_cnt); // limit max no. of threads run in parallel
-    cout << "thread cnt:  " << thread_cnt << endl;
-    cout << "\n\n";
-
-    auto start_time = tick();
-    vector<thread> threads; // spawn M threads
-    for (uint_t i = 1; i <= M; i += thread_cnt) {
-        for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
-            // cout << "Thread " << i + j << " created with seed " << i+j + seed_rssv << endl;
-            threads.emplace_back(&RSSV::solveSubproblem, this, i+j + seed_rssv);
-        }
-        // Wait for the current batch of threads to finish before starting the next batch
-        for (auto &th : threads) {
-            th.join();
-        }
-        // Clear the threads vector for the next batch
-        threads.clear();
-    }
-
-
-    cout << "[INFO] All subproblems solved."  << endl << endl;
-    tock(start_time);
-
-    // auto filtered_cnt = max(n, FILETRING_SIZE * instance->get_p());
-    auto filtered_cnt = n;
-    auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
-    cout << "\n\nFiltered " << filtered_cnt << " locations: ";
-    for (auto fl:filtered_locations) cout << fl << " ";
-    cout << endl << endl;
-
-    auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
-    cout << "\n\nExtracted " << prioritized_locations.size() << " prioritized locations: ";
-    for (auto pl:prioritized_locations) cout << pl << " ";
-    cout << endl << endl;
-
-    for (auto fl:filtered_locations) prioritized_locations.insert(fl);
-    vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
-
-
-
-    bool extract_fixed_locations = false;
-    if (extract_fixed_locations){
-        cout << "Replace with fixed locations: ";
-        final_locations = extractFixedLocations(final_locations);
-        cout << endl << endl;
-        cout << "\n\nFinal " << filtered_cnt << " locations: ";
-        for (auto fl:final_locations) cout << fl << " ";
-        cout << endl << endl;
-        // size of final locations
-        cout << "Size of final locations: " << final_locations.size() << endl << endl;
-    }
-
-
-    //stats
-    subSols_avg_dist = subSols_avg_dist/M;
-    // subSols_std_dev_dist = sqrt(subSols_std_dev_dist/M - subSols_avg_dist*subSols_avg_dist);
-    subSols_std_dev_dist = subSols_std_dev_dist/M;
-    cout << "\nStats: \n";
-    cout << "Max dist: " << subSols_max_dist << endl;
-    cout << "Min dist: " << subSols_min_dist << endl;
-    cout << "avg of Avg dists: " << subSols_avg_dist << endl;
-    cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
-    cout << "\n\n";
-
-
-    // shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations)); // Create filtered instance (n locations, all customers)
-    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
-    // cout << "\n\nFinal instance parameters:\n";
-    // filtered_instance->print()
-    filtered_instance->setVotedLocs(filtered_locations);
-
-    filtered_instance->set_ThresholdDist(subSols_max_dist);
-
-
-    atexit(printDDE);
-
-    return filtered_instance;
+    return run_impl(thread_cnt, method_sp, false);
 }
-
 shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
-
-
-
+    return run_impl(thread_cnt, method_sp, true);
+}
+shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, bool is_cap) {
     cout << "RSSV running...\n";
     cout << "cPMP size (N): " << N << endl;
-    cout << "sub-cPMP size (n): " << min(n,N) << endl;
+    cout << "sub-cPMP size (n): " << min(n, N) << endl;
     cout << "Subproblems cnt (M): " << M << endl;
     cout << "p: " << instance->get_p() << endl << endl;
     this->method_RSSV_sp = method_sp;
-    cout << "Method to solve the Subproblems: " << method_RSSV_sp  << endl;
+    cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl;
+    cout << "Seed: " << seed_rssv << endl << endl;
+    
 
-
-
-    if (instance->get_p() > min(n,N)){
+    if (instance->get_p() > min(n, N)) {
         cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
-        cout << "[WARN]  Setting n = min(1.5 * p, N)" << endl;
-        n = min(static_cast<uint_t>(1.5*instance->get_p()), N);
-        // exit(1);
-    } 
+        cout << "[WARN] Setting n = min(1.5 * p, N)" << endl;
+        n = min(static_cast<uint_t>(1.5 * instance->get_p()), N);
+    }
 
-    sem.setCount(thread_cnt); // limit max no. of threads run in parallel
-    cout << "thread cnt:  " << thread_cnt << endl;
-    cout << "\n\n";
+    sem.setCount(thread_cnt);
+    cout << "thread cnt: " << thread_cnt << endl << endl;
 
     auto start_time = tick();
-    vector<thread> threads; // spawn M threads
+    vector<thread> threads;
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
-            // cout << "Thread " << i + j << " created with seed " << i+j + seed_rssv << endl;
-            threads.emplace_back(&RSSV::solveSubproblem_CAP, this, i + j + seed_rssv);
+            int seed_thread = seed_rssv + i + j;
+            if (is_cap) {
+                threads.emplace_back(&RSSV::solveSubproblem_CAP, this, seed_thread);
+            } else {
+                threads.emplace_back(&RSSV::solveSubproblem, this, seed_thread);
+            }
         }
-        // Wait for the current batch of threads to finish before starting the next batch
         for (auto &th : threads) {
             th.join();
         }
-        // Clear the threads vector for the next batch
         threads.clear();
     }
 
-
-    cout << "[INFO] All subproblems solved."  << endl << endl;
+    cout << "[INFO] All subproblems solved." << endl << endl;
     tock(start_time);
 
-    // auto filtered_cnt = min(max(n, FILTERING_SIZE * instance->get_p()), N);
     auto filtered_cnt = n;
-    auto filtered_locations = filterLocations(filtered_cnt); // Filter n locations according to voting weights
+    auto filtered_locations = filterLocations(filtered_cnt);
     cout << "Filtered " << filtered_cnt << " locations: ";
-    for (auto fl:filtered_locations) cout << fl << " ";
+    for (auto fl : filtered_locations) cout << fl << " ";
     cout << endl << endl;
-
 
     auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
     cout << "Extracted " << prioritized_locations.size() << " prioritized locations: ";
-    for (auto pl:prioritized_locations) cout << pl << " ";
+    for (auto pl : prioritized_locations) cout << pl << " ";
     cout << endl << endl;
 
-    for (auto fl:filtered_locations) prioritized_locations.insert(fl);
-    vector<uint_t> final_locations (prioritized_locations.begin(), prioritized_locations.end());
-    
+    for (auto fl : filtered_locations) prioritized_locations.insert(fl);
+    vector<uint_t> final_locations(prioritized_locations.begin(), prioritized_locations.end());
 
     bool extract_fixed_locations = false;
-    if (extract_fixed_locations){
+    if (extract_fixed_locations) {
         cout << "Replace with fixed locations: ";
         final_locations = extractFixedLocations(final_locations);
         cout << endl << endl;
-        cout << "\n\nFinal " << filtered_cnt << " locations: ";
-        for (auto fl:final_locations) cout << fl << " ";
+        cout << "Final " << filtered_cnt << " locations: ";
+        for (auto fl : final_locations) cout << fl << " ";
         cout << endl << endl;
-        // size of final locations
         cout << "Size of final locations: " << final_locations.size() << endl << endl;
     }
 
-
-    //stats
-    subSols_avg_dist = subSols_avg_dist/M;
-    // subSols_std_dev_dist = sqrt(subSols_std_dev_dist/M - subSols_avg_dist*subSols_avg_dist);
-    subSols_std_dev_dist = subSols_std_dev_dist/M;
+    subSols_avg_dist = subSols_avg_dist / M;
+    subSols_std_dev_dist = subSols_std_dev_dist / M;
     cout << "\nStats: \n";
     cout << "Max dist: " << subSols_max_dist << endl;
     cout << "Min dist: " << subSols_min_dist << endl;
     cout << "avg of Avg dists: " << subSols_avg_dist << endl;
     cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
-    cout << "\n\n";
+    cout << endl;
 
-    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations,instance->getTypeService())); // Create filtered instance (n locations, all customers)
-    // cout << "Final instance parameters:\n";
-    // filtered_instance->print();
-
-
-    filtered_instance->setVotedLocs(final_locations);
-
+    shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
+    filtered_instance->setVotedLocs(filtered_locations);
     filtered_instance->set_ThresholdDist(subSols_max_dist);
 
     atexit(printDDE);
 
     return filtered_instance;
 }
-
 
 /*
  * Solve sub-PMP of the original problem by the TB heuristic.

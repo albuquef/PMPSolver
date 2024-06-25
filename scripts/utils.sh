@@ -8,8 +8,8 @@ MACHINE_CLUSTER=poseidon
 USER_CLUSTER=falbuquerque
 CLUSTER_SERVER="${USER_CLUSTER}@${MACHINE_CLUSTER}"
 
-# BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
-BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+# BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
 
 reload_utils() {
@@ -25,15 +25,15 @@ send_code_to_cluster() {
     # call the reload function
     reload_utils
 
-    path="/"
+    # path="/"
     # path="/src/"
-    # path="/scripts/"
+    path="/scripts/"
     # path="/data/"
     # BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
     PATH_ORIGIN=${BASE_PATH}${path}
 
-    DIR_DEST=Literature_test_limit_distance
+    DIR_DEST=test_h_bandwidth_bigger
     # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
     PATH_DEST="${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST}/${path}"
 
@@ -52,7 +52,7 @@ save_outputs_cluster() {
     # call the reload function
     reload_utils
 
-    DIR_NAME=Literature_test_2
+    DIR_NAME=test_h_bandwidth_smaller   
     PATH_CLUSTER=${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_NAME}/
 
     PATH_LOCAL=~/Documents/projects/Project_PMP/saves/SaveCluster/${DATE}_save_cluster/${DIR_NAME}
@@ -182,6 +182,56 @@ create_list_all_instances_literature() {
         "XMC10150_1000.txt"
         "XMC10150_100.txt"
         "XMC10150_2000.txt"
+    )
+
+    filename=./scripts/filter_lit.txt
+    # Write entries to output file
+    printf "%s\n" "${entries[@]}" > $filename
+
+    echo "List generated successfully in $filename"
+
+
+
+}
+
+
+create_list_pr2392_instances_literature() {
+
+    # call the reload function
+    reload_utils
+
+    # Array of all the entries
+    entries=(
+        "pr2392_020.txt"
+        "pr2392_075.txt"
+        "pr2392_150.txt"
+        "pr2392_300.txt"
+        "pr2392_500.txt"
+    )
+
+    filename=./scripts/filter_lit.txt
+    # Write entries to output file
+    printf "%s\n" "${entries[@]}" > $filename
+
+    echo "List generated successfully in $filename"
+
+
+
+}
+
+create_list_SJC_instances_literature() {
+
+    # call the reload function
+    reload_utils
+
+    # Array of all the entries
+    entries=(
+        "SJC1"
+        "SJC2"
+        "SJC3a"
+        "SJC3b"
+        "SJC4a"
+        "SJC4b"
     )
 
     filename=./scripts/filter_lit.txt

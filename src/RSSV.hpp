@@ -39,6 +39,7 @@ public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
     shared_ptr<Instance> run(uint_t thread_cnt, const string& method_sp);
     shared_ptr<Instance> run_CAP(uint_t thread_cnt, const string& method_sp);
+    shared_ptr<Instance> run_impl(uint_t thread_cnt, const string& method_sp, bool is_cap);
     void solveSubproblem(int seed);
     void solveSubproblem_CAP(int seed);
     void processSubsolution(shared_ptr<Solution_std> solution);

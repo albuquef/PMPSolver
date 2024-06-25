@@ -35,21 +35,25 @@ METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 metsp="TB_PMP" # Subproblem method
 
 # FOR_METHODS=("GAP")
-
 # Cover mode:
 # COVER_MODE=1
 # subar="kmeans"
 COVER_MODE=false 
-
 # Weighted sum of distances
 IsWeighted_OBJ=false
-
 # Define time settings
-TIME_CPLEX=0
+TIME_CPLEX=3600
 TIME_CLOCK=3600
 
 
 # ----------------------------------------- Instance configuration -----------------------------------------
+# INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
+# INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
+# INSTANCE_GROUPS=("group3/" "group4/" "group5/")
+INSTANCE_GROUPS=("group2/")
+
+mapfile -t filters < ./scripts/filter_lit.txt
+
 
 # Define p values for each group
 for ((i = 0; i < 10; i++)); do
@@ -119,19 +123,6 @@ done
 p_values_GB21+=(1000)
 p_values_GB21+=(100)
 p_values_GB21+=(2000)
-
-
-
-# Define INSTANCE_GROUPS
-# INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
-# INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
-# INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-INSTANCE_GROUPS=("group2/")
-
-mapfile -t filters < ./scripts/filter_lit.txt
-#print filters
-# echo "Filters: ${filters[@]}"
-
 
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
@@ -275,7 +266,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                         -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
                         -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                         -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
-                        -o $OUTPUT --seed $SEED --verbose| tee ./console/$CONSOLE_NAME")
+                        -o $OUTPUT --seed $SEED | tee ./console/$CONSOLE_NAME")
 
 
                     fi
@@ -297,7 +288,7 @@ fi
 # for element in "${arr[@]}"; do
 #     echo "$element"
 # done
-echo "Number of instances: ${#arr[@]}"
+# echo "Number of instances: ${#arr[@]}"
 
 for element in "${arr[@]}"; do
     eval $element
