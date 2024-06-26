@@ -26,14 +26,14 @@ send_code_to_cluster() {
     reload_utils
 
     # path="/"
-    # path="/src/"
-    path="/scripts/"
+    path="/src/"
+    # path="/scripts/"
     # path="/data/"
     # BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
     PATH_ORIGIN=${BASE_PATH}${path}
 
-    DIR_DEST=test_h_bandwidth_bigger
+    DIR_DEST=test_akj_dist_sol_voting
     # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
     PATH_DEST="${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST}/${path}"
 

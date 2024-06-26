@@ -221,14 +221,14 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
                     # SUB PRO SIZE IS N/2 
                     # SUB_PROB_SIZE=$((N / 4)) 
-                    SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-                    # if [ "$N" -lt 500 ]; then
-                    #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-                    # elif [ "$N" -le 2000 ]; then
-                    #     SUB_PROB_SIZE=$((N / 4)) 
-                    # else
-                    #     SUB_PROB_SIZE=$((N / 4)) 
-                    # fi
+                    # SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+                    if [ "$N" -lt 500 ]; then
+                        SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+                    elif [ "$N" -le 2000 ]; then
+                        SUB_PROB_SIZE=$((N / 4)) 
+                    else
+                        SUB_PROB_SIZE=$((N / 4)) 
+                    fi
                     
                     #create a dir with date and time
                     NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_LIT"

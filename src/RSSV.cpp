@@ -110,7 +110,11 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
     filtered_instance->setVotedLocs(filtered_locations);
-    filtered_instance->set_ThresholdDist(subSols_max_dist);
+
+    bool add_threshold_dist = false;
+    if (add_threshold_dist) {
+        filtered_instance->set_ThresholdDist(subSols_max_dist);
+    }
 
     atexit(printDDE);
 
@@ -204,7 +208,8 @@ void RSSV::processSubsolutionScores(shared_ptr<SolutionType> solution) {
             if (loc == loc_sol) {
                 weights[loc] += 1;
             } else {
-                weights[loc] += instance->getVotingScore(loc, cust_cl);
+                // weights[loc] += instance->getVotingScore(loc, cust_cl);
+                weights[loc] += instance->getVotingScore(loc, loc_sol);
             }
         }
         weights_mutex.unlock();
