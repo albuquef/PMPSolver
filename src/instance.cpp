@@ -4,18 +4,6 @@
 #include <sstream>
 #include <string.h>
 
-// Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
-//                    shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p,
-//                    uint_t loc_max, uint_t cust_max, string type_service)
-//         : locations(locations), customers(customers), cust_weights(cust_weights),
-//           dist_matrix(dist_matrix),
-//           loc_capacities(loc_capacities), p(p),
-//           loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service){
-//     total_demand = 0;
-//     for (auto cust:this->customers) {
-//         total_demand += this->getCustWeight(cust);
-//     }
-// }
 
 Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights,
                    shared_ptr<dist_t[]> loc_capacities, shared_ptr<dist_t[]> dist_matrix, uint_t p,
@@ -73,6 +61,7 @@ vector<string> tokenize(const string& input, char delim) {
     }
     return tokens;
 }
+
 
 Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service, uint_t cust_max_id, uint_t loc_max_id) : p(p), type_service(type_service) {
 
@@ -177,15 +166,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
                 cnt++;
             }
             // Determine stdev and bandwidth
-            dist_t mean = sum / cnt;
-            dist_t variance = sum_sq / cnt - mean * mean;
-            dist_t stdev = sqrt(variance);
-            dist_t a = (4 * pow(stdev, 5)) / (3 * cnt);
-            dist_t b = 0.2;
-            h = pow(a, b);
-            cout << "Loaded " << cnt << " distances\n";
-            cout << "dists stdev: " << stdev << endl;
-            cout << "bandwidth h: " << h << endl;
+            calculate_Bandwidth(sum, sum_sq, cnt);
             // Extract unique locations and customers
             for (uint_t loc = 0; loc < loc_flags.size(); loc++) {
                 if (loc_flags[loc]) locations.push_back(loc);
@@ -312,8 +293,6 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         uint_t cnt = 0;
         // Loop through all pairs of locations and customers
 
-
-
         for (uint_t i = 1; i < cust_max_id+1; i++) {
             for (uint_t j = i; j < loc_max_id+1; j++) {
                 if (i >= cust_coordinates.size() || j >= loc_coordinates.size()) {
@@ -342,15 +321,8 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         }
 
         // Determine stdev and bandwidth
-        dist_t mean = sum / cnt;
-        dist_t variance = sum_sq / cnt - mean * mean;
-        dist_t stdev = sqrt(variance);
-        dist_t a = (4 * pow(stdev, 5)) / (3 * cnt);
-        dist_t b = 0.2;
-        h = pow(a, b);
-        cout << "Loaded " << cnt << " distances\n";
-        cout << "dists stdev: " << stdev << endl;
-        cout << "bandwidth h: " << h << endl;
+        calculate_Bandwidth(sum, sum_sq, cnt);
+
         // Extract unique locations and customers
         for (uint_t loc = 0; loc < loc_flags.size(); loc++) {
             if (loc_flags[loc]) locations.push_back(loc);
@@ -374,6 +346,18 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
 
     }
 
+}
+
+void Instance::calculate_Bandwidth(dist_t sum, dist_t sum_sq, uint_t cnt) {
+    dist_t mean = sum / cnt;
+    dist_t variance = sum_sq / cnt - mean * mean;
+    dist_t stdev = sqrt(variance);
+    h = pow((4 * pow(stdev, 5)) / (3 * cnt), 0.2);
+    h = BW_MULTIPLIER * h;
+
+    cout << "Loaded " << cnt << " distances\n";
+    cout << "dists stdev: " << stdev << endl;
+    cout << "bandwidth h: " << h << endl;
 }
 
 bool Instance::get_isWeightedObjFunc() {

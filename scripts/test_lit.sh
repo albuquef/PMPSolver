@@ -224,10 +224,10 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     # if [ "$N" -lt 500 ]; then
                     #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-                    # elif [ "$N" -le 3000 ]; then
-                    #     SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
+                    # elif [ "$N" -le 2000 ]; then
+                    #     SUB_PROB_SIZE=$((N / 4)) 
                     # else
-                    #     SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
+                    #     SUB_PROB_SIZE=$((N / 4)) 
                     # fi
                     
                     #create a dir with date and time

@@ -26,6 +26,7 @@ typedef vector<my_tuple> assignment;
 
 extern uint_t LOC_FREQUENCY; // avg. no. of location occurrences in M sub-PMPs (M = LOC_FREQUENCY*N/n)
 extern double BW_CUTOFF; // locations within BW_CUTOFF * h from a selected one obtain nonzero voting score
+extern double BW_MULTIPLIER; // bandwidth multiplier
 extern uint_t LOC_PRIORITY_CNT;
 extern uint_t MAX_SUB_P; // maximum value of p allowed in sub-PMPs
 extern uint_t FILTERING_SIZE; // when creating the final sub-PMP, max(n, FILTERING_SIZE * p locations) are considered

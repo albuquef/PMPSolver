@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <thread>
+#include <functional>
 #include <mutex>
 #include "TB.hpp"
 #include "VNS.hpp"
@@ -24,6 +25,7 @@ private:
     uint_t n; // sub-PMP size
     Semaphore sem;
     mutex weights_mutex;
+    mutex dist_mutex;
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
     // vector<uint_t> filtered_locs; // locations that are filtered 
     string method_RSSV_sp;
@@ -40,10 +42,12 @@ public:
     shared_ptr<Instance> run(uint_t thread_cnt, const string& method_sp);
     shared_ptr<Instance> run_CAP(uint_t thread_cnt, const string& method_sp);
     shared_ptr<Instance> run_impl(uint_t thread_cnt, const string& method_sp, bool is_cap);
-    void solveSubproblem(int seed);
-    void solveSubproblem_CAP(int seed);
-    void processSubsolution(shared_ptr<Solution_std> solution);
-    void processSubsolution_CAP(shared_ptr<Solution_cap> solution);
+    template <typename SolutionType>
+    void solveSubproblemTemplate(int seed, bool isCapacitated);
+    template <typename SolutionType>
+    void processSubsolutionScores(shared_ptr<SolutionType> solution);
+    template <typename SolutionType>
+    void processSubsolutionDists(shared_ptr<SolutionType> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
     vector<uint_t> extractFixedLocations(vector<uint_t> vet_locs);

@@ -49,14 +49,24 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
             int seed_thread = seed_rssv + i + j;
+            cout << "Thread " << i + j << " created with seed " << seed_thread << endl;
+            
             if (is_cap) {
-                threads.emplace_back(&RSSV::solveSubproblem_CAP, this, seed_thread);
+                threads.emplace_back([this, seed_thread]() {
+                    this->solveSubproblemTemplate<Solution_cap>(seed_thread, true);
+                });
             } else {
-                threads.emplace_back(&RSSV::solveSubproblem, this, seed_thread);
+                threads.emplace_back([this, seed_thread]() {
+                    this->solveSubproblemTemplate<Solution_std>(seed_thread, false);
+                });
             }
+
         }
+
         for (auto &th : threads) {
-            th.join();
+            if (th.joinable()) {
+                th.join();
+            }
         }
         threads.clear();
     }
@@ -107,178 +117,90 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     return filtered_instance;
 }
 
-/*
- * Solve sub-PMP of the original problem by the TB heuristic.
- * sub-PMP considers only n locations and customers.
- */
-void RSSV::solveSubproblem(int seed) {
 
-
-    // // Use the seed for random number generation
+template <typename SolutionType>
+void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
+    // Use the seed for random number generation
+    int thread_id = seed - seed_rssv;
     std::mt19937 gen(seed);
-
+    
     sem.wait(seed);
-    cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
+    cout << "Solving sub-PMP " << thread_id << "/" << M << "..." << endl;
     auto start = tick();
-    // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
+    
+    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), seed);
     subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
+    
     if (instance->get_p() > n) {
         cout << "[ERROR] The number of facilities is greater than the number of locations to be selected" << endl;
         exit(1);
     }
-    // subInstance.setCoverModel(instance->isCoverMode(),instance->getTypeSubarea());
-    // subInstance.print();
-    // double time_limit_subproblem = 0; // off time limit
+
     double time_limit_subproblem = 300; // 5 minutes
+    bool verb = false;
 
-    Solution_std sol;
-    if(checkClock()){
-        if(method_RSSV_sp == "EXACT_PMP"){
-            PMP pmp(make_shared<Instance>(subInstance), "PMP");
-            pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
-            pmp.setCoverModel_n2(cover_mode_n2,instance->getTypeSubarea_n2());
+    SolutionType sol;
+    if (checkClock()) {
+        if (method_RSSV_sp == "EXACT_PMP" || (isCapacitated && method_RSSV_sp == "EXACT_CPMP")) {
+            PMP pmp(make_shared<Instance>(subInstance), isCapacitated ? "CPMP" : "PMP");
+            pmp.setCoverModel(cover_mode, instance->getTypeSubarea());
+            pmp.setCoverModel_n2(cover_mode_n2, instance->getTypeSubarea_n2());
+            if (time_limit_subproblem > 0) pmp.setTimeLimit(time_limit_subproblem);
             pmp.run();
-            sol = pmp.getSolution_std();
-        }else if(method_RSSV_sp == "TB_PMP"){
-            TB heuristic(make_shared<Instance>(subInstance), seed);
-            heuristic.setCoverMode(cover_mode);
-            heuristic.setCoverMode_n2(cover_mode_n2);   
-            // heuristic.setTimeLimit(60);
-            if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
-            sol = heuristic.run(false, UB_MAX_ITER);
-        }else if(method_RSSV_sp == "VNS_PMP"){
-            VNS heuristic(make_shared<Instance>(subInstance), seed);
-            heuristic.setCoverMode(cover_mode);
-            heuristic.setCoverMode_n2(cover_mode_n2);
-            sol = heuristic.runVNS_std(false,UB_MAX_ITER);
-        }else{
-            cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
-            exit(1);
-        }
-        if (VERBOSE) cout << "Solution_std " << seed << ": ";
-        if (VERBOSE) sol.print();
-        processSubsolution(make_shared<Solution_std>(sol));
-        if (VERBOSE) tock(start);
-        sem.notify(seed);
-    }else{
-        cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
-    }
-
-
-    sol.statsDistances();
-    dist_t max_dist_local = sol.getMaxDist();
-    dist_t min_dist_local = sol.getMinDist();
-    dist_t avg_dist_local = sol.getAvgDist();
-    dist_t std_dev_dist_local = sol.getStdDevDist();
-    cout << "Max dist: " << max_dist_local << endl;
-    cout << "Min dist: " << min_dist_local << endl;
-    cout << "Avg dist: " << avg_dist_local << endl;
-    cout << "Std dev dist: " << std_dev_dist_local << endl;
-
-    mtx.lock();
-        subSols_max_dist = max(subSols_max_dist,max_dist_local);
-        subSols_min_dist = min(subSols_min_dist,min_dist_local);
-        subSols_avg_dist += avg_dist_local;
-        subSols_std_dev_dist += std_dev_dist_local;
-    mtx.unlock();
-
-
-
-    // checkClock();
-}
-
-
-
-/*
- * Solve sub-PMP of the original problem by the TB heuristic.
- * sub-PMP capacitated considers only n locations and customers.
- */
-void RSSV::solveSubproblem_CAP(int seed) {
-    sem.wait(seed);
-    cout << "Solving sub-PMP " << seed << "/" << M << "..." << endl;
-    auto start = tick();
-    // Instance subInstance = instance->sampleSubproblem(n, n, min(instance->get_p(), MAX_SUB_P), &engine);
-    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(),seed);
-    subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
-    // checkClock();
-    // double time_limit_subproblem = 0; // off time limit
-    double time_limit_subproblem = 300; // 5 minutes
-
-
-    Solution_cap sol;
-    if(checkClock()){
-        if(method_RSSV_sp == "EXACT_CPMP"){
-            PMP pmp(make_shared<Instance>(subInstance), "CPMP");
-            pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
-            pmp.setCoverModel_n2(cover_mode_n2,instance->getTypeSubarea_n2());
-            pmp.run();
-            sol = pmp.getSolution_cap();
-        }else if(method_RSSV_sp == "EXACT_CPMP_BIN"){
-            PMP pmp(make_shared<Instance>(subInstance), "CPMP", true);
-            pmp.setCoverModel(cover_mode,instance->getTypeSubarea());
-            pmp.setCoverModel_n2(cover_mode_n2,instance->getTypeSubarea_n2());
-            pmp.run();
-            sol = pmp.getSolution_cap();
-        }else if(method_RSSV_sp == "TB_CPMP"){
+            if constexpr (std::is_same_v<SolutionType, Solution_std>) {
+                sol = pmp.getSolution_std();
+            } else if constexpr (std::is_same_v<SolutionType, Solution_cap>) {
+                sol = pmp.getSolution_cap();
+            }
+        } else if (method_RSSV_sp == "TB_PMP" || (isCapacitated && method_RSSV_sp == "TB_CPMP")) {
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
             heuristic.setCoverMode_n2(cover_mode_n2);
             if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
-            sol = heuristic.run_cap(true, UB_MAX_ITER);
-        }else if(method_RSSV_sp == "VNS_CPMP"){
+            if constexpr (std::is_same_v<SolutionType, Solution_std>) {
+                sol = heuristic.run(verb, UB_MAX_ITER);
+            } else if constexpr (std::is_same_v<SolutionType, Solution_cap>) {
+                sol = heuristic.run_cap(verb, UB_MAX_ITER);
+            }
+        } else if (method_RSSV_sp == "VNS_PMP" || (isCapacitated && method_RSSV_sp == "VNS_CPMP")) {
             VNS heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
             heuristic.setCoverMode_n2(cover_mode_n2);
-            sol = heuristic.runVNS_cap(method_RSSV_sp,false,UB_MAX_ITER);
-        }else{
+            // if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem); // not implemented yet in VNS
+            if constexpr (std::is_same_v<SolutionType, Solution_std>) {
+                sol = heuristic.runVNS_std(verb, UB_MAX_ITER);
+            } else if constexpr (std::is_same_v<SolutionType, Solution_cap>) {
+                sol = heuristic.runVNS_cap(method_RSSV_sp, verb, UB_MAX_ITER);
+            }
+        } else {
             cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
             exit(1);
         }
 
-        if (VERBOSE) cout << "Solution_cap " << seed << ": ";
+        if (VERBOSE) cout << "Solution " << seed << ": ";
         if (VERBOSE) sol.print();
-        processSubsolution_CAP(make_shared<Solution_cap>(sol));
+        processSubsolutionScores(make_shared<SolutionType>(sol));
+        processSubsolutionDists(make_shared<SolutionType>(sol));
         if (VERBOSE) tock(start);
         sem.notify(seed);
-    }else{
+    } else {
         cout << "[TIMELIMIT]  Time limit exceeded to solve Sub-cPMPs " << endl;
     }
 
-    sol.statsDistances();
-    dist_t max_dist_local = sol.getMaxDist();
-    dist_t min_dist_local = sol.getMinDist();
-    dist_t avg_dist_local = sol.getAvgDist();
-    dist_t std_dev_dist_local = sol.getStdDevDist();
-
-    //PRINT
-    cout << "Max dist: " << max_dist_local << endl;
-    cout << "Min dist: " << min_dist_local << endl;
-    cout << "Avg dist: " << avg_dist_local << endl;
-    cout << "Std dev dist: " << std_dev_dist_local << endl;
-
-    mtx.lock();
-    subSols_max_dist = max(subSols_max_dist,max_dist_local);
-    subSols_min_dist = min(subSols_min_dist,min_dist_local);
-    subSols_avg_dist += avg_dist_local;
-    subSols_std_dev_dist += std_dev_dist_local;
-    mtx.unlock();
-
-
-    // checkClock();
 }
 
 /*
  * Extract voting weights from a subproblem solution.
  * Distance to closest locations is determined from closest customer, NOT from the location in the solution (as it should be).
  */
-void RSSV::processSubsolution(shared_ptr<Solution_std> solution) {
-    for (auto loc_sol:solution->get_pLocations()) {
+template <typename SolutionType>
+void RSSV::processSubsolutionScores(shared_ptr<SolutionType> solution) {
+    for (auto loc_sol : solution->get_pLocations()) {
         // get closest customer in orig. instance
         auto cust_cl = instance->getClosestCust(loc_sol);
         // evaluate voting score increment for all locations in orig. instance
         weights_mutex.lock();
-        for (auto loc:instance->getLocations()) {
+        for (auto loc : instance->getLocations()) {
             if (loc == loc_sol) {
                 weights[loc] += 1;
             } else {
@@ -289,30 +211,35 @@ void RSSV::processSubsolution(shared_ptr<Solution_std> solution) {
     }
 }
 
+template <typename SolutionType>
+void RSSV::processSubsolutionDists(shared_ptr<SolutionType> solution) {
+    solution->statsDistances();
+    dist_t max_dist_local = solution->getMaxDist();
+    dist_t min_dist_local = solution->getMinDist();
+    dist_t avg_dist_local = solution->getAvgDist();
+    dist_t std_dev_dist_local = solution->getStdDevDist();
+    
+    cout << "Max dist: " << max_dist_local << endl;
+    cout << "Min dist: " << min_dist_local << endl;
+    cout << "Avg dist: " << avg_dist_local << endl;
+    cout << "Std dev dist: " << std_dev_dist_local << endl;
 
-void RSSV::processSubsolution_CAP(shared_ptr<Solution_cap> solution) {
-    for (auto loc_sol:solution->get_pLocations()) {
-        // get closest customer in orig. instance
-        auto cust_cl = instance->getClosestCust(loc_sol);
-        // evaluate voting score increment for all locations in orig. instance
-        weights_mutex.lock();
-        for (auto loc:instance->getLocations()) {
-            if (loc == loc_sol) {
-                weights[loc] += 1;
-            } else {
-                weights[loc] += instance->getVotingScore(loc, cust_cl);
-            }
-        }
-        weights_mutex.unlock();
-    }
+    dist_mutex.lock();
+    subSols_max_dist = max(subSols_max_dist, max_dist_local);
+    subSols_min_dist = min(subSols_min_dist, min_dist_local);
+    subSols_avg_dist += avg_dist_local;
+    subSols_std_dev_dist += std_dev_dist_local;
+    dist_mutex.unlock();
 }
+
+
+
 
 bool cmp(pair<uint_t, double>& a,
          pair<uint_t, double>& b)
 {
     return a.second < b.second;
 }
-
 /*
  * Filter locations for the final filtered instance.
  * First cnt(=n) locations with the highest weight are extracted.
