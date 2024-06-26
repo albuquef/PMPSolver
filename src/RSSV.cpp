@@ -238,8 +238,6 @@ void RSSV::processSubsolutionDists(shared_ptr<SolutionType> solution) {
 }
 
 
-
-
 bool cmp(pair<uint_t, double>& a,
          pair<uint_t, double>& b)
 {
@@ -390,28 +388,6 @@ vector<uint_t> RSSV::extractFixedLocations(vector<uint_t> vet_locs) {
         cout << loc << " ";
     }
     cout << endl;
-
-
-    // eliminate cont last ellements in locations and add the not_in_final_locs
-
-    // elimine last ellements in final locs wich is not in in_final_locs
-
-
-
-    // for (int i = 0; i < cont; i++) {
-    //     // check if the last element is in in_final_locs
-    //     if (find(in_final_locs.begin(), in_final_locs.end(), final_locs.back()) == in_final_locs.end()) {
-    //         not_in_final_locs.push_back(final_locs.back()); // add the last element in not_in_final_locs
-    //         final_locs.pop_back(); // remove the last element
-    //         i = i - 1; // decrement the counter
-    //         if (final_locs.size() == 0) break;
-    //     }else{
-    //         final_locs.pop_back();
-    //     }
-    // }
-    // for (auto loc:p_locations) {
-    //     final_locs.push_back(loc);
-    // }
 
     cout << "Replaced " << cont << " fixed locations" << endl;
 

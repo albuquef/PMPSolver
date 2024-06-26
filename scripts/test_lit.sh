@@ -50,7 +50,7 @@ TIME_CLOCK=3600
 # INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-INSTANCE_GROUPS=("group2/")
+INSTANCE_GROUPS=("group5/")
 
 mapfile -t filters < ./scripts/filter_lit.txt
 

@@ -167,6 +167,8 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             }
             // Determine stdev and bandwidth
             calculate_Bandwidth(sum, sum_sq, cnt);
+
+
             // Extract unique locations and customers
             for (uint_t loc = 0; loc < loc_flags.size(); loc++) {
                 if (loc_flags[loc]) locations.push_back(loc);
@@ -353,8 +355,9 @@ void Instance::calculate_Bandwidth(dist_t sum, dist_t sum_sq, uint_t cnt) {
     dist_t variance = sum_sq / cnt - mean * mean;
     dist_t stdev = sqrt(variance);
     h = pow((4 * pow(stdev, 5)) / (3 * cnt), 0.2);
-    h = BW_MULTIPLIER * h;
 
+    cout << "bw multiplier: " << BW_MULTIPLIER << endl;
+    h = BW_MULTIPLIER * h;
     cout << "Loaded " << cnt << " distances\n";
     cout << "dists stdev: " << stdev << endl;
     cout << "bandwidth h: " << h << endl;

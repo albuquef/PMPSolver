@@ -2,7 +2,7 @@
 
 // double BW_CUTOFF = 4;
 double BW_CUTOFF = 2;
-double BW_MULTIPLIER = 1;
+double BW_MULTIPLIER = 0.5;
 uint_t LOC_PRIORITY_CNT = 15;
 uint_t MAX_SUB_P = 100;
 uint_t FILTERING_SIZE = 4;
