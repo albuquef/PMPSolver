@@ -2,7 +2,7 @@
 # #emoji=🍀
 #SBATCH --job-name=pmpLIT
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=20
 #SBATCH --partition=cpuonly
 # #SBATCH --exclusive
 #SBATCH --mem=128G
@@ -22,8 +22,10 @@ DIR_DATA="./data/Literature/"
 
 # ---------------------------------------- Machine configuration ----------------------------------------
 SEED=0
+cores=$(nproc)
+# echo "Number of CPU cores: $cores"
 NUM_THREADS=20
-
+ADD_TYPE_TEST="LIT"
 
 # ----------------------------------------- Methods configuration -----------------------------------------
 # Methods
@@ -51,8 +53,31 @@ TIME_CLOCK=3600
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
 INSTANCE_GROUPS=("group5/")
-
 mapfile -t filters < ./scripts/filter_lit.txt
+
+
+# if [ -n "$1" ]; then
+#     echo "test argument: $1"
+# fi
+# if $1 == basic, then run the basic instances
+# if $1 == all, then run all instances
+# if $1 == pr2392, then run the instances that match the filters
+if [ "$1" == "basic" ]; then
+    filters=("SJC1")
+    INSTANCE_GROUPS=("group2/")
+elif [ "$1" == "spain" ]; then
+    filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
+    INSTANCE_GROUPS=("group4/")
+elif [ "$1" == "basic_spain" ]; then
+    filters=("spain737_148_1.txt")
+    INSTANCE_GROUPS=("group4/")
+elif [ "$1" == "pr2392" ]; then
+    filters=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
+    INSTANCE_GROUPS=("group5/")
+elif [ "$1" == "p3038" ]; then
+     filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    INSTANCE_GROUPS=("group3/")
+fi
 
 
 # Define p values for each group
@@ -224,6 +249,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     # SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
                     if [ "$N" -lt 500 ]; then
                         SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+                    elif [ "$N" -le 1000 ]; then
+                        SUB_PROB_SIZE=$((N / 3))
                     elif [ "$N" -le 2000 ]; then
                         SUB_PROB_SIZE=$((N / 4)) 
                     else
@@ -231,7 +258,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                     fi
                     
                     #create a dir with date and time
-                    NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_LIT"
+                    NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
                     mkdir -p $NEW_DIR
                     mkdir -p $NEW_DIR/VarsValues_cplex/
                     mkdir -p $NEW_DIR/Results_cplex/
@@ -285,16 +312,31 @@ if [ -z "$arr" ]; then
     echo "No instances"
 fi
 
-# for element in "${arr[@]}"; do
-#     echo "$element"
-# done
-# echo "Number of instances: ${#arr[@]}"
+# if $2 is empty put $2 = $1 (default value)
+if [ -z "$2" ]; then
+    # echo "cmd argument: $1"
+    set -- "$1" "$1"
+fi
 
-for element in "${arr[@]}"; do
-    eval $element
-done
+# if [ -n "$2" ]; then
+#     echo "cmd argument: $2"
+# fi
+if [ "$2" == "cmds" ]; then
+    for element in "${arr[@]}"; do
+        echo "$element"
+    done
 
-#create a dir with date and time
-# NEW_DIR="./console/$(date '+%Y-%m-%d')_console_LIT"
-# mkdir -p $NEW_DIR
-# srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee ./$NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}
+elif [ "$2" == "size" ]; then
+    echo "Number of instances: ${#arr[@]}"
+
+elif [ "$2" == "run" ]; then
+    for element in "${arr[@]}"; do
+        eval $element
+    done
+
+elif [ "$2" == "srun" ]; then
+    NEW_DIR="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
+    mkdir -p $NEW_DIR
+    srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee $NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}
+fi
+

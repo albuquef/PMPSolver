@@ -458,84 +458,87 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
 
 Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_ITE) {
 
-    cout << "uncapacitated TB local search started\n";
+    
+    cout << "[INFO] Uncapacitated TB local search started\n";
 
-    //// time limit ////
-    // auto time_limit_seconds = CLOCK_LIMIT;
-    auto time_limit_seconds = time_limit;
-    ///
-
+    auto time_limit_seconds = time_limit; // Assuming time_limit is set elsewhere
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_std sol_cand;
-    // int objectiveCpt = 0;
+    int ite = 1;
+    auto start_time_total = get_wall_time_TB();
 
-    int ite=1;
-    auto start_time_total = high_resolution_clock::now();
+
+
     while (improved && ite < MAX_ITE) {
 
         improved = false;
         sol_cand = sol_best;
-        // auto start = tick();
+
         auto p_locations = sol_best.get_pLocations();
 
         vector<uint_t> locations_not_in_p;
         for (auto loc : locations) 
-            if (find(p_locations.begin(), p_locations.end(), loc) == p_locations.end())                 // loc is not in p_locations, so add it to locations_not_in_p
+            if (find(p_locations.begin(), p_locations.end(), loc) == p_locations.end())                
                 locations_not_in_p.push_back(loc);
 
 
+        // Locations Swaps
         for (auto loc: locations_not_in_p) { // First improvement over locations
-            
-                for (auto p_loc:p_locations) { // Best improvement over p_locations
-                    Solution_std sol_tmp = sol_best; 
-                    if(test_Cover(sol_tmp.get_pLocations(), p_loc, loc) && test_CoverN2(sol_tmp.get_pLocations(), p_loc, loc) && test_SizeofP(sol_tmp.get_pLocations(), p_loc, loc)){
+            for (auto p_loc:p_locations) { // Best improvement over p_locations
+                Solution_std sol_tmp = sol_best; // N1 for sol_best
 
-                        sol_tmp = sol_best;
-                        sol_tmp.replaceLocation(p_loc, loc);
-                        
-                        if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { 
-                            sol_cand = sol_tmp;
-                            improved = true;
-                        }
+                if (test_Cover(sol_tmp.get_pLocations(), p_loc, loc) &&
+                    test_CoverN2(sol_tmp.get_pLocations(), p_loc, loc) &&
+                    test_SizeofP(sol_tmp.get_pLocations(), p_loc, loc)) {
+
+                    sol_tmp.replaceLocation(p_loc, loc);
+                    
+                    if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { 
+                        sol_cand = sol_tmp;
+                        improved = true;
                     }
+
                 }
-                auto elapsed_time = duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count();
-                if (improved) {
 
-                    sol_best = sol_cand;
-
-                    if (verbose) {
-                        cout << "\n[INFO] Improved TB solution: \n"; printSolution_TB(sol_best, duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count()); cout << endl;
+                if (checkClock_TB(start_time_total, time_limit_seconds)) {
+                    if (sol_cand.isSolutionFeasible() == true && sol_cand.get_objective() < sol_best.get_objective()) {
+                        sol_best = sol_cand;
                     }
-
-                    if (elapsed_time >= time_limit_seconds) {
-                        cout << "\n[INFO] Time limit reached. Stopping the algorithm.\n"; printSolution_TB(sol_best, elapsed_time); cout << "uncapacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
-                        return sol_best;
-                    }
-                    break;
+                    // if (verbose) printSolution_TB(sol_best, get_wall_time_TB() - start_time_total);
+                    cout << "Num ite total uncapacited TB: " << ite << "\n";
+                    if(sol_best.isSolutionFeasible() == false){cout << "tb solution is not feasible\n";}
+                    else{cout << "tb solution is feasible\n";}
+                    return sol_best;
                 }
-            // }
+
+
+            } 
+            if (improved) {
+
+                sol_best = sol_cand;
+                if (verbose) {
+                    cout << "\n[INFO] Improved TB solution: \n"; 
+                    if (verbose) printSolution_TB(sol_best, get_wall_time_TB() - start_time_total);
+                    cout << endl;
+                }
+                break;
+            }
         }
-         auto elapsed_time = duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count();
-        if (elapsed_time >= time_limit_seconds) {
-            cout << "\n[INFO] Time limit reached. Stopping the uncapacitated TB  algorithm.\n"; printSolution_TB(sol_best, elapsed_time); cout << "uncapacitated TB loop FINAL elapsed time: " << elapsed_time << " seconds\n";
+
+        if (checkClock_TB(start_time_total, time_limit_seconds)) {
+            cout << "Num ite total uncapacited TB: " << ite << "\n";
+            if(sol_best.isSolutionFeasible() == false){cout << "tb solution is not feasible\n";}
+            else{cout << "tb solution is feasible\n";}
             return sol_best;
         }
-
-        if (verbose) {
-            printSolution_TB(sol_best, duration_cast<seconds>(high_resolution_clock::now() - start_time_total).count());
-            cout << endl;
-        }
         ite++;
+
     }
 
     cout << "Num ite total uncapacited TB: " << ite << "\n";
-    if(sol_best.isSolutionFeasible() == false){
-        cout << "tb solution is not feasible\n";
-    }else{
-        cout << "tb solution is feasible\n";
-    }
+    if(sol_best.isSolutionFeasible() == false){cout << "tb solution is not feasible\n";}
+    else{cout << "tb solution is feasible\n";}
     return sol_best;
 }
 
@@ -645,32 +648,25 @@ bool TB::test_basic_Solution_cap(Solution_cap sol, uint_t in_p, uint_t out_p) {
 Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
 
     cout << "\n[INFO] Local Search cap (TB)\n";
-    
 
-
-    string report_filename = "./outputs/reports/report_"+ this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size());
-    // if (instance->is_BinModel()) report_filename += "_Bin_";
-    if(cover_mode) report_filename += "_cover_" + instance->getTypeSubarea();
+    string report_filename = "./outputs/reports/report_" + this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size());
+    if (cover_mode) report_filename += "_cover_" + instance->getTypeSubarea();
     report_filename += ".csv";
 
-
-    //// time limit ////
-    // auto time_limit_seconds = CLOCK_LIMIT;
-    auto time_limit_seconds = time_limit;
-    ///
+    auto time_limit_seconds = time_limit; //
+    // auto time_limit_seconds = CLOCK_LIMIT; // Assuming time_limit is set elsewhere
+    
     auto locations = instance->getLocations();
     bool improved = true;
     Solution_cap sol_cand;
+    int ite = 1;
+    auto start_time_total = get_wall_time_TB();
 
     if (generate_reports)
         writeReport_TB(report_filename, sol_best.get_objective(), 0, solutions_map.getNumSolutions(), external_time);
 
 
-    int ite = 1;
-    auto start_time_total = get_wall_time_TB();
-    while (improved && ite < MAX_ITE) {
-    // while (improved) {
-        
+    while (improved && ite < MAX_ITE) {        
         improved = false;
         sol_cand = sol_best;
         auto p_locations = sol_best.get_pLocations();
@@ -685,6 +681,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             // #pragma omp parallel for 
             for (auto p_loc:p_locations) { // Best improvement over p_locations
                 Solution_cap sol_tmp = sol_best;    // N1 for sol_best
+
                 if (test_basic_Solution_cap(sol_tmp, p_loc, loc)){ 
                     int index = isSolutionExistsinMap(sol_tmp, p_loc, loc);
                     if (index != -1){
@@ -692,40 +689,36 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                             sol_cand = solutions_map.getSolution(index);
                             improved = true;
                         }
-                    }else if (test_LB_PMP(sol_tmp,p_loc,loc)) { // LB1
+                    }else if (test_LB_PMP(sol_tmp,p_loc,loc)) { // LB1 
+                    // else if (test_LB_PMP(sol_tmp,p_loc,loc) && test_UB_heur(sol_tmp, p_loc, loc)) { // LB1 and UB1
                         
-                        // if (test_UB_heur(sol_tmp, p_loc, loc)) { // UB1
-                            
-                            sol_tmp.add_UpperBound(sol_best.get_objective());
-                            sol_tmp.replaceLocation(p_loc, loc, "GAP"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
-                            // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
-                            // sol_tmp.print();
+                        sol_tmp.add_UpperBound(sol_best.get_objective());
+                        sol_tmp.replaceLocation(p_loc, loc, "GAP"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
+                        // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
-                            auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
-                            // #pragma omp critical
-                            if (sol_cand.get_objective() - sol_tmp.get_objective() > TOLERANCE_OBJ) { // LB2
-                    
-                                if (verbose) {
-                                    cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
-                                    printSolution_TB(sol_tmp, (get_wall_time_TB() - start_time) + external_time); cout << endl;
-                                }
-                                sol_cand = copySolution_cap(sol_tmp, 0);
-                                improved = true;
+                        auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
+                        // #pragma omp critical
+                        if (sol_tmp.get_objective() < sol_cand.get_objective() + TOLERANCE_OBJ) { // LB2
+                
+                            if (verbose) {
                                 cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
-                                sol_cand.print();
-
-                                if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
-    
+                                printSolution_TB(sol_tmp, (get_wall_time_TB() - start_time) + external_time); cout << endl;
                             }
+                            sol_cand = copySolution_cap(sol_tmp, 0);
+                            improved = true;
+                            cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
+                            sol_cand.print();
 
+                            if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
 
-                            // check time limit
-                            if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {
-                                if(sol_cand.isSolutionFeasible() && sol_cand.get_objective() < sol_best.get_objective()){sol_best = copySolution_cap(sol_cand);}
-                                return sol_best;
-                                // break;  
-                            }
-                        // }
+                        }
+
+                        // check time limit
+                        if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {
+                            if(sol_cand.isSolutionFeasible() && sol_cand.get_objective() < sol_best.get_objective()){sol_best = copySolution_cap(sol_cand);}
+                            return sol_best;
+                            // break;  
+                        }
 
                     }
                 }
@@ -743,17 +736,17 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                 }
 
                 if (generate_reports) {writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);}
-                if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
-
+                
                 ite++;
                 break;
             }
         }
 
         // check time limit
-        if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
+        // if (checkClock_TB(start_time_total, time_limit_seconds, external_time)) {return sol_best;}
         if (verbose) {
             cout << "\n[INFO] Best TB solution: \n";
+            cout << "Number of iterations capacited TB: " << ite << "\n";
             printSolution_TB(sol_best, (get_wall_time_TB() - start_time_total) + external_time);
             cout << endl;
         }

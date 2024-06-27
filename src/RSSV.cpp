@@ -8,8 +8,9 @@ void printDDE(void){
 }
 
 RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
-    engine.seed(seed);
     seed_rssv = seed;
+    engine.seed(seed_rssv);
+
     N = instance->getLocations().size();
     M = max(static_cast<uint_t>(1), (LOC_FREQUENCY*N/n));
 
@@ -53,10 +54,12 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
             
             if (is_cap) {
                 threads.emplace_back([this, seed_thread]() {
+                    std::mt19937 gen(seed_thread); // Local to each thread
                     this->solveSubproblemTemplate<Solution_cap>(seed_thread, true);
                 });
             } else {
                 threads.emplace_back([this, seed_thread]() {
+                    std::mt19937 gen(seed_thread); // Local to each thread
                     this->solveSubproblemTemplate<Solution_std>(seed_thread, false);
                 });
             }
@@ -76,6 +79,7 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
     auto filtered_cnt = n;
     auto filtered_locations = filterLocations(filtered_cnt);
+    cout << endl << endl;
     cout << "Filtered " << filtered_cnt << " locations: ";
     for (auto fl : filtered_locations) cout << fl << " ";
     cout << endl << endl;
@@ -111,7 +115,7 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
     filtered_instance->setVotedLocs(filtered_locations);
 
-    bool add_threshold_dist = false;
+    bool add_threshold_dist = true;
     if (add_threshold_dist) {
         filtered_instance->set_ThresholdDist(subSols_max_dist);
     }
@@ -126,9 +130,9 @@ template <typename SolutionType>
 void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
     // Use the seed for random number generation
     int thread_id = seed - seed_rssv;
-    std::mt19937 gen(seed);
-    
-    sem.wait(seed);
+    // std::mt19937 gen(seed);
+    sem.wait(thread_id);
+
     cout << "Solving sub-PMP " << thread_id << "/" << M << "..." << endl;
     auto start = tick();
     
@@ -239,8 +243,7 @@ void RSSV::processSubsolutionDists(shared_ptr<SolutionType> solution) {
 
 
 bool cmp(pair<uint_t, double>& a,
-         pair<uint_t, double>& b)
-{
+         pair<uint_t, double>& b){
     return a.second < b.second;
 }
 /*

@@ -25,15 +25,20 @@ send_code_to_cluster() {
     # call the reload function
     reload_utils
 
+
+    if [ -z "$1" ]; then
+        path="/"
+    else
+        path=$1
+    fi
     # path="/"
-    path="/src/"
+    # path="/src/"
     # path="/scripts/"
-    # path="/data/"
-    # BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
-    PATH_ORIGIN=${BASE_PATH}${path}
 
-    DIR_DEST=test_akj_dist_sol_voting
+    PATH_ORIGIN=${BASE_PATH}/${path}/
+
+    DIR_DEST=test_p3038
     # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
     PATH_DEST="${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST}/${path}"
 
@@ -52,7 +57,8 @@ save_outputs_cluster() {
     # call the reload function
     reload_utils
 
-    DIR_NAME=test_h_bandwidth_smaller   
+    DIR_NAME=test_code   
+    echo "DIR_NAME: $DIR_NAME"
     PATH_CLUSTER=${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_NAME}/
 
     PATH_LOCAL=~/Documents/projects/Project_PMP/saves/SaveCluster/${DATE}_save_cluster/${DIR_NAME}
@@ -87,14 +93,14 @@ restart_code_config () {
     # Configure the code again
     eval "mkdir build && cd build/ && cmake -DUSE_CLUSTER=ON .. && make -j && cd .."
 }
-reecompile_code () {
+recompile_code () {
     # Recompile the code
     eval "cd build/ && make -j && cd .."
 }
 
 test_literature() {
     # Run the code
-    eval "bash ./scripts/test_lit.sh"
+    eval "bash ./scripts/test_lit.sh" $1 $2
 }
 test_random_grid() {
     # Run the code
