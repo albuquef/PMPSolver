@@ -144,7 +144,10 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
         exit(1);
     }
 
-    double time_limit_subproblem = 300; // 5 minutes
+    double time_limit_subproblem = 0; // no time limit = 0
+    // double time_limit_subproblem = 300; // 5 minutes
+    // uint_t MAX_ITER_SUBP = UB_MAX_ITER; // Upper Bound for the number of iterations in the subproblem; 
+    uint_t MAX_ITER_SUBP = 40;
     bool verb = false;
 
     SolutionType sol;
@@ -166,9 +169,9 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
             heuristic.setCoverMode_n2(cover_mode_n2);
             if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
             if constexpr (std::is_same_v<SolutionType, Solution_std>) {
-                sol = heuristic.run(verb, UB_MAX_ITER);
+                sol = heuristic.run(verb, MAX_ITER_SUBP);
             } else if constexpr (std::is_same_v<SolutionType, Solution_cap>) {
-                sol = heuristic.run_cap(verb, UB_MAX_ITER);
+                sol = heuristic.run_cap(verb, MAX_ITER_SUBP);
             }
         } else if (method_RSSV_sp == "VNS_PMP" || (isCapacitated && method_RSSV_sp == "VNS_CPMP")) {
             VNS heuristic(make_shared<Instance>(subInstance), seed);
@@ -176,9 +179,9 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
             heuristic.setCoverMode_n2(cover_mode_n2);
             // if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem); // not implemented yet in VNS
             if constexpr (std::is_same_v<SolutionType, Solution_std>) {
-                sol = heuristic.runVNS_std(verb, UB_MAX_ITER);
+                sol = heuristic.runVNS_std(verb, MAX_ITER_SUBP);
             } else if constexpr (std::is_same_v<SolutionType, Solution_cap>) {
-                sol = heuristic.runVNS_cap(method_RSSV_sp, verb, UB_MAX_ITER);
+                sol = heuristic.runVNS_cap(method_RSSV_sp, verb, MAX_ITER_SUBP);
             }
         } else {
             cout << "Method to solve the Subproblems: " << method_RSSV_sp << " not found" << endl;
@@ -228,10 +231,6 @@ void RSSV::processSubsolutionDists(shared_ptr<SolutionType> solution) {
     dist_t avg_dist_local = solution->getAvgDist();
     dist_t std_dev_dist_local = solution->getStdDevDist();
     
-    cout << "Max dist: " << max_dist_local << endl;
-    cout << "Min dist: " << min_dist_local << endl;
-    cout << "Avg dist: " << avg_dist_local << endl;
-    cout << "Std dev dist: " << std_dev_dist_local << endl;
 
     dist_mutex.lock();
     subSols_max_dist = max(subSols_max_dist, max_dist_local);

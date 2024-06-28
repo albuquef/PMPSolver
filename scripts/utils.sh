@@ -38,7 +38,7 @@ send_code_to_cluster() {
 
     PATH_ORIGIN=${BASE_PATH}/${path}/
 
-    DIR_DEST=test_p3038
+    DIR_DEST=test_lit
     # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
     PATH_DEST="${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST}/${path}"
 

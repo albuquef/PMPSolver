@@ -23,6 +23,9 @@ void tock_TB(double start) {
     cout << "Elapsed time: " << end - start << " seconds\n";
 }
 bool checkClock_TB(double start, double limit, double external_time = 0.0) {
+
+    if (limit == 0) return false;   
+
     auto end = get_wall_time_TB();
     if ((end - start) + external_time >= limit) {
         cout << "\n[INFO] Time limit reached. Stopping the algorithm.\n";
@@ -522,19 +525,15 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
                     if (verbose) printSolution_TB(sol_best, get_wall_time_TB() - start_time_total);
                     cout << endl;
                 }
+                ite++;
                 break;
             }
         }
 
-        if (checkClock_TB(start_time_total, time_limit_seconds)) {
-            cout << "Num ite total uncapacited TB: " << ite << "\n";
-            if(sol_best.isSolutionFeasible() == false){cout << "tb solution is not feasible\n";}
-            else{cout << "tb solution is feasible\n";}
-            return sol_best;
-        }
-        ite++;
-
+        // if not improved, the while loop will break
     }
+    if (ite == MAX_ITE) cout << "TB reached max iterations\n";
+
 
     cout << "Num ite total uncapacited TB: " << ite << "\n";
     if(sol_best.isSolutionFeasible() == false){cout << "tb solution is not feasible\n";}

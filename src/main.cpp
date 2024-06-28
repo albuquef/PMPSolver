@@ -389,8 +389,6 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << "Final instance parameters:\n";
         filtered_instance->print();
 
-        // exit(1);
-
         cout << "-------------------------------------------------\n";
         cout << "Final Problem RSSV heuristic \n";
         cout << "-------------------------------------------------\n";
@@ -427,6 +425,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
             solution.saveAssignment(config.output_filename, "RSSV_" + config.Method_RSSV_fp);
             solution.saveResults(config.output_filename, elapsed_time, 0, config.Method, config.Method_RSSV_sp, config.Method_RSSV_fp);
+            cout << "\n\n\n";
         }
     }
 }

@@ -49,10 +49,10 @@ TIME_CLOCK=3600
 
 
 # ----------------------------------------- Instance configuration -----------------------------------------
-# INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
+INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 # INSTANCE_GROUPS=("group2/" "group3/" "group5/" "GB21/")
 # INSTANCE_GROUPS=("group3/" "group4/" "group5/")
-INSTANCE_GROUPS=("group5/")
+# INSTANCE_GROUPS=("group5/")
 mapfile -t filters < ./scripts/filter_lit.txt
 
 
@@ -244,15 +244,15 @@ for METHOD in "${FOR_METHODS[@]}"; do
                         export CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.log"
                     fi
 
-                    # SUB PRO SIZE IS N/2 
+                    # SUB PRO SIZE 
                     # SUB_PROB_SIZE=$((N / 4)) 
                     # SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-                    if [ "$N" -lt 500 ]; then
+                    if [ "$N" -lt 700 ]; then
                         SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-                    elif [ "$N" -le 1000 ]; then
-                        SUB_PROB_SIZE=$((N / 3))
-                    elif [ "$N" -le 2000 ]; then
-                        SUB_PROB_SIZE=$((N / 4)) 
+                    elif [ "$N" -le 1500 ]; then
+                        SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
+                    elif [ "$N" -le 5000 ]; then
+                        SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
                     else
                         SUB_PROB_SIZE=$((N / 4)) 
                     fi
