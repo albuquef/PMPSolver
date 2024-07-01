@@ -8,8 +8,8 @@ MACHINE_CLUSTER=poseidon
 USER_CLUSTER=falbuquerque
 CLUSTER_SERVER="${USER_CLUSTER}@${MACHINE_CLUSTER}"
 
-BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
-# BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+# BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
 
 reload_utils() {
@@ -38,7 +38,7 @@ send_code_to_cluster() {
 
     PATH_ORIGIN=${BASE_PATH}/${path}/
 
-    DIR_DEST=test_lit
+    DIR_DEST="Cyrille/multiechelles/"
     # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
     PATH_DEST="${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST}/${path}"
 
@@ -57,7 +57,7 @@ save_outputs_cluster() {
     # call the reload function
     reload_utils
 
-    DIR_NAME=test_code   
+    DIR_NAME="Cyrille/distr_pop/original"
     echo "DIR_NAME: $DIR_NAME"
     PATH_CLUSTER=${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_NAME}/
 
