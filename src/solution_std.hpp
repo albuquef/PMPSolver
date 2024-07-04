@@ -39,7 +39,7 @@ public:
     void print();
     void replaceLocation(uint_t loc_old, uint_t loc_new);
     dist_t get_objective();
-    void saveAssignment(string output_filename,string Method);
+    void saveAssignment(string output_filename,string Method, double timeFinal);
     void saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp="null", string Method_fp="null");
 
     bool isSolutionFeasible();

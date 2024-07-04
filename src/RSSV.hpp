@@ -37,6 +37,11 @@ private:
     dist_t subSols_min_dist=numeric_limits<dist_t>::max();;
     dist_t subSols_avg_dist=0;
     dist_t subSols_std_dev_dist=0; 
+
+    uint_t MAX_ITE_SUBPROBLEMS = 0;
+    dist_t TIME_LIMIT_SUBPROBLEMS = 0;
+
+
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
     shared_ptr<Instance> run(uint_t thread_cnt, const string& method_sp);
@@ -51,6 +56,8 @@ public:
     vector<uint_t> filterLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
     vector<uint_t> extractFixedLocations(vector<uint_t> vet_locs);
+    void setTIME_LIMIT_SUBPROBLEMS(dist_t time_limit);
+    void setMAX_ITE_SUBPROBLEMS(uint_t max_ite);
 
 
     void setCoverMode(bool mode) {

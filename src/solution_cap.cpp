@@ -312,7 +312,7 @@ dist_t Solution_cap::get_objective() const {
     return objective;
 }
 
-void Solution_cap::saveAssignment(string output_filename,string Method) {
+void Solution_cap::saveAssignment(string output_filename, string Method, double timeFinal) {
     
     // cout << "[INFO] Saving assignment" << endl;
     
@@ -348,6 +348,22 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
         cout.rdbuf(stream_buffer_file); // redirect cout to file
     }
 
+    // Infos
+    cout << "INFOS\n";
+    cout << "instance: " << instance->getTypeService() << endl;
+    cout << "p: " << instance->get_p() << endl;
+    if(instance->get_isWeightedObjFunc())
+        cout << "Objective: Weighted" << endl;
+    else
+        cout << "Objective: Unweighted" << endl;
+
+    if(cover_mode){cout << "Cover N1: " << instance->getTypeSubarea() << endl;}
+    if(cover_mode_n2){cout << "Cover N2: " << instance->getTypeSubarea_n2() << endl;}
+    cout << "time: " << timeFinal << endl;
+    cout << endl;
+
+
+
     cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
 
     cout << "P LOCATIONS\n";
@@ -366,6 +382,7 @@ void Solution_cap::saveAssignment(string output_filename,string Method) {
         cout << endl;
     }
     cout << endl;
+
     // stats
     cout << "STATS\n";
     cout << "max_dist: " << max_dist << endl;
@@ -497,6 +514,7 @@ unordered_map<uint_t, dist_t> Solution_cap::getCustSatisfactions(){
 unordered_map<uint_t, assignment> Solution_cap::getAssignments(){
     return assignments;
 }
+
 
 void Solution_cap::setLocUsage(uint_t loc, dist_t usage){
 

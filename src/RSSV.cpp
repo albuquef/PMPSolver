@@ -145,9 +145,12 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
     }
 
     double time_limit_subproblem = 0; // no time limit = 0
-    // double time_limit_subproblem = 300; // 5 minutes
-    // uint_t MAX_ITER_SUBP = UB_MAX_ITER; // Upper Bound for the number of iterations in the subproblem; 
-    uint_t MAX_ITER_SUBP = 40;
+    uint_t MAX_ITER_SUBP = UB_MAX_ITER; // Upper Bound for the number of iterations in the subproblem; 
+    
+    if (MAX_ITE_SUBPROBLEMS > 0) MAX_ITER_SUBP = MAX_ITE_SUBPROBLEMS;
+    if (TIME_LIMIT_SUBPROBLEMS > 0) time_limit_subproblem = TIME_LIMIT_SUBPROBLEMS;
+    
+    
     bool verb = false;
 
     SolutionType sol;
@@ -157,7 +160,6 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
             pmp.setCoverModel(cover_mode, instance->getTypeSubarea());
             pmp.setCoverModel_n2(cover_mode_n2, instance->getTypeSubarea_n2());
             if (time_limit_subproblem > 0) pmp.setTimeLimit(time_limit_subproblem);
-            pmp.run();
             if constexpr (std::is_same_v<SolutionType, Solution_std>) {
                 sol = pmp.getSolution_std();
             } else if constexpr (std::is_same_v<SolutionType, Solution_cap>) {
@@ -395,4 +397,11 @@ vector<uint_t> RSSV::extractFixedLocations(vector<uint_t> vet_locs) {
 
     return final_locs;
     
+}
+
+void RSSV::setTIME_LIMIT_SUBPROBLEMS(dist_t time_limit) {
+    TIME_LIMIT_SUBPROBLEMS = time_limit;
+}
+void RSSV::setMAX_ITE_SUBPROBLEMS(uint_t max_ite) {
+    MAX_ITE_SUBPROBLEMS = max_ite;
 }

@@ -123,7 +123,7 @@ dist_t Solution_std::get_objective() {
     return objective;
 }
 
-void Solution_std::saveAssignment(string output_filename,string Method) {
+void Solution_std::saveAssignment(string output_filename,string Method, double timeFinal) {
 
     fstream file;
     streambuf *stream_buffer_cout = cout.rdbuf();
@@ -156,6 +156,22 @@ void Solution_std::saveAssignment(string output_filename,string Method) {
         streambuf *stream_buffer_file = file.rdbuf();
         cout.rdbuf(stream_buffer_file); // redirect cout to file
     }
+
+
+    // Infos
+    cout << "INFOS\n";
+    cout << "instance: " << instance->getTypeService() << endl;
+    cout << "p: " << instance->get_p() << endl;
+    if(instance->get_isWeightedObjFunc())
+        cout << "Objective Function: Weighted" << endl;
+    else
+        cout << "Objective Funtion: Unweighted" << endl;
+
+    if(cover_mode){cout << "Cover N1: " << instance->getTypeSubarea() << endl;}
+    if(cover_mode_n2){cout << "Cover N2: " << instance->getTypeSubarea_n2() << endl;}
+    cout << "Final time: " << timeFinal << endl;
+    cout << endl;
+
 
     cout << setprecision(15) << "OBJECTIVE\n" << objective << endl << endl;
 

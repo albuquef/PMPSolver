@@ -62,7 +62,7 @@ public:
     unordered_map<uint_t, dist_t> getLocUsages();
     unordered_map<uint_t, dist_t> getCustSatisfactions();
     unordered_map<uint_t, assignment> getAssignments();
-    void saveAssignment(string output_filename,string Method);
+    void saveAssignment(string output_filename,string Method, double timeFinal);
     void saveResults(string output_filename, double timeFinal, int numIter,string Method, string Method_sp="null", string Method_fp="null");
     void setFeasibility(bool feasible);
     bool getFeasibility();
