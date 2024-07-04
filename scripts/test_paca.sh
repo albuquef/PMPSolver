@@ -6,7 +6,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-13%7
+#SBATCH --array=0-55%7
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -61,14 +61,15 @@ p_values_poste=(476 544 612 681 749 817 885)
 COVER_MODE=1
 # kmeans_cover=1
 kmeans_cover=0
+grid_cover=1
 
 # SUBAREAS=("null")
-# SUBAREAS=("arrond" "EPCI" "canton" "commune")
+SUBAREAS=("arrond" "EPCI" "canton" "commune")
 # SUBAREAS="EPCI"
 # p_values_mat_arrond=(26)
 
-COVER_MODE_N2=1
-SUBAREAS_N2="canton"
+COVER_MODE_N2=0
+SUBAREAS_N2="null"
 
 # METHOD="RSSV"
 # for METHOD_RSSV_FINAL in "EXACT_CPMP" "VNS_CPMP" "TB_CPMP"; do
@@ -78,17 +79,16 @@ for METHOD in "${FOR_METHODS[@]}"; do
   METHOD_RSSV_FINAL="EXACT_CPMP"
   for serv in "${SERVICES[@]}"; do
 
-    if [ "$serv" = "mat" ]; then
-      echo "mat"
-      SUBAREAS=("arrond")
-    elif [ "$serv" = "urgenc" ]; then
-      SUBAREAS=("arrond" "EPCI")
-    elif [ "$serv" = "lycee" ]; then
-      SUBAREAS=("canton" "commune")
-    elif [ "$serv" = "poste" ]; then
-      echo "poste"
-      SUBAREAS=("commune")
-    fi
+    # if [ "$serv" = "mat" ]; then
+    #   SUBAREAS=("arrond" "EPCI" "canton")
+    # elif [ "$serv" = "urgenc" ]; then
+    #   SUBAREAS=("arrond" "EPCI")
+    # elif [ "$serv" = "lycee" ]; then
+    #   SUBAREAS=("canton" "commune")
+    # elif [ "$serv" = "poste" ]; then
+    #   echo "poste"
+    #   SUBAREAS=("commune")
+    # fi
 
     if [ "$COVER_MODE" != "1" ]; then
       SUBAREAS=("null")
@@ -109,6 +109,10 @@ for METHOD in "${FOR_METHODS[@]}"; do
         subar="kmeans_${subar}"
       fi
 
+      if [ $grid_cover = 1 ]; then
+        COVERAGES="${DIR_DATA}loc_coverages_grid_${subar}.txt"
+        subar="grid_${subar}"
+      fi
     
        #create a dir with date and time
       NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
