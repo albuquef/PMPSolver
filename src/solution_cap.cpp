@@ -348,18 +348,18 @@ void Solution_cap::saveAssignment(string output_filename, string Method, double 
         cout.rdbuf(stream_buffer_file); // redirect cout to file
     }
 
-    // Infos
+     // Infos
     cout << "INFOS\n";
     cout << "instance: " << instance->getTypeService() << endl;
     cout << "p: " << instance->get_p() << endl;
     if(instance->get_isWeightedObjFunc())
-        cout << "Objective: Weighted" << endl;
+        cout << "Objective Function: Weighted" << endl;
     else
-        cout << "Objective: Unweighted" << endl;
+        cout << "Objective Funtion: Unweighted" << endl;
 
     if(cover_mode){cout << "Cover N1: " << instance->getTypeSubarea() << endl;}
     if(cover_mode_n2){cout << "Cover N2: " << instance->getTypeSubarea_n2() << endl;}
-    cout << "time: " << timeFinal << endl;
+    cout << "Final time: " << timeFinal << endl;
     cout << endl;
 
 

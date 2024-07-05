@@ -55,15 +55,6 @@ struct Config {
     string configPath = "config.toml";
 };
 
-double get_wall_time_main(){
-    struct timeval time;
-    if(gettimeofday(&time,nullptr)){
-        // HANDLE ERROR
-        return 0;
-    }else{
-        return static_cast<double>(time.tv_sec) + static_cast<double>(time.tv_usec*0.000001); //microsegundos
-    }
-}
 void parseArguments(int argc, char* argv[], Config& config) {
     std::set<const char*> configOverride;
 
@@ -320,7 +311,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
     cout << "-------------------------------------------------\n";
     
     if (config.Method == "EXACT_PMP" || config.Method == "TB_PMP" || config.Method == "VNS_PMP") {
-        auto start_time = high_resolution_clock::now();
+        auto start_time = high_resolution_clock::now(); // only clock can give CPU time
         Solution_std solution = methods_PMP(make_shared<Instance>(instance), config, 0);
         auto current_time = high_resolution_clock::now();
         auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
@@ -335,7 +326,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << "Std deviation distance: " << solution.getStdDevDist() << endl;
         cout << endl << endl;
         cout << "Final total elapsed time: " << elapsed_time << "s\n";
-        solution.saveAssignment(config.output_filename, config.Method);
+        solution.saveAssignment(config.output_filename, config.Method, elapsed_time);
         solution.saveResults(config.output_filename, elapsed_time, 0, config.Method);   
     } 
     else if (config.Method == "EXACT_CPMP" || config.Method == "EXACT_CPMP_BIN" || config.Method == "TB_CPMP" || 
@@ -356,7 +347,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << "Std deviation distance: " << solution.getStdDevDist() << endl;
         cout << endl << endl;
         cout << "Final total elapsed time: " << elapsed_time << "s\n";  
-        solution.saveAssignment(config.output_filename, config.Method);
+        solution.saveAssignment(config.output_filename, config.Method, elapsed_time);
         solution.saveResults(config.output_filename, elapsed_time, 0, config.Method); 
     } 
     else if (config.Method == "RSSV") {
@@ -404,7 +395,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             solution.print();
             cout << "Final problem elapsed time: " << elapsed_time << "s\n";
             cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
-            solution.saveAssignment(config.output_filename, config.Method);
+            solution.saveAssignment(config.output_filename, config.Method, elapsed_time);
             solution.saveResults(config.output_filename, elapsed_time, 0, config.Method); 
         } 
         else if (config.Method_RSSV_fp == "EXACT_CPMP" || config.Method_RSSV_fp == "EXACT_CPMP_BIN" || 
@@ -423,7 +414,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             solution.print();
             cout << "Final elapsed time: " << elapsed_time << "s\n";
             cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
-            solution.saveAssignment(config.output_filename, "RSSV_" + config.Method_RSSV_fp);
+            solution.saveAssignment(config.output_filename, "RSSV_" + config.Method_RSSV_fp, elapsed_time);
             solution.saveResults(config.output_filename, elapsed_time, 0, config.Method, config.Method_RSSV_sp, config.Method_RSSV_fp);
             cout << "\n\n\n";
         }

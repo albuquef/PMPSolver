@@ -8,7 +8,7 @@ DATE=$(date +"%y-%m-%d")
 MACHINE_CLUSTER=poseidon
 USER_CLUSTER=falbuquerque
 CLUSTER_SERVER="${USER_CLUSTER}@${MACHINE_CLUSTER}"
-DIR_DEST_CLUSTER="test_lit/"
+DIR_DEST_CLUSTER="test_exact_big_time_limit/"
 
 # BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 # BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP/"
@@ -60,7 +60,7 @@ save_outputs_cluster() {
     # call the reload function
     reload_utils
 
-    DIR_NAME="Cyrille/decoupages/grid/"
+    DIR_NAME="test_exact_big_time_limit/"
     PATH_CLUSTER=${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_NAME}
 
     # PATH_LOCAL=~/Documents/projects/Project_PMP/SaveCluster/${DATE}_save_cluster/${DIR_NAME}

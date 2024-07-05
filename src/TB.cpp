@@ -9,24 +9,21 @@
 #include <chrono> // for time-related functions
 using namespace std::chrono;
 
-double get_wall_time_TB(){
-    struct timeval time;
-    if(gettimeofday(&time,nullptr)){
-        // HANDLE ERROR
-        return 0;
-    }else{
-        return static_cast<double>(time.tv_sec) + static_cast<double>(time.tv_usec*0.000001); //microsegundos
-    }
+double get_cpu_time_TB(){
+    using clock = std::chrono::high_resolution_clock;
+    auto now = clock::now();
+    auto now_sec = std::chrono::duration_cast<std::chrono::duration<double>>(now.time_since_epoch());
+    return now_sec.count();
 }
 void tock_TB(double start) {
-    auto end = get_wall_time_TB();
+    auto end = get_cpu_time_TB();
     cout << "Elapsed time: " << end - start << " seconds\n";
 }
 bool checkClock_TB(double start, double limit, double external_time = 0.0) {
 
     if (limit == 0) return false;   
 
-    auto end = get_wall_time_TB();
+    auto end = get_cpu_time_TB();
     if ((end - start) + external_time >= limit) {
         cout << "\n[INFO] Time limit reached. Stopping the algorithm.\n";
         cout << "TB elapsed time: " << end - start << " seconds\n";
@@ -469,7 +466,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
     bool improved = true;
     Solution_std sol_cand;
     int ite = 1;
-    auto start_time_total = get_wall_time_TB();
+    auto start_time_total = get_cpu_time_TB();
 
 
 
@@ -508,7 +505,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
                     if (sol_cand.isSolutionFeasible() == true && sol_cand.get_objective() < sol_best.get_objective()) {
                         sol_best = sol_cand;
                     }
-                    // if (verbose) printSolution_TB(sol_best, get_wall_time_TB() - start_time_total);
+                    // if (verbose) printSolution_TB(sol_best, get_cpu_time_TB() - start_time_total);
                     cout << "Num ite total uncapacited TB: " << ite << "\n";
                     if(sol_best.isSolutionFeasible() == false){cout << "tb solution is not feasible\n";}
                     else{cout << "tb solution is feasible\n";}
@@ -522,7 +519,7 @@ Solution_std TB::localSearch_std(Solution_std sol_best, bool verbose, int MAX_IT
                 sol_best = sol_cand;
                 if (verbose) {
                     cout << "\n[INFO] Improved TB solution: \n"; 
-                    if (verbose) printSolution_TB(sol_best, get_wall_time_TB() - start_time_total);
+                    if (verbose) printSolution_TB(sol_best, get_cpu_time_TB() - start_time_total);
                     cout << endl;
                 }
                 ite++;
@@ -659,7 +656,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
     bool improved = true;
     Solution_cap sol_cand;
     int ite = 1;
-    auto start_time_total = get_wall_time_TB();
+    auto start_time_total = get_cpu_time_TB();
 
     if (generate_reports)
         writeReport_TB(report_filename, sol_best.get_objective(), 0, solutions_map.getNumSolutions(), external_time);
@@ -675,7 +672,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             if (find(p_locations.begin(), p_locations.end(), loc) == p_locations.end())                 // loc is not in p_locations, so add it to locations_not_in_p
                 locations_not_in_p.push_back(loc);
 
-        auto start_time = get_wall_time_TB();
+        auto start_time = get_cpu_time_TB();
         for (auto loc:locations_not_in_p) { // First improvement over locations
             // #pragma omp parallel for 
             for (auto p_loc:p_locations) { // Best improvement over p_locations
@@ -695,13 +692,13 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                         sol_tmp.replaceLocation(p_loc, loc, "GAP"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
                         // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
-                        auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
+                        auto elapsed_time_total = (get_cpu_time_TB() - start_time_total) + external_time;
                         // #pragma omp critical
                         if (sol_tmp.get_objective() < sol_cand.get_objective() + TOLERANCE_OBJ) { // LB2
                 
                             if (verbose) {
                                 cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
-                                printSolution_TB(sol_tmp, (get_wall_time_TB() - start_time) + external_time); cout << endl;
+                                printSolution_TB(sol_tmp, (get_cpu_time_TB() - start_time) + external_time); cout << endl;
                             }
                             sol_cand = copySolution_cap(sol_tmp, 0);
                             improved = true;
@@ -722,7 +719,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                     }
                 }
             }
-            auto elapsed_time_total = (get_wall_time_TB() - start_time_total) + external_time;
+            auto elapsed_time_total = (get_cpu_time_TB() - start_time_total) + external_time;
             if (improved) {
 
                 sol_best = copySolution_cap(sol_cand, 0);
@@ -746,7 +743,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
         if (verbose) {
             cout << "\n[INFO] Best TB solution: \n";
             cout << "Number of iterations capacited TB: " << ite << "\n";
-            printSolution_TB(sol_best, (get_wall_time_TB() - start_time_total) + external_time);
+            printSolution_TB(sol_best, (get_cpu_time_TB() - start_time_total) + external_time);
             cout << endl;
         }
 

@@ -2,16 +2,13 @@
 
 
 
-double get_wall_time(){
-    struct timeval time;
-    if(gettimeofday(&time,nullptr)){
-        // HANDLE ERROR
-        return 0;
-    }else{
-        return static_cast<double>(time.tv_sec) + static_cast<double>(time.tv_usec*0.000001); //microsegundos
-    }
-}
 
+double get_cpu_time_pmp(){
+    using clock = std::chrono::high_resolution_clock;
+    auto now = clock::now();
+    auto now_sec = std::chrono::duration_cast<std::chrono::duration<double>>(now.time_since_epoch());
+    return now_sec.count();
+}
 
 
 static std::string gap_outputFilename;
@@ -643,14 +640,14 @@ void PMP::exportILP(IloCplex& cplex)
 
 void PMP::solveILP(){
     double cpu0, cpu1;
-    cpu0 = get_wall_time(); 
+    cpu0 = get_cpu_time_pmp(); 
     if (!cplex.solve()){
         isFeasible_Solver = false;
         // env.error() << "Failed to optimize LP." << endl;
         // cout << "Solution status = " << cplex.getStatus()   << endl;
         // throw(-1);
     }
-    cpu1 = get_wall_time();
+    cpu1 = get_cpu_time_pmp();
     this->timeSolver = cpu1 - cpu0; 
 }
 

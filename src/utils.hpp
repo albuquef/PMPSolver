@@ -5,7 +5,6 @@
 #include <random>
 #include <thread>
 #include <cstdlib>
-#include <ctime>  // clock
 #include <iostream>
 #include <vector>
 #include <algorithm>

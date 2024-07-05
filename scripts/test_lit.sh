@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=pmpLIT
+#SBATCH --job-name=pmpLIT4d
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --partition=cpuonly
-#SBATCH --mem=128G
-#SBATCH --time=100:00:00
-#SBATCH --array=0-4%5
+#SBATCH --mem=256G
+#SBATCH --time=1800:00:00
+#SBATCH --array=0-19%1
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -29,15 +29,15 @@ metsp="TB_PMP" # Subproblem method
 
 COVER_MODE=false
 IsWeighted_OBJ=false
-TIME_CPLEX=3600
-TIME_CLOCK=3600
+TIME_CPLEX=345600 # 4 days
+TIME_CLOCK=345600
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 mapfile -t filters < ./scripts/filter_lit.txt
 
 if [ "$1" == "basic" ]; then
-    filters=("SJC1")
+    filters=("SJC")
     INSTANCE_GROUPS=("group2/")
 elif [ "$1" == "spain" ]; then
     filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
@@ -51,6 +51,12 @@ elif [ "$1" == "pr2392" ]; then
 elif [ "$1" == "p3038" ]; then
     filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
     INSTANCE_GROUPS=("group3/")
+elif [ "$1" == "biggest_2015" ]; then
+    filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
+    filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
+    filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    INSTANCE_GROUPS=("group3/" "group5/")
 fi
 
 # Define p values for each group
@@ -154,7 +160,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                 SUB_PROB_SIZE=$((N / 4))
             fi
              
-            SUB_PROB_SIZE=$((N / 4))
+            # SUB_PROB_SIZE=$((N / 4))
 
 
             NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
@@ -175,6 +181,11 @@ for METHOD in "${FOR_METHODS[@]}"; do
             done
 
             if $match_filter; then
+
+                echo "Instance: $file"
+                echo "p: $p"
+                echo "N: $N"
+
                 console_names+=("$CONSOLE_NAME")
                 arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
                 -cover $COVERAGES -subarea null -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
