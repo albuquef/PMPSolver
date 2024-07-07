@@ -51,6 +51,9 @@ elif [ "$1" == "pr2392" ]; then
 elif [ "$1" == "p3038" ]; then
     filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
     INSTANCE_GROUPS=("group3/")
+elif [ "$1" == "fnl4461" ]; then
+    filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    INSTANCE_GROUPS=("group5/")
 elif [ "$1" == "biggest_2015" ]; then
     filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
     filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
