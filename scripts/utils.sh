@@ -8,7 +8,7 @@ DATE=$(date +"%y-%m-%d")
 MACHINE_CLUSTER=poseidon
 USER_CLUSTER=falbuquerque
 CLUSTER_SERVER="${USER_CLUSTER}@${MACHINE_CLUSTER}"
-DIR_DEST_CLUSTER="test_exact_big_time_limit/"
+DIR_DEST_CLUSTER="test_lit_hx05/"
 
 # BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 # BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP/"
@@ -60,11 +60,11 @@ save_outputs_cluster() {
     # call the reload function
     reload_utils
 
-    DIR_NAME="test_lit/"
+    DIR_NAME="test_lit_hx1/"
     PATH_CLUSTER=${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_NAME}
 
-    # PATH_LOCAL=~/Documents/projects/Project_PMP/SaveCluster/${DATE}_save_cluster/${DIR_NAME}
-    PATH_LOCAL=/home/felipe/Documents/Projects/GeoAvigon/save_cluster/${DATE}_save_cluster/${DIR_NAME}
+    PATH_LOCAL=~/Documents/projects/Project_PMP/saves/SaveCluster/${DATE}_save_cluster/${DIR_NAME}
+    # PATH_LOCAL=~/Documents/Projects/GeoAvigon/save_cluster/${DATE}_save_cluster/${DIR_NAME}
     mkdir -p $PATH_LOCAL
 
     echo $PATH_LOCAL

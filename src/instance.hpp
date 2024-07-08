@@ -103,6 +103,8 @@ public:
     bool isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand);
     bool isPcoversAllSubareas_n2(unordered_set<uint_t> p_loc_cand);
     bool get_isWeightedObjFunc();
+
+    
     void set_isWeightedObjFunc(bool is_weighted_obj_func);
     void set_ThresholdDist(dist_t threshold_dist);
     dist_t get_ThresholdDist();

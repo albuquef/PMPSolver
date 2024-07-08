@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=pmpLIT4d
+#SBATCH --job-name=pmpLIT
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --partition=cpuonly
-#SBATCH --mem=256G
-#SBATCH --time=1800:00:00
-#SBATCH --array=0-19%1
+#SBATCH --mem=128G
+#SBATCH --time=90:00:00
+#SBATCH --array=0-4%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -29,8 +29,8 @@ metsp="TB_PMP" # Subproblem method
 
 COVER_MODE=false
 IsWeighted_OBJ=false
-TIME_CPLEX=345600 # 4 days
-TIME_CLOCK=345600
+TIME_CPLEX=3600 # 1 hour
+TIME_CLOCK=3600
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
