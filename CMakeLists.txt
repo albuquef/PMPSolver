@@ -55,7 +55,8 @@ set(SOURCE_FILES
     src/toml.hpp 
     src/TBPercentage.hpp src/TBPercentage.cpp
     src/PMP.hpp src/PMP.cpp
-    src/VNS.hpp src/VNS.cpp)
+    src/VNS.hpp src/VNS.cpp
+    src/PostOptimization.hpp src/PostOptimization.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

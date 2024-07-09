@@ -1059,3 +1059,8 @@ void PMP::setTimeLimit(double CLOCK_LIMIT){
     // this->timeLimit =  static_cast<int>(ceil(CLOCK_LIMIT));
     this->timeLimit =  CLOCK_LIMIT;
 }
+
+
+// IloCplex PMP::getCplex(){
+//     return this->cplex;
+// } 

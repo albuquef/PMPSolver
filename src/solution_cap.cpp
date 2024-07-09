@@ -47,7 +47,8 @@ void Solution_cap::naiveEval() {
     objective = 0;
     for (auto cust:instance->getCustomers()) {
         auto loc = getClosestpLoc(cust);
-        auto dist = instance->getWeightedDist(loc, cust);
+        dist_t dist =  instance->getRealDist(loc, cust);
+        if(instance->get_isWeightedObjFunc()) dist = instance->getWeightedDist(loc, cust);
         objective += dist;
         assignments[cust].emplace_back(my_tuple{loc, 0, dist});
         // assignment[cust] = my_pair{loc, dist};

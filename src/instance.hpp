@@ -83,6 +83,7 @@ public:
     string getTypeService() const;
     void setVotedLocs(vector<uint_t> voted_locs);
     vector<uint_t> getVotedLocs();
+    vector<uint_t> get_kClosestLocations(uint_t loc, uint_t k);
 
     void ReadCoverages(const string& coverages_filename, const string type_subarea,char delim);
     void ReadCoverages_n2(const string& coverages_filename_n2, const string type_subarea_n2,char delim);

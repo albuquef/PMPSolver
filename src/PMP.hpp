@@ -74,6 +74,13 @@ class PMP
         void setMIPStartSolution(Solution_cap sol);
         void setUseMIPStart(bool useMIPStart);
         // void setInitialSolution(Solution_cap sol);
+        
+        // // Method to retrieve CPLEX object
+        // IloCplex getCplex() const;
+
+        // // Methods to retrieve variables
+        // BoolVarMatrix getX_bin() const;
+        // IloBoolVarArray getY() const;
 
     private:
         shared_ptr<Instance> instance; // original PMP instance

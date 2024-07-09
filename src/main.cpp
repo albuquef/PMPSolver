@@ -17,6 +17,7 @@ using namespace std::chrono;
 #include "solution_map.hpp"
 #include "PMP.hpp"
 #include "VNS.hpp"
+#include "PostOptimization.hpp"
 
 struct Config {
     // Required parameters
@@ -376,7 +377,17 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << endl << endl;
         cout << "Final total elapsed time: " << elapsed_time << "s\n";  
         solution.saveAssignment(config.output_filename, config.Method, elapsed_time);
-        solution.saveResults(config.output_filename, elapsed_time, 0, config.Method); 
+        solution.saveResults(config.output_filename, elapsed_time, 0, config.Method);
+
+
+        cout << "-------------------------------------------------\n";
+        cout << "Post Optimization\n";
+        cout << "-------------------------------------------------\n";
+        PostOptimization postOptimization(make_shared<Instance>(instance), solution);
+
+
+
+
     } 
     else if (config.Method == "RSSV") {
         cout << "RSSV heuristic \n";
@@ -448,8 +459,20 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             solution.saveAssignment(config.output_filename, "RSSV_" + config.Method_RSSV_fp, elapsed_time);
             solution.saveResults(config.output_filename, elapsed_time, 0, config.Method, config.Method_RSSV_sp, config.Method_RSSV_fp);
             cout << "\n\n\n";
+
+
+            cout << "-------------------------------------------------\n";
+            cout << "Post Optimization\n";
+            cout << "-------------------------------------------------\n";
+            PostOptimization postOptimization(make_shared<Instance>(instance), solution);
+
+
+
         }
     }
+
+
+
 }
 
 

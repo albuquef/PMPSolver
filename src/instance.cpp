@@ -903,3 +903,35 @@ void Instance::set_ThresholdDist(dist_t threshold_dist){
 dist_t Instance::get_ThresholdDist(){
     return threshold_dist;
 }
+
+
+vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
+    // Validate input
+    if (loc >= locations.size()) {
+        cerr << "Error: Invalid location index." << endl;
+        return {};
+    }
+
+    // Create a vector to store distances and indices
+    vector<pair<dist_t, uint_t>> dist_index;
+
+    // Compute distances from location loc to all other locations
+    for (uint_t i = 0; i < locations.size(); ++i) {
+        if (i != loc) {
+            dist_t dist = getRealDist(loc, i);
+            if(get_isWeightedObjFunc()) dist = getWeightedDist(loc, i);
+            dist_index.emplace_back(dist, i);
+        }
+    }
+
+    // Sort distances in ascending order
+    sort(dist_index.begin(), dist_index.end());
+
+    // Extract the indices of the k closest locations
+    vector<uint_t> closest_locations;
+    for (uint_t i = 0; i < k && i < dist_index.size(); ++i) {
+        closest_locations.push_back(locations[dist_index[i].second]);
+    }
+
+    return closest_locations;
+}
