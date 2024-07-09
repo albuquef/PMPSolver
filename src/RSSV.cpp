@@ -34,7 +34,11 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     this->method_RSSV_sp = method_sp;
     cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl;
     cout << "Seed: " << seed_rssv << endl << endl;
+    if(TIME_LIMIT_SUBPROBLEMS > 0) cout << "Time limit for subproblems: " << TIME_LIMIT_SUBPROBLEMS << endl;
+    if(MAX_ITE_SUBPROBLEMS > 0) cout << "Max iterations for subproblems: " << MAX_ITE_SUBPROBLEMS << endl;
     
+    cout << endl;
+
 
     if (instance->get_p() > min(n, N)) {
         cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
@@ -77,6 +81,16 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     cout << "[INFO] All subproblems solved." << endl << endl;
     tock(start_time);
 
+    subSols_avg_dist = subSols_avg_dist / M;
+    subSols_std_dev_dist = subSols_std_dev_dist / M;
+    cout << "\nStats: \n";
+    cout << "Max dist: " << subSols_max_dist << endl;
+    cout << "Min dist: " << subSols_min_dist << endl;
+    cout << "avg of Avg dists: " << subSols_avg_dist << endl;
+    cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
+    cout << endl;
+
+
     auto filtered_cnt = n;
     auto filtered_locations = filterLocations(filtered_cnt);
     cout << endl << endl;
@@ -103,19 +117,10 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
         cout << "Size of final locations: " << final_locations.size() << endl << endl;
     }
 
-    subSols_avg_dist = subSols_avg_dist / M;
-    subSols_std_dev_dist = subSols_std_dev_dist / M;
-    cout << "\nStats: \n";
-    cout << "Max dist: " << subSols_max_dist << endl;
-    cout << "Min dist: " << subSols_min_dist << endl;
-    cout << "avg of Avg dists: " << subSols_avg_dist << endl;
-    cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
-    cout << endl;
-
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
     filtered_instance->setVotedLocs(filtered_locations);
 
-    bool add_threshold_dist = true;
+    
     if (add_threshold_dist) {
         filtered_instance->set_ThresholdDist(subSols_max_dist);
     }

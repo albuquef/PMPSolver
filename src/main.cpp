@@ -44,12 +44,17 @@ struct Config {
     uint_t PERCENTAGE = 0;
     double CLOCK_LIMIT = 0;
     double CLOCK_LIMIT_CPLEX = 0;
+    double CLOCK_LIMIT_SUBPROB_RSSV = 0;
+    uint_t MAX_ITE_SUBPROB_RSSV = 0;
+    uint_t size_subproblems_rssv = 800;
+
+    double BW_MULTIPLIER = 1.0;
+    bool add_threshold_distance_rssv = false;
 
     bool cover_mode = false;
     bool cover_mode_n2 = false;
     uint_t cust_max_id = 0;
     uint_t loc_max_id = 0;
-    uint_t size_subproblems_rssv = 800;
     bool IsWeighted_ObjFunc = false;
     set<const char*> configOverride;
     string configPath = "config.toml";
@@ -85,7 +90,7 @@ void parseArguments(int argc, char* argv[], Config& config) {
             }else if (key == "-loc_max_id") {
                 config.loc_max_id = std::stoi(argv[i+1]);
                 configOverride.insert("loc_max_id");
-            } else if (key == "--mode") {
+            }else if (key == "--mode") {
                 config.mode = std::stoi(argv[i+1]);
                 configOverride.insert("mode");
             } else if (key == "-IsWeighted_ObjFunc") {
@@ -106,6 +111,12 @@ void parseArguments(int argc, char* argv[], Config& config) {
             } else if (key == "-time_cplex") {
                 config.CLOCK_LIMIT_CPLEX = std::stod(argv[i+1]);
                 configOverride.insert("time_cplex");
+            }else if (key == "-time_subprob_rssv") {
+                config.CLOCK_LIMIT_SUBPROB_RSSV = std::stod(argv[i+1]);
+                configOverride.insert("time_subprob_rssv");
+            }else if (key == "-max_ite_subprob_rssv") {
+                config.MAX_ITE_SUBPROB_RSSV = std::stoi(argv[i+1]);
+                configOverride.insert("max_ite_subprob_rssv");
             } else if (key == "-o") {
                 config.output_filename = argv[i+1];
                 configOverride.insert("output");
@@ -149,6 +160,10 @@ void parseArguments(int argc, char* argv[], Config& config) {
                 config.size_subproblems_rssv = std::stoi(argv[i+1]);
                 configOverride.insert("size_subproblems_rssv");
                 SUB_PMP_SIZE = static_cast<uint_t>(config.size_subproblems_rssv);
+            }else if (key == "-bw_multiplier") {
+                config.BW_MULTIPLIER = std::stod(argv[i+1]);
+                configOverride.insert("bw_multiplier");
+                BW_MULTIPLIER = config.BW_MULTIPLIER;
             } else if (key == "-cover_mode") {
                 if (strcmp(argv[i+1], "true") == 0 || strcmp(argv[i+1], "1") == 0) {
                     config.cover_mode = true;
@@ -164,9 +179,18 @@ void parseArguments(int argc, char* argv[], Config& config) {
                 } else if (strcmp(argv[i+1], "false") == 0 || strcmp(argv[i+1], "0") == 0) {
                     config.cover_mode_n2 = false;
                 } else {
-                    throw std::invalid_argument("Unknown parameter [cover mode]: " + std::string(argv[i+1]));
+                    throw std::invalid_argument("Unknown parameter [cover mode n2]: " + std::string(argv[i+1]));
                 }
                 configOverride.insert("cover_mode_n2");
+            } else if (key == "-add_threshold_distance_rssv") {
+                if (strcmp(argv[i+1], "true") == 0 || strcmp(argv[i+1], "1") == 0) {
+                    config.add_threshold_distance_rssv = true;
+                } else if (strcmp(argv[i+1], "false") == 0 || strcmp(argv[i+1], "0") == 0) {
+                    config.add_threshold_distance_rssv = false;
+                } else {
+                    throw std::invalid_argument("Unknown parameter [add_threshold_distance_rssv]: " + std::string(argv[i+1]));
+                }
+                configOverride.insert("add_threshold_distance_rssv");
             } else if (key == "--help" || key == "-h" || key == "?") {
                 std::cout << "Usage instructions:\n";
                 std::cout << "-p <value>          : Number of medians to select.\n";
@@ -213,6 +237,10 @@ void setupConfig(Config& config, std::set<const char*>& configOverride) {
     configParser.setFromConfig(&config.cover_mode, "cover_mode");
     configParser.setFromConfig(&config.cover_mode_n2, "cover_mode_n2");
     configParser.setFromConfig(&config.IsWeighted_ObjFunc, "IsWeighted_ObjFunc");
+    configParser.setFromConfig(&config.add_threshold_distance_rssv, "add_threshold_distance_rssv");
+    configParser.setFromConfig(&config.MAX_ITE_SUBPROB_RSSV, "max_ite_subprob_rssv");
+    configParser.setFromConfig(&config.CLOCK_LIMIT_SUBPROB_RSSV, "time_subprob_rssv");
+    configParser.setFromConfig(&config.BW_MULTIPLIER, "bw_multiplier");
 
     // Additional fields can be set similarly
 
@@ -357,6 +385,9 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         RSSV metaheuristic(make_shared<Instance>(instance), seed, SUB_PMP_SIZE);
         metaheuristic.setCoverMode(config.cover_mode);
         metaheuristic.setCoverMode_n2(config.cover_mode_n2);
+        metaheuristic.setMAX_ITE_SUBPROBLEMS(config.MAX_ITE_SUBPROB_RSSV);
+        metaheuristic.setTIME_LIMIT_SUBPROBLEMS(config.CLOCK_LIMIT_SUBPROB_RSSV);
+        metaheuristic.setAddThresholdDist(config.add_threshold_distance_rssv);
         CLOCK_THREADED = true;
         auto start_time_total = high_resolution_clock::now();
 

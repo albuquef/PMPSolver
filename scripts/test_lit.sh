@@ -32,6 +32,12 @@ IsWeighted_OBJ=false
 TIME_CPLEX=3600 # 1 hour
 TIME_CLOCK=3600
 
+ADD_THRESHOLD_DIST_SUBP_RSSV=false
+TIME_SUBP_RSSV=600 # 10 minutes  
+MAX_ITE_SUBP_RSSV=0 # 0 = No limit
+
+BW_MULTIPLIER=0.5   # Bandwidth multiplier
+
 # ----------------------------------------- Instance configuration -----------------------------------------
 INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 mapfile -t filters < ./scripts/filter_lit.txt
@@ -165,6 +171,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
              
             # SUB_PROB_SIZE=$((N / 4))
 
+            mkdir -p ./outputs/reports/
 
             NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
             mkdir -p $NEW_DIR
@@ -190,10 +197,11 @@ for METHOD in "${FOR_METHODS[@]}"; do
                 echo "N: $N"
 
                 console_names+=("$CONSOLE_NAME")
-                arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
+                arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\
                 -cover $COVERAGES -subarea null -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
                 -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                 -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
+                -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
                 -o $OUTPUT --seed $SEED | tee ./console/$CONSOLE_NAME")
             fi
 

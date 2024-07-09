@@ -60,7 +60,7 @@ save_outputs_cluster() {
     # call the reload function
     reload_utils
 
-    DIR_NAME="test_lit_hx1/"
+    DIR_NAME="test_lit_hx010/"
     PATH_CLUSTER=${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_NAME}
 
     PATH_LOCAL=~/Documents/projects/Project_PMP/saves/SaveCluster/${DATE}_save_cluster/${DIR_NAME}

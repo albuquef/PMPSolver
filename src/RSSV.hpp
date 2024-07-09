@@ -30,6 +30,7 @@ private:
     // vector<uint_t> filtered_locs; // locations that are filtered 
     string method_RSSV_sp;
     int DEFAULT_MAX_NUM_ITER = 10000000;
+    bool add_threshold_dist = false;
     bool cover_mode = false;
     bool cover_mode_n2 = false;
     mutex mtx;
@@ -65,6 +66,9 @@ public:
     }
     void setCoverMode_n2(bool mode) {
         cover_mode_n2 = mode;
+    }
+    void setAddThresholdDist(bool add_threshold) {
+        add_threshold_dist = add_threshold;
     }
 };
 
