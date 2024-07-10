@@ -905,6 +905,8 @@ dist_t Instance::get_ThresholdDist(){
 }
 
 
+
+
 vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
     // Validate input
     if (loc >= locations.size()) {
@@ -918,8 +920,19 @@ vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
     // Compute distances from location loc to all other locations
     for (uint_t i = 0; i < locations.size(); ++i) {
         if (i != loc) {
+            
+            // auto loc1_x = loc_coordinates[loc].first; 
+            // auto loc1_y = loc_coordinates[loc].second;
+            // auto loc2_x = loc_coordinates[i].first;
+            // auto loc2_y = loc_coordinates[i].second;
+
+            // auto dist = sqrt(pow(loc1_x - loc2_x, 2) + pow(loc1_y - loc2_y, 2));
+
             dist_t dist = getRealDist(loc, i);
             if(get_isWeightedObjFunc()) dist = getWeightedDist(loc, i);
+
+            // cout << "dist loc " << loc << " to " << i << " = " << dist << endl;
+
             dist_index.emplace_back(dist, i);
         }
     }
@@ -929,9 +942,27 @@ vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
 
     // Extract the indices of the k closest locations
     vector<uint_t> closest_locations;
-    for (uint_t i = 0; i < k && i < dist_index.size(); ++i) {
-        closest_locations.push_back(locations[dist_index[i].second]);
+    // for (uint_t i = 0; i < k && i < dist_index.size(); ++i) {
+    //     if (dist_index[i].second != loc) closest_locations.push_back(dist_index[i].second);
+    //     // closest_locations.push_back(locations[dist_index[i].second]);
+    // }
+
+    for (uint_t i = 0; i < k; ++i) {
+        closest_locations.push_back(dist_index[i].second);
     }
+
+
+    // print the 5 lowest distances
+    for (uint_t i = 0; i < 5; ++i) {
+        cout << "dist loc " << loc << " to " << dist_index[i].second << " = " << dist_index[i].first << endl;
+   
+    }
+
+
+    // print the k closest locations
+    cout << "k closest locations to " << loc << " are: ";
+    for (auto loc_close:closest_locations) cout << loc_close << "(" << std::fixed << std::setprecision(2) << getRealDist(loc,loc_close) << ") "<< " coord: " << loc_coordinates[loc].first << "," << loc_coordinates[loc].second << " | ";
+
 
     return closest_locations;
 }

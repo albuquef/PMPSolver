@@ -3,6 +3,7 @@
 #include <iostream>
 #include <experimental/filesystem>
 #include <sys/time.h>
+#include <chrono>
 #include <string.h>
 #include <utility>
 #include <cmath>
@@ -31,6 +32,21 @@ typedef IloArray<BoolVar3Matrix> BoolVar4Matrix;
 
 typedef IloArray<IloNumVarArray> NumVarMatrix;
 typedef IloArray<NumVarMatrix> NumVar3Matrix;
+
+
+class BreakCallback : public IloCplex::MIPInfoCallbackI {
+private:
+    double lastGap;
+    double gapThreshold;
+    double timeThreshold;
+    std::chrono::steady_clock::time_point lastTime;
+
+public:
+    BreakCallback(IloEnv env, double gapThreshold, double timeThreshold);
+
+    void main() override;
+    IloCplex::CallbackI* duplicateCallback() const override;
+};
 
 
 class PMP
@@ -148,6 +164,7 @@ class PMP
         
 
 };
+
 
 
 

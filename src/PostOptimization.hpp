@@ -1,6 +1,7 @@
 #ifndef POSTOPTIMIZATION_HPP
 #define POSTOPTIMIZATION_HPP
 
+#include <algorithm>
 #include <ilcplex/ilocplex.h>
 #include "solution_std.hpp"
 #include "solution_cap.hpp"

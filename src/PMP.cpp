@@ -65,6 +65,33 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
     }
 }
 
+
+// BreakCallback definition using ILOMIPINFOCALLBACK4
+ILOMIPINFOCALLBACK4(BreakCallback, double, gapThreshold, double, timeThreshold,
+                    double, lastGap, std::chrono::steady_clock::time_point, lastTime) {
+    try {
+        if (hasIncumbent()) {
+            double currentGap = getMIPRelativeGap();
+            auto currentTime = std::chrono::steady_clock::now();
+            std::chrono::duration<double> elapsed = currentTime - lastTime;
+            double elapsedTime = elapsed.count(); // elapsed time in seconds
+
+            if (elapsedTime >= timeThreshold) {
+                double gapImprovement = lastGap - currentGap;
+                if (gapImprovement / lastGap < gapThreshold) {
+                    std::cout << "Stopping optimization: Relative gap did not improve by "
+                              << gapThreshold * 100 << "% in the last " << timeThreshold << " seconds." << std::endl;
+                    abort();
+                }
+                lastGap = currentGap;
+                lastTime = currentTime;
+            }
+        }
+    } catch (const IloException& e) {
+        std::cerr << "CPLEX exception caught: " << e.getMessage() << std::endl;
+    }
+}
+
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
@@ -103,19 +130,12 @@ void PMP::run(string Method_name){
     try{
         initILP();
 
-
-        // if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT_CPLEX);
-        // if (CLOCK_LIMIT_CPLEX != 0) cplex.setParam(IloCplex::Param::TimeLimit, CLOCK_LIMIT_CPLEX);
         if (timeLimit != 0) cplex.setParam(IloCplex::Param::TimeLimit, timeLimit);
 
         // cplex.setParam(IloCplex::TiLim, 60);
         // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
-        // cplex.setParam(IloCplex::TreLim, 30000); // tree memory limit 30GB
-        // cplex.setParam(IloCplex::Threads, 8); // use 8 threads
-
 
         if(useMIPStart) addMIPStartSolution();
-
 
         // Set up the MIP callback
         IloNum startTime = cplex.getCplexTime();
@@ -134,6 +154,17 @@ void PMP::run(string Method_name){
             cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
         }
 
+
+
+        bool add_break_callback = true;
+        if (add_break_callback){
+            double gapThreshold = 0.1; // X% improvement, e.g., 1% improvement
+            double timeThreshold = 5; // T seconds, e.g., 10 seconds
+            cout << "Creating BreakCallback..." << endl;
+            cplex.use(BreakCallback(env, gapThreshold, timeThreshold, 1.0, std::chrono::steady_clock::now()));
+            cout << "Using BreakCallback..." << endl;
+        }
+        
         // cplex.exportModel("./model.lp");
 
         solveILP();

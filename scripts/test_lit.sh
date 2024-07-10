@@ -27,6 +27,8 @@ FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 metsp="TB_PMP" # Subproblem method
 
+# FOR_METHODS=("EXACT_CPMP_BIN")
+
 COVER_MODE=false
 IsWeighted_OBJ=false
 TIME_CPLEX=3600 # 1 hour
@@ -36,7 +38,8 @@ ADD_THRESHOLD_DIST_SUBP_RSSV=false
 TIME_SUBP_RSSV=600 # 10 minutes  
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
 
-BW_MULTIPLIER=0.5   # Bandwidth multiplier
+# BW_MULTIPLIER=0.5   # Bandwidth multiplier
+BW_MULTIPLIER=1   # Bandwidth multiplier
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
@@ -44,6 +47,7 @@ mapfile -t filters < ./scripts/filter_lit.txt
 
 if [ "$1" == "basic" ]; then
     filters=("SJC4a")
+    # filters=("SJC1")
     INSTANCE_GROUPS=("group2/")
 elif [ "$1" == "spain" ]; then
     filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
@@ -154,10 +158,6 @@ for METHOD in "${FOR_METHODS[@]}"; do
             # echo "p: $p"
             # echo "N: $N"
 
-            export CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.log"
-            if [ "$METHOD" = "RSSV" ]; then
-                export CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.log"
-            fi
 
             if [ "$N" -lt 700 ]; then
                 SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
@@ -170,9 +170,15 @@ for METHOD in "${FOR_METHODS[@]}"; do
             fi
              
             # SUB_PROB_SIZE=$((N / 4))
+            NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
+            mkdir -p $NEW_DIR_CONSOLE
+            export CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.log"
+            if [ "$METHOD" = "RSSV" ]; then
+                export CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.log"
+            fi
+
 
             mkdir -p ./outputs/reports/
-
             NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
             mkdir -p $NEW_DIR
             mkdir -p $NEW_DIR/VarsValues_cplex/
@@ -202,7 +208,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                 -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                 -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
                 -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
-                -o $OUTPUT --seed $SEED | tee ./console/$CONSOLE_NAME")
+                -o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
             fi
 
             ((index++))
@@ -230,7 +236,7 @@ elif [ "$2" == "run" ]; then
         eval $element
     done
 elif [ "$2" == "srun" ]; then
-    NEW_DIR="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
-    mkdir -p $NEW_DIR
-    srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee $NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}
+    NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
+    mkdir -p $NEW_DIR_CONSOLE
+    srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee $NEW_DIR_CONSOLE/${console_names[$SLURM_ARRAY_TASK_ID]}
 fi
