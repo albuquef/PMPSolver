@@ -5,10 +5,10 @@
 
 # Constants
 DATE=$(date +"%y-%m-%d")
-MACHINE_CLUSTER=poseidon
+MACHINE_CLUSTER=poseidon.univ-avignon.fr
 USER_CLUSTER=falbuquerque
 CLUSTER_SERVER="${USER_CLUSTER}@${MACHINE_CLUSTER}"
-DIR_DEST_CLUSTER="test_lit_hx05/"
+DIR_DEST_CLUSTER="test_code"
 
 # BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 # BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP/"
@@ -28,23 +28,24 @@ send_code_to_cluster() {
 
     # call the reload function
     # reload_utils
-    BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP/"
+    # BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP/"
+    BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
     if [ -z "$1" ]; then
         path="/"
     else
-        path=$1
+        path=/$1/
     fi
     # path="/"
     # path="/src/"
     # path="/scripts/"
 
 
-    PATH_ORIGIN=${BASE_PATH}/${path}/
+    PATH_ORIGIN=${BASE_PATH}${path}
     echo $PATH_ORIGIN
     # PATH_DEST=falbuquerque@poseidon:/users/falbuquerque/Projects/Project_PMP/Benchmark_Lit${path}
-    PATH_DEST=" ${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST_CLUSTER}/${path}"
-
+    PATH_DEST=" ${CLUSTER_SERVER}:/users/falbuquerque/Projects/Project_PMP/${DIR_DEST_CLUSTER}${path}"
+    echo $PATH_DEST
     # Copy the code to the cluster
     eval "rsync -av --exclude='.git' $PATH_ORIGIN $PATH_DEST"
     # copy the code to the cluster using scp

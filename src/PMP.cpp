@@ -79,7 +79,7 @@ ILOMIPINFOCALLBACK4(BreakCallback, double, gapThreshold, double, timeThreshold,
             if (elapsedTime >= timeThreshold) {
                 double gapImprovement = lastGap - currentGap;
                 if (gapImprovement / lastGap < gapThreshold) {
-                    std::cout << "Stopping optimization: Relative gap did not improve by "
+                    cout << "Stopping optimization: Relative gap did not improve by "
                               << gapThreshold * 100 << "% in the last " << timeThreshold << " seconds." << std::endl;
                     abort();
                 }
@@ -158,8 +158,10 @@ void PMP::run(string Method_name){
 
         bool add_break_callback = true;
         if (add_break_callback){
+            // double gapThreshold = 0.01; // X% improvement, e.g., 1% improvement
+            // double timeThreshold = 180; // T seconds, e.g., 10 seconds
             double gapThreshold = 0.1; // X% improvement, e.g., 1% improvement
-            double timeThreshold = 5; // T seconds, e.g., 10 seconds
+            double timeThreshold = 60; // T seconds, e.g., 10 seconds
             cout << "Creating BreakCallback..." << endl;
             cplex.use(BreakCallback(env, gapThreshold, timeThreshold, 1.0, std::chrono::steady_clock::now()));
             cout << "Using BreakCallback..." << endl;

@@ -2,6 +2,8 @@
 #define POSTOPTIMIZATION_HPP
 
 #include <algorithm>
+#include <iostream>
+#include <chrono>
 #include <ilcplex/ilocplex.h>
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
@@ -25,12 +27,14 @@ public:
     // void saveSolution();
 
 
-    void createSelectedLocations();
-
+    // void createSelectedLocations();
+    void createSelectedLocations(int num_k);
+    void run();
 
     // Getters for solution information
     Solution_std getSolution_std() const;
     Solution_cap getSolution_cap() const;
+    void set_time_limit(double time);
 
 private:
     // IloEnv env;
@@ -40,6 +44,10 @@ private:
     shared_ptr<Instance> instance;
     Solution_std solution_std;
     Solution_cap solution_cap;
+    vector<uint_t> selectedLocations;
+
+
+    double timelimit=0;
     // PMP pmpSolver;
 
     // Helper methods

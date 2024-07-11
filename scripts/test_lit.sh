@@ -38,8 +38,8 @@ ADD_THRESHOLD_DIST_SUBP_RSSV=false
 TIME_SUBP_RSSV=600 # 10 minutes  
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
 
-# BW_MULTIPLIER=0.5   # Bandwidth multiplier
-BW_MULTIPLIER=1   # Bandwidth multiplier
+BW_MULTIPLIER=0.5   # Bandwidth multiplier
+
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")

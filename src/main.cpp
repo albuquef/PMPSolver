@@ -384,6 +384,8 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << "Post Optimization\n";
         cout << "-------------------------------------------------\n";
         PostOptimization postOptimization(make_shared<Instance>(instance), solution);
+        cout << "Time for post-optimization: " << config.CLOCK_LIMIT - elapsed_time << "s\n";
+        postOptimization.set_time_limit(config.CLOCK_LIMIT - elapsed_time);
 
 
 
@@ -464,12 +466,16 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             cout << "-------------------------------------------------\n";
             cout << "Post Optimization\n";
             cout << "-------------------------------------------------\n";
+            auto time_left = config.CLOCK_LIMIT - elapsed_time;
+            cout << "Time for post-optimization: " << time_left << "s\n";
             PostOptimization postOptimization(make_shared<Instance>(instance), solution);
-
+            postOptimization.set_time_limit(time_left);
+            postOptimization.run();
 
 
         }
     }
+
 
 
 
