@@ -1,6 +1,6 @@
 #include "PMP.hpp"
 
-
+#include <mutex>
 
 
 double get_cpu_time_pmp(){
@@ -10,9 +10,72 @@ double get_cpu_time_pmp(){
     return now_sec.count();
 }
 
-
 static std::string gap_outputFilename;
+struct CallbackParams {
+    IloCplex cplex;
+    IloNum startTime;
+    IloNum lastPrintTime;
+    IloNum lastBestBound;
+    double gapThreshold;
+    double timeThreshold;
+    double lastGap;
+    std::chrono::steady_clock::time_point lastTime;
+};
+ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
+    try {
+        double interval_time = 5.0; // seconds
+
+        // GapInfoCallback functionality
+        if (params->cplex.getCplexTime() - params->lastPrintTime >= interval_time) {
+            std::ofstream outputTable;
+            outputTable.open("./outputs/reports/" + gap_outputFilename, std::ios::app);
+
+            if (!outputTable.is_open()) {
+                std::cerr << "Error opening file: " << std::endl;
+            } else {
+                outputTable << std::fixed << std::setprecision(15) << getBestObjValue() << ";"; // bound obj value
+                outputTable << std::fixed << std::setprecision(15) << getIncumbentObjValue() << ";"; // obj value
+                outputTable << getNnodes() << ";"; // num nodes
+                outputTable << getMIPRelativeGap() << ";"; // relative gap
+                outputTable << params->cplex.getCplexTime() - params->startTime << ";"; // time cplex
+                outputTable << "\n";
+            }
+
+            std::cout << "Time: " << params->cplex.getCplexTime() - params->startTime << " seconds" << std::endl;
+            std::cout << "MIP Gap: " << getMIPRelativeGap() << std::endl;
+            std::cout << "Nodes: " << getNnodes() << std::endl;
+            std::cout << "Best Objective: " << std::fixed << std::setprecision(15) << getBestObjValue() << std::endl;
+            std::cout << "Incumbent Obj:  " << std::fixed << std::setprecision(15) << getIncumbentObjValue() << std::endl;
+
+            params->lastPrintTime = params->cplex.getCplexTime();
+        }
+
+        // BreakCallback functionality
+        if (hasIncumbent()) {
+            double currentGap = getMIPRelativeGap();
+            auto currentTime = std::chrono::steady_clock::now();
+            std::chrono::duration<double> elapsed = currentTime - params->lastTime;
+            double elapsedTime = elapsed.count(); // elapsed time in seconds
+
+            if (elapsedTime >= params->timeThreshold) {
+                double gapImprovement = params->lastGap - currentGap;
+                if (gapImprovement / params->lastGap < params->gapThreshold) {
+                    std::cout << "Stopping optimization: Relative gap did not improve by "
+                              << std::fixed << std::setprecision(2) << params->gapThreshold * 100 << "% in the last " << params->timeThreshold << " seconds." << std::endl;
+                    abort();
+                }
+                params->lastGap = currentGap;
+                params->lastTime = currentTime;
+            }
+        }
+    } catch (const IloException &ex) {
+        std::cerr << "Error in callback function: " << ex.getMessage() << std::endl;
+        throw; // Rethrow the exception to terminate the program
+    }
+}
+
 ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum, lastPrintTime, IloNum, lastBestBound) {
+
     try {
 
         // cout << "Callback called" << endl;
@@ -69,6 +132,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 // BreakCallback definition using ILOMIPINFOCALLBACK4
 ILOMIPINFOCALLBACK4(BreakCallback, double, gapThreshold, double, timeThreshold,
                     double, lastGap, std::chrono::steady_clock::time_point, lastTime) {
+
     try {
         if (hasIncumbent()) {
             double currentGap = getMIPRelativeGap();
@@ -149,24 +213,37 @@ void PMP::run(string Method_name){
         gap_outputFilename += "_service_" + instance->getTypeService() + "_p_" + to_string(p) + "_" + Method_name;
         if(instance->isCoverMode()) gap_outputFilename += "_cover_"+ typeSubarea;
         gap_outputFilename += ".csv";
-        cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
-        if (generate_reports){
-            cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
-        }
 
-
-
+        double gapThreshold = 0.01; // alpha% improvement, e.g., 1% improvement
+        double timeThreshold = 300; // T seconds, e.g., 300 seconds
         bool add_break_callback = true;
-        if (add_break_callback){
-            // double gapThreshold = 0.01; // X% improvement, e.g., 1% improvement
-            // double timeThreshold = 180; // T seconds, e.g., 10 seconds
-            double gapThreshold = 0.1; // X% improvement, e.g., 1% improvement
-            double timeThreshold = 60; // T seconds, e.g., 10 seconds
-            cout << "Creating BreakCallback..." << endl;
+
+        if (generate_reports && add_break_callback){
+            CallbackParams params;
+            params.cplex = cplex;
+            params.startTime = startTime;
+            params.lastPrintTime = lastPrintTime;
+            params.lastBestBound = lastBestBound;
+            params.gapThreshold = gapThreshold; // X% improvement, e.g., 1% improvement
+            params.timeThreshold = timeThreshold; // T seconds, e.g., 10 seconds
+            params.lastGap = 1.0;
+            params.lastTime = std::chrono::steady_clock::now();
+
+            cplex.use(CombinedCallback(env, &params));
+
+            cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
+            cout << "Generating reports cplex callbacks...";
+            cout << "Using BreakCallback..." << endl;
+        } else if (generate_reports){
+            cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
+            cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
+            cout << "Generating reports cplex callbacks...";
+        } else if (add_break_callback){
             cplex.use(BreakCallback(env, gapThreshold, timeThreshold, 1.0, std::chrono::steady_clock::now()));
             cout << "Using BreakCallback..." << endl;
         }
-        
+
+
         // cplex.exportModel("./model.lp");
 
         solveILP();
@@ -362,6 +439,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if(CoverModel_n2) {constr_Cover_n2(model,y);}
     if (UpperBound != 0) {constr_UpperBound(model,x);}
     if (instance->get_ThresholdDist() > 0) {constr_MaxDistance(model,x);}
+    if (add_constr_maxNeighbors_from_solution) {constr_MaxNeighborsFromSolution(model,y);}
 }
 
 
@@ -621,7 +699,8 @@ void PMP::constr_UpperBound (IloModel model, VarType x){
 template <typename VarType>
 void PMP::constr_MaxDistance(IloModel model, VarType x){
 
-    if (VERBOSE){cout << "[INFO] Adding Max Distance Constraints "<< endl; cout << "Threshold Distance: " << instance->get_ThresholdDist() << endl;}
+    if (VERBOSE){cout << "[INFO] Adding Max Distance Constraints "<< endl; 
+    cout << "Threshold Distance: " << instance->get_ThresholdDist() << endl;}
 
     for(IloInt i = 0; i < num_customers; i++)
         for(IloInt j = 0; j < num_facilities; j++){
@@ -630,6 +709,38 @@ void PMP::constr_MaxDistance(IloModel model, VarType x){
             if (instance->getRealDist(loc,cust) > instance->get_ThresholdDist())
                 model.add(x[i][j] == 0);
         }
+}
+
+
+
+void PMP::constr_MaxNeighborsFromSolution(IloModel model, IloBoolVarArray y){
+
+    uint_t MaxNeighbors = 10;
+
+    if (VERBOSE){cout << "[INFO] Adding Max Neighbors Constraints from Solution"<< endl;
+                cout << "Max Neighbors from solution: " << MaxNeighbors<< endl;}
+    
+
+    IloEnv env = model.getEnv();
+
+    if (p_locations_from_solution.size() > 0){
+        for(auto ploc:p_locations_from_solution){
+            auto index_loc = instance->getLocIndex(ploc);
+            if (index_loc != 10000000){
+                IloExpr expr(env);
+                expr += y[index_loc];
+                auto k_locs = this->instance->get_kClosestLocations(ploc, MaxNeighbors);
+                for(auto neighbor:k_locs){
+                    auto index_neighbor = instance->getLocIndex(neighbor);
+                    if (index_neighbor != 10000000){
+                        expr += y[index_neighbor];
+                    }
+                }
+                model.add(expr >= 1);
+            }
+        }
+    }
+
 }
 
 
@@ -1091,6 +1202,12 @@ void PMP::setUpperBound(double UB){
 void PMP::setTimeLimit(double CLOCK_LIMIT){
     // this->timeLimit =  static_cast<int>(ceil(CLOCK_LIMIT));
     this->timeLimit =  CLOCK_LIMIT;
+}
+
+
+void PMP::set_pLocations_from_solution(unordered_set<uint_t> p_locations){
+    this->add_constr_maxNeighbors_from_solution = true;
+    this->p_locations_from_solution = p_locations;
 }
 
 

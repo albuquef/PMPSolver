@@ -8,7 +8,7 @@ DATE=$(date +"%y-%m-%d")
 MACHINE_CLUSTER=poseidon.univ-avignon.fr
 USER_CLUSTER=falbuquerque
 CLUSTER_SERVER="${USER_CLUSTER}@${MACHINE_CLUSTER}"
-DIR_DEST_CLUSTER="test_code"
+DIR_DEST_CLUSTER="test_code_2"
 
 # BASE_PATH="~/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 # BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP/"
@@ -28,8 +28,8 @@ send_code_to_cluster() {
 
     # call the reload function
     # reload_utils
-    # BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP/"
-    BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
+    BASE_PATH="/home/falbuquerque/Documents/projects/Project_PMP/large-PMP"
+    # BASE_PATH="/home/felipe/Documents/Projects/GeoAvigon/pmp_code/large-PMP"
 
     if [ -z "$1" ]; then
         path="/"

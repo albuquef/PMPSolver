@@ -462,7 +462,14 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             solution.saveResults(config.output_filename, elapsed_time, 0, config.Method, config.Method_RSSV_sp, config.Method_RSSV_fp);
             cout << "\n\n\n";
 
+            cout << "Solution Stats" << endl;
+            solution.statsDistances();
+            cout << "Max dist: " << solution.getMaxDist() << endl;
+            cout << "Min dist: " << solution.getMinDist() << endl;
+            cout << "avg of Avg dists: " << solution.getAvgDist() << endl;
+            cout << "avg Std dev dist: " << solution.getStdDevDist() << endl;
 
+            cout << "\n\n\n";
             cout << "-------------------------------------------------\n";
             cout << "Post Optimization\n";
             cout << "-------------------------------------------------\n";

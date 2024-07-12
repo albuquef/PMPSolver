@@ -122,7 +122,7 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
     
     if (add_threshold_dist) {
-        filtered_instance->set_ThresholdDist(subSols_max_dist);
+        filtered_instance->set_ThresholdDist(subSols_max_dist+subSols_std_dev_dist);
     }
 
     atexit(printDDE);

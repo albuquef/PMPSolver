@@ -7,6 +7,7 @@
 #include <string.h>
 #include <utility>
 #include <cmath>
+#include <mutex>    
 
 #include "instance.hpp"
 #include "globals.hpp"
@@ -34,19 +35,6 @@ typedef IloArray<IloNumVarArray> NumVarMatrix;
 typedef IloArray<NumVarMatrix> NumVar3Matrix;
 
 
-class BreakCallback : public IloCplex::MIPInfoCallbackI {
-private:
-    double lastGap;
-    double gapThreshold;
-    double timeThreshold;
-    std::chrono::steady_clock::time_point lastTime;
-
-public:
-    BreakCallback(IloEnv env, double gapThreshold, double timeThreshold);
-
-    void main() override;
-    IloCplex::CallbackI* duplicateCallback() const override;
-};
 
 
 class PMP
@@ -98,7 +86,10 @@ class PMP
         // BoolVarMatrix getX_bin() const;
         // IloBoolVarArray getY() const;
 
+        void set_pLocations_from_solution(unordered_set<uint_t> p_locations);
+
     private:
+        // mutex callbackMutex;
         shared_ptr<Instance> instance; // original PMP instance
         const char* typeProb;
         IloEnv env;
@@ -162,6 +153,9 @@ class PMP
         template <typename VarType>
         void constr_MaxDistance (IloModel model, VarType x);
         
+        bool add_constr_maxNeighbors_from_solution = false;
+        unordered_set<uint_t> p_locations_from_solution; // p selected locations from  a solution
+        void constr_MaxNeighborsFromSolution (IloModel model, IloBoolVarArray y);
 
 };
 

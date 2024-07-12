@@ -45,7 +45,10 @@ void PostOptimization::createSelectedLocations(int num_k) {
         selectedLocations.insert(selectedLocations.end(), k_locs.begin(), k_locs.end());
 
         // add only the kth position
+        // uint_t lastValue = k_locs.back();
+        // uint_t lastValue = vet[vet.size() - 1];
         // selectedLocations.push_back(k_locs[num_k-1]);
+        // selectedLocations.push_back(lastValue);
 
     }
 
@@ -64,33 +67,6 @@ void PostOptimization::createSelectedLocations(int num_k) {
     cout << endl << endl;
     cout << "Selected locations size: " << selectedLocations.size() << endl;
 
-
-    // // create new instance
-    // auto new_instance = this->instance->getReducedSubproblem(selectedLocations, "null");
-    // new_instance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
-    // new_instance.print();
-
-    // // create new solution
-    // PMP pmp(make_shared<Instance>(new_instance), "CPMP", true);
-    // pmp.setGenerateReports(true);
-    // pmp.setTimeLimit(3600);
-
-    // if (solution_cap.getFeasibility()) {
-    //     pmp.setMIPStartSolution(solution_cap);
-    // } 
-
-    // // ADD INITIAL SOLUTION SOLUTION_CAP
-
-    // // NOW ADD THE BEST BOUND FOUND IN CPLEX BEFORE
-
-
-    // pmp.run("EXACT_CPMP_BIN");
-    // auto solution = pmp.getSolution_cap();
-
-
-    // cout << "Post-Optimization Solution: " << endl;
-    // solution.print();
-
 }
 
 
@@ -105,7 +81,7 @@ void PostOptimization::run() {
     }
 
 
-    int limit_repeat_soluttion = 3;
+    int limit_repeat_soluttion = 12;
     int cont_repeat_solution = 0;
 
     int neigh_dist = 1;
@@ -121,6 +97,12 @@ void PostOptimization::run() {
         // create new instance
         auto new_instance = this->instance->getReducedSubproblem(selectedLocations, "null");
         new_instance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
+        
+        this->solution_cap.statsDistances();
+        // new_instance.set_ThresholdDist(instance->get_ThresholdDist());
+        new_instance.set_ThresholdDist(this->solution_cap.getMaxDist());
+
+
         new_instance.print();
 
         // create new solution
@@ -130,6 +112,7 @@ void PostOptimization::run() {
 
         if (solution_cap.getFeasibility()) {
             pmp.setMIPStartSolution(solution_cap);
+            pmp.set_pLocations_from_solution(solution_cap.get_pLocations());
         } 
 
         // ADD INITIAL SOLUTION SOLUTION_CAP
@@ -158,7 +141,7 @@ void PostOptimization::run() {
             cont_repeat_solution++;
         }
 
-        if (cont_repeat_solution >= limit_repeat_soluttion) {
+        if (cont_repeat_solution > limit_repeat_soluttion) {
             cout << "Repeat solution limit reached" << endl;
             cout << "number of repeat solutions: " << cont_repeat_solution << endl;
             break;
@@ -169,6 +152,17 @@ void PostOptimization::run() {
     
     cout << "Finishing post-optimization" << endl;
     this->solution_cap.print(); 
+
+
+    cout << "Solution Stats" << endl;
+    this->solution_cap.statsDistances();
+    cout << "Max dist: " << this->solution_cap.getMaxDist() << endl;
+    cout << "Min dist: " << this->solution_cap.getMinDist() << endl;
+    cout << "avg of Avg dists: " << this->solution_cap.getAvgDist() << endl;
+    cout << "avg Std dev dist: " << this->solution_cap.getStdDevDist() << endl;
+
+    cout << "\n\n\n";
+
 
 }
 

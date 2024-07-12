@@ -34,7 +34,7 @@ IsWeighted_OBJ=false
 TIME_CPLEX=3600 # 1 hour
 TIME_CLOCK=3600
 
-ADD_THRESHOLD_DIST_SUBP_RSSV=false
+ADD_THRESHOLD_DIST_SUBP_RSSV=true
 TIME_SUBP_RSSV=600 # 10 minutes  
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
 
@@ -46,7 +46,7 @@ INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 mapfile -t filters < ./scripts/filter_lit.txt
 
 if [ "$1" == "basic" ]; then
-    filters=("SJC4a")
+    filters=("SJC4b")
     # filters=("SJC1")
     INSTANCE_GROUPS=("group2/")
 elif [ "$1" == "spain" ]; then
