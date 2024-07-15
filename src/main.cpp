@@ -457,7 +457,8 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             cout << "\nFinal solution:\n";
             solution.print();
             cout << "Final elapsed time: " << elapsed_time << "s\n";
-            cout << "Final total elapsed time: " << duration_cast<seconds>(current_time - start_time_total).count() << "s\n";
+            auto elapse_time_total = duration_cast<seconds>(current_time - start_time_total).count();
+            cout << "Final total elapsed time: " << elapse_time_total << "s\n";
             solution.saveAssignment(config.output_filename, "RSSV_" + config.Method_RSSV_fp, elapsed_time);
             solution.saveResults(config.output_filename, elapsed_time, 0, config.Method, config.Method_RSSV_sp, config.Method_RSSV_fp);
             cout << "\n\n\n";
@@ -473,7 +474,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             cout << "-------------------------------------------------\n";
             cout << "Post Optimization\n";
             cout << "-------------------------------------------------\n";
-            auto time_left = config.CLOCK_LIMIT - elapsed_time;
+            auto time_left = config.CLOCK_LIMIT - elapsed_time_total;
             cout << "Time for post-optimization: " << time_left << "s\n";
             PostOptimization postOptimization(make_shared<Instance>(instance), solution);
             postOptimization.set_time_limit(time_left);

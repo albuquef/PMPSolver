@@ -30,6 +30,7 @@ public:
     // void createSelectedLocations();
     void createSelectedLocations(int num_k);
     void run();
+    void run_partialOpt();
 
     // Getters for solution information
     Solution_std getSolution_std() const;

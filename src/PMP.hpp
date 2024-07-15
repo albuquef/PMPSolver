@@ -87,6 +87,7 @@ class PMP
         // IloBoolVarArray getY() const;
 
         void set_pLocations_from_solution(unordered_set<uint_t> p_locations);
+        void set_MaxNeighbors_from_solution(uint_t MaxNeighbors);
 
     private:
         // mutex callbackMutex;
@@ -154,6 +155,7 @@ class PMP
         void constr_MaxDistance (IloModel model, VarType x);
         
         bool add_constr_maxNeighbors_from_solution = false;
+        uint_t MaxNeighbors_with_solution = 0;
         unordered_set<uint_t> p_locations_from_solution; // p selected locations from  a solution
         void constr_MaxNeighborsFromSolution (IloModel model, IloBoolVarArray y);
 

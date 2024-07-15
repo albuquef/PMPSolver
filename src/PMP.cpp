@@ -715,11 +715,13 @@ void PMP::constr_MaxDistance(IloModel model, VarType x){
 
 void PMP::constr_MaxNeighborsFromSolution(IloModel model, IloBoolVarArray y){
 
-    uint_t MaxNeighbors = 10;
+    uint_t MaxNeighbors = MaxNeighbors_with_solution;
 
     if (VERBOSE){cout << "[INFO] Adding Max Neighbors Constraints from Solution"<< endl;
                 cout << "Max Neighbors from solution: " << MaxNeighbors<< endl;}
     
+
+    if (MaxNeighbors == 0) return;
 
     IloEnv env = model.getEnv();
 
@@ -1208,6 +1210,9 @@ void PMP::setTimeLimit(double CLOCK_LIMIT){
 void PMP::set_pLocations_from_solution(unordered_set<uint_t> p_locations){
     this->add_constr_maxNeighbors_from_solution = true;
     this->p_locations_from_solution = p_locations;
+}
+void PMP::set_MaxNeighbors_from_solution(uint_t MaxNeighbors){
+    this->MaxNeighbors_with_solution = MaxNeighbors;
 }
 
 

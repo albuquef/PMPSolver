@@ -71,14 +71,10 @@ void PostOptimization::createSelectedLocations(int num_k) {
 
 
 void PostOptimization::run() {
-    cout << "Running post-optimization" << endl;
-
-    if (timelimit > 60) {
-        cout << "Time limit: " << timelimit << endl;
-    }else{
-        cout << "Finishing post-optimization" << endl;
-        // return this->solution_cap;
-    }
+    cout << "[INFO] Running post-optimization" << endl;
+    cout << "Time limit: " << timelimit << endl;
+ 
+    bool is_reduce_instance = false;
 
 
     int limit_repeat_soluttion = 12;
@@ -86,54 +82,78 @@ void PostOptimization::run() {
 
     int neigh_dist = 1;
     int iter = 1;
-    double start_time = 0;
+
+    auto start_time_total = std::chrono::high_resolution_clock::now();
+
     while(timelimit > 60) {
         
         auto start = std::chrono::high_resolution_clock::now();
+
         cout << " ------------------------------------ \n\n";
         cout << "Iteration Post-Optimization: " << iter << endl;
         cout << "Size of neighborhood: " << neigh_dist << endl;
-        createSelectedLocations(neigh_dist);
-        // create new instance
-        auto new_instance = this->instance->getReducedSubproblem(selectedLocations, "null");
-        new_instance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
         
+        Solution_cap solution_final = this->solution_cap;
         this->solution_cap.statsDistances();
-        // new_instance.set_ThresholdDist(instance->get_ThresholdDist());
-        new_instance.set_ThresholdDist(this->solution_cap.getMaxDist());
+        
+        if (is_reduce_instance){
+            cout << "Reducing instance" << endl;
+            createSelectedLocations(neigh_dist);
+            // create new instance
+            auto new_instance = this->instance->getReducedSubproblem(selectedLocations, "null");
+            new_instance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
+            // new_instance.set_ThresholdDist(instance->get_ThresholdDist());
+            this->solution_cap.statsDistances();
+            new_instance.set_ThresholdDist(this->solution_cap.getMaxDist());
+            new_instance.print();
+
+            PMP pmp(make_shared<Instance>(new_instance), "CPMP", true);
+            pmp.setGenerateReports(true);
+            pmp.setTimeLimit(timelimit);
+
+            if (solution_cap.getFeasibility()) {
+                pmp.setMIPStartSolution(solution_cap);
+                pmp.set_pLocations_from_solution(solution_cap.get_pLocations());
+            } 
+
+            pmp.run("EXACT_CPMP_BIN");
+            solution_final = pmp.getSolution_cap();
+
+        }else{
+            
+            // PMP pmp(make_shared<Instance>(instance), "CPMP", true);
+            this->solution_cap.statsDistances();
+            instance->set_ThresholdDist(this->solution_cap.getMaxDist());
+            PMP pmp(instance, "CPMP", true);
+            pmp.setGenerateReports(true);
+            pmp.setTimeLimit(timelimit);
+
+            if (solution_cap.getFeasibility()) {
+                pmp.setMIPStartSolution(solution_cap);
+                pmp.set_pLocations_from_solution(solution_cap.get_pLocations());
+                pmp.set_MaxNeighbors_from_solution(neigh_dist);
+            }else{
+                cout << "[WARN] Initial Solution is not feasible" << endl;
+            }
 
 
-        new_instance.print();
+            pmp.run("EXACT_CPMP_BIN");
+            solution_final = pmp.getSolution_cap();
+        }
 
-        // create new solution
-        PMP pmp(make_shared<Instance>(new_instance), "CPMP", true);
-        pmp.setGenerateReports(true);
-        pmp.setTimeLimit(timelimit);
-
-        if (solution_cap.getFeasibility()) {
-            pmp.setMIPStartSolution(solution_cap);
-            pmp.set_pLocations_from_solution(solution_cap.get_pLocations());
-        } 
-
-        // ADD INITIAL SOLUTION SOLUTION_CAP
-
-        // NOW ADD THE BEST BOUND FOUND IN CPLEX BEFORE
-
-
-        pmp.run("EXACT_CPMP_BIN");
-        auto solution = pmp.getSolution_cap();
 
 
         cout << "Post-Optimization Solution: " << endl;
-        solution.print();
+        solution_final.print();
 
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
+        cout << "Time elapsed: " << elapsed_seconds.count() << "s" << endl;
         this->timelimit -= elapsed_seconds.count();
 
 
-        if (solution.get_objective() < this->solution_cap.get_objective()) {
-            this->solution_cap = solution;
+        if (solution_final.get_objective() < this->solution_cap.get_objective()) {
+            this->solution_cap = solution_final;
             neigh_dist = 1;
             cont_repeat_solution = 0;
         }else{
@@ -150,9 +170,12 @@ void PostOptimization::run() {
         iter++;
     }
     
+
+    auto end_time_total = std::chrono::high_resolution_clock::now();
+
     cout << "Finishing post-optimization" << endl;
     this->solution_cap.print(); 
-
+    cout << "Post Optimization Time elapsed: " << std::chrono::duration<double>(end_time_total - start_time_total).count() << "s" << endl;    
 
     cout << "Solution Stats" << endl;
     this->solution_cap.statsDistances();
@@ -165,6 +188,49 @@ void PostOptimization::run() {
 
 
 }
+
+
+void PostOptimization::run_partialOpt() {
+    
+    cout << "Running post-optimization (in parts)" << endl;
+    
+
+    vector<uint_t> visited_clusters;
+
+    // while(timelimit > 60){
+
+    //     auto start = std::chrono::high_resolution_clock::now();
+
+    //     cout << " ------------------------------------ \n\n";
+    //     cout << "Iteration Post-Optimization: " << iter << endl;
+    //     cout << "Size of clusters neighborhood: " << neigh_dist << endl;
+
+    //     auto p_locations = this->solution_cap.get_pLocations();
+
+    //     // choose a random in p_locations
+    //     uint_t p = p_locations[rand() % p_locations.size()];
+
+    //     // get the cluster closest of p
+    //     auto cluster = this->instance->getClosestCluster(p, visited_clusters);
+
+
+        
+
+
+
+
+
+
+
+
+
+    // }
+
+
+
+}
+
+
 
 
 void PostOptimization::set_time_limit(double time) {
