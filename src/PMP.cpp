@@ -201,6 +201,9 @@ void PMP::run(string Method_name){
 
         if(useMIPStart) addMIPStartSolution();
 
+        if (BestBound != 0) cplex.setParam(IloCplex::Param::MIP::Tolerances::LowerCutoff, BestBound);
+
+
         // Set up the MIP callback
         IloNum startTime = cplex.getCplexTime();
         IloNum lastPrintTime = startTime;
@@ -745,6 +748,38 @@ void PMP::constr_MaxNeighborsFromSolution(IloModel model, IloBoolVarArray y){
 
 }
 
+template <typename VarType> 
+void PMP::constr_fixedAllocs_from_solution(IloModel model, IloBoolVarArray y, VarType x){
+
+    if (VERBOSE){cout << "[INFO] Adding Fixed Allocations Constraints from Solution and fixed locations"<< endl;}
+
+    IloEnv env = model.getEnv();
+
+    // fix vars y from fixed_p_locations
+    for(auto ploc:fixed_p_locations){
+        auto index_loc = instance->getLocIndex(ploc);
+        if (index_loc != 10000000){
+            model.add(y[index_loc] == 1);
+        }
+    }
+
+    // fix vars x from intial solution assignments
+    auto assignments = initial_solution.getAssignments();
+    for (auto cust:instance->getCustomers()) {
+        for (auto a:assignments[cust]){ 
+            auto loc = a.node;
+            auto dem_used = a.usage;
+            if (is_BinModel){
+                model.add(x[instance->getCustIndex(cust)][instance->getLocIndex(loc)] == dem_used);
+            }else{
+                model.add(x[instance->getCustIndex(cust)][instance->getLocIndex(loc)] == dem_used / instance->getCustWeight(cust));
+            }
+        }
+    }
+
+}
+
+
 
 // void PMP::printSolution(IloCplex& cplex, BoolVarMatrix x, IloBoolVarArray y){
 template <typename VarType>  
@@ -866,6 +901,8 @@ Solution_cap PMP::getSolution_cap(){
 
         }
         Solution_cap sol(instance, p_locations, loc_usages, cust_satisfactions, assignments);
+        sol.setBestBound(static_cast<dist_t>(cplex.getBestObjValue()));
+        
         return sol;
 
     } catch (IloException& e) {
@@ -1216,6 +1253,16 @@ void PMP::set_MaxNeighbors_from_solution(uint_t MaxNeighbors){
 }
 
 
+void PMP::set_Fixed_pLocations_from_solution(unordered_set<uint_t> fixed_p_locations){
+    this->add_constr_FixedAllocs_from_solution = true;
+    this->fixed_p_locations = fixed_p_locations;
+}
+
 // IloCplex PMP::getCplex(){
 //     return this->cplex;
 // } 
+
+
+void PMP::setBestBound(dist_t bestBound){
+    this->BestBound = bestBound;
+}

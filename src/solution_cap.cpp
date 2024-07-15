@@ -772,3 +772,10 @@ dist_t Solution_cap::getAvgDist(){
 dist_t Solution_cap::getStdDevDist(){
     return std_dev_dist;
 }
+
+void Solution_cap::setBestBound(dist_t best_bound){
+    this->Best_Bound = best_bound;
+}
+dist_t Solution_cap::getBestBound(){
+    return this->Best_Bound;
+}

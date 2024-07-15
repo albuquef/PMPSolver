@@ -77,6 +77,9 @@ class PMP
         void setTimeLimit(double timeLimit);
         void setMIPStartSolution(Solution_cap sol);
         void setUseMIPStart(bool useMIPStart);
+        
+        void setBestBound(dist_t BestBound);
+
         // void setInitialSolution(Solution_cap sol);
         
         // // Method to retrieve CPLEX object
@@ -88,6 +91,8 @@ class PMP
 
         void set_pLocations_from_solution(unordered_set<uint_t> p_locations);
         void set_MaxNeighbors_from_solution(uint_t MaxNeighbors);
+        void set_Fixed_pLocations_from_solution(unordered_set<uint_t> p_locations_fixed);
+
 
     private:
         // mutex callbackMutex;
@@ -102,6 +107,7 @@ class PMP
         bool isFeasible_Solver=false;
         bool generate_reports=false;
         double UpperBound=0;
+        dist_t BestBound=0;
         // IloNumVarArray y_cont;
         uint_t p;
         uint_t num_facilities;
@@ -158,6 +164,13 @@ class PMP
         uint_t MaxNeighbors_with_solution = 0;
         unordered_set<uint_t> p_locations_from_solution; // p selected locations from  a solution
         void constr_MaxNeighborsFromSolution (IloModel model, IloBoolVarArray y);
+
+        bool add_constr_FixedAllocs_from_solution = false;
+        unordered_set<uint_t> fixed_p_locations; // p selected locations from  a solution
+        template <typename VarType>
+        void constr_fixedAllocs_from_solution (IloModel model, IloBoolVarArray y, VarType x);
+
+
 
 };
 

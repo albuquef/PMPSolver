@@ -909,8 +909,9 @@ dist_t Instance::get_ThresholdDist(){
 
 vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
     // Validate input
-    if (loc >= locations.size()) {
-        cerr << "Error: Invalid location index." << endl;
+    if (loc > locations.size()) { // attention: loc is the index of the location in the vector locations values = 1 ... loc_size  not start from 0
+        cerr << "Error: Invalid location index. (kclosest locs)" << endl;
+        cerr << "returning empty vector" << endl;
         return {};
     }
 

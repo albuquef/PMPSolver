@@ -130,6 +130,7 @@ void PostOptimization::run() {
 
             if (solution_cap.getFeasibility()) {
                 pmp.setMIPStartSolution(solution_cap);
+                pmp.setBestBound(solution_cap.getBestBound());
                 pmp.set_pLocations_from_solution(solution_cap.get_pLocations());
                 pmp.set_MaxNeighbors_from_solution(neigh_dist);
             }else{
@@ -140,7 +141,6 @@ void PostOptimization::run() {
             pmp.run("EXACT_CPMP_BIN");
             solution_final = pmp.getSolution_cap();
         }
-
 
 
         cout << "Post-Optimization Solution: " << endl;
@@ -154,6 +154,9 @@ void PostOptimization::run() {
 
         if (solution_final.get_objective() < this->solution_cap.get_objective()) {
             this->solution_cap = solution_final;
+            cout << "Comparing Best Bounds: " << endl;
+            cout << "Old Best Bound: " << this->solution_cap.getBestBound() << endl;
+            cout << "New Best Bound: " << solution_final.getBestBound() << endl;
             neigh_dist = 1;
             cont_repeat_solution = 0;
         }else{
@@ -172,7 +175,7 @@ void PostOptimization::run() {
     
 
     auto end_time_total = std::chrono::high_resolution_clock::now();
-
+    cout << "\n\n\n";
     cout << "Finishing post-optimization" << endl;
     this->solution_cap.print(); 
     cout << "Post Optimization Time elapsed: " << std::chrono::duration<double>(end_time_total - start_time_total).count() << "s" << endl;    
@@ -199,29 +202,43 @@ void PostOptimization::run_partialOpt() {
 
     // while(timelimit > 60){
 
-    //     auto start = std::chrono::high_resolution_clock::now();
 
-    //     cout << " ------------------------------------ \n\n";
-    //     cout << "Iteration Post-Optimization: " << iter << endl;
-    //     cout << "Size of clusters neighborhood: " << neigh_dist << endl;
+        // // get random 5 values in p locations from solution
+        // vector<uint_t> p_locations = this->solution_cap.get_pLocations();
+        // // vector<uint_t> p_locations_rand;
+        // // random_shuffle(p_locations.begin(), p_locations.end());
+        // // for (int i = 0; i < 5; i++) {
+        // //     p_locations_rand.push_back(p_locations[i]);
+        // // }
 
-    //     auto p_locations = this->solution_cap.get_pLocations();
-
-    //     // choose a random in p_locations
-    //     uint_t p = p_locations[rand() % p_locations.size()];
-
-    //     // get the cluster closest of p
-    //     auto cluster = this->instance->getClosestCluster(p, visited_clusters);
-
-
-        
+        // // chose a random p in p locations and add the 5 closest locations
+        // auto p = p_locations[rand() % p_locations.size()];
+        // auto k_locs = this->instance->get_kClosestLocations(p, 5); // with vecto p locations
 
 
 
 
+        // // create a problem PMP with only the selected p locations not fixed
+        // PMP pmp(make_shared<Instance>(*instance), "CPMP", true);
 
+        // this->solution_cap.statsDistances();
+        // instance->set_ThresholdDist(this->solution_cap.getMaxDist());
+        // PMP pmp(instance, "CPMP", true);
+        // pmp.setGenerateReports(true);
 
-
+        // // set p locations fixed is the vector p locations without the 5 random values
+        // vector<uint_t> p_locations_fixed;
+        // for (auto p : p_locations) {
+        //     if (find(p_locations_rand.begin(), p_locations_rand.end(), p) == p_locations_rand.end()) {
+        //         p_locations_fixed.push_back(p);
+        //     }
+        // }
+        // pmp.set_Fixed_pLocations_from_solution(p_locations_fixed);
+        // if (solution_cap.getFeasibility()) {
+        //     pmp.setMIPStartSolution(solution_cap);
+        // }else{
+        //     cout << "[WARN] Initial Solution is not feasible" << endl;
+        // }
 
 
     // }

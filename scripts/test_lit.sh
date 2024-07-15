@@ -46,7 +46,7 @@ INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 mapfile -t filters < ./scripts/filter_lit.txt
 
 if [ "$1" == "basic" ]; then
-    filters=("SJC4b")
+    filters=("SJC4a")
     # filters=("SJC1")
     INSTANCE_GROUPS=("group2/")
 elif [ "$1" == "spain" ]; then

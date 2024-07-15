@@ -34,6 +34,9 @@ private:
     dist_t min_dist=numeric_limits<dist_t>::max();;
     dist_t avg_dist=0;
     dist_t std_dev_dist=0;
+
+    dist_t Best_Bound=0;
+
 public:
 
     Solution_cap() = default;
@@ -77,6 +80,9 @@ public:
     dist_t getMinDist();
     dist_t getAvgDist();
     dist_t getStdDevDist();
+
+    void setBestBound(dist_t Best_Bound);
+    dist_t getBestBound();
 };
 
 

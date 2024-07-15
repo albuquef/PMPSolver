@@ -474,7 +474,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             cout << "-------------------------------------------------\n";
             cout << "Post Optimization\n";
             cout << "-------------------------------------------------\n";
-            auto time_left = config.CLOCK_LIMIT - elapsed_time_total;
+            auto time_left = config.CLOCK_LIMIT - elapse_time_total;
             cout << "Time for post-optimization: " << time_left << "s\n";
             PostOptimization postOptimization(make_shared<Instance>(instance), solution);
             postOptimization.set_time_limit(time_left);
