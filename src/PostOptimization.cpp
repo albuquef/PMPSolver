@@ -253,3 +253,7 @@ void PostOptimization::run_partialOpt() {
 void PostOptimization::set_time_limit(double time) {
     this->timelimit = time;
 }
+
+Solution_cap PostOptimization::getSolution_cap() const {
+    return this->solution_cap;
+}

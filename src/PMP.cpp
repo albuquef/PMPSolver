@@ -20,6 +20,9 @@ struct CallbackParams {
     double timeThreshold;
     double lastGap;
     std::chrono::steady_clock::time_point lastTime;
+    bool gapBelowOnePercent = false;
+    double timeGapBelowOnePercent = 0.0;
+    double timelimite_less_than_1perc;
 };
 ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
     try {
@@ -57,6 +60,27 @@ ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
             std::chrono::duration<double> elapsed = currentTime - params->lastTime;
             double elapsedTime = elapsed.count(); // elapsed time in seconds
 
+            // Check if the gap is less than 1%
+            if (currentGap < 0.01) {
+                if (!params->gapBelowOnePercent) {
+                    // Start tracking the time when the gap first goes below 1%
+                    params->gapBelowOnePercent = true;
+                    params->timeGapBelowOnePercent = params->cplex.getCplexTime();
+                } else {
+                    // Calculate the total elapsed time with the gap below 1%
+                    double totalElapsedTime = params->cplex.getCplexTime() - params->timeGapBelowOnePercent;
+                    if (totalElapsedTime >= params->timelimite_less_than_1perc) {
+                        std::cout << "Stopping optimization: Gap is less than 1% for more than "
+                                  << params->timelimite_less_than_1perc << " seconds." << std::endl;
+                        abort();
+                    }
+                }
+            } else {
+                // Reset the gapBelowOnePercent flag if the gap goes above 1%
+                params->gapBelowOnePercent = false;
+            }
+
+            // Existing improvement check
             if (elapsedTime >= params->timeThreshold) {
                 double gapImprovement = params->lastGap - currentGap;
                 if (gapImprovement / params->lastGap < params->gapThreshold) {
@@ -231,6 +255,8 @@ void PMP::run(string Method_name){
             params.timeThreshold = timeThreshold; // T seconds, e.g., 10 seconds
             params.lastGap = 1.0;
             params.lastTime = std::chrono::steady_clock::now();
+
+            params.timelimite_less_than_1perc = 180; // 3 minutes
 
             cplex.use(CombinedCallback(env, &params));
 

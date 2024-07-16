@@ -88,6 +88,7 @@ clean_code() {
     rm -r ./outputs/solutions/*
     rm -r ./outputs/reports/*
     rm -r ./outputs/results/*
+    rm -r ./console/*
     rm model.lp
 }
 

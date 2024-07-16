@@ -348,12 +348,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << "\nFinal solution std:\n";
         solution.print();
         solution.statsDistances();
-        cout << "Statistics:\n";
-        cout << "Max distance: " << solution.getMaxDist() << endl;
-        cout << "Min distance: " << solution.getMinDist() << endl;
-        cout << "Avg distance: " << solution.getAvgDist() << endl;
-        cout << "Std deviation distance: " << solution.getStdDevDist() << endl;
-        cout << endl << endl;
+        // solution.printStatsDistances(); // not implemented yet
         cout << "Final total elapsed time: " << elapsed_time << "s\n";
         solution.saveAssignment(config.output_filename, config.Method, elapsed_time);
         solution.saveResults(config.output_filename, elapsed_time, 0, config.Method);   
@@ -364,28 +359,30 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         auto start_time = high_resolution_clock::now();
         Solution_cap solution = methods_CPMP(make_shared<Instance>(instance), config, 0);
         auto current_time = high_resolution_clock::now();
-        auto elapsed_time = duration_cast<seconds>(current_time - start_time).count();
+        auto elapsed_time_total = duration_cast<seconds>(current_time - start_time).count();
 
         cout << "\nFinal solution:\n";
         solution.print();
         solution.statsDistances();
-        cout << "Statistics:\n";
-        cout << "Max distance: " << solution.getMaxDist() << endl;
-        cout << "Min distance: " << solution.getMinDist() << endl;
-        cout << "Avg distance: " << solution.getAvgDist() << endl;
-        cout << "Std deviation distance: " << solution.getStdDevDist() << endl;
-        cout << endl << endl;
-        cout << "Final total elapsed time: " << elapsed_time << "s\n";  
-        solution.saveAssignment(config.output_filename, config.Method, elapsed_time);
-        solution.saveResults(config.output_filename, elapsed_time, 0, config.Method);
+        solution.printStatsDistances();
+        cout << "Final total elapsed time: " << elapsed_time_total << "s\n";  
+        solution.saveAssignment(config.output_filename, config.Method, elapsed_time_total);
+        solution.saveResults(config.output_filename, elapsed_time_total, 0, config.Method);
 
 
+        cout << "\n\n";
         cout << "-------------------------------------------------\n";
         cout << "Post Optimization\n";
         cout << "-------------------------------------------------\n";
+        auto time_left = config.CLOCK_LIMIT - elapsed_time_total;
+        cout << "Time for post-optimization: " << time_left << "s\n";
         PostOptimization postOptimization(make_shared<Instance>(instance), solution);
-        cout << "Time for post-optimization: " << config.CLOCK_LIMIT - elapsed_time << "s\n";
-        postOptimization.set_time_limit(config.CLOCK_LIMIT - elapsed_time);
+        postOptimization.set_time_limit(time_left);
+        postOptimization.run();
+        auto elapsed_time_postopt = duration_cast<seconds>(high_resolution_clock::now() - start_time).count();
+        solution = postOptimization.getSolution_cap();
+        solution.saveAssignment(config.output_filename, config.Method + "_POSTOPT", elapsed_time_postopt);
+        solution.saveResults(config.output_filename, elapsed_time_postopt, 0, config.Method + "_POSTOPT");
 
 
 
@@ -457,28 +454,30 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             cout << "\nFinal solution:\n";
             solution.print();
             cout << "Final elapsed time: " << elapsed_time << "s\n";
-            auto elapse_time_total = duration_cast<seconds>(current_time - start_time_total).count();
-            cout << "Final total elapsed time: " << elapse_time_total << "s\n";
+            auto elapsed_time_rssv = duration_cast<seconds>(current_time - start_time_total).count();
+            cout << "Final total elapsed time RSSV: " << elapsed_time_rssv << "s\n";
             solution.saveAssignment(config.output_filename, "RSSV_" + config.Method_RSSV_fp, elapsed_time);
             solution.saveResults(config.output_filename, elapsed_time, 0, config.Method, config.Method_RSSV_sp, config.Method_RSSV_fp);
             cout << "\n\n\n";
 
             cout << "Solution Stats" << endl;
             solution.statsDistances();
-            cout << "Max dist: " << solution.getMaxDist() << endl;
-            cout << "Min dist: " << solution.getMinDist() << endl;
-            cout << "avg of Avg dists: " << solution.getAvgDist() << endl;
-            cout << "avg Std dev dist: " << solution.getStdDevDist() << endl;
+            solution.printStatsDistances();
 
-            cout << "\n\n\n";
+            cout << "\n\n";
             cout << "-------------------------------------------------\n";
             cout << "Post Optimization\n";
             cout << "-------------------------------------------------\n";
-            auto time_left = config.CLOCK_LIMIT - elapse_time_total;
+            auto time_left = config.CLOCK_LIMIT - elapsed_time_rssv;
             cout << "Time for post-optimization: " << time_left << "s\n";
             PostOptimization postOptimization(make_shared<Instance>(instance), solution);
             postOptimization.set_time_limit(time_left);
             postOptimization.run();
+            auto elapsed_time_postopt = duration_cast<seconds>(high_resolution_clock::now() - start_time).count();
+            solution = postOptimization.getSolution_cap();
+            solution.saveAssignment(config.output_filename, "RSSV_" + config.Method_RSSV_fp + "_POSTOPT", elapsed_time_postopt);
+            solution.saveResults(config.output_filename, elapsed_time_postopt, 0, "RSSV_" + config.Method_RSSV_fp + "_POSTOPT");
+            cout << "Final total elapsed time: " << elapsed_time_postopt << "s\n";
 
 
         }

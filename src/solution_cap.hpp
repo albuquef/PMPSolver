@@ -80,6 +80,7 @@ public:
     dist_t getMinDist();
     dist_t getAvgDist();
     dist_t getStdDevDist();
+    void printStatsDistances();
 
     void setBestBound(dist_t Best_Bound);
     dist_t getBestBound();

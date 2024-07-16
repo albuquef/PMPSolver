@@ -773,6 +773,16 @@ dist_t Solution_cap::getStdDevDist(){
     return std_dev_dist;
 }
 
+void Solution_cap::printStatsDistances(){
+    cout << "Statistics:\n";
+    cout << "Max distance: " << getMaxDist() << endl;
+    cout << "Min distance: " << getMinDist() << endl;
+    cout << "Avg distance: " << getAvgDist() << endl;
+    cout << "Std deviation distance: " << getStdDevDist() << endl;
+    cout << endl << endl;
+}
+
+
 void Solution_cap::setBestBound(dist_t best_bound){
     this->Best_Bound = best_bound;
 }

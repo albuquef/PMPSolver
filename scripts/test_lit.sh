@@ -31,11 +31,13 @@ metsp="TB_PMP" # Subproblem method
 
 COVER_MODE=false
 IsWeighted_OBJ=false
-TIME_CPLEX=3600 # 1 hour
+# TIME_CPLEX=3600 # 1 hour
+TIME_CPLEX=2100 # 1 hour
 TIME_CLOCK=3600
 
 ADD_THRESHOLD_DIST_SUBP_RSSV=true
-TIME_SUBP_RSSV=600 # 10 minutes  
+# TIME_SUBP_RSSV=600 # 10 minutes  
+TIME_SUBP_RSSV=300   
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
 
 BW_MULTIPLIER=0.5   # Bandwidth multiplier
