@@ -142,34 +142,35 @@ void PostOptimization::run() {
             solution_final = pmp.getSolution_cap();
         }
 
+        // check status solution_final
+        if (solution_final.getFeasibility()) {
+            cout << "Post-Optimization Solution: " << endl;
+            solution_final.print();
 
-        cout << "Post-Optimization Solution: " << endl;
-        solution_final.print();
+            auto end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> elapsed_seconds = end - start;
+            cout << "Time elapsed: " << elapsed_seconds.count() << "s" << endl;
+            this->timelimit -= elapsed_seconds.count();
 
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed_seconds = end - start;
-        cout << "Time elapsed: " << elapsed_seconds.count() << "s" << endl;
-        this->timelimit -= elapsed_seconds.count();
+    
+            if (solution_final.get_objective() < this->solution_cap.get_objective()) {
+                this->solution_cap = solution_final;
+                cout << "Comparing Best Bounds: " << endl;
+                cout << "Old Best Bound: " << this->solution_cap.getBestBound() << endl;
+                cout << "New Best Bound: " << solution_final.getBestBound() << endl;
+                neigh_dist = 1;
+                cont_repeat_solution = 0;
+            }else{
+                neigh_dist++;
+                cont_repeat_solution++;
+            }
 
-
-        if (solution_final.get_objective() < this->solution_cap.get_objective()) {
-            this->solution_cap = solution_final;
-            cout << "Comparing Best Bounds: " << endl;
-            cout << "Old Best Bound: " << this->solution_cap.getBestBound() << endl;
-            cout << "New Best Bound: " << solution_final.getBestBound() << endl;
-            neigh_dist = 1;
-            cont_repeat_solution = 0;
-        }else{
-            neigh_dist++;
-            cont_repeat_solution++;
+            if (cont_repeat_solution > limit_repeat_soluttion) {
+                cout << "Repeat solution limit reached" << endl;
+                cout << "number of repeat solutions: " << cont_repeat_solution << endl;
+                break;
+            }
         }
-
-        if (cont_repeat_solution > limit_repeat_soluttion) {
-            cout << "Repeat solution limit reached" << endl;
-            cout << "number of repeat solutions: " << cont_repeat_solution << endl;
-            break;
-        }
-
         iter++;
     }
     

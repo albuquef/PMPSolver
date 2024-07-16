@@ -8,8 +8,8 @@
 #SBATCH --array=0-4%5
 
 # Activate the conda env if needed
-# source /etc/profile.d/conda.sh # Required before using conda
-# conda activate myenv
+source /etc/profile.d/conda.sh # Required before using conda
+conda activate myenv
 
 # Executable
 CMD="./build/large_PMP"
@@ -66,12 +66,13 @@ elif [ "$1" == "p3038" ]; then
 elif [ "$1" == "fnl4461" ]; then
     filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
     INSTANCE_GROUPS=("group5/")
-elif [ "$1" == "biggest_2015" ]; then
-    filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+elif [ "$1" == "biggest" ]; then
+    filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
+    filters+=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
     filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
     filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
     filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
-    INSTANCE_GROUPS=("group3/" "group5/")
+    INSTANCE_GROUPS=("group4/" "group3/" "group5/")
 fi
 
 # Define p values for each group
@@ -160,16 +161,18 @@ for METHOD in "${FOR_METHODS[@]}"; do
             # echo "p: $p"
             # echo "N: $N"
 
+        
+            SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
 
-            if [ "$N" -lt 700 ]; then
-                SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-            elif [ "$N" -le 1500 ]; then
-                SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
-            elif [ "$N" -le 5000 ]; then
-                SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
-            else
-                SUB_PROB_SIZE=$((N / 4))
-            fi
+            # if [ "$N" -lt 700 ]; then
+            #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+            # elif [ "$N" -le 1500 ]; then
+            #     SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
+            # elif [ "$N" -le 5000 ]; then
+            #     SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
+            # else
+            #     SUB_PROB_SIZE=$((N / 4))
+            # fi
              
             # SUB_PROB_SIZE=$((N / 4))
             NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"

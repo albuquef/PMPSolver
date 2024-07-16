@@ -8,7 +8,8 @@ endif()
 
 # CPLEX_ROOT_DIR - path to CPLEX installation
 if (USE_CLUSTER)
-    set(CPLEX_ROOT_DIR "/usr/local/ibm/ILOG/CPLEX_Studio1210")
+    # set(CPLEX_ROOT_DIR "/usr/local/ibm/ILOG/CPLEX_Studio1210")
+    set(CPLEX_ROOT_DIR "/users/falbuquerque/opt/ibm/CPLEX_Studio2211")
 else()
     set(CPLEX_ROOT_DIR "/opt/ibm/ILOG/CPLEX_Studio2211")
 endif(USE_CLUSTER)

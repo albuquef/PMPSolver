@@ -637,7 +637,14 @@ int getIndex(vector<uint_t> vec, uint_t val){
 }
 
 bool Solution_cap::isSolutionFeasible(){
-    
+
+    // check if the p location is a vector and if is empty
+    if (p_locations.empty()){
+        isFeasible = false;
+        return isFeasible;
+    }
+
+
     isFeasible = true;
     bool verb = false;
 
