@@ -76,18 +76,22 @@ void PostOptimization::run() {
  
     bool is_reduce_instance = false;
 
+    auto p = this->instance->get_p();
+    auto num_facilities = this->instance->getLocations().size();
+    int limit_repeat_solution = ceil((num_facilities - p)/p); // limit of repeat solutions
+    cout << "Max size of the neigh: " << limit_repeat_solution << endl;
+    // if active_num_max_neighbors it means we are running the entire prob so need to stop just need to have one more execution (all problem)
+    int active_num_max_neighbors = 0; 
 
-    int limit_repeat_soluttion = 12;
     int cont_repeat_solution = 0;
-
     int neigh_dist = 1;
     int iter = 1;
-
     auto start_time_total = std::chrono::high_resolution_clock::now();
 
-    while(timelimit > 60) {
+    while(timelimit > 0 && active_num_max_neighbors < 2){ 
         
         auto start = std::chrono::high_resolution_clock::now();
+        if (active_num_max_neighbors == 1) active_num_max_neighbors++;
 
         cout << " ------------------------------------ \n\n";
         cout << "Iteration Post-Optimization: " << iter << endl;
@@ -143,16 +147,10 @@ void PostOptimization::run() {
         }
 
         // check status solution_final
-        if (solution_final.getFeasibility()) {
+        if (solution_final.get_pLocations().size() != 0) {
             cout << "Post-Optimization Solution: " << endl;
             solution_final.print();
 
-            auto end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed_seconds = end - start;
-            cout << "Time elapsed: " << elapsed_seconds.count() << "s" << endl;
-            this->timelimit -= elapsed_seconds.count();
-
-    
             if (solution_final.get_objective() < this->solution_cap.get_objective()) {
                 this->solution_cap = solution_final;
                 cout << "Comparing Best Bounds: " << endl;
@@ -165,13 +163,24 @@ void PostOptimization::run() {
                 cont_repeat_solution++;
             }
 
-            if (cont_repeat_solution > limit_repeat_soluttion) {
-                cout << "Repeat solution limit reached" << endl;
-                cout << "number of repeat solutions: " << cont_repeat_solution << endl;
-                break;
+            if (cont_repeat_solution > limit_repeat_solution) {
+                cout << "[INFO] Repeat solution limit reached" << endl;
+                cout << "max number of neighboors is " << cont_repeat_solution << endl;
+                cout << "running just one more execution" << endl;
+                active_num_max_neighbors = 1;
+                // break;
             }
         }
+
+        
         iter++;
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+        cout << "[INFO] iterations Post-Optimization" << iter << endl;
+        cout << "Time elapsed: " << elapsed_seconds.count() << "s" << endl;
+        cout << "Time in Post opt: " << std::chrono::duration<double>(end - start_time_total).count() << "s" << endl;
+        cout << "Time remaining: " << timelimit << "s" << endl;
+        this->timelimit -= elapsed_seconds.count();
     }
     
 

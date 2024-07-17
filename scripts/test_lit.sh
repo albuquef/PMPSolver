@@ -5,7 +5,7 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
-#SBATCH --array=0-4%5
+#SBATCH --array=0-19%5
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -32,13 +32,18 @@ metsp="TB_PMP" # Subproblem method
 COVER_MODE=false
 IsWeighted_OBJ=false
 # TIME_CPLEX=3600 # 1 hour
-TIME_CPLEX=2100 # 1 hour
+TIME_CPLEX=2400 # 1 hour
 TIME_CLOCK=3600
 
 ADD_THRESHOLD_DIST_SUBP_RSSV=true
 # TIME_SUBP_RSSV=600 # 10 minutes  
 TIME_SUBP_RSSV=300   
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
+
+
+# TIME_SUBP_RSSV=30  
+# TIME_CPLEX=120 # sum the time of the subproblems
+# TIME_CLOCK=180 # sum of all times
 
 BW_MULTIPLIER=0.5   # Bandwidth multiplier
 
@@ -66,13 +71,15 @@ elif [ "$1" == "p3038" ]; then
 elif [ "$1" == "fnl4461" ]; then
     filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
     INSTANCE_GROUPS=("group5/")
-elif [ "$1" == "biggest" ]; then
-    filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
-    filters+=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+elif [ "$1" == "benchmark" ]; then
+    # filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
+    # filters=("SJC1" "SJC2" "SJC3a" "SJC3b" "SJC4a" "SJC4b") 
+    filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
     filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
     filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
     filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
-    INSTANCE_GROUPS=("group4/" "group3/" "group5/")
+    # INSTANCE_GROUPS=("group2/" "group4/" "group3/" "group5/")
+    INSTANCE_GROUPS=("group3/" "group5/")
 fi
 
 # Define p values for each group
@@ -166,7 +173,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
             # if [ "$N" -lt 700 ]; then
             #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-            # elif [ "$N" -le 1500 ]; then
+            # elif [ "$N" -le 1000 ]; then
             #     SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
             # elif [ "$N" -le 5000 ]; then
             #     SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)

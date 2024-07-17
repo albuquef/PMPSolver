@@ -18,18 +18,33 @@ struct CallbackParams {
     IloNum lastBestBound;
     double gapThreshold;
     double timeThreshold;
-    double lastGap;
+    double lastGap = 1.0;
     std::chrono::steady_clock::time_point lastTime;
+    bool useGapInfoCallback = false;
+    bool useBreakCallbackLessThan1Percent = false;
+    bool useBreakCallbackImprovementCheck = false;
     bool gapBelowOnePercent = false;
-    double timeGapBelowOnePercent = 0.0;
-    double timelimite_less_than_1perc;
+    double timeGapBelowOnePercent = 0.0;   // Flag to track if the gap is below 1%
+    double timelimite_less_than_1perc;     // Represents duration in seconds
+
+    // Constructor to initialize the parameters
+    CallbackParams(const IloCplex& cplex_)
+        : cplex(cplex_),
+          startTime(cplex.getCplexTime()),
+          lastPrintTime(cplex.getCplexTime()),
+          lastBestBound(cplex_.getBestObjValue()),
+          gapThreshold(0.01),   // 1% improvement
+          timeThreshold(300),   // 300 seconds
+          lastTime(std::chrono::steady_clock::now()),
+          timelimite_less_than_1perc(180.0) {}  // 3 minutes (180 seconds)
 };
+// Combined callback function
 ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
     try {
         double interval_time = 5.0; // seconds
 
         // GapInfoCallback functionality
-        if (params->cplex.getCplexTime() - params->lastPrintTime >= interval_time) {
+        if (params->useGapInfoCallback && params->cplex.getCplexTime() - params->lastPrintTime >= interval_time) {
             std::ofstream outputTable;
             outputTable.open("./outputs/reports/" + gap_outputFilename, std::ios::app);
 
@@ -53,43 +68,46 @@ ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
             params->lastPrintTime = params->cplex.getCplexTime();
         }
 
-        // BreakCallback functionality
         if (hasIncumbent()) {
             double currentGap = getMIPRelativeGap();
             auto currentTime = std::chrono::steady_clock::now();
             std::chrono::duration<double> elapsed = currentTime - params->lastTime;
             double elapsedTime = elapsed.count(); // elapsed time in seconds
 
-            // Check if the gap is less than 1%
-            if (currentGap < 0.01) {
-                if (!params->gapBelowOnePercent) {
-                    // Start tracking the time when the gap first goes below 1%
-                    params->gapBelowOnePercent = true;
-                    params->timeGapBelowOnePercent = params->cplex.getCplexTime();
-                } else {
-                    // Calculate the total elapsed time with the gap below 1%
-                    double totalElapsedTime = params->cplex.getCplexTime() - params->timeGapBelowOnePercent;
-                    if (totalElapsedTime >= params->timelimite_less_than_1perc) {
-                        std::cout << "Stopping optimization: Gap is less than 1% for more than "
-                                  << params->timelimite_less_than_1perc << " seconds." << std::endl;
-                        abort();
+            // BreakCallback functionality for less than 1% gap
+            if (params->useBreakCallbackLessThan1Percent) {
+                if (currentGap < 0.01) {
+                    if (!params->gapBelowOnePercent) {
+                        // Start tracking the time when the gap first goes below 1%
+                        params->gapBelowOnePercent = true;
+                        params->timeGapBelowOnePercent = params->cplex.getCplexTime();
+                    } else {
+                        // Calculate the total elapsed time with the gap below 1%
+                        double totalElapsedTime = params->cplex.getCplexTime() - params->timeGapBelowOnePercent;
+                        if (totalElapsedTime >= params->timelimite_less_than_1perc) {
+                            std::cout << "Stopping optimization: Gap is less than 1% for more than "
+                                      << params->timelimite_less_than_1perc << " seconds." << std::endl;
+                            abort();
+                        }
                     }
+                } else {
+                    // Reset the gapBelowOnePercent flag if the gap goes above 1%
+                    params->gapBelowOnePercent = false;
                 }
-            } else {
-                // Reset the gapBelowOnePercent flag if the gap goes above 1%
-                params->gapBelowOnePercent = false;
             }
 
-            // Existing improvement check
-            if (elapsedTime >= params->timeThreshold) {
-                double gapImprovement = params->lastGap - currentGap;
-                if (gapImprovement / params->lastGap < params->gapThreshold) {
-                    std::cout << "Stopping optimization: Relative gap did not improve by "
-                              << std::fixed << std::setprecision(2) << params->gapThreshold * 100 << "% in the last " << params->timeThreshold << " seconds." << std::endl;
-                    abort();
+            // BreakCallback functionality for existing improvement check
+            if (params->useBreakCallbackImprovementCheck) {
+                if (elapsedTime >= params->timeThreshold) {
+                    double gapImprovement = params->lastGap - currentGap;
+                    if (gapImprovement / params->lastGap < params->gapThreshold) {
+                        std::cout << "Stopping optimization: Relative gap did not improve by "
+                                  << std::fixed << std::setprecision(2) << params->gapThreshold * 100 << "% in the last " << params->timeThreshold << " seconds." << std::endl;
+                        abort();
+                    }
+                    params->lastGap = currentGap;
+                    params->lastTime = currentTime;
                 }
-                params->lastGap = currentGap;
-                params->lastTime = currentTime;
             }
         }
     } catch (const IloException &ex) {
@@ -97,7 +115,6 @@ ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
         throw; // Rethrow the exception to terminate the program
     }
 }
-
 ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum, lastPrintTime, IloNum, lastBestBound) {
 
     try {
@@ -152,34 +169,6 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
     }
 }
 
-
-// BreakCallback definition using ILOMIPINFOCALLBACK4
-ILOMIPINFOCALLBACK4(BreakCallback, double, gapThreshold, double, timeThreshold,
-                    double, lastGap, std::chrono::steady_clock::time_point, lastTime) {
-
-    try {
-        if (hasIncumbent()) {
-            double currentGap = getMIPRelativeGap();
-            auto currentTime = std::chrono::steady_clock::now();
-            std::chrono::duration<double> elapsed = currentTime - lastTime;
-            double elapsedTime = elapsed.count(); // elapsed time in seconds
-
-            if (elapsedTime >= timeThreshold) {
-                double gapImprovement = lastGap - currentGap;
-                if (gapImprovement / lastGap < gapThreshold) {
-                    cout << "Stopping optimization: Relative gap did not improve by "
-                              << gapThreshold * 100 << "% in the last " << timeThreshold << " seconds." << std::endl;
-                    abort();
-                }
-                lastGap = currentGap;
-                lastTime = currentTime;
-            }
-        }
-    } catch (const IloException& e) {
-        std::cerr << "CPLEX exception caught: " << e.getMessage() << std::endl;
-    }
-}
-
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
@@ -219,20 +208,10 @@ void PMP::run(string Method_name){
         initILP();
 
         if (timeLimit != 0) cplex.setParam(IloCplex::Param::TimeLimit, timeLimit);
-
         // cplex.setParam(IloCplex::TiLim, 60);
         // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
-
         if(useMIPStart) addMIPStartSolution();
-
         if (BestBound != 0) cplex.setParam(IloCplex::Param::MIP::Tolerances::LowerCutoff, BestBound);
-
-
-        // Set up the MIP callback
-        IloNum startTime = cplex.getCplexTime();
-        IloNum lastPrintTime = startTime;
-        IloNum lastBestBound = cplex.getBestObjValue();
-        // gap_outputFilename = "gap.csv";
 
         gap_outputFilename="";
         if (!is_BinModel){gap_outputFilename += "gap_Cont";}
@@ -241,36 +220,43 @@ void PMP::run(string Method_name){
         if(instance->isCoverMode()) gap_outputFilename += "_cover_"+ typeSubarea;
         gap_outputFilename += ".csv";
 
+
+        // Initialize CallbackParams with cplex
+        CallbackParams params(cplex);
+        bool add_break_callback = true;
+        if (timeLimit == 0) add_break_callback = false; // if time limit is not set, do not use break callback
+        // generate reports set outside the class
+
         double gapThreshold = 0.01; // alpha% improvement, e.g., 1% improvement
         double timeThreshold = 300; // T seconds, e.g., 300 seconds
-        bool add_break_callback = true;
+        params.gapThreshold = gapThreshold;
+        params.timeThreshold = timeThreshold;
 
-        if (generate_reports && add_break_callback){
-            CallbackParams params;
-            params.cplex = cplex;
-            params.startTime = startTime;
-            params.lastPrintTime = lastPrintTime;
-            params.lastBestBound = lastBestBound;
-            params.gapThreshold = gapThreshold; // X% improvement, e.g., 1% improvement
-            params.timeThreshold = timeThreshold; // T seconds, e.g., 10 seconds
-            params.lastGap = 1.0;
-            params.lastTime = std::chrono::steady_clock::now();
+        double time_limit_with_gap_less_than_1perc = 180; // limit of time with gap less than 1%
+        params.timelimite_less_than_1perc = time_limit_with_gap_less_than_1perc;
 
-            params.timelimite_less_than_1perc = 180; // 3 minutes
+
+
+        if (generate_reports || add_break_callback) {
+            params.useGapInfoCallback = generate_reports;
+            params.useBreakCallbackLessThan1Percent = add_break_callback;
+            params.useBreakCallbackImprovementCheck = add_break_callback;
 
             cplex.use(CombinedCallback(env, &params));
 
-            cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
-            cout << "Generating reports cplex callbacks...";
-            cout << "Using BreakCallback..." << endl;
-        } else if (generate_reports){
-            cplex.use(GapInfoCallback(env, cplex, startTime, lastPrintTime, lastBestBound));
-            cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
-            cout << "Generating reports cplex callbacks...";
-        } else if (add_break_callback){
-            cplex.use(BreakCallback(env, gapThreshold, timeThreshold, 1.0, std::chrono::steady_clock::now()));
-            cout << "Using BreakCallback..." << endl;
-        }
+            if (generate_reports) {
+                cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
+                cout << "[CALLBACK] Generating reports cplex callbacks..." << endl;
+            }
+
+            if (add_break_callback) {
+                cout << "Using BreakCallback..." << endl;
+                // explain the break callback values
+                cout << "[CALLBACK] Time Limit with not improving " << gapThreshold * 100 << "%: " << time_limit_with_gap_less_than_1perc << " seconds" << endl;
+                cout << "[CALLBACK] Time Limit with Gap less than 1%: " << time_limit_with_gap_less_than_1perc << " seconds" << endl;
+            }
+        } 
+
 
 
         // cplex.exportModel("./model.lp");

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <chrono>
+#include <cmath>
 #include <ilcplex/ilocplex.h>
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
