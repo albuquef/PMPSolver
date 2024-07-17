@@ -252,7 +252,7 @@ void PMP::run(string Method_name){
             if (add_break_callback) {
                 cout << "Using BreakCallback..." << endl;
                 // explain the break callback values
-                cout << "[CALLBACK] Time Limit with not improving " << gapThreshold * 100 << "%: " << time_limit_with_gap_less_than_1perc << " seconds" << endl;
+                cout << "[CALLBACK] Time Limit with not improving " << gapThreshold * 100 << "% (gap): " << time_limit_with_gap_less_than_1perc << " seconds" << endl;
                 cout << "[CALLBACK] Time Limit with Gap less than 1%: " << time_limit_with_gap_less_than_1perc << " seconds" << endl;
             }
         } 
