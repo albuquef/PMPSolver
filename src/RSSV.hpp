@@ -1,5 +1,5 @@
-#ifndef LARGE_PMP_RSSV_HPP
-#define LARGE_PMP_RSSV_HPP
+#ifndef PMPSOLVER_RSSV_HPP
+#define PMPSOLVER_RSSV_HPP
 
 #include <unordered_map>
 #include <thread>
@@ -72,4 +72,4 @@ public:
     }
 };
 
-#endif //LARGE_PMP_RSSV_HPP
+#endif //PMPSOLVER_RSSV_HPP

@@ -30,7 +30,7 @@ public:
 
     // void createSelectedLocations();
     void createSelectedLocations(int num_k);
-    void run();
+    void run(string Method_name);
     void run_partialOpt();
 
     // Getters for solution information

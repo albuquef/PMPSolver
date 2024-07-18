@@ -1,9 +1,5 @@
-//
-// Created by david on 09/06/2021.
-//
-
-#ifndef LARGE_PMP_SOLUTION_CAP_H
-#define LARGE_PMP_SOLUTION_CAP_H
+#ifndef PMPSOLVER_SOLUTION_CAP_H
+#define PMPSOLVER_SOLUTION_CAP_H
 
 #include <utility>
 #include <unordered_set>
@@ -87,4 +83,4 @@ public:
 };
 
 
-#endif //LARGE_PMP_SOLUTION_CAP_H
+#endif //PMPSOLVER_SOLUTION_CAP_H

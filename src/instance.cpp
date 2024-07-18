@@ -62,7 +62,7 @@ vector<string> tokenize(const string& input, char delim) {
     return tokens;
 }
 
-
+// Instance constructor with distance matrix 
 Instance::Instance(const string &dist_matrix_filename, const string &weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service, uint_t cust_max_id, uint_t loc_max_id) : p(p), type_service(type_service) {
 
     if (strcmp(dist_matrix_filename.c_str(), "euclidian") == 0) {
@@ -196,7 +196,6 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
         }
     }
 }
-
 
 // Instane construtor and dist matrix with euclidian distances
 Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_filename, const string &capacities_filename, uint_t p, char delim, string type_service) : p(p), type_service(type_service) {
@@ -363,6 +362,11 @@ void Instance::calculate_Bandwidth(dist_t sum, dist_t sum_sq, uint_t cnt) {
     cout << "bandwidth h: " << h << endl;
 }
 
+void Instance::set_isBinProblem(bool isBinProblem) {
+    this->isBinProblem = isBinProblem;
+}
+
+
 bool Instance::get_isWeightedObjFunc() {
     return is_weighted_obj_func;
 }
@@ -471,21 +475,6 @@ void Instance::print() {
         cout << "threshold_dist: " << threshold_dist << endl;
     }
     cout << endl << endl;
-
-    // print cust, loc, dist value for ten pairs
-    // for (uint_t i = 0; i < 4; i++) {
-    //     auto cust = customers[i];
-    //     for (uint_t j = 0; j < 4; j++) {
-    //         auto loc = locations[j];
-    //         cout << cust << " " << loc << " " << getRealDist(locations[j], customers[i]) << endl;
-    //     }
-    // }
-    // for (auto cust:customers) {
-    //     for (auto loc:locations) {
-    //         cout << cust << " " << loc << " " << getRealDist(loc, cust) << endl;
-    //     }
-    // }
-
 
 }
 
@@ -903,9 +892,6 @@ void Instance::set_ThresholdDist(dist_t threshold_dist){
 dist_t Instance::get_ThresholdDist(){
     return threshold_dist;
 }
-
-
-
 
 vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
     // Validate input

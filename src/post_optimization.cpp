@@ -1,4 +1,4 @@
-#include "PostOptimization.hpp"
+#include "post_optimization.hpp"
 
 
 
@@ -28,13 +28,7 @@ void PostOptimization::createSelectedLocations(int num_k) {
     // vector<uint_t> selectedLocations;
     auto p_locations = this->solution_cap.get_pLocations();
 
-    // int num_loc = this->instance->getCustomers().size();
-    // cout << "Number of locations: " << num_loc << endl;
-    // int num_p = p_locations.size();
-    // int num_k = (int) max(1, num_loc / num_p);
-    // // num_k=1;
 
-    // erase selected locations
     selectedLocations.clear();
 
     for (auto p : p_locations) {
@@ -46,8 +40,6 @@ void PostOptimization::createSelectedLocations(int num_k) {
 
         // add only the kth position
         // uint_t lastValue = k_locs.back();
-        // uint_t lastValue = vet[vet.size() - 1];
-        // selectedLocations.push_back(k_locs[num_k-1]);
         // selectedLocations.push_back(lastValue);
 
     }
@@ -70,28 +62,23 @@ void PostOptimization::createSelectedLocations(int num_k) {
 }
 
 
-void PostOptimization::run() {
+void PostOptimization::run(string Method_name) {
     cout << "[INFO] Running post-optimization" << endl;
     cout << "Time limit: " << timelimit << endl;
- 
     bool is_reduce_instance = false;
 
     auto p = this->instance->get_p();
     auto num_facilities = this->instance->getLocations().size();
-    int limit_repeat_solution = ceil((num_facilities - p)/p); // limit of repeat solutions
-    cout << "Max size of the neigh: " << limit_repeat_solution << endl;
-    // if active_num_max_neighbors it means we are running the entire prob so need to stop just need to have one more execution (all problem)
-    int active_num_max_neighbors = 0; 
+    int limit_neigh_size = ceil((num_facilities - p)/p); // limit of repeat solutions = num neighboors
+    cout << "Max size of the neigh: " << limit_neigh_size << endl;
+
 
     int cont_repeat_solution = 0;
     int neigh_dist = 1;
     int iter = 1;
-    auto start_time_total = std::chrono::high_resolution_clock::now();
+    while(timelimit > 0 && neigh_dist <= limit_neigh_size) { 
 
-    while(timelimit > 0 && active_num_max_neighbors != 2){ 
-        
         auto start = std::chrono::high_resolution_clock::now();
-        if (active_num_max_neighbors == 1) active_num_max_neighbors++;
 
         cout << " ------------------------------------ \n\n";
         cout << "Iteration Post-Optimization: " << iter << endl;
@@ -106,7 +93,7 @@ void PostOptimization::run() {
             // create new instance
             auto new_instance = this->instance->getReducedSubproblem(selectedLocations, "null");
             new_instance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
-            // new_instance.set_ThresholdDist(instance->get_ThresholdDist());
+            new_instance.set_ThresholdDist(instance->get_ThresholdDist());
             this->solution_cap.statsDistances();
             new_instance.set_ThresholdDist(this->solution_cap.getMaxDist());
             new_instance.print();
@@ -115,12 +102,12 @@ void PostOptimization::run() {
             pmp.setGenerateReports(true);
             pmp.setTimeLimit(timelimit);
 
-            if (solution_cap.getFeasibility()) {
+            if (solution_final.isSolutionFeasible()) {
                 pmp.setMIPStartSolution(solution_cap);
                 pmp.set_pLocations_from_solution(solution_cap.get_pLocations());
             } 
 
-            pmp.run("EXACT_CPMP_BIN");
+            pmp.run(Method_name);
             solution_final = pmp.getSolution_cap();
 
         }else{
@@ -132,7 +119,7 @@ void PostOptimization::run() {
             pmp.setGenerateReports(true);
             pmp.setTimeLimit(timelimit);
 
-            if (solution_cap.getFeasibility()) {
+            if (solution_final.isSolutionFeasible()) {
                 pmp.setMIPStartSolution(solution_cap);
                 pmp.setBestBound(solution_cap.getBestBound());
                 pmp.set_pLocations_from_solution(solution_cap.get_pLocations());
@@ -142,7 +129,7 @@ void PostOptimization::run() {
             }
 
 
-            pmp.run("EXACT_CPMP_BIN");
+            pmp.run(Method_name);
             solution_final = pmp.getSolution_cap();
         }
 
@@ -157,49 +144,25 @@ void PostOptimization::run() {
                 cout << "Old Best Bound: " << this->solution_cap.getBestBound() << endl;
                 cout << "New Best Bound: " << solution_final.getBestBound() << endl;
                 neigh_dist = 1;
-                cont_repeat_solution = 0;
             }else{
                 neigh_dist++;
-                cont_repeat_solution++;
-            }
-
-            if (cont_repeat_solution > limit_repeat_solution) {
-                cout << "[INFO] Repeat solution limit reached" << endl;
-                cout << "max number of neighboors is " << cont_repeat_solution << endl;
-                cout << "running just one more execution" << endl;
-                if(active_num_max_neighbors == 0) active_num_max_neighbors = 1;
-                // break;
             }
         }
 
+        if (neigh_dist > limit_neigh_size) {
+            cout << "[INFO] Repeat solution limit reached" << endl;
+            cout << "max number of neighboors is " << neigh_dist << endl;
+            break;
+        }
         
         iter++;
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        cout << "iterations Post-Optimization: " << iter << endl;
         cout << "Time elapsed: " << elapsed_seconds.count() << "s" << endl;
-        cout << "Time in Post opt: " << std::chrono::duration<double>(end - start_time_total).count() << "s" << endl;
         cout << "Time remaining: " << timelimit << "s" << endl;
         this->timelimit -= elapsed_seconds.count();
     }
     
-
-    auto end_time_total = std::chrono::high_resolution_clock::now();
-    cout << "\n\n\n";
-    cout << "Finishing post-optimization" << endl;
-    this->solution_cap.print(); 
-    cout << "Post Optimization Time elapsed: " << std::chrono::duration<double>(end_time_total - start_time_total).count() << "s" << endl;    
-
-    cout << "Solution Stats" << endl;
-    this->solution_cap.statsDistances();
-    cout << "Max dist: " << this->solution_cap.getMaxDist() << endl;
-    cout << "Min dist: " << this->solution_cap.getMinDist() << endl;
-    cout << "avg of Avg dists: " << this->solution_cap.getAvgDist() << endl;
-    cout << "avg Std dev dist: " << this->solution_cap.getStdDevDist() << endl;
-
-    cout << "\n\n\n";
-
-
 }
 
 

@@ -1,5 +1,5 @@
-#ifndef LARGE_PMP_INSTANCE_HPP
-#define LARGE_PMP_INSTANCE_HPP
+#ifndef PMPSOLVER_INSTANCE_HPP
+#define PMPSOLVER_INSTANCE_HPP
 #include <set>
 #include <unordered_set>
 #include <utility>
@@ -52,6 +52,8 @@ private:
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
     dist_t threshold_dist=0;
+
+    bool isBinProblem=false;
 public:
     // Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p, uint_t loc_max, uint_t cust_max, string type_service);    
     Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> loc_capacities,shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max, uint_t cust_max, string type_service);    
@@ -60,7 +62,7 @@ public:
     Instance(const string& dist_matrix_filename, const string& weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service="null",uint_t cust_max_id=0, uint_t loc_max_id=0);
     Instance(uint_t cust_max_id, uint_t loc_max_id, const string& weights_filename, const string& capacities_filename, uint_t p, char delim, string type_service="null");
     void calculate_Bandwidth(dist_t sum, dist_t sum_sq, uint_t cnt);
-    
+    void set_isBinProblem(bool isBinProblem);
 
 
     dist_t getWeightedDist(uint_t loc, uint_t cust);
@@ -111,7 +113,8 @@ public:
     void set_ThresholdDist(dist_t threshold_dist);
     dist_t get_ThresholdDist();
 
+
 };
 
 
-#endif //LARGE_PMP_INSTANCE_HPP
+#endif //PMPSOLVER_INSTANCE_HPP

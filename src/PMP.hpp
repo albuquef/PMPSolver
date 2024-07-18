@@ -76,8 +76,6 @@ class PMP
         void setUpperBound(double UpperBound);
         void setTimeLimit(double timeLimit);
         void setMIPStartSolution(Solution_cap sol);
-        void setUseMIPStart(bool useMIPStart);
-        
         void setBestBound(dist_t BestBound);
 
         // void setInitialSolution(Solution_cap sol);
@@ -116,6 +114,7 @@ class PMP
         double timeLimit = CLOCK_LIMIT_CPLEX;
         bool useMIPStart=false;
         Solution_cap initial_solution;
+        void set_gap_report_filename(string Method_name);
 
         void initVars();
         void initILP        (void);

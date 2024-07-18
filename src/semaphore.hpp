@@ -1,5 +1,5 @@
-#ifndef LARGE_PMP_SEMAPHORE_HPP
-#define LARGE_PMP_SEMAPHORE_HPP
+#ifndef PMPSOLVER_SEMAPHORE_HPP
+#define PMPSOLVER_SEMAPHORE_HPP
 
 #include <mutex>
 #include <condition_variable>
@@ -41,4 +41,4 @@ private:
     int count;
 };
 
-#endif //LARGE_PMP_SEMAPHORE_HPP
+#endif //PMPSOLVER_SEMAPHORE_HPP

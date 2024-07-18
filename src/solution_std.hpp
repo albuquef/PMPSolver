@@ -1,5 +1,5 @@
-#ifndef LARGE_PMP_SOLUTION_STD_HPP
-#define LARGE_PMP_SOLUTION_STD_HPP
+#ifndef PMPSOLVER_SOLUTION_STD_HPP
+#define PMPSOLVER_SOLUTION_STD_HPP
 
 #include <utility>
 #include <unordered_set>
@@ -58,4 +58,4 @@ public:
 };
 
 
-#endif //LARGE_PMP_SOLUTION_STD_HPP
+#endif //PMPSOLVER_SOLUTION_STD_HPP

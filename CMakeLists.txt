@@ -57,7 +57,9 @@ set(SOURCE_FILES
     src/TBPercentage.hpp src/TBPercentage.cpp
     src/PMP.hpp src/PMP.cpp
     src/VNS.hpp src/VNS.cpp
-    src/PostOptimization.hpp src/PostOptimization.cpp)
+    src/post_optimization.hpp src/post_optimization.cpp
+    src/solver_config.hpp src/solver_config.cpp
+    src/solver_manager.hpp src/solver_manager.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

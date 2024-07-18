@@ -1,5 +1,5 @@
-#ifndef LARGE_PMP_TB_HPP
-#define LARGE_PMP_TB_HPP
+#ifndef PMPSOLVER_TB_HPP
+#define PMPSOLVER_TB_HPP
 
 #include <omp.h>
 #include <utility>
@@ -66,4 +66,4 @@ public:
 };
 
 
-#endif //LARGE_PMP_TB_HPP
+#endif //PMPSOLVER_TB_HPP

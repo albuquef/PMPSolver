@@ -1,5 +1,5 @@
-#ifndef LARGE_PMP_UTILS_HPP
-#define LARGE_PMP_UTILS_HPP
+#ifndef PMPSOLVER_UTILS_HPP
+#define PMPSOLVER_UTILS_HPP
 
 #include <chrono>
 #include <random>
@@ -46,4 +46,4 @@ void setClockLimit(const uint_t);
 bool checkClock(void);
 
 
-#endif //LARGE_PMP_UTILS_HPP
+#endif //PMPSOLVER_UTILS_HPP

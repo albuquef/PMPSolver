@@ -164,28 +164,14 @@ for METHOD in "${FOR_METHODS[@]}"; do
             p="${p_values[$index]}"
             N="${N_values[$index]}"
 
-            # echo "Instance: $file"
-            # echo "p: $p"
-            # echo "N: $N"
 
-        
             if [ "$N" -lt 800 ]; then
                 SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
             else
                 SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
             fi
 
-            # if [ "$N" -lt 700 ]; then
-            #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-            # elif [ "$N" -le 1000 ]; then
-            #     SUB_PROB_SIZE=$(echo "0.6 * $N" | bc)
-            # elif [ "$N" -le 5000 ]; then
-            #     SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
-            # else
-            #     SUB_PROB_SIZE=$((N / 4))
-            # fi
-             
-            # SUB_PROB_SIZE=$((N / 4))
+
             NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
             mkdir -p $NEW_DIR_CONSOLE
             export CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.log"

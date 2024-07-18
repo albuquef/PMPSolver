@@ -11,6 +11,14 @@ double get_cpu_time_pmp(){
 }
 
 static std::string gap_outputFilename;
+void PMP::set_gap_report_filename(string Method_name){
+    gap_outputFilename="";
+    if (!is_BinModel){gap_outputFilename += "gap_Cont";}
+    else{ gap_outputFilename += "gap_Bin";}
+    gap_outputFilename += "_service_" + instance->getTypeService() + "_p_" + to_string(p) + "_" + Method_name;
+    if(instance->isCoverMode()) gap_outputFilename += "_cover_"+ typeSubarea;
+    gap_outputFilename += ".csv";
+}
 struct CallbackParams {
     IloCplex cplex;
     IloNum startTime;
@@ -183,6 +191,8 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
     this->num_customers = this->instance->getCustomers().size();
 
     if (VERBOSE) {
+        cout << "------------------------------------------------------" << endl;
+        cout << "[INFO] Start PMP Model" << endl;
         cout << "Problem type: " << typeProb << endl;
         cout << "Value of p: " << this->p << endl;
         cout << "Number of facilities: " << num_facilities << endl;
@@ -196,6 +206,7 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
         else cout << "Binary Model: false" << endl;
         if (CoverModel) cout << "Cover Model: true" << endl;
         else cout << "Cover Model: false" << endl;
+        cout << "------------------------------------------------------" << endl;
     }
 }
 PMP::~PMP()
@@ -207,26 +218,16 @@ void PMP::run(string Method_name){
     try{
         initILP();
 
+        // Parameters CPLEX
         if (timeLimit != 0) cplex.setParam(IloCplex::Param::TimeLimit, timeLimit);
-        // cplex.setParam(IloCplex::TiLim, 60);
-        // cplex.setParam(IloCplex::TiLim, CLOCK_LIMIT); // time limit CLOCK_LIMIT seconds
-        if(useMIPStart) addMIPStartSolution();
+        if (useMIPStart) addMIPStartSolution();
         if (BestBound != 0) cplex.setParam(IloCplex::Param::MIP::Tolerances::LowerCutoff, BestBound);
 
-        gap_outputFilename="";
-        if (!is_BinModel){gap_outputFilename += "gap_Cont";}
-        else{ gap_outputFilename += "gap_Bin";}
-        gap_outputFilename += "_service_" + instance->getTypeService() + "_p_" + to_string(p) + "_" + Method_name;
-        if(instance->isCoverMode()) gap_outputFilename += "_cover_"+ typeSubarea;
-        gap_outputFilename += ".csv";
-
-
-        // Initialize CallbackParams with cplex
+        // Callbacks CPLEX
         CallbackParams params(cplex);
         bool add_break_callback = true;
         if (timeLimit == 0) add_break_callback = false; // if time limit is not set, do not use break callback
-        // generate reports set outside the class
-
+        
         double gapThreshold = 0.01; // alpha% improvement, e.g., 1% improvement
         double timeThreshold = 300; // T seconds, e.g., 300 seconds
         params.gapThreshold = gapThreshold;
@@ -236,9 +237,9 @@ void PMP::run(string Method_name){
         params.timelimite_less_than_1perc = time_limit_with_gap_less_than_1perc;
 
 
-
         if (generate_reports || add_break_callback) {
             params.useGapInfoCallback = generate_reports;
+            set_gap_report_filename(Method_name);
             params.useBreakCallbackLessThan1Percent = add_break_callback;
             params.useBreakCallbackImprovementCheck = add_break_callback;
 
@@ -250,17 +251,16 @@ void PMP::run(string Method_name){
             }
 
             if (add_break_callback) {
-                cout << "Using BreakCallback..." << endl;
-                // explain the break callback values
-                cout << "[CALLBACK] Time Limit with not improving " <<  std::fixed << std::setprecision(2) << gapThreshold * 100 << "% (gap): " << std::fixed << std::setprecision(2) << time_limit_with_gap_less_than_1perc << " seconds" << endl;
-                cout << "[CALLBACK] Time Limit with Gap less than 1%: " << std::fixed << std::setprecision(2) << time_limit_with_gap_less_than_1perc << " seconds" << endl;
+                cout << "[CALLBACK] Using BreakCallback..." << endl;
+                cout << fixed << setprecision(2);
+                cout << "Time Limit with not improving " <<  params.gapThreshold * 100 << "% (gap): " << params.timeThreshold << " seconds" << endl;
+                cout << "Time Limit with Gap less than 1%: " << time_limit_with_gap_less_than_1perc << " seconds" << endl;
             }
         } 
 
 
-
+        // Solve CPLEX
         // cplex.exportModel("./model.lp");
-
         solveILP();
 
         bool verb = false;
@@ -273,12 +273,9 @@ void PMP::run(string Method_name){
         }else
             cout << "Solution status = " << cplex.getStatus()   << endl;
 
-        // cplex.end();
-        // env.end();
     } catch (IloException& e) {
-        // isFeasible = false;
         cerr << "ERROR: " << e.getMessage()  << endl;
-        cout << "\nError ilocplex" << endl;
+        cout << "\n[ERROR] run method PMP" << endl;
         return;
     }
 }
@@ -307,12 +304,9 @@ void PMP::run_GAP(unordered_set<uint_t> p_locations){
             }
         }else
             if (verb) cout << "Solution status = " << cplex.getStatus()   << endl;
-        // cplex.end();
-        // env.end();
     } catch (IloException& e) {
-        // isFeasible = false;
         cerr << "ERROR: " << e.getMessage()  << endl;
-        cout << "\nError ilocplex" << endl;
+        cout << "\n[ERROR] run_gap method PMP" << endl;
         return;
     }
 }
@@ -793,7 +787,6 @@ void PMP::constr_fixedAllocs_from_solution(IloModel model, IloBoolVarArray y, Va
 
 
 
-// void PMP::printSolution(IloCplex& cplex, BoolVarMatrix x, IloBoolVarArray y){
 template <typename VarType>  
 void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
     
@@ -805,16 +798,16 @@ void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
         cout << "Num. of var y>0: " << y.getSize() << endl;
         cout << "Time to solve: " << timeSolver << endl;
 
-        bool verbose_vars = true;
+        bool verbose_vars = false;
         if (verbose_vars){
-            // for(IloInt j = 0; j < num_facilities; j++){
-            //     auto loc = instance->getLocations()[j];
-            //     for(IloInt i = 0; i < num_customers; i++){
-            //         auto cust = instance->getCustomers()[i];
-            //         if (cplex.getValue(x[i][j]) > 0.001)
-            //             cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x[i][j]) << endl;
-            //     }
-            // }
+            for(IloInt j = 0; j < num_facilities; j++){
+                auto loc = instance->getLocations()[j];
+                for(IloInt i = 0; i < num_customers; i++){
+                    auto cust = instance->getCustomers()[i];
+                    if (cplex.getValue(x[i][j]) > 0.001)
+                        cout << "x[" << cust << "][" << loc << "] = " << cplex.getValue(x[i][j]) << endl;
+                }
+            }
         
             for(IloInt j = 0; j < num_facilities; j++){
                 auto loc = instance->getLocations()[j];
@@ -868,10 +861,6 @@ Solution_cap PMP::getSolution_cap(){
             assignments[cust] = assignment{};
         }
 
-        // cout << "p_loc = ";
-        // for(auto p_loc:p_locations)
-        //     cout << p_loc << " ";
-        // cout << endl;   
 
         bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
         dist_t objtest = 0.0;
@@ -903,8 +892,8 @@ Solution_cap PMP::getSolution_cap(){
 
                         // cout << "loc: " << loc << " cust: " << cust << " qtde_used: " << qtde_used << " dem_used: " << dem_used << " dist: " << instance->getRealDist(loc, cust) << " obj_increment: " << obj_increment << endl;
                     }
-                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.0001){ cerr << "ERROR: usage > capacity" << endl;  exit(1);}
-                    if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){ cerr << "ERROR: satisfaction > weight" << endl; exit(1);}
+                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.0001){ cerr << "[ERROR] usage > capacity" << endl;  exit(1);}
+                    if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){ cerr << "[ERROR] satisfaction > weight" << endl; exit(1);}
 
                     
                 }
@@ -919,7 +908,7 @@ Solution_cap PMP::getSolution_cap(){
 
     } catch (IloException& e) {
         cerr << "ERROR: " << e.getMessage()  << endl;
-        cout << "\nError get solution cap" << endl;
+        cout << "\n[ERROR] get solution cap PMP" << endl;
         Solution_cap sol;
         sol.setFeasibility(false);
         return sol;

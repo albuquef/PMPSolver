@@ -1,5 +1,5 @@
-#ifndef LARGE_PMP_VNS_HPP
-#define LARGE_PMP_VNS_HPP
+#ifndef PMPSOLVER_VNS_HPP
+#define PMPSOLVER_VNS_HPP
 
 #include <omp.h>
 #include <utility>
@@ -64,4 +64,4 @@ public:
 };
 
 
-#endif //LARGE_PMP_VNS_HPP
+#endif //PMPSOLVER_VNS_HPP

@@ -2,7 +2,7 @@ INFOS
 instance: SJC4a
 p: 30
 Objective Funtion: Unweighted
-Final time: 104.000000000000000
+Final time: 107.000000000000000
 
 OBJECTIVE
 62182.774481176900736
