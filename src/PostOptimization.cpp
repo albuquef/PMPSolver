@@ -88,7 +88,7 @@ void PostOptimization::run() {
     int iter = 1;
     auto start_time_total = std::chrono::high_resolution_clock::now();
 
-    while(timelimit > 0 && active_num_max_neighbors < 2){ 
+    while(timelimit > 0 && active_num_max_neighbors != 2){ 
         
         auto start = std::chrono::high_resolution_clock::now();
         if (active_num_max_neighbors == 1) active_num_max_neighbors++;
@@ -167,7 +167,7 @@ void PostOptimization::run() {
                 cout << "[INFO] Repeat solution limit reached" << endl;
                 cout << "max number of neighboors is " << cont_repeat_solution << endl;
                 cout << "running just one more execution" << endl;
-                active_num_max_neighbors = 1;
+                if(active_num_max_neighbors == 0) active_num_max_neighbors = 1;
                 // break;
             }
         }
@@ -176,7 +176,7 @@ void PostOptimization::run() {
         iter++;
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
-        cout << "[INFO] iterations Post-Optimization" << iter << endl;
+        cout << "iterations Post-Optimization: " << iter << endl;
         cout << "Time elapsed: " << elapsed_seconds.count() << "s" << endl;
         cout << "Time in Post opt: " << std::chrono::duration<double>(end - start_time_total).count() << "s" << endl;
         cout << "Time remaining: " << timelimit << "s" << endl;

@@ -18,7 +18,7 @@ CMD="./build/large_PMP"
 DIR_DATA="./data/Literature/"
 
 # ---------------------------------------- Machine configuration ----------------------------------------
-SEED=0
+SEED=20
 NUM_THREADS=20
 ADD_TYPE_TEST="LIT"
 
@@ -169,7 +169,11 @@ for METHOD in "${FOR_METHODS[@]}"; do
             # echo "N: $N"
 
         
-            SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
+            if [ "$N" -lt 800 ]; then
+                SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+            else
+                SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
+            fi
 
             # if [ "$N" -lt 700 ]; then
             #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
