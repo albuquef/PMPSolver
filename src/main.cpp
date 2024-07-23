@@ -77,9 +77,16 @@ int main(int argc, char *argv[]) {
     // Instance instance_original = setupInstance(config); // Instance instance = instance_original.filterInstance(TypeService);
 
     auto start = tick();
-    solveProblem(instance, config, config.seed);
-    cout << endl;
+    SolverManager solverManager(config, instance);
+    solverManager.solveProblem();
     tock(start);
+
+
+
+    // auto start = tick();
+    // solveProblem(instance, config, config.seed);
+    // cout << endl;
+    // tock(start);
 
     return 0;
 }
@@ -125,7 +132,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
         cout << "-------------------------------------------------\n";
         auto time_left = config.CLOCK_LIMIT - elapsed_time_total;
         cout << "Time for post-optimization: " << time_left << "s\n";
-        PostOptimization postOptimization(make_shared<Instance>(instance), solution);
+        PostOptimization postOptimization(make_shared<Instance>(instance),config, solution);
         postOptimization.set_time_limit(time_left);
         postOptimization.run(config.Method + "_POSTOPT");
         auto elapsed_time_postopt = duration_cast<seconds>(high_resolution_clock::now() - start_time).count();
@@ -219,7 +226,7 @@ void solveProblem(const Instance& instance, const Config& config, int seed) {
             cout << "-------------------------------------------------\n";
             auto time_left = config.CLOCK_LIMIT - elapsed_time_rssv;
             cout << "Time for post-optimization: " << time_left << "s\n";
-            PostOptimization postOptimization(make_shared<Instance>(instance), solution);
+            PostOptimization postOptimization(make_shared<Instance>(instance), config, solution);
             postOptimization.set_time_limit(time_left);
             postOptimization.run("RSSV_" + config.Method_RSSV_fp + "_POSTOPT");
             auto elapsed_time_postopt = duration_cast<seconds>(high_resolution_clock::now() - start_time).count();

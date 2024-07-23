@@ -28,6 +28,7 @@ private:
     double external_time=0;
     bool useInitSol=false;
     Solution_cap initial_solution;
+    double timeLimit = 0;
 public:
     explicit VNS(shared_ptr<Instance> instance, uint_t seed);
 
@@ -51,6 +52,8 @@ public:
     // to do: add time limit
     // Solution_std runVNS_std(bool verbose, int MAX_ITE, int MAX_TIME);
     // Solution_cap runVNS_cap(bool verbose, int MAX_ITE, int MAX_TIME);
+    
+    // params heuristic 
     Solution_MAP solutions_map;
     void setSolutionMap(Solution_MAP sol_map);
     void setGenerateReports(bool generate_reports);
@@ -58,6 +61,8 @@ public:
     void setCoverMode(bool cover_mode);
     void setCoverMode_n2(bool cover_mode_n2);
     void setExternalTime(double time);
+    void setTimeLimit(double time_limit);
+
 
     void setInitialSolution(Solution_cap sol);
     void setUseInitialSol(bool useInitSol);

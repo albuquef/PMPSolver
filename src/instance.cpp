@@ -894,6 +894,7 @@ dist_t Instance::get_ThresholdDist(){
 }
 
 vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
+    
     // Validate input
     if (loc > locations.size()) { // attention: loc is the index of the location in the vector locations values = 1 ... loc_size  not start from 0
         cerr << "Error: Invalid location index. (kclosest locs)" << endl;
@@ -933,4 +934,37 @@ vector<uint_t> Instance::get_kClosestLocations(uint_t loc, uint_t k) {
 
 
     return closest_locations;
+}
+
+vector<uint_t> Instance::get_kClosestLocations_notin_plocs(uint_t loc, uint_t k, unordered_set<uint_t> p_locs) {
+    // Validate input
+    if (loc > locations.size()) { // attention: loc is the index of the location in the vector locations values = 1 ... loc_size  not start from 0
+        cerr << "Error: Invalid location index. (kclosest locs notin plocs)" << endl;
+        cerr << "returning empty vector" << endl;
+        return {};
+    }
+
+    // Create a vector to store distances and indices
+    vector<pair<dist_t, uint_t>> dist_index;
+
+    // Compute distances from location loc to all other locations
+    for (uint_t i = 0; i < locations.size(); ++i) {
+        if (i != loc && p_locs.find(i) == p_locs.end()) {
+            dist_t dist = getRealDist(loc, i);
+            if(get_isWeightedObjFunc()) dist = getWeightedDist(loc, i);
+            dist_index.emplace_back(dist, i);
+        }
+    }
+
+    // Sort distances in ascending order
+    sort(dist_index.begin(), dist_index.end());
+
+    // Extract the indices of the k closest locations
+    vector<uint_t> closest_locations;
+    for (uint_t i = 0; i < k && i < dist_index.size(); ++i) {
+        closest_locations.push_back(dist_index[i].second);
+    }
+
+    return closest_locations;
+
 }

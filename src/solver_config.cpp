@@ -101,7 +101,10 @@ void parseArguments(int argc, char* argv[], Config& config) {
                 config.size_subproblems_rssv = std::stoi(argv[i+1]);
                 configOverride.insert("size_subproblems_rssv");
                 SUB_PMP_SIZE = static_cast<uint_t>(config.size_subproblems_rssv);
-            }else if (key == "-bw_multiplier") {
+            } else if (key == "-method_post_opt") {
+                config.Method_PostOpt = argv[i+1];
+                configOverride.insert("method_post_opt");
+            } else if (key == "-bw_multiplier") {
                 config.BW_MULTIPLIER = std::stod(argv[i+1]);
                 configOverride.insert("bw_multiplier");
                 BW_MULTIPLIER = config.BW_MULTIPLIER;
@@ -183,6 +186,7 @@ void setupConfig(Config& config, std::set<const char*>& configOverride) {
     configParser.setFromConfig(&config.MAX_ITE_SUBPROB_RSSV, "max_ite_subprob_rssv");
     configParser.setFromConfig(&config.CLOCK_LIMIT_SUBPROB_RSSV, "time_subprob_rssv");
     configParser.setFromConfig(&config.BW_MULTIPLIER, "bw_multiplier");
+    configParser.setFromConfig(&config.Method_PostOpt, "method_post_opt");
 
     // Additional fields can be set similarly
 

@@ -30,10 +30,10 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     cout << "cPMP size (N): " << N << endl;
     cout << "sub-cPMP size (n): " << min(n, N) << endl;
     cout << "Subproblems cnt (M): " << M << endl;
-    cout << "p: " << instance->get_p() << endl << endl;
+    cout << "p: " << instance->get_p() << endl;
     this->method_RSSV_sp = method_sp;
-    cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl;
-    cout << "Seed: " << seed_rssv << endl << endl;
+    // cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl;
+    cout << "Seed: " << seed_rssv  << endl;
     if(TIME_LIMIT_SUBPROBLEMS > 0) cout << "Time limit for subproblems: " << TIME_LIMIT_SUBPROBLEMS << endl;
     if(MAX_ITE_SUBPROBLEMS > 0) cout << "Max iterations for subproblems: " << MAX_ITE_SUBPROBLEMS << endl;
     

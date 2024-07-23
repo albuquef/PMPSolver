@@ -22,6 +22,9 @@ bool checkClock_VNS(double start, double limit) {
     return false;
 }
 
+void VNS::setTimeLimit(double timeLimit){
+    this->timeLimit = timeLimit;
+}
 
 VNS::VNS(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);

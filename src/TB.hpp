@@ -63,6 +63,10 @@ public:
     void setCoverMode(bool cover_mode);
     void setCoverMode_n2(bool cover_mode_n2);
     void setTimeLimit(double time_limit);
+
+
+
+
 };
 
 

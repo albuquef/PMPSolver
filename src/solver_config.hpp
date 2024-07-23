@@ -27,13 +27,14 @@ struct Config {
     string TypeSubarea_n2;
     
     // Optional parameters with default values
-    uint_t threads_cnt = (uint_t) getAvailableThreads();  // Default initialized based on available threads
+    uint_t threads_cnt = static_cast<uint_t>(getAvailableThreads());  // Default initialized based on available threads
     int mode = 0;
     int seed = 1;
     string output_filename;
     string Method;
     string Method_RSSV_sp;
     string Method_RSSV_fp;
+    string Method_PostOpt;
     bool VERBOSE = false;
     uint_t TOLERANCE_CPT = 10;
     uint_t K = 1;
@@ -61,5 +62,8 @@ void parseArguments(int argc, char* argv[], Config& config);
 void setupConfig(Config& config, std::set<const char*>& configOverride);
 
 void checkRequiredParameters(const Config& config);
+
+// void setMethod_Name(string method);
+
 
 #endif // PMPSOLVER_CONFIG_HPP

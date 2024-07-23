@@ -9,13 +9,14 @@
 #include "solution_std.hpp"
 #include "solution_cap.hpp"
 #include "instance.hpp"
+#include "solver_config.hpp"
 #include "PMP.hpp"
 
 class PostOptimization {
 public:
     // Constructor
-    PostOptimization(const shared_ptr<Instance>& instance, const Solution_cap solution);
-    PostOptimization(const shared_ptr<Instance>& instance, const Solution_std solution);
+    PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_cap solution);
+    PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_std solution);
     // Destructor
     ~PostOptimization();
 
@@ -42,6 +43,7 @@ private:
     // IloEnv env;
     // IloModel model;
     // IloCplex cplex;
+    const Config& config;
     const bool is_cap;
     shared_ptr<Instance> instance;
     Solution_std solution_std;

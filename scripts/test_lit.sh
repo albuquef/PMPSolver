@@ -25,8 +25,10 @@ ADD_TYPE_TEST="LIT"
 # ----------------------------------------- Methods configuration -----------------------------------------
 FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
+# METHOD_RSSV_FINAL="TB_CPMP"
 metsp="TB_PMP" # Subproblem method
 
+METHOD_POSTOPT="EXACT_CPMP_BIN"
 # FOR_METHODS=("EXACT_CPMP_BIN")
 
 COVER_MODE=false
@@ -41,9 +43,9 @@ TIME_SUBP_RSSV=300
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
 
 
-# TIME_SUBP_RSSV=30  
-# TIME_CPLEX=120 # sum the time of the subproblems
-# TIME_CLOCK=180 # sum of all times
+TIME_SUBP_RSSV=30  
+TIME_CPLEX=100 # sum the time of the subproblems
+TIME_CLOCK=180 # sum of all times
 
 BW_MULTIPLIER=0.5   # Bandwidth multiplier
 
@@ -209,7 +211,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
                 -cover $COVERAGES -subarea null -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
                 -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
                 -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
-                -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
+                -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
+                -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
                 -o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
             fi
 

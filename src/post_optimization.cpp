@@ -2,7 +2,7 @@
 
 
 
-PostOptimization::PostOptimization(const shared_ptr<Instance>& instance, const Solution_cap solution) : instance(instance), is_cap(true), solution_cap(solution) {
+PostOptimization::PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_cap solution) : instance(instance), config(config), is_cap(true), solution_cap(solution) {
     // this->env = IloEnv();
     // this->model = IloModel(env);
     // this->cplex = IloCplex(model);
@@ -11,7 +11,7 @@ PostOptimization::PostOptimization(const shared_ptr<Instance>& instance, const S
     this->solution_cap.print();
 }
 
-PostOptimization::PostOptimization(const shared_ptr<Instance>& instance, const Solution_std solution) : instance(instance), is_cap(false), solution_std(solution) {
+PostOptimization::PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_std solution) : instance(instance), config(config), is_cap(false), solution_std(solution) {
     cout << "PostOptimization constructor" << endl;
     this->solution_std.print();
 }

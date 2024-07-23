@@ -180,7 +180,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = true;    
+    VERBOSE = false;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -192,7 +192,7 @@ PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinM
 
     if (VERBOSE) {
         cout << "------------------------------------------------------" << endl;
-        cout << "[INFO] Start PMP Model" << endl;
+        cout << "[INFO] Start CPLEX Model" << endl;
         cout << "Problem type: " << typeProb << endl;
         cout << "Value of p: " << this->p << endl;
         cout << "Number of facilities: " << num_facilities << endl;
@@ -740,7 +740,8 @@ void PMP::constr_MaxNeighborsFromSolution(IloModel model, IloBoolVarArray y){
             if (index_loc != 10000000){
                 IloExpr expr(env);
                 expr += y[index_loc];
-                auto k_locs = this->instance->get_kClosestLocations(ploc, MaxNeighbors);
+                // auto k_locs = this->instance->get_kClosestLocations(ploc, MaxNeighbors);
+                auto k_locs = this->instance->get_kClosestLocations_notin_plocs(ploc, MaxNeighbors, p_locations_from_solution);
                 for(auto neighbor:k_locs){
                     auto index_neighbor = instance->getLocIndex(neighbor);
                     if (index_neighbor != 10000000){
