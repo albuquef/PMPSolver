@@ -42,9 +42,9 @@ struct CallbackParams {
           lastPrintTime(cplex.getCplexTime()),
           lastBestBound(cplex_.getBestObjValue()),
           gapThreshold(0.01),   // 1% improvement
-          timeThreshold(300),   // 300 seconds
+          timeThreshold(180),   // 300 seconds
           lastTime(std::chrono::steady_clock::now()),
-          timelimite_less_than_1perc(180.0) {}  // 3 minutes (180 seconds)
+          timelimite_less_than_1perc(120.0) {}  // 2 minutes (120 seconds)
 };
 // Combined callback function
 ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
@@ -225,27 +225,27 @@ void PMP::run(string Method_name){
 
         // Callbacks CPLEX
         CallbackParams params(cplex);
-        bool add_break_callback = true;
+        // bool add_break_callback = true;
         if (timeLimit == 0) add_break_callback = false; // if time limit is not set, do not use break callback
         
         double gapThreshold = 0.01; // alpha% improvement, e.g., 1% improvement
-        double timeThreshold = 300; // T seconds, e.g., 300 seconds
+        double timeThreshold = 120; // T seconds, e.g., 300 seconds
         params.gapThreshold = gapThreshold;
         params.timeThreshold = timeThreshold;
 
-        double time_limit_with_gap_less_than_1perc = 180; // limit of time with gap less than 1%
+        double time_limit_with_gap_less_than_1perc = 120; // limit of time with gap less than 1%
         params.timelimite_less_than_1perc = time_limit_with_gap_less_than_1perc;
 
 
-        if (generate_reports || add_break_callback) {
-            params.useGapInfoCallback = generate_reports;
+        if (add_generate_reports || add_break_callback) {
+            params.useGapInfoCallback = add_generate_reports;
             set_gap_report_filename(Method_name);
             params.useBreakCallbackLessThan1Percent = add_break_callback;
             params.useBreakCallbackImprovementCheck = add_break_callback;
 
             cplex.use(CombinedCallback(env, &params));
 
-            if (generate_reports) {
+            if (add_generate_reports) {
                 cout << "Gap Cplex Reports: " << gap_outputFilename << endl;
                 cout << "[CALLBACK] Generating reports cplex callbacks..." << endl;
             }
@@ -260,7 +260,7 @@ void PMP::run(string Method_name){
 
 
         // Solve CPLEX
-        // cplex.exportModel("./model.lp");
+        cplex.exportModel("./model.lp");
         solveILP();
 
         bool verb = false;
@@ -1121,8 +1121,12 @@ bool PMP::getFeasibility_Solver(){
     return isFeasible_Solver;
 }
 
-void PMP::setGenerateReports(bool generate_reports){
-    this->generate_reports = generate_reports;
+void PMP::setGenerateReports(bool add_generate_reports){
+    this->add_generate_reports = add_generate_reports;
+}
+
+void PMP::setAddBreakCallback(bool add_break_callback){
+    this->add_break_callback = add_break_callback;
 }
 
 void PMP::setCoverModel(bool CoverModel, string typeSubarea){

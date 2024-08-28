@@ -1,8 +1,21 @@
 #include "solver_config.hpp"
 
+void setBoolConfigOption(bool &configOption, const char* value, const std::string &paramName, std::set<std::string> &configOverride) {
+    if (strcmp(value, "true") == 0 || strcmp(value, "1") == 0) {
+        configOption = true;
+    } else if (strcmp(value, "false") == 0 || strcmp(value, "0") == 0) {
+        configOption = false;
+    } else {
+        throw std::invalid_argument("Unknown parameter [" + paramName + "]: " + std::string(value));
+    }
+    configOverride.insert(paramName);
+}
+
 
 void parseArguments(int argc, char* argv[], Config& config) {
-    std::set<const char*> configOverride;
+    // std::set<const char*> configOverride;
+    
+    std::set<std::string> configOverride;
 
     for (int i = 1; i < argc; ++i) {
         if (argv[i][0] == '-' || argv[i][0] == '?') {
@@ -35,14 +48,7 @@ void parseArguments(int argc, char* argv[], Config& config) {
                 config.mode = std::stoi(argv[i+1]);
                 configOverride.insert("mode");
             } else if (key == "-IsWeighted_ObjFunc") {
-                if (strcmp(argv[i+1], "true") == 0 || strcmp(argv[i+1], "1") == 0) {
-                    config.IsWeighted_ObjFunc = true;
-                } else if (strcmp(argv[i+1], "false") == 0 || strcmp(argv[i+1], "0") == 0) {
-                    config.IsWeighted_ObjFunc = false;
-                } else {
-                    throw std::invalid_argument("Unknown parameter [IsWeighted_ObjFunc]: " + std::string(argv[i+1]));
-                }
-                configOverride.insert("IsWeighted_ObjFunc");
+                setBoolConfigOption(config.IsWeighted_ObjFunc, argv[i+1], "IsWeighted_ObjFunc", configOverride);
             } else if (key == "--seed") {
                 config.seed = std::stoi(argv[i+1]);
                 configOverride.insert("seed");
@@ -108,34 +114,20 @@ void parseArguments(int argc, char* argv[], Config& config) {
                 config.BW_MULTIPLIER = std::stod(argv[i+1]);
                 configOverride.insert("bw_multiplier");
                 BW_MULTIPLIER = config.BW_MULTIPLIER;
+            } else if (key == "-fixed_threshold_distance") {
+                config.fixed_threshold_distance = std::stod(argv[i+1]);
+                configOverride.insert("fixed_threshold_distance");
             } else if (key == "-cover_mode") {
-                if (strcmp(argv[i+1], "true") == 0 || strcmp(argv[i+1], "1") == 0) {
-                    config.cover_mode = true;
-                } else if (strcmp(argv[i+1], "false") == 0 || strcmp(argv[i+1], "0") == 0) {
-                    config.cover_mode = false;
-                } else {
-                    throw std::invalid_argument("Unknown parameter [cover mode]: " + std::string(argv[i+1]));
-                }
-                configOverride.insert("cover_mode");
+                setBoolConfigOption(config.cover_mode, argv[i+1], "cover_mode", configOverride);
             } else if (key == "-cover_mode_n2") {
-                if (strcmp(argv[i+1], "true") == 0 || strcmp(argv[i+1], "1") == 0) {
-                    config.cover_mode_n2 = true;
-                } else if (strcmp(argv[i+1], "false") == 0 || strcmp(argv[i+1], "0") == 0) {
-                    config.cover_mode_n2 = false;
-                } else {
-                    throw std::invalid_argument("Unknown parameter [cover mode n2]: " + std::string(argv[i+1]));
-                }
-                configOverride.insert("cover_mode_n2");
+                setBoolConfigOption(config.cover_mode_n2, argv[i+1], "cover_mode_n2", configOverride);
             } else if (key == "-add_threshold_distance_rssv") {
-                if (strcmp(argv[i+1], "true") == 0 || strcmp(argv[i+1], "1") == 0) {
-                    config.add_threshold_distance_rssv = true;
-                } else if (strcmp(argv[i+1], "false") == 0 || strcmp(argv[i+1], "0") == 0) {
-                    config.add_threshold_distance_rssv = false;
-                } else {
-                    throw std::invalid_argument("Unknown parameter [add_threshold_distance_rssv]: " + std::string(argv[i+1]));
-                }
-                configOverride.insert("add_threshold_distance_rssv");
-            } else if (key == "--help" || key == "-h" || key == "?") {
+                setBoolConfigOption(config.add_threshold_distance_rssv, argv[i+1], "add_threshold_distance_rssv", configOverride);
+            } else if (key == "-add_generate_reports") {
+                setBoolConfigOption(config.add_generate_reports, argv[i+1], "add_generate_reports", configOverride);
+            } else if (key == "-add_break_callback") {
+                setBoolConfigOption(config.add_break_callback, argv[i+1], "add_break_callback", configOverride);
+            }else if (key == "--help" || key == "-h" || key == "?") {
                 std::cout << "Usage instructions:\n";
                 std::cout << "-p <value>          : Number of medians to select.\n";
                 std::cout << "-dm <filename>      : Path to the distance matrix file.\n";
@@ -150,7 +142,7 @@ void parseArguments(int argc, char* argv[], Config& config) {
     config.configOverride = configOverride;
 }
 
-void setupConfig(Config& config, std::set<const char*>& configOverride) {
+void setupConfig(Config& config, std::set<std::string>& configOverride) {
 
     ConfigParser configParser(config.configPath, configOverride);
 
@@ -187,6 +179,9 @@ void setupConfig(Config& config, std::set<const char*>& configOverride) {
     configParser.setFromConfig(&config.CLOCK_LIMIT_SUBPROB_RSSV, "time_subprob_rssv");
     configParser.setFromConfig(&config.BW_MULTIPLIER, "bw_multiplier");
     configParser.setFromConfig(&config.Method_PostOpt, "method_post_opt");
+    configParser.setFromConfig(&config.add_generate_reports, "add_generate_reports");
+    configParser.setFromConfig(&config.add_break_callback, "add_break_callback");
+    configParser.setFromConfig(&config.fixed_threshold_distance, "fixed_threshold_distance");
 
     // Additional fields can be set similarly
 
@@ -218,3 +213,48 @@ void checkRequiredParameters(const Config& config) {
     // Add more checks for other required parameters as needed
 }
 
+
+// void ConfigParser::printINFOparameters(const Config& config) {
+//     cout << " -------------------------------------------------- " << endl;
+//     std::cout << "Parameters:\n";
+//     std::cout << "p: " << config.p << std::endl;
+//     std::cout << "dist_matrix_filename: " << config.dist_matrix_filename << std::endl;
+//     std::cout << "labeled_weights_filename: " << config.labeled_weights_filename << std::endl;
+//     std::cout << "capacities_filename: " << config.capacities_filename << std::endl;
+//     std::cout << "TypeService: " << config.TypeService << std::endl;
+//     std::cout << "IsWeighted_ObjFunc: " << config.IsWeighted_ObjFunc << std::endl;
+//     if (config.cover_mode){
+//         cout << "cover mode n1" << endl;
+//         std::cout << "coverages_filename: " << config.coverages_filename << std::endl;
+//         std::cout << "TypeSubarea: " << config.TypeSubarea << std::endl;
+//     }
+//     if (config.cover_mode_n2){
+//         cout << "cover mode n2" << endl;
+//         std::cout << "coverages_filename_n2: " << config.coverages_filename_n2 << std::endl;
+//         std::cout << "TypeSubarea_n2: " << config.TypeSubarea_n2 << std::endl;
+//     }
+//     std::cout << "Method: " << config.Method << std::endl;
+//     if (config.Method == "RSSV"){
+//         std::cout << "Method_RSSV_sp: " << config.Method_RSSV_sp << std::endl;
+//         std::cout << "Method_RSSV_fp: " << config.Method_RSSV_fp << std::endl;
+//         std::cout << "size_subproblems_rssv: " << config.size_subproblems_rssv << std::endl;
+//         std::cout << "MAX_ITE_SUBPROB_RSSV: " << config.MAX_ITE_SUBPROB_RSSV << std::endl;
+//         std::cout << "CLOCK_LIMIT_SUBPROB_RSSV: " << config.CLOCK_LIMIT_SUBPROB_RSSV << std::endl;
+//     }
+//     if (config.Method_PostOpt != "null")
+//         std::cout << "Method_PostOpt: " << config.Method_PostOpt << std::endl;
+//     std::cout << "output_filename: " << config.output_filename << std::endl;
+//     std::cout << "VERBOSE: " << config.VERBOSE << std::endl;
+//     std::cout << "CLOCK_LIMIT: " << config.CLOCK_LIMIT << std::endl;
+//     std::cout << "CLOCK_LIMIT_CPLEX: " << config.CLOCK_LIMIT_CPLEX << std::endl
+//     std::cout << "BW_MULTIPLIER: " << config.BW_MULTIPLIER << std::endl;
+//     if (config.fixed_threshold_distance > 0) std::cout << "fixed_threshold_distance: " << config.fixed_threshold_distance << std::endl;
+//     std::cout << "add_threshold_distance_rssv: " << config.add_threshold_distance_rssv << std::endl;
+//     std::cout << "add_generate_reports: " << config.add_generate_reports << std::endl;
+//     std::cout << "add_break_callback: " << config.add_break_callback << std::endl;
+//     std::cout << "threads_cnt: " << config.threads_cnt << std::endl;
+//     std::cout << "seed: " << config.seed << std::endl;
+//     cout << " -------------------------------------------------- " << endl;
+//     cout << "\n\n";
+    
+// }

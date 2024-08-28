@@ -15,40 +15,33 @@
 class PostOptimization {
 public:
     // Constructor
-    PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_cap solution);
-    PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_std solution);
+    PostOptimization(const std::shared_ptr<Instance>& instance, const Config& config, Solution_cap solution);
+    PostOptimization(const std::shared_ptr<Instance>& instance, const Config& config, Solution_std solution);
+    
+
     // Destructor
     ~PostOptimization();
 
+    // Other methods...
 
-    // processSolution(const PMP& pmpSolver);
-
-    // Methods to perform post-optimization tasks
-    // void performPostOptimization();
-    // void exportResults(const char* filename);
-    // void saveSolution();
-
-
-    // void createSelectedLocations();
     void createSelectedLocations(int num_k);
-    void run(string Method_name);
+    void run(std::string Method_name);
     void run_partialOpt();
 
     // Getters for solution information
     Solution_std getSolution_std() const;
     Solution_cap getSolution_cap() const;
     void set_time_limit(double time);
+    void setBinModel(bool isBinModel);  
 
 private:
-    // IloEnv env;
-    // IloModel model;
-    // IloCplex cplex;
     const Config& config;
     const bool is_cap;
-    shared_ptr<Instance> instance;
+    std::shared_ptr<Instance> instance;
     Solution_std solution_std;
     Solution_cap solution_cap;
-    vector<uint_t> selectedLocations;
+    std::vector<uint_t> selectedLocations;
+    bool isBinModel=false;
 
 
     double timelimit=0;

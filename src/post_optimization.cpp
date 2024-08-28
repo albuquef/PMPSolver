@@ -2,25 +2,24 @@
 
 
 
-PostOptimization::PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_cap solution) : instance(instance), config(config), is_cap(true), solution_cap(solution) {
-    // this->env = IloEnv();
-    // this->model = IloModel(env);
-    // this->cplex = IloCplex(model);
-    // this->pmpSolver = PMP(instance);
-    cout << "PostOptimization constructor" << endl;
+// Constructor definitions
+PostOptimization::PostOptimization(const std::shared_ptr<Instance>& instance, const Config& config, Solution_cap solution) 
+    : config(config), is_cap(true), instance(instance), solution_cap(std::move(solution)) {
+    std::cout << "PostOptimization constructor for Solution_cap" << std::endl;
     this->solution_cap.print();
 }
 
-PostOptimization::PostOptimization(const shared_ptr<Instance>& instance, const Config& config, const Solution_std solution) : instance(instance), config(config), is_cap(false), solution_std(solution) {
-    cout << "PostOptimization constructor" << endl;
+PostOptimization::PostOptimization(const std::shared_ptr<Instance>& instance, const Config& config, Solution_std solution) 
+    : config(config), is_cap(false), instance(instance), solution_std(std::move(solution)) {
+    std::cout << "PostOptimization constructor for Solution_std" << std::endl;
     this->solution_std.print();
 }
 
-
+// Destructor definition
 PostOptimization::~PostOptimization() {
-    // this->env.end();
+    // Destructor implementation (if any)
+    std::cout << "PostOptimization destructor" << std::endl;
 }
-
 
 void PostOptimization::createSelectedLocations(int num_k) {
     cout << "Creating selected locations" << endl;
@@ -73,7 +72,7 @@ void PostOptimization::run(string Method_name) {
     cout << "Max size of the neigh: " << limit_neigh_size << endl;
 
 
-    int cont_repeat_solution = 0;
+    // int cont_repeat_solution = 0;
     int neigh_dist = 1;
     int iter = 1;
     while(timelimit > 0 && neigh_dist <= limit_neigh_size) { 
@@ -100,6 +99,7 @@ void PostOptimization::run(string Method_name) {
 
             PMP pmp(make_shared<Instance>(new_instance), "CPMP", true);
             pmp.setGenerateReports(true);
+            pmp.setAddBreakCallback(true);
             pmp.setTimeLimit(timelimit);
 
             if (solution_final.isSolutionFeasible()) {

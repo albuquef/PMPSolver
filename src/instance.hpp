@@ -32,7 +32,7 @@ private:
     uint_t cover_max_id=0; 
     uint_t cover_n2_max_id=0; 
     dist_t h; // bandwidth
-    uint_t total_demand;
+    dist_t total_demand;
     const string type_service;
     vector<uint_t> voted_locs;
 

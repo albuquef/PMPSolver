@@ -140,8 +140,11 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
 
     cout << "Solving sub-PMP " << thread_id << "/" << M << "..." << endl;
     auto start = tick();
-    
-    Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), seed);
+    // uint_t nu = this->n;
+    uint_t num_customers = instance->getCustomers().size();
+    uint_t p_subproblem = min(instance->get_p(),uint_t(100));
+    // Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), seed);
+    Instance subInstance = instance->sampleSubproblem(n, n, p_subproblem, seed);
     subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
     
     if (instance->get_p() > n) {

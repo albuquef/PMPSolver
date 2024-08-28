@@ -1,0 +1,1857 @@
+Debug: configOverride contents: IsWeighted_ObjFunc add_break_callback add_generate_reports add_threshold_distance_rssv bw_multiplier capacities cover_mode coverages cust_max_id distance_matrix loc_max_id max_ite_subprob_rssv method method_post_opt method_rssv_fp method_rssv_sp output p seed service size_subproblems_rssv subarea threads time time_cplex time_subprob_rssv weights 
+Loading instance...
+Scanning input data...
+Distance matrix dimensions: 4462 x 4462 = 19909444
+Elapsed time: 0 ms
+
+Loading weights...
+Skipped line: customer weight coord_x coord_y
+Loaded 4461 weights
+Loaded 4461 coordinates
+Total customer demand: 224395.00
+Elapsed time: 11 ms
+
+Loading capacities...
+Skipped line: location capacity coord_x coord_y
+Loaded 4461 capacities
+Loaded 4461 coordinates
+Elapsed time: 7 ms
+
+Loading distance matrix...
+Computing euclidian distances...
+bw multiplier: 0.50
+Loaded 19904982 distances
+dists stdev: 954.33
+bandwidth h: 17.53
+locations: 4461
+customers: 4461
+p: 100
+Elapsed time: 582 ms
+
+[INFO] Instance loaded
+loc_max_id: 4461
+loc_cnt: 4461
+service: fnl4461_0100
+cust_max_id: 4461
+cust_cnt: 4461
+unweighted obj function
+p: 100
+total_demand: 224395.00
+
+
+-------------------------------------------------
+
+
+-------------------------------------------------
+RSSV heuristic 
+-------------------------------------------------
+method subproblems: TB_PMP
+method final problem: EXACT_CPMP_BIN
+-------------------------------------------------
+RSSV running...
+cPMP size (N): 4461
+sub-cPMP size (n): 120
+Subproblems cnt (M): 185
+p: 100
+Seed: 0
+Time limit for subproblems: 300.00
+
+thread cnt: 20
+
+Thread 1 created with seed 1
+Thread 2 created with seed 2
+Thread 3 created with seed 3
+Thread 4 created with seed 4
+Solving sub-PMP Solving sub-PMP 1/185...2
+/Thread 5 created with seed 5
+Solving sub-PMP 3/185...
+Solving sub-PMP 4/185...
+Thread 6 created with seed 6
+185...
+Solving sub-PMP 5/185...
+uncapacitated TB started
+Thread 7 created with seed 7
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 6/185...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Thread 8 created with seed 8
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 7/185...
+Thread 9 created with seed 9
+Solving sub-PMP 8/185...
+Thread 10 created with seed 10
+Thread 11 created with seed 11
+uncapacitated TB started
+Thread 12 created with seed 12
+Thread 13 created with seed 13
+Thread 14 created with seed 14
+Thread 15 created with seed 15
+Thread 16 created with seed 16
+Thread 17 created with seed 17
+uncapacitated TB started
+Thread 18 created with seed 18
+Thread 19 created with seed 19
+Thread 20 created with seed 20
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 18/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 15/185...
+uncapacitated TB started
+Solving sub-PMP 17/185...
+Solving sub-PMP Solving sub-PMP 916//185...185
+...
+Solving sub-PMP 11/185...
+Solving sub-PMP 19/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 13/185...
+Solving sub-PMP 14/185...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP Solving sub-PMP 20/12185.../
+185...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 10/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Thread 21 created with seed 21
+Thread 22 created with seed 22
+Thread 23 created with seed 23
+Solving sub-PMP 21/185...
+Solving sub-PMP 22/185...
+Thread 24 created with seed 24
+Thread 25 created with seed 25
+Thread 26 created with seed 26
+Thread 27 created with seed 27
+Solving sub-PMP 26/185...
+Thread 28 created with seed 28
+Solving sub-PMP 23/185...
+Thread 29 created with seed 29
+Solving sub-PMP 27/185...
+Thread 30 created with seed 30
+uncapacitated TB started
+uncapacitated TB started
+Thread 31 created with seed 31
+Solving sub-PMP 25/185...
+Thread 32 created with seed uncapacitated TB started
+32
+Solving sub-PMP 28/185...
+Thread 33 created with seed 33
+uncapacitated TB started
+Thread 34 created with seed 34
+uncapacitated TB started
+Thread 35 created with seed 35
+Thread 36 created with seed 36
+Thread 37 created with seed 37
+uncapacitated TB started
+Thread 38 created with seed 38
+uncapacitated TB started
+Thread 39 created with seed 39
+Thread 40 created with seed 40
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 37/185...
+Solving sub-PMP 35/185...
+Solving sub-PMP Solving sub-PMP Solving sub-PMP 32/185...
+Solving sub-PMP 40/185...Solving sub-PMP 
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 24/185...
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 33/185...
+uncapacitated TB started
+34/185...
+uncapacitated TB started
+Solving sub-PMP 36/185[INFO] Uncapacitated TB local search started
+31/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 38/185...
+Solving sub-PMP 30/185...
+39/185uncapacitated TB started
+...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 29/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 9
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 18
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Thread 41 created with seed 41
+Thread 42 created with seed 42
+Solving sub-PMP 41/185...
+Thread 43 created with seed 43
+Thread 44 created with seed 44
+Solving sub-PMP 43/185...
+Solving sub-PMP 42/185...Thread 
+45 created with seed 45
+Thread 46 created with seed 46
+Solving sub-PMP 45/185...
+Thread 47 created with seed 47
+Thread 48 created with seed 48
+uncapacitated TB started
+Thread 49 created with seed 49
+Solving sub-PMP 47/185...
+uncapacitated TB started
+Thread 50 created with seed 50
+uncapacitated TB started
+Thread 51 created with seed 51
+Thread 52 created with seed 52
+uncapacitated TB started
+Thread 53 created with seed 53
+Thread 54 created with seed 54
+Thread 55 created with seed 55
+uncapacitated TB started
+Solving sub-PMP 44/185...
+Thread 56 created with seed 56
+Thread 57 created with seed 57
+Thread 58 created with seed 58
+Thread 59 created with seed 59
+Thread 60 created with seed 60
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Solving sub-PMP 53/185...
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 48/185...
+Solving sub-PMP 50/185...
+Solving sub-PMP 49/185...
+Solving sub-PMP 46/185...
+Solving sub-PMP [INFO] Uncapacitated TB local search started
+55/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 58/185...
+Solving sub-PMP 56/Solving sub-PMP 54185/...
+Solving sub-PMP 57/185...
+[INFO] Uncapacitated TB local search started
+185...
+uncapacitated TB started
+Solving sub-PMP 51/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 59/185...
+Solving sub-PMP 52/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 60/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 8
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Thread 61 created with seed 61
+Thread 62 created with seed 62
+Thread 63 created with seed 63
+Thread 64 created with seed 64
+Solving sub-PMP 63/185...
+Thread 65 created with seed 65
+Solving sub-PMP 62/185...
+Thread 66 created with seed 66
+Thread 67 created with seed 67
+Solving sub-PMP 65/185...
+Thread 68 created with seed 68
+Thread 69 created with seed 69
+uncapacitated TB started
+uncapacitated TB started
+Thread 70 created with seed 70
+Thread 71 created with seed 71
+uncapacitated TB started
+Thread 72 created with seed 72
+Thread 73 created with seed 73
+Thread 74 created with seed 74
+Thread 75 created with seed 75
+Thread 76 created with seed 76
+Solving sub-PMP 68/185...
+Solving sub-PMP 69/185...
+Thread 77 created with seed 77
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Thread 78 created with seed 78
+Thread 79 created with seed 79
+Thread 80 created with seed 80
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 72/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 77/185...
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP Solving sub-PMP Solving sub-PMP 7473/Solving sub-PMP 1856779...Solving sub-PMP 71/185...
+
+Solving sub-PMP /66/185185......
+
+Solving sub-PMP 64/185...
+Solving sub-PMP 76/185...Solving sub-PMP 
+80/185...
+Solving sub-PMP 70/185...
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 61/185...
+uncapacitated TB started
+Solving sub-PMP 78/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+/185...
+Solving sub-PMP 75/185...
+uncapacitated TB started
+/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 17
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 17
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Thread 81 created with seed 81
+Thread 82 created with seed 82
+Thread 83 created with seed 83
+Thread 84 created with seed 84
+Solving sub-PMP 82/185...
+Thread 85 created with seed 85
+Solving sub-PMP 81/185...
+Solving sub-PMP 83/185...
+Thread 86 created with seed 86
+Thread 87 created with seed 87
+Solving sub-PMP 86/185...
+Thread 88 created with seed 88
+Thread 89 created with seed 89
+Thread 90 created with seed 90
+Solving sub-PMP 84/185...
+Solving sub-PMP 87/185...
+uncapacitated TB started
+uncapacitated TB started
+Thread 91 created with seed 91
+uncapacitated TB started
+Thread 92 created with seed 92
+Thread 93 created with seed 93
+uncapacitated TB started
+Thread 94 created with seed 94
+Thread 95 created with seed 95
+Thread 96 created with seed 96
+Thread 97 created with seed 97
+Thread 98 created with seed 98
+Thread 99 created with seed 99
+Solving sub-PMP 88/185...
+Thread 100 created with seed 100
+Solving sub-PMP 85/185...
+uncapacitated TB started
+Solving sub-PMP 90/185...
+Solving sub-PMP 94/185...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 93/185...
+uncapacitated TB started
+Solving sub-PMP 91/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 92/185...
+Solving sub-PMP 100/185...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 97/185...
+Solving sub-PMP 99/185...
+Solving sub-PMP 95/185...
+Solving sub-PMP 98/185...
+Solving sub-PMP 96/185...
+uncapacitated TB started
+Solving sub-PMP 89/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 9
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Thread 101 created with seed 101
+Thread 102 created with seed 102
+Thread 103 created with seed 103
+Thread 104 created with seed 104
+Solving sub-PMP 103/185Solving sub-PMP Thread 105 created with seed 105
+102/185...
+Solving sub-PMP 101/185...
+...
+Thread 106 created with seed 106
+Solving sub-PMP 104/185...
+Thread 107 created with seed 107
+Solving sub-PMP 105/185...
+uncapacitated TB started
+Thread 108 created with seed 108
+uncapacitated TB started
+Solving sub-PMP Thread 109 created with seed 109
+106/185...
+Thread 110 created with seed 110
+Thread 111 created with seed 111
+uncapacitated TB started
+uncapacitated TB started
+Thread 112 created with seed 112
+uncapacitated TB started
+Solving sub-PMP 110/Solving sub-PMP 185Solving sub-PMP 108/...109
+/185...185Thread 113 created with seed 113
+[INFO] Uncapacitated TB local search started
+Thread 114 created with seed 114
+[INFO] Uncapacitated TB local search started
+Thread 115 created with seed 115
+Solving sub-PMP 113/185...
+Solving sub-PMP 114/185...
+Thread 116 created with seed 116
+uncapacitated TB started
+Thread 117 created with seed 117
+Thread 118 created with seed 118
+Thread 119 created with seed 119
+Thread 120 created with seed 120
+uncapacitated TB started
+Solving sub-PMP [INFO] Uncapacitated TB local search started
+111/185...
+...
+Solving sub-PMP 116/185...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 117/185...
+
+Solving sub-PMP Solving sub-PMP 112/185...
+Solving sub-PMP 115/185...
+Solving sub-PMP 120118Solving sub-PMP /185119.../Solving sub-PMP 107/uncapacitated TB started
+185...185...
+
+
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 9
+tb solution is feasible
+Num ite total uncapacited TB: 9
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 17
+tb solution is feasible
+Thread 121 created with seed 121
+Thread 122 created with seed 122
+Thread 123 created with seed 123
+Thread 124 created with seed 124
+Solving sub-PMP 123/185...
+Thread 125 created with seed 125
+Thread 126 created with seed 126
+Solving sub-PMP 121/185...
+Solving sub-PMP 125/185...
+Thread 127 created with seed 127
+Thread 128 created with seed 128
+Thread 129 created with seed 129
+Solving sub-PMP 122/185...
+Thread 130 created with seed 130
+Solving sub-PMP 124/Solving sub-PMP 185...129
+/185...
+Solving sub-PMP 128/185...
+Solving sub-PMP 126/185...
+Solving sub-PMP 127/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+Thread 131 created with seed 131
+Thread 132 created with seed 132
+Thread 133 created with seed 133
+Thread 134 created with seed 134
+Thread 135 created with seed 135
+Thread 136 created with seed 136
+Thread 137 created with seed 137
+Thread 138 created with seed 138
+Thread 139 created with seed 139
+Thread 140 created with seed 140
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 130/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 135/185...
+Solving sub-PMP 131/185...
+Solving sub-PMP 132/185...
+Solving sub-PMP 140/185...
+Solving sub-PMP 133/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 136/185...
+Solving sub-PMP 134/185...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 137/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP Solving sub-PMP 138/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+139/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 17
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 18
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Thread 141 created with seed 141
+Thread 142 created with seed 142
+Thread 143 created with seed 143
+Solving sub-PMP 142/185...
+Thread 144 created with seed 144
+Solving sub-PMP Thread 145 created with seed 145
+Solving sub-PMP 144/141/185185......
+
+Thread 146 created with seed 146
+Thread 147 created with seed 147
+Thread 148 created with seed 148
+Solving sub-PMP Solving sub-PMP 143/145/185...185...
+
+Thread 149 created with seed 149
+Thread uncapacitated TB started
+150 created with seed 150
+uncapacitated TB started
+Solving sub-PMP 148/185...
+Thread 151 created with seed 151
+Thread 152 created with seed 152
+Solving sub-PMP 151/185...
+uncapacitated TB started
+Thread 153 created with seed 153
+uncapacitated TB started
+Thread 154 created with seed 154
+Thread 155 created with seed 155
+Thread 156 created with seed 156
+Thread 157 created with seed 157
+Thread 158 created with seed 158
+uncapacitated TB started
+Thread 159 created with seed 159
+Thread 160 created with seed 160
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 150/185...
+uncapacitated TB started
+Solving sub-PMP 149/185...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 158/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 147/185...
+Solving sub-PMP 146/185...
+uncapacitated TB started
+Solving sub-PMP 156/185...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 152/185...
+Solving sub-PMP 157/185...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 153/185...
+Solving sub-PMP 155/185...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP Solving sub-PMP 160Solving sub-PMP 159//185...
+154/185...
+185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 9
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 10
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 17
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 19
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 15
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Thread 161 created with seed 161
+Thread 162 created with seed 162
+Solving sub-PMP 161/185...
+Thread 163 created with seed 163
+Solving sub-PMP 162/185...
+Thread 164 created with seed 164
+Solving sub-PMP 163/185...
+Thread 165 created with seed 165
+Thread 166 created with seed 166
+uncapacitated TB started
+uncapacitated TB started
+Thread 167 created with seed 167
+Solving sub-PMP Thread 168 created with seed 168
+uncapacitated TB started
+Thread 169Solving sub-PMP  created with seed 169
+Thread 170 created with seed 170
+166/185...
+Thread 171 created with seed 171
+Solving sub-PMP 170/185...
+165Thread /185...172
+ created with seed 172Solving sub-PMP 171/185...
+Solving sub-PMP 167/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 169/185...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 168/185...Solving sub-PMP 164/185...
+[INFO] Uncapacitated TB local search started
+
+
+Thread 173 created with seed 173
+Thread 174 created with seed 174
+Thread 175 created with seed 175
+uncapacitated TB started
+uncapacitated TB started
+Thread 176 created with seed 176
+Thread 177 created with seed 177
+Thread 178 created with seed 178
+Thread 179 created with seed 179
+Thread 180 created with seed 180
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 176/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 175/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP Solving sub-PMP 173/185...179
+Solving sub-PMP 180/185...
+Solving sub-PMP 174/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 177/185...
+Solving sub-PMP 178/185...
+Solving sub-PMP 172/185...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+/185...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 11
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 16
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Num ite total uncapacited TB: 14
+tb solution is feasible
+Thread 181 created with seed 181
+Thread 182 created with seed 182
+Thread 183 created with seed 183
+Solving sub-PMP 181/185...
+Thread 184 created with seed 184
+Solving sub-PMP 182/185...
+Thread 185 created with seed 185
+Solving sub-PMP 184/185...
+Solving sub-PMP 185/185...
+Solving sub-PMP 183/185...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 12
+tb solution is feasible
+Num ite total uncapacited TB: 13
+tb solution is feasible
+[INFO] All subproblems solved.
+
+Elapsed time: 35114 ms
+
+
+Stats: 
+Max dist: 727.73
+Min dist: 0.00
+avg of Avg dists: 156.99
+avg Std dev dist: 89.55
+
+First 120 voting weights (sorted): 2034(48.93) 3578(38.93) 3576(34.99) 2588(33.00) 3580(30.00) 1055(25.00) 2032(23.00) 2586(22.14) 3574(22.07) 1396(22.00) 2629(19.00) 4019(17.01) 872(17.00) 3002(16.97) 3908(16.21) 2106(16.00) 3232(15.28) 3891(15.21) 1906(15.17) 1030(15.02) 3000(15.00) 59(14.95) 1010(14.57) 3728(14.37) 502(14.21) 3572(14.16) 1534(13.53) 57(13.51) 1812(13.37) 3594(13.02) 1810(13.00) 3038(13.00) 2243(13.00) 1960(12.78) 1111(12.74) 504(12.63) 2564(12.63) 2010(12.60) 3043(12.32) 3098(12.29) 1804(12.27) 681(12.27) 3993(12.14) 3078(12.09) 737(12.09) 2940(12.00) 3629(12.00) 2687(11.97) 1129(11.90) 150(11.81) 3040(11.76) 2372(11.66) 453(11.55) 2900(11.35) 1764(11.29) 3388(11.28) 1982(11.22) 3716(11.20) 3127(11.10) 271(11.10) 1166(11.07) 1710(11.04) 3315(11.00) 4050(11.00) 3546(10.98) 2056(10.92) 88(10.90) 3707(10.80) 2742(10.71) 3239(10.62) 3160(10.59) 2662(10.55) 2998(10.52) 1013(10.51) 2134(10.46) 4218(10.42) 3653(10.40) 1864(10.39) 949(10.32) 3860(10.29) 3544(10.27) 3756(10.27) 133(10.25) 876(10.24) 1599(10.23) 1234(10.19) 311(10.16) 2047(10.14) 2899(10.14) 151(10.13) 975(10.13) 3056(10.12) 1993(10.10) 1798(10.09) 3281(10.09) 4214(10.09) 3477(10.07) 1388(10.04) 941(10.02) 1519(10.00) 1109(10.00) 795(10.00) 3631(10.00) 3068(10.00) 658(10.00) 840(10.00) 3906(10.00) 2942(10.00) 3671(10.00) 718(10.00) 1213(10.00) 976(10.00) 3286(10.00) 3213(10.00) 4216(10.00) 3964(10.00) 2818(10.00) 1834(10.00) 3632(9.95) 565(9.93) 
+
+
+Filtered 120 locations: 2034 3578 3576 2588 3580 1055 2032 2586 3574 1396 2629 4019 872 3002 3908 2106 3232 3891 1906 1030 3000 59 1010 3728 502 3572 1534 57 1812 3594 1810 3038 2243 1960 1111 504 2564 2010 3043 3098 1804 681 3993 3078 737 2940 3629 2687 1129 150 3040 2372 453 2900 1764 3388 1982 3716 3127 271 1166 1710 3315 4050 3546 2056 88 3707 2742 3239 3160 2662 2998 1013 2134 4218 3653 1864 949 3860 3544 3756 133 876 1599 1234 311 2047 2899 151 975 3056 1993 1798 3281 4214 3477 1388 941 1519 1109 795 3631 3068 658 840 3906 2942 3671 718 1213 976 3286 3213 4216 3964 2818 1834 3632 565 
+
+Extracted 0 prioritized locations: 
+
+Final instance parameters:
+loc_max_id: 4461
+loc_cnt: 120
+service: fnl4461_0100
+cust_max_id: 4461
+cust_cnt: 4461
+unweighted obj function
+p: 100
+total_demand: 224395.00
+threshold_dist: 817.28
+
+
+
+-------------------------------------------------
+Final Problem RSSV heuristic
+-------------------------------------------------
+    RSSV_EXACT_CPMP_BIN
+-------------------------------------------------
+Gap Cplex Reports: gap_Bin_service_fnl4461_0100_p_100_RSSV_EXACT_CPMP_BIN.csv
+[CALLBACK] Generating reports cplex callbacks...
+[CALLBACK] Using BreakCallback...
+Time Limit with not improving 1.00% (gap): 120.00 seconds
+Time Limit with Gap less than 1%: 120.00 seconds
+Default row names c1, c2 ... being created.
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_TimeLimit                               2365
+Legacy callback                                  i
+Tried aggregator 2 times.
+MIP Presolve eliminated 453995 rows and 453995 columns.
+Aggregator did 8 substitutions.
+Reduced MIP has 4574 rows, 81437 columns, and 162874 nonzeros.
+Reduced MIP has 81437 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 1.06 sec. (453.02 ticks)
+Found incumbent of value 2347382.321145 after 1.78 sec. (720.27 ticks)
+Tried aggregator 1 time.
+Detecting symmetries...
+Reduced MIP has 4574 rows, 81437 columns, and 162874 nonzeros.
+Reduced MIP has 81437 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.33 sec. (118.92 ticks)
+Probing time = 1.88 sec. (13.62 ticks)
+Clique table members: 85780.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 32 threads.
+Root relaxation solution time = 0.34 sec. (79.15 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                      2347382.3211     3861.3123            99.84%
+*     0+    0                       938889.8121     3861.3123            99.59%
+*     0+    0                       866983.7991     3861.3123            99.55%
+*     0+    0                       839773.7298     3861.3123            99.54%
+      0     0   760083.0152   105   839773.7298   760083.0152      636    9.49%
+Time: 7.72 seconds
+MIP Gap: 0.09
+Nodes: 0
+Best Objective: 760083.015246570226736
+Incumbent Obj:  839773.729804596514441
+      0     0   760124.0741   117   839773.7298    Cuts: 1243      795    9.48%
+*     0+    0                       795945.5582   760124.0741             4.50%
+      0     0   764049.7802   826   795945.5582    Cuts: 1243     2869    4.01%
+      0     0   765039.8722   985   795945.5582     Cuts: 316     3358    3.88%
+*     0+    0                       777838.3349   765039.8722             1.65%
+*     0+    0                       777467.5047   765039.8722             1.60%
+      0     0  -1.00000e+75     0   777467.5047   765039.8722     3358    1.60%
+Time: 53.570611953735352 seconds
+MIP Gap: 0.015984761230542
+Nodes: 0
+Best Objective: 765039.872246125363745
+Incumbent Obj:  777467.504672826034948
+      0     0   765151.6293   940   777467.5047     Cuts: 169     3546    1.58%
+      0     0   765220.5335   916   777467.5047     Cuts: 100     3803    1.58%
+Detecting symmetries...
+      0     0   765273.0035  1011   777467.5047     Cuts: 120     4040    1.57%
+      0     0   765297.7301   973   777467.5047      Cuts: 80     4255    1.57%
+      0     0   765319.7884  1073   777467.5047      Cuts: 83     4401    1.56%
+      0     0   765333.5030   948   777467.5047      Cuts: 76     4505    1.56%
+      0     0   765342.0930  1079   777467.5047      Cuts: 38     4595    1.56%
+*     0+    0                       774288.1545   765342.0930             1.16%
+*     0+    0                       769503.2382   765342.0930             0.54%
+*     0+    0                       769091.6536   765342.0930             0.49%
+      0     0  -1.00000e+75     0   769091.6536   765342.0930     4595    0.49%
+Detecting symmetries...
+Time: 122.452381849288940 seconds
+MIP Gap: 0.004875310502864
+Nodes: 0
+Best Objective: 765342.092958509572782
+Incumbent Obj:  769091.653574847849086
+      0     2   765342.0930  1079   769091.6536   765342.0930     4595    0.49%
+Elapsed time = 120.82 sec. (7445.80 ticks, tree = 0.02 MB, solutions = 10)
+      8     9   765995.3289   814   769091.6536   765392.2367     5221    0.48%
+     52    46   766509.0430   777   769091.6536   765457.4367     6678    0.47%
+    104    83   766745.4976   719   769091.6536   765494.9342     9339    0.47%
+Time: 128.287525892257690 seconds
+MIP Gap: 0.004676580927590
+Nodes: 106
+Best Objective: 765494.934216171153821
+Incumbent Obj:  769091.653574847849086
+    184   152   766667.5852   560   769091.6536   765523.8610    15511    0.46%
+    299   246   766504.8612   457   769091.6536   765523.8610    23105    0.46%
+*   338+  101                       767669.6382   765523.8610             0.28%
+    339   298   766471.9541   526   767669.6382   765523.8610    28162    0.28%
+Time: 134.586572885513306 seconds
+MIP Gap: 0.004638969360049
+Nodes: 353
+Best Objective: 765523.860958844656125
+Incumbent Obj:  769091.653574847849086
+*   381+  101                       767540.9665   765523.8610             0.26%
+*   402+  101                       767417.1287   765523.8610             0.25%
+    435   362   767113.6866   438   767417.1287   765523.8610    34855    0.25%
+    503   379   767464.5874   550   767417.1287   765523.8610    36937    0.25%
+    590   494   767351.0451   357   767417.1287   765523.8610    41931    0.25%
+Time: 141.376824855804443 seconds
+MIP Gap: 0.002892756309513
+Nodes: 669
+Best Objective: 765523.860958844656125
+Incumbent Obj:  767744.759455856401473
+   1337  1120   767196.9427   402   767417.1287   765523.8610    60521    0.25%
+Elapsed time = 143.59 sec. (10583.46 ticks, tree = 58.81 MB, solutions = 17)
+Time: 147.494542837142944 seconds
+MIP Gap: 0.002884825423612
+Nodes: 1375
+Best Objective: 765529.949854933074676
+Incumbent Obj:  767744.759455856401473
+   2062  1237   767190.6619   252   767417.1287   765550.8983    73792    0.24%
+*  2065+ 1564                       767263.7036   765550.8983             0.22%
+*  2077+ 1560                       767061.4187   765550.8983             0.20%
+Time: 153.199272871017456 seconds
+MIP Gap: 0.002432418707119
+Nodes: 1997
+Best Objective: 765550.448943566065282
+Incumbent Obj:  767417.128723636735231
+   2568   844   767042.3796   212   767061.4187   765558.0954   102902    0.20%
+Time: 160.189512014389038 seconds
+MIP Gap: 0.001959847301736
+Nodes: 2524
+Best Objective: 765558.095417715143412
+Incumbent Obj:  767061.418669359874912
+*  3102+ 1014                       766744.4739   765558.0954             0.15%
+*  3159+ 1012                       766625.8668   765558.0954             0.14%
+   3414  1418   767049.3748   356   766625.8668   765558.0954   130757    0.14%
+Time: 166.990525007247925 seconds
+MIP Gap: 0.001392819364689
+Nodes: 3190
+Best Objective: 765558.095417715143412
+Incumbent Obj:  766625.866770424181595
+*  3778+  864                       766560.1031   765558.0954             0.13%
+*  4100+  894                       766548.0470   765558.0954             0.13%
+   4112   884   766280.9882   479   766548.0470   765558.0954   157580    0.13%
+*  4125+  894                       766547.9518   765558.0954             0.13%
+Time: 173.994405984878540 seconds
+MIP Gap: 0.001291316967242
+Nodes: 3989
+Best Objective: 765558.095417715143412
+Incumbent Obj:  766547.951794071588665
+*  4657+ 1081                       766533.8028   765558.0954             0.13%
+   4921  1311    infeasible         766533.8028   765558.0954   184515    0.13%
+Time: 180.179590940475464 seconds
+MIP Gap: 0.001272882429103
+Nodes: 4793
+Best Objective: 765558.095417715143412
+Incumbent Obj:  766533.802826646715403
+*  5318+ 1402                       766533.7076   765873.4760             0.09%
+   5583  1543   766414.6262   550   766533.7076   765873.4760   195370    0.09%
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 1 time.
+MIP Presolve eliminated 0 rows and 41 columns.
+Reduced MIP has 4574 rows, 81396 columns, and 162792 nonzeros.
+Reduced MIP has 81396 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.28 sec. (100.20 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 4574 rows, 81396 columns, and 162792 nonzeros.
+Reduced MIP has 81396 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.39 sec. (121.19 ticks)
+Represolve time = 4.43 sec. (701.43 ticks)
+   5585     0   765405.5956  1100   766533.7076      Cuts: 41   218664    0.07%
+   5585     0   765427.6193  1053   766533.7076      Cuts: 56   218803    0.07%
+   5585     0   765439.9464  1094   766533.7076      Cuts: 63   218938    0.07%
+*  5585+    0                       766487.3217   765970.6994             0.07%
+   5585     0   765443.7979  1002   766487.3217      Cuts: 44   219016    0.07%
+   5585     0   765449.3621  1012   766487.3217      Cuts: 47   219094    0.07%
+   5585     0   765453.0118  1100   766487.3217      Cuts: 31   219159    0.07%
+   5585     0   765456.0806  1052   766487.3217      Cuts: 36   219221    0.07%
+   5585     0   765457.2582  1058   766487.3217      Cuts: 19   219264    0.07%
+*  5585+    0                       766473.3203   765970.6994             0.07%
+Time: 309.330016851425171 seconds
+MIP Gap: 0.000655757860917
+Nodes: 5585
+Best Objective: 765970.699356623808853
+Incumbent Obj:  766473.320261568762362
+Stopping optimization: Gap is less than 1% for more than 120.00 seconds.
+Stopping optimization: Gap is less than 1% for more than 120.00 seconds.
+
+Clique cuts applied:  1343
+Cover cuts applied:  159
+Flow cuts applied:  12
+Mixed integer rounding cuts applied:  102
+Zero-half cuts applied:  29
+Lift and project cuts applied:  1
+Gomory fractional cuts applied:  6
+
+Root node processing (before b&c):
+  Real time             =  116.67 sec. (7491.96 ticks)
+Parallel b&c, 32 threads:
+  Real time             =  194.02 sec. (24716.40 ticks)
+  Sync time (average)   =   36.33 sec.
+  Wait time (average)   =    1.25 sec.
+                          ------------
+Total (root+branch&cut) =  310.70 sec. (32208.37 ticks)
+[INFO] Saving variables cplex:
+./outputs/solutions/2024-08-27_LIT_seed_0_1-2p/VarsValues_cplex/test_lit_fnl4461_0100_CPMP_Vars_Bin_p_100_RSSV_EXACT_CPMP_BIN.txt
+[INFO] Saving results cplex: 
+./outputs/solutions/2024-08-27_LIT_seed_0_1-2p/Results_cplex/test_lit_fnl4461_0100_Bin_RSSV_EXACT_CPMP_BIN.csv
+
+Final solution CPMP:
+p locations: 1864 2998 2662 658 3707 88 1710 3213 271 3127 3546 4214 3388 2742 2900 2056 1388 2372 3040 150 2134 2687 3580 3728 3000 3632 1010 3098 2940 681 1234 3906 2010 57 2032 1534 3038 949 3477 3860 3756 840 976 1213 1055 502 1519 941 975 1810 3286 311 565 3068 1804 1109 872 718 3056 133 1798 2588 1599 876 4216 3594 3002 3239 3160 1834 1166 3671 3574 3908 2564 3232 59 3653 2818 1396 3716 4050 3964 1960 3078 1812 3315 3631 2629 795 1129 2586 453 504 2047 4218 2106 1906 737 1764 
+p size: 100
+objective: 766473.320262102410197
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+Statistics:
+Max distance: 777.743530992061665
+Min distance: 0.000000000000000
+Avg distance: 171.816480668482939
+Std deviation distance: 108.534964451585395
+
+
+Final total elapsed time: 351s
+[INFO] Saving assignment: ./outputs/solutions/2024-08-27_LIT_seed_0_1-2p/Assignments/test_lit_fnl4461_0100_p_100_RSSV_EXACT_CPMP_BIN.txt
+[INFO] Saving results: ./outputs/solutions/2024-08-27_LIT_seed_0_1-2p/test_lit_fnl4461_0100_results_RSSV_EXACT_CPMP_BIN.csv
+[INFO] Saving all results: ./outputs/solutions/test_all_results.csv
+Post Optimization: EXACT_CPMP_BIN
+
+
+-------------------------------------------------
+Post Optimization
+-------------------------------------------------
+method: EXACT_CPMP_BIN
+-------------------------------------------------
+Time for post-optimization: 3249.000000000000000s
+PostOptimization constructor for Solution_cap
+p locations: 1864 2998 2662 658 3707 88 1710 3213 271 3127 3546 4214 3388 2742 2900 2056 1388 2372 3040 150 2134 2687 3580 3728 3000 3632 1010 3098 2940 681 1234 3906 2010 57 2032 1534 3038 949 3477 3860 3756 840 976 1213 1055 502 1519 941 975 1810 3286 311 565 3068 1804 1109 872 718 3056 133 1798 2588 1599 876 4216 3594 3002 3239 3160 1834 1166 3671 3574 3908 2564 3232 59 3653 2818 1396 3716 4050 3964 1960 3078 1812 3315 3631 2629 795 1129 2586 453 504 2047 4218 2106 1906 737 1764 
+p size: 100
+objective: 766473.320262102410197
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+[INFO] Running post-optimization
+Time limit: 3249.000000000000000
+Max size of the neigh: 43
+ ------------------------------------ 
+
+Iteration Post-Optimization: 1
+Size of neighborhood: 1
+[INFO] Adding MIP start solution
+Gap Cplex Reports: gap_Bin_service_fnl4461_0100_p_100_RSSV_POSTOPT.csv
+[CALLBACK] Generating reports cplex callbacks...
+Default row names c1, c2 ... being created.
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_TimeLimit                               3249
+CPXPARAM_MIP_Tolerances_LowerCutoff              765970.69935662381
+Legacy callback                                  i
+1 of 2 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 766460.5827.
+Presolve has eliminated 17232872 rows and 17232872 columns...
+Tried aggregator 1 time.
+Presolve has eliminated 17232872 rows and 17232872 columns...
+MIP Presolve eliminated 17232872 rows and 17232872 columns.
+Reduced MIP has 9023 rows, 2672110 columns, and 5344420 nonzeros.
+Reduced MIP has 2672110 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 178.93 sec. (44257.27 ticks)
+Presolve has eliminated 0 rows and 0 columns...
+Tried aggregator 1 time.
+Detecting symmetries...
+Reduced MIP has 9023 rows, 2672110 columns, and 5344420 nonzeros.
+Reduced MIP has 2672110 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 61.52 sec. (22321.32 ticks)
+Probing time = 9.75 sec. (619.82 ticks)
+Clique table members: 2672210.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 32 threads.
+Root relaxation solution time = 65.90 sec. (11963.57 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                       766460.5827        0.0000           100.00%
+      0     0   538511.3138  1033   766460.5827   538511.3138    18850   29.74%
+Time: 687.333193063735962 seconds
+MIP Gap: 0.297405077470341
+Nodes: 0
+Best Objective: 538511.313753530033864
+Incumbent Obj:  766460.582741825841367
+Time: 721.893193006515503 seconds
+MIP Gap: 0.297405077470341
+Nodes: 0
+Best Objective: 538511.313753530033864
+Incumbent Obj:  766460.582741825841367
+      0     0   576717.6068  3995   766460.5827    Cuts: 2355    22530   24.76%
+Time: 781.502342939376831 seconds
+MIP Gap: 0.247557382813571
+Nodes: 0
+Best Objective: 576717.606848494848236
+Incumbent Obj:  766460.582741825841367
+      0     0   590043.4424  4927   766460.5827    Cuts: 2355    25610   23.02%
+Time: 808.222573995590210 seconds
+MIP Gap: 0.230171184731833
+Nodes: 0
+Best Objective: 590043.442361888359301
+Incumbent Obj:  766460.582741825841367
+      0     0   596695.7451  3318   766460.5827    Cuts: 1926    27521   22.15%
+Time: 881.230466842651367 seconds
+MIP Gap: 0.221491935135019
+Nodes: 0
+Best Objective: 596695.745065624359995
+Incumbent Obj:  766460.582741825841367
+      0     0   601896.7631  3671   766460.5827    Cuts: 1331    29229   21.47%
+Time: 907.185955047607422 seconds
+MIP Gap: 0.214706174492778
+Nodes: 0
+Best Objective: 601896.763121823314577
+Incumbent Obj:  766460.582741825841367
+      0     0   606355.3656  3296   766460.5827    Cuts: 1532    30623   20.89%
+Detecting symmetries...
+Time: 939.148979902267456 seconds
+MIP Gap: 0.208889042314168
+Nodes: 0
+Best Objective: 606355.365641326876357
+Incumbent Obj:  766460.582741825841367
+      0     0   610434.6245  3839   766460.5827    Cuts: 1259    31952   20.36%
+Time: 972.144595861434937 seconds
+MIP Gap: 0.203566839208675
+Nodes: 0
+Best Objective: 610434.624535032897256
+Incumbent Obj:  766460.582741825841367
+      0     0   613991.5355  4405   766460.5827    Cuts: 1132    33302   19.89%
+Time: 1000.786176919937134 seconds
+MIP Gap: 0.198926142744563
+Nodes: 0
+Best Objective: 613991.535451244562864
+Incumbent Obj:  766460.582741825841367
+      0     0   617241.9634  4080   766460.5827    Cuts: 1207    34558   19.47%
+Time: 1028.226800918579102 seconds
+MIP Gap: 0.194685314108407
+Nodes: 0
+Best Objective: 617241.963439020444639
+Incumbent Obj:  766460.582741825841367
+      0     0   620093.0240  4245   766460.5827    Cuts: 1056    35808   19.10%
+Time: 1066.995162963867188 seconds
+MIP Gap: 0.190965539621785
+Nodes: 0
+Best Objective: 620093.023959705256857
+Incumbent Obj:  766460.582741825841367
+      0     0   622940.2417  5485   766460.5827    Cuts: 1173    37186   18.73%
+Time: 1095.708508968353271 seconds
+MIP Gap: 0.187250778815909
+Nodes: 0
+Best Objective: 622940.241691723698750
+Incumbent Obj:  766460.582741825841367
+      0     0   625428.2311  4563   766460.5827    Cuts: 1170    38407   18.40%
+Time: 1126.472081899642944 seconds
+MIP Gap: 0.184004702676493
+Nodes: 0
+Best Objective: 625428.231101164594293
+Incumbent Obj:  766460.582741825841367
+      0     0   627786.2575  5073   766460.5827    Cuts: 1029    39588   18.09%
+Time: 1164.968986988067627 seconds
+MIP Gap: 0.180928189039958
+Nodes: 0
+Best Objective: 627786.257535836193711
+Incumbent Obj:  766460.582741825841367
+      0     0   630048.7414  5425   766460.5827    Cuts: 1023    40793   17.80%
+Time: 1222.015523910522461 seconds
+MIP Gap: 0.177976329712870
+Nodes: 0
+Best Objective: 630048.741355848149396
+Incumbent Obj:  766460.582741825841367
+      0     0   632118.1654  5160   766460.5827     Cuts: 930    41967   17.53%
+Time: 1264.199511051177979 seconds
+MIP Gap: 0.175276355239995
+Nodes: 0
+Best Objective: 632118.165363715845160
+Incumbent Obj:  766460.582741825841367
+      0     0   634313.9629  5582   766460.5827     Cuts: 923    43187   17.24%
+Time: 1303.930271863937378 seconds
+MIP Gap: 0.172411501444922
+Nodes: 0
+Best Objective: 634313.962872958043590
+Incumbent Obj:  766460.582741825841367
+      0     0   636219.1368  5130   766460.5827    Cuts: 1000    44262   16.99%
+Time: 1350.922703027725220 seconds
+MIP Gap: 0.169925823805331
+Nodes: 0
+Best Objective: 636219.136805107234977
+Incumbent Obj:  766460.582741825841367
+      0     0   638045.6214  5532   766460.5827     Cuts: 928    45451   16.75%
+Time: 1390.768151044845581 seconds
+MIP Gap: 0.167542812089917
+Nodes: 0
+Best Objective: 638045.621353184105828
+Incumbent Obj:  766460.582741825841367
+      0     0   639725.9476  5508   766460.5827     Cuts: 907    46562   16.54%
+Time: 1437.582934856414795 seconds
+MIP Gap: 0.165350492893245
+Nodes: 0
+Best Objective: 639725.947602220927365
+Incumbent Obj:  766460.582741825841367
+      0     0   641279.3301  6367   766460.5827     Cuts: 851    47716   16.33%
+Time: 1482.207916975021362 seconds
+MIP Gap: 0.163323796975255
+Nodes: 0
+Best Objective: 641279.330136563978158
+Incumbent Obj:  766460.582741825841367
+      0     0   642846.8315  5702   766460.5827     Cuts: 898    48800   16.13%
+Time: 1523.757372856140137 seconds
+MIP Gap: 0.161278680228857
+Nodes: 0
+Best Objective: 642846.831509783398360
+Incumbent Obj:  766460.582741825841367
+      0     0   644275.0680  6201   766460.5827     Cuts: 771    49860   15.94%
+Time: 1556.337417840957642 seconds
+MIP Gap: 0.159415262115157
+Nodes: 0
+Best Objective: 644275.068043101346120
+Incumbent Obj:  766460.582741825841367
+      0     0   645589.0306  6363   766460.5827     Cuts: 772    50798   15.77%
+Time: 1591.365871906280518 seconds
+MIP Gap: 0.157700937133457
+Nodes: 0
+Best Objective: 645589.030567584093660
+Incumbent Obj:  766460.582741825841367
+      0     0   646932.9738  5498   766460.5827     Cuts: 790    51730   15.59%
+Time: 1649.094068050384521 seconds
+MIP Gap: 0.155947496300933
+Nodes: 0
+Best Objective: 646932.973849883768708
+Incumbent Obj:  766460.582741825841367
+      0     0   648162.2513  5921   766460.5827     Cuts: 798    52695   15.43%
+Time: 1690.194920063018799 seconds
+MIP Gap: 0.154343659846562
+Nodes: 0
+Best Objective: 648162.251273323898204
+Incumbent Obj:  766460.582741825841367
+      0     0   649462.4143  6206   766460.5827     Cuts: 838    53678   15.26%
+Time: 1725.450095891952515 seconds
+MIP Gap: 0.152647339082600
+Nodes: 0
+Best Objective: 649462.414274586830288
+Incumbent Obj:  766460.582741825841367
+      0     0   650617.4537  5779   766460.5827     Cuts: 711    54554   15.11%
+Time: 1771.309891939163208 seconds
+MIP Gap: 0.151140360818767
+Nodes: 0
+Best Objective: 650617.453712863731198
+Incumbent Obj:  766460.582741825841367
+      0     0   651747.2871  6725   766460.5827     Cuts: 710    55521   14.97%
+Time: 1809.642602920532227 seconds
+MIP Gap: 0.149666268898878
+Nodes: 0
+Best Objective: 651747.287064796662889
+Incumbent Obj:  766460.582741825841367
+      0     0   652947.8917  6729   766460.5827     Cuts: 788    56537   14.81%
+Time: 1857.011847972869873 seconds
+MIP Gap: 0.148099841755040
+Nodes: 0
+Best Objective: 652947.891726286034100
+Incumbent Obj:  766460.582741825841367
+      0     0   653992.5155  6704   766460.5827     Cuts: 714    57487   14.67%
+Time: 1908.815320968627930 seconds
+MIP Gap: 0.146736922628432
+Nodes: 0
+Best Objective: 653992.515514295548201
+Incumbent Obj:  766460.582741825841367
+      0     0   654995.4266  6861   766460.5827     Cuts: 767    58459   14.54%
+Time: 1951.060545921325684 seconds
+MIP Gap: 0.145428426031043
+Nodes: 0
+Best Objective: 654995.426578845828772
+Incumbent Obj:  766460.582741825841367
+      0     0   655931.0831  7185   766460.5827     Cuts: 673    59433   14.42%
+Time: 2011.891798973083496 seconds
+MIP Gap: 0.144207676328408
+Nodes: 0
+Best Objective: 655931.083107309299521
+Incumbent Obj:  766460.582741825841367
+      0     0   656845.2889  7254   766460.5827     Cuts: 682    60433   14.30%
+Time: 2061.796087026596069 seconds
+MIP Gap: 0.143014913322066
+Nodes: 0
+Best Objective: 656845.288936223369092
+Incumbent Obj:  766460.582741825841367
+      0     0   657737.8491  7218   766460.5827     Cuts: 719    61441   14.19%
+Time: 2116.581466913223267 seconds
+MIP Gap: 0.141850391438000
+Nodes: 0
+Best Objective: 657737.849058100488037
+Incumbent Obj:  766460.582741825841367
+      0     0   658564.1834  7152   766460.5827     Cuts: 703    62397   14.08%
+Time: 2158.809476852416992 seconds
+MIP Gap: 0.140772274172784
+Nodes: 0
+Best Objective: 658564.183445461909287
+Incumbent Obj:  766460.582741825841367
+      0     0   659415.9649  7058   766460.5827     Cuts: 721    63290   13.97%
+Time: 2204.509027957916260 seconds
+MIP Gap: 0.139660956147023
+Nodes: 0
+Best Objective: 659415.964907098328695
+Incumbent Obj:  766460.582741825841367
+      0     0   660207.8314  6557   766460.5827     Cuts: 650    64218   13.86%
+Time: 2276.285763025283813 seconds
+MIP Gap: 0.138627809085859
+Nodes: 0
+Best Objective: 660207.831405655480921
+Incumbent Obj:  766460.582741825841367
+      0     0   660932.3395  7547   766460.5827     Cuts: 606    65233   13.77%
+Time: 2340.316395044326782 seconds
+MIP Gap: 0.137682544445369
+Nodes: 0
+Best Objective: 660932.339492850936949
+Incumbent Obj:  766460.582741825841367
+      0     0   661724.3967  8108   766460.5827     Cuts: 639    66130   13.66%
+Time: 2404.177727937698364 seconds
+MIP Gap: 0.136649148612962
+Nodes: 0
+Best Objective: 661724.396664760890417
+Incumbent Obj:  766460.582741825841367
+      0     0   662485.7016  7179   766460.5827     Cuts: 634    67285   13.57%
+Time: 2463.286005973815918 seconds
+MIP Gap: 0.135655875155692
+Nodes: 0
+Best Objective: 662485.701617641956545
+Incumbent Obj:  766460.582741825841367
+      0     0   663222.5673  7939   766460.5827     Cuts: 603    68274   13.47%
+Time: 2518.026514053344727 seconds
+MIP Gap: 0.134694487535253
+Nodes: 0
+Best Objective: 663222.567333443905227
+Incumbent Obj:  766460.582741825841367
+      0     0   663904.9938  7777   766460.5827     Cuts: 569    69153   13.38%
+Time: 2560.672909975051880 seconds
+MIP Gap: 0.133804126752102
+Nodes: 0
+Best Objective: 663904.993778148898855
+Incumbent Obj:  766460.582741825841367
+      0     0   664528.9353  7974   766460.5827     Cuts: 575    70041   13.30%
+Time: 2618.457251071929932 seconds
+MIP Gap: 0.132990071155529
+Nodes: 0
+Best Objective: 664528.935305081889965
+Incumbent Obj:  766460.582741825841367
+      0     0   665139.4293  7743   766460.5827     Cuts: 598    70996   13.22%
+Time: 2689.518066883087158 seconds
+MIP Gap: 0.132193560555706
+Nodes: 0
+Best Objective: 665139.429283582605422
+Incumbent Obj:  766460.582741825841367
+      0     0   665691.4900  7973   766460.5827     Cuts: 564    71939   13.15%
+Time: 2740.893203973770142 seconds
+MIP Gap: 0.131473287761187
+Nodes: 0
+Best Objective: 665691.489989402471110
+Incumbent Obj:  766460.582741825841367
+      0     0   666208.0067  7398   766460.5827     Cuts: 569    72994   13.08%
+Time: 2799.892277956008911 seconds
+MIP Gap: 0.130799389128649
+Nodes: 0
+Best Objective: 666208.006728006876074
+Incumbent Obj:  766460.582741825841367
+      0     0   666694.3098  7310   766460.5827     Cuts: 482    74040   13.02%
+Time: 2860.980231046676636 seconds
+MIP Gap: 0.130164910180063
+Nodes: 0
+Best Objective: 666694.309832677477971
+Incumbent Obj:  766460.582741825841367
+      0     0   667159.7943  7069   766460.5827     Cuts: 492    75087   12.96%
+Time: 2937.201393842697144 seconds
+MIP Gap: 0.129557593286539
+Nodes: 0
+Best Objective: 667159.794292796636000
+Incumbent Obj:  766460.582741825841367
+      0     0   667589.2000  7938   766460.5827     Cuts: 474    75954   12.90%
+Time: 2996.459939002990723 seconds
+MIP Gap: 0.128997348271913
+Nodes: 0
+Best Objective: 667589.200013184803538
+Incumbent Obj:  766460.582741825841367
+      0     0   667974.8171  7704   766460.5827     Cuts: 508    76890   12.85%
+Time: 3059.448058843612671 seconds
+MIP Gap: 0.128494234237023
+Nodes: 0
+Best Objective: 667974.817089552292600
+Incumbent Obj:  766460.582741825841367
+      0     0   668362.9989  7233   766460.5827     Cuts: 464    77769   12.80%
+Time: 3134.876507997512817 seconds
+MIP Gap: 0.127987774023580
+Nodes: 0
+Best Objective: 668362.998879883438349
+Incumbent Obj:  766460.582741825841367
+      0     0   668773.4351  7773   766460.5827     Cuts: 460    78654   12.75%
+*     0+    0                       766090.8066   668773.4351            12.70%
+Time: 3208.680819988250732 seconds
+MIP Gap: 0.127031117806581
+Nodes: 0
+Best Objective: 668773.435133691993542
+Incumbent Obj:  766090.806642882758752
+      0     0   669119.3791  7723   766090.8066     Cuts: 478    79618   12.66%
+Advanced basis not built.
+
+Clique cuts applied:  10493
+Cover cuts applied:  22082
+Flow cuts applied:  475
+Mixed integer rounding cuts applied:  2730
+Zero-half cuts applied:  622
+Gomory fractional cuts applied:  5
+
+Root node processing (before b&c):
+  Real time             = 3253.67 sec. (1024199.93 ticks)
+Parallel b&c, 32 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) = 3253.67 sec. (1024199.93 ticks)
+Post-Optimization Solution: 
+p locations: 3860 3756 3728 4050 3716 3707 3632 3594 3580 3908 3574 4214 3546 3477 3388 1599 1534 1396 3653 2818 1710 3213 1109 872 1798 2588 1055 976 502 1213 1010 3906 1234 681 949 2134 2687 941 975 1810 2047 4216 876 840 271 1519 150 88 57 2032 1764 133 718 3056 453 2586 504 565 311 1129 795 1804 3068 3671 1166 1834 2940 3098 1864 3286 737 1906 3964 1960 2010 4227 1388 2056 2106 3232 59 2564 3038 3631 2629 658 2662 2742 2900 2998 3000 3002 3160 3239 2372 3040 3078 1812 3315 3127 
+p size: 100
+objective: 766090.806642882176675
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+Comparing Best Bounds: 
+Old Best Bound: 669119.379142899648286
+New Best Bound: 669119.379142899648286
+Time elapsed: 3437.446890746000008s
+Time remaining: 3249.000000000000000s
+
+
+
+Finishing post-optimization
+p locations: 3860 3756 3728 4050 3716 3707 3632 3594 3580 3908 3574 4214 3546 3477 3388 1599 1534 1396 3653 2818 1710 3213 1109 872 1798 2588 1055 976 502 1213 1010 3906 1234 681 949 2134 2687 941 975 1810 2047 4216 876 840 271 1519 150 88 57 2032 1764 133 718 3056 453 2586 504 565 311 1129 795 1804 3068 3671 1166 1834 2940 3098 1864 3286 737 1906 3964 1960 2010 4227 1388 2056 2106 3232 59 2564 3038 3631 2629 658 2662 2742 2900 2998 3000 3002 3160 3239 2372 3040 3078 1812 3315 3127 
+p size: 100
+objective: 766090.806642882176675
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+Solution Stats
+Statistics:
+Max distance: 777.743530992061665
+Min distance: 0.000000000000000
+Avg distance: 171.730734508603945
+Std deviation distance: 108.582579904904264
+
+
+[INFO] Saving assignment: ./outputs/solutions/2024-08-27_LIT_seed_0_1-2p/Assignments/test_lit_fnl4461_0100_p_100_RSSV_EXACT_CPMP_BIN_POSTOPT.txt
+[INFO] Saving results: ./outputs/solutions/2024-08-27_LIT_seed_0_1-2p/test_lit_fnl4461_0100_results_RSSV_EXACT_CPMP_BIN_POSTOPT.csv
+[INFO] Saving all results: ./outputs/solutions/test_all_results.csv
+Final total elapsed time (post opt): 3788s
+PostOptimization destructor
+Finish solving problem
+Elapsed time: 3789098 ms
+
+RSSV finished.

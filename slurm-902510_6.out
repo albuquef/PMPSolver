@@ -1,0 +1,1933 @@
+Debug: configOverride contents: IsWeighted_ObjFunc add_break_callback add_generate_reports add_threshold_distance_rssv bw_multiplier capacities cover_mode coverages cust_max_id distance_matrix loc_max_id max_ite_subprob_rssv method method_post_opt method_rssv_fp method_rssv_sp output p seed service size_subproblems_rssv subarea threads time time_cplex time_subprob_rssv weights 
+Loading instance...
+Scanning input data...
+Distance matrix dimensions: 4462 x 4462 = 19909444
+Elapsed time: 0 ms
+
+Loading weights...
+Skipped line: customer weight coord_x coord_y
+Loaded 4461 weights
+Loaded 4461 coordinates
+Total customer demand: 224395.00
+Elapsed time: 4 ms
+
+Loading capacities...
+Skipped line: location capacity coord_x coord_y
+Loaded 4461 capacities
+Loaded 4461 coordinates
+Elapsed time: 4 ms
+
+Loading distance matrix...
+Computing euclidian distances...
+bw multiplier: 0.50
+Loaded 19904982 distances
+dists stdev: 954.33
+bandwidth h: 17.53
+locations: 4461
+customers: 4461
+p: 100
+Elapsed time: 343 ms
+
+[INFO] Instance loaded
+loc_max_id: 4461
+loc_cnt: 4461
+service: fnl4461_0100
+cust_max_id: 4461
+cust_cnt: 4461
+unweighted obj function
+p: 100
+total_demand: 224395.00
+
+
+-------------------------------------------------
+
+
+-------------------------------------------------
+RSSV heuristic 
+-------------------------------------------------
+method subproblems: TB_PMP
+method final problem: EXACT_CPMP_BIN
+-------------------------------------------------
+RSSV running...
+cPMP size (N): 4461
+sub-cPMP size (n): 150
+Subproblems cnt (M): 148
+p: 100
+Seed: 0
+Time limit for subproblems: 180.00
+
+thread cnt: 20
+
+Thread 1 created with seed 1
+Thread 2 created with seed 2
+Thread 3 created with seed 3
+Thread 4 created with seed 4
+Solving sub-PMP Solving sub-PMP 2/1148/...148...
+Thread 5 created with seed 5
+
+Thread Solving sub-PMP 6 created with seed 6
+3/148...
+Solving sub-PMP 5/148...
+Thread 7 created with seed 7
+Thread 8 created with seed 8
+Solving sub-PMP 6/148...
+Thread 9 created with seed 9
+Solving sub-PMP 7/148...
+Solving sub-PMP 8/148...
+Solving sub-PMP 4/148...
+Thread 10 created with seed 10
+Solving sub-PMP 9/148...
+Thread 11 created with seed 11
+Solving sub-PMP 10/148...
+Solving sub-PMP 11/148...
+Thread 12 created with seed 12
+Thread 13 created with seed 13
+uncapacitated TB started
+Solving sub-PMP 12/148...
+Thread 14 created with seed 14
+Solving sub-PMP 13/148...
+Thread 15 created with seed 15
+Thread 16 created with seed 16
+uncapacitated TB started
+Thread 17 created with seed 17
+Solving sub-PMP uncapacitated TB started
+Solving sub-PMP 16/uncapacitated TB started
+148...
+uncapacitated TB started
+15Thread 18 created with seed 18
+uncapacitated TB started
+/148...
+uncapacitated TB started
+Solving sub-PMP 17/Thread 19 created with seed uncapacitated TB started
+148Solving sub-PMP ...14
+/Solving sub-PMP 18/19
+148...
+148...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Thread 20 created with seed 20
+Solving sub-PMP 19/148...
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 20/148...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 27
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 30
+tb solution is feasible
+Num ite total uncapacited TB: 29
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 41
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Thread 21 created with seed 21
+Thread 22 created with seed 22
+Thread 23 created with seed 23
+Solving sub-PMP 22/Solving sub-PMP 148...
+Thread 24 created with seed 24
+21/148...
+Thread 25 created with seed 25
+Solving sub-PMP 23/148...
+Solving sub-PMP 24/148...
+Thread 26 created with seed 26
+Thread 27 created with seed 27
+Solving sub-PMP 25/148...
+Solving sub-PMP Thread 28 created with seed 28
+26/148...
+uncapacitated TB started
+uncapacitated TB started
+Thread 29 created with seed 29
+Solving sub-PMP 27/148...
+Solving sub-PMP 28/148...
+Thread 30 created with seed 30
+uncapacitated TB started
+Thread 31 created with seed 31
+Solving sub-PMP 29/148...
+Solving sub-PMP 30/148...
+uncapacitated TB started
+Thread 32 created with seed 32
+Solving sub-PMP 31/148...
+Thread 33 created with seed 33
+uncapacitated TB started
+Solving sub-PMP 32/148...
+uncapacitated TB started
+Thread 34 created with seed 34
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Thread 35 created with seed 35
+Solving sub-PMP 34/148...
+Thread 36 created with seed 36
+Solving sub-PMP 35/148...
+Solving sub-PMP 33/148...
+Thread 37 created with seed 37
+[INFO] Uncapacitated TB local search started
+Thread 38 created with seed 38
+Thread 39 created with seed 39
+[INFO] Uncapacitated TB local search started
+Thread 40 created with seed 40
+Solving sub-PMP uncapacitated TB started
+uncapacitated TB started
+36/148[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+...
+Solving sub-PMP 39/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 37/148...
+Solving sub-PMP 40/148...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 38/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 30
+tb solution is feasible
+Num ite total uncapacited TB: 29
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 40
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Thread 41 created with seed 41
+Thread 42 created with seed 42
+Thread 43 created with seed 43
+Thread 44 created with seed 44
+Solving sub-PMP 41/148...
+Thread 45 created with seed 45
+Solving sub-PMP 42/148...
+Solving sub-PMP 43/148...
+Solving sub-PMP 44/148...
+Thread 46 created with seed 46
+Solving sub-PMP 45/148...
+Thread 47 created with seed 47
+Thread 48 created with seed 48
+Solving sub-PMP 46/148...
+Thread 49 created with seed 49
+Solving sub-PMP 47/148...
+Thread 50 created with seed 50
+Thread 51 created with seed 51
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 49/148...
+Solving sub-PMP uncapacitated TB started
+50/148...
+Thread 52 created with seed 52
+uncapacitated TB started
+Thread 53 created with seed 53
+Solving sub-PMP 51/148...
+Solving sub-PMP uncapacitated TB started
+52/148...
+Thread 54 created with seed 54
+Solving sub-PMP 53/148...
+Solving sub-PMP 48/148...
+Solving sub-PMP 54/148...
+Thread 55 created with seed 55
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Thread 56 created with seed 56
+Solving sub-PMP 55/148...
+[INFO] Uncapacitated TB local search started
+Thread 57 created with seed 57
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Solving sub-PMP 56/148...
+uncapacitated TB started
+Thread 58 created with seed 58
+uncapacitated TB started
+Solving sub-PMP 57/148...
+Thread 59 created with seed 59
+[INFO] Uncapacitated TB local search started
+Thread 60 created with seed 60
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 58/148...
+Solving sub-PMP 59/148...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 60/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 24
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 30
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 29
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 41
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Thread 61 created with seed 61
+Thread 62 created with seed 62
+Thread 63 created with seed 63
+Solving sub-PMP Thread 64 created with seed 64
+61/148...
+Solving sub-PMP 62/Thread 14865... created with seed 65
+
+Solving sub-PMP 63/148...
+Solving sub-PMP 64/148...
+Solving sub-PMP 65/148...
+Thread 66 created with seed 66
+Thread 67 created with seed 67
+Thread 68 created with seed 68
+Solving sub-PMP 67/148...
+Solving sub-PMP 66/148...
+Thread 69 created with seed 69
+Solving sub-PMP 68/148...
+uncapacitated TB started
+Thread 70 created with seed 70
+uncapacitated TB started
+uncapacitated TB started
+Thread 71 created with seed 71
+Solving sub-PMP 69/148...
+Solving sub-PMP 70/148...
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Thread 72 created with seed 72
+Solving sub-PMP 71/148...
+uncapacitated TB started
+Thread 73 created with seed 73
+Thread 74 created with seed 74
+Solving sub-PMP 73/148...
+Thread 75 created with seed 75
+Solving sub-PMP 72/148...
+Thread 76 created with seed 76
+Thread 77 created with seed 77
+Solving sub-PMP 74/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Thread 78 created with seed 78
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Thread 79 created with seed 79[INFO] Uncapacitated TB local search started
+
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+Thread 80 created with seed 80
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Solving sub-PMP 80/148...
+Solving sub-PMP 77/148...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 78/148...
+Solving sub-PMP 75/148...
+Solving sub-PMP 79/148...
+uncapacitated TB started
+Solving sub-PMP 76/148...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 22
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 26
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 29
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 27
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Thread 81 created with seed 81
+Thread 82 created with seed 82
+Thread 83 created with seed 83
+Solving sub-PMP 81/148...
+Thread 84 created with seed 84
+Thread 85 created with seed 85
+Solving sub-PMP 82/148...
+Solving sub-PMP 83/148...
+Thread 86 created with seed 86
+Solving sub-PMP 84/148...
+Thread 87 created with seed 87
+Solving sub-PMP 86/148...
+uncapacitated TB started
+Thread 88 created with seed 88
+Thread 89 created with seed 89
+Solving sub-PMP 85/148...
+Thread 90 created with seed 90
+Thread 91 created with seed 91
+uncapacitated TB started
+Solving sub-PMP 89/148...
+Thread 92 created with seed 92
+Solving sub-PMP 87/148...
+uncapacitated TB started
+Solving sub-PMP 90/148...
+Thread 93 created with seed 93
+Solving sub-PMP 91/148...
+uncapacitated TB started
+Thread 94 created with seed 94
+uncapacitated TB started
+Solving sub-PMP 93/148...
+Thread 95 created with seed 95
+Solving sub-PMP 94/148...
+Thread 96 created with seed 96
+Thread 97 created with seed 97
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 96/148...
+uncapacitated TB started
+Thread 98 created with seed 98
+[INFO] Uncapacitated TB local search started
+Thread 99 created with seed 99
+uncapacitated TB started
+Solving sub-PMP 88/148...
+Thread 100 created with seed 100
+Solving sub-PMP 99/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 92/148...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 98/148...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 97/148...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Solving sub-PMP 95/148...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 100/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 27
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 29
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 30
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 39
+tb solution is feasible
+Num ite total uncapacited TB: 30
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 39
+tb solution is feasible
+Num ite total uncapacited TB: 39
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Thread 101 created with seed 101
+Thread 102 created with seed 102
+Thread 103 created with seed 103
+Thread 104 created with seed 104
+Solving sub-PMP 101/148...
+Thread 105 created with seed 105
+Solving sub-PMP 102/148...
+Solving sub-PMP 103/148...
+Thread 106 created with seed 106
+Solving sub-PMP 104/148...
+Solving sub-PMP 106/148...
+Solving sub-PMP 105/148...
+Thread 107 created with seed 107
+uncapacitated TB started
+uncapacitated TB started
+Thread 108 created with seed 108
+Solving sub-PMP uncapacitated TB started
+107/148...
+Thread 109 created with seed 109
+Solving sub-PMP 108/148...
+uncapacitated TB started
+uncapacitated TB started
+Thread 110 created with seed 110
+Solving sub-PMP 109/148...
+Thread 111 created with seed 111
+Solving sub-PMP 110/148...
+Thread 112 created with seed 112
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Solving sub-PMP 111/148...
+Thread 113 created with seed 113
+Solving sub-PMP 112/148...
+Thread 114 created with seed 114
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Thread 115 created with seed 115
+Solving sub-PMP 114/148...
+uncapacitated TB started
+Thread 116 created with seed 116
+Solving sub-PMP 115/148...
+[INFO] Uncapacitated TB local search started
+Thread 117 created with seed 117
+Solving sub-PMP 116/148...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Thread 118 created with seed 118
+uncapacitated TB started
+Solving sub-PMP 117/148...
+[INFO] Uncapacitated TB local search started
+Thread 119 created with seed 119
+Solving sub-PMP 118/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Thread 120 created with seed 120
+uncapacitated TB started
+Solving sub-PMP 119/148...
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 113/148...
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Solving sub-PMP 120/148...
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 29
+tb solution is feasible
+Num ite total uncapacited TB: 30
+tb solution is feasible
+Num ite total uncapacited TB: 26
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 29
+tb solution is feasible
+Num ite total uncapacited TB: 24
+tb solution is feasible
+Num ite total uncapacited TB: 27
+tb solution is feasible
+Num ite total uncapacited TB: 39
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 39
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 41
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Thread 121 created with seed 121
+Thread 122 created with seed 122
+Thread 123 created with seed 123
+Thread 124 created with seed 124
+Thread 125 created with seed 125
+Solving sub-PMP 122/148...
+Solving sub-PMP 123/148...
+Solving sub-PMP Thread 126 created with seed 126
+Solving sub-PMP 121/148...
+Thread 127 created with seed 127
+124/148...
+Thread 128 created with seed 128
+Thread 129 created with seed 129
+Solving sub-PMP 126/148...Solving sub-PMP 
+Solving sub-PMP 127/148...
+Solving sub-PMP 128/148...
+125/148...
+Thread 130 created with seed 130
+Solving sub-PMP 129/148...
+uncapacitated TB started
+uncapacitated TB started
+Thread 131 created with seed 131
+uncapacitated TB started
+Thread 132 created with seed 132
+Solving sub-PMP 131/148...
+Solving sub-PMP 130/148...
+Thread 133 created with seed 133
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+Thread 134uncapacitated TB started
+ created with seed 134
+Solving sub-PMP 133/148...
+Thread 135 created with seed 135
+Solving sub-PMP 132/148...
+uncapacitated TB started
+Solving sub-PMP 134/148...
+Thread 136 created with seed 136
+Solving sub-PMP 135/148...
+Thread 137 created with seed 137
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+Thread 138 created with seed 138
+Solving sub-PMP 137/148...
+[INFO] Uncapacitated TB local search started
+Thread 139 created with seed 139
+uncapacitated TB started
+Thread 140 created with seed 140
+Solving sub-PMP 139/148Solving sub-PMP ...[INFO] Uncapacitated TB local search started
+138/
+148...
+Solving sub-PMP 136/148...
+Solving sub-PMP 140/148...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 28
+tb solution is feasible
+Num ite total uncapacited TB: 27
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 34
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 41
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Thread 141 created with seed 141
+Thread 142 created with seed 142
+Thread 143 created with seed 143
+Solving sub-PMP 141/148...
+Solving sub-PMP 142/148...
+Thread 144 created with seed 144
+Solving sub-PMP Thread 145 created with seed 145143/
+148...
+Solving sub-PMP 144/148...
+Thread 146 created with seed 146
+Solving sub-PMP 145/148...
+Thread 147 created with seed 147
+Solving sub-PMP 146/148...
+uncapacitated TB started
+uncapacitated TB started
+Thread 148 created with seed 148
+uncapacitated TB started
+Solving sub-PMP 147/148...
+Solving sub-PMP 148/148...
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+uncapacitated TB started
+uncapacitated TB started
+uncapacitated TB started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+[INFO] Uncapacitated TB local search started
+Num ite total uncapacited TB: 38
+tb solution is feasible
+Num ite total uncapacited TB: 33
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+Num ite total uncapacited TB: 32
+tb solution is feasible
+Num ite total uncapacited TB: 36
+tb solution is feasible
+Num ite total uncapacited TB: 37
+tb solution is feasible
+Num ite total uncapacited TB: 35
+tb solution is feasible
+Num ite total uncapacited TB: 31
+tb solution is feasible
+[INFO] All subproblems solved.
+
+Elapsed time: 182643 ms
+
+
+Stats: 
+Max dist: 652.91
+Min dist: 0.00
+avg of Avg dists: 139.46
+avg Std dev dist: 80.63
+
+First 150 voting weights (sorted): 2034(36.14) 3578(26.62) 3580(23.00) 3576(22.14) 2588(21.00) 2586(20.14) 2629(20.00) 1055(20.00) 3574(18.07) 2372(15.29) 1960(14.48) 1111(13.24) 4019(12.96) 1982(12.45) 2032(12.00) 3000(12.00) 872(12.00) 1534(11.53) 502(11.21) 3232(11.10) 1396(11.00) 2940(11.00) 2106(11.00) 1804(10.81) 1935(10.79) 2072(10.74) 2010(10.69) 3002(10.63) 3909(10.63) 1010(10.58) 3891(10.57) 1129(10.46) 3908(10.45) 1798(10.36) 2446(10.33) 1993(10.25) 3121(10.21) 3728(10.18) 598(10.16) 737(10.13) 958(10.09) 1906(10.07) 1115(10.06) 1864(10.05) 2942(10.00) 3629(10.00) 3068(10.00) 2938(10.00) 2687(9.97) 2002(9.90) 3544(9.85) 1030(9.68) 422(9.55) 453(9.55) 2037(9.54) 2998(9.49) 3594(9.38) 404(9.37) 2099(9.37) 1157(9.37) 3661(9.37) 1893(9.22) 4253(9.22) 4248(9.13) 4256(9.13) 1938(9.11) 4242(9.10) 4357(9.07) 2872(9.06) 150(9.00) 998(9.00) 3038(9.00) 3450(9.00) 3533(9.00) 2565(9.00) 772(9.00) 3796(9.00) 795(9.00) 2838(9.00) 1810(9.00) 2607(9.00) 2798(8.97) 1519(8.96) 3160(8.90) 167(8.88) 1459(8.84) 4154(8.81) 417(8.66) 504(8.65) 1599(8.62) 486(8.59) 949(8.57) 1413(8.56) 4161(8.55) 2056(8.53) 1013(8.46) 2374(8.42) 1718(8.42) 1766(8.40) 3716(8.39) 1148(8.39) 66(8.38) 3705(8.36) 4058(8.33) 3722(8.33) 4214(8.27) 2702(8.27) 3791(8.23) 1198(8.23) 876(8.22) 1067(8.22) 1328(8.21) 2440(8.19) 2491(8.19) 2992(8.19) 3965(8.18) 975(8.17) 326(8.16) 59(8.15) 2226(8.15) 95(8.14) 3055(8.13) 3127(8.10) 924(8.09) 2447(8.07) 2080(8.05) 587(8.05) 3636(8.03) 1565(8.03) 3388(8.02) 1166(8.02) 4077(8.00) 815(8.00) 1574(8.00) 1703(8.00) 1712(8.00) 2660(8.00) 902(8.00) 2501(8.00) 4056(8.00) 3778(8.00) 1834(8.00) 4052(8.00) 3964(8.00) 1644(8.00) 718(8.00) 3284(8.00) 3275(8.00) 679(8.00) 2041(8.00) 
+
+
+Filtered 150 locations: 2034 3578 3580 3576 2588 2586 2629 1055 3574 2372 1960 1111 4019 1982 2032 3000 872 1534 502 3232 1396 2940 2106 1804 1935 2072 2010 3002 3909 1010 3891 1129 3908 1798 2446 1993 3121 3728 598 737 958 1906 1115 1864 2942 3629 3068 2938 2687 2002 3544 1030 422 453 2037 2998 3594 404 2099 1157 3661 1893 4253 4248 4256 1938 4242 4357 2872 150 998 3038 3450 3533 2565 772 3796 795 2838 1810 2607 2798 1519 3160 167 1459 4154 417 504 1599 486 949 1413 4161 2056 1013 2374 1718 1766 3716 1148 66 3705 4058 3722 4214 2702 3791 1198 876 1067 1328 2440 2491 2992 3965 975 326 59 2226 95 3055 3127 924 2447 2080 587 3636 1565 3388 1166 4077 815 1574 1703 1712 2660 902 2501 4056 3778 1834 4052 3964 1644 718 3284 3275 679 2041 
+
+Extracted 0 prioritized locations: 
+
+Final instance parameters:
+loc_max_id: 4461
+loc_cnt: 150
+service: fnl4461_0100
+cust_max_id: 4461
+cust_cnt: 4461
+unweighted obj function
+p: 100
+total_demand: 224395.00
+threshold_dist: 733.53
+
+
+
+-------------------------------------------------
+Final Problem RSSV heuristic
+-------------------------------------------------
+    RSSV_EXACT_CPMP_BIN
+-------------------------------------------------
+Gap Cplex Reports: gap_Bin_service_fnl4461_0100_p_100_RSSV_EXACT_CPMP_BIN.csv
+[CALLBACK] Generating reports cplex callbacks...
+[CALLBACK] Using BreakCallback...
+Time Limit with not improving 1.00% (gap): 120.00 seconds
+Time Limit with Gap less than 1%: 120.00 seconds
+Default row names c1, c2 ... being created.
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_TimeLimit                               2218
+Legacy callback                                  i
+Tried aggregator 1 time.
+MIP Presolve eliminated 584050 rows and 584050 columns.
+Reduced MIP has 4612 rows, 85250 columns, and 170500 nonzeros.
+Reduced MIP has 85250 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.69 sec. (466.99 ticks)
+Tried aggregator 1 time.
+Detecting symmetries...
+Reduced MIP has 4612 rows, 85250 columns, and 170500 nonzeros.
+Reduced MIP has 85250 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.21 sec. (125.14 ticks)
+Probing time = 1.91 sec. (14.58 ticks)
+Clique table members: 89561.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 32 threads.
+Root relaxation solution time = 0.17 sec. (74.03 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                       913574.3333        0.0000           100.00%
+*     0+    0                       880134.8639        0.0000           100.00%
+*     0+    0                       823220.1322        0.0000           100.00%
+      0     0   664824.4119   127   823220.1322   664824.4119      358   19.24%
+Time: 7.19 seconds
+MIP Gap: 0.19
+Nodes: 0
+Best Objective: 664824.411885961540975
+Incumbent Obj:  823220.132211010088213
+*     0+    0                       799873.3699   664824.4119            16.88%
+      0     0   669326.6946   719   799873.3699    Cuts: 1253     1744   16.32%
+      0     0   682009.5730  1531   799873.3699    Cuts: 1253     3415   14.74%
+      0     0   688558.6107  1984   799873.3699    Cuts: 1253     4904   13.92%
+*     0+    0                       734407.1191   688558.6107             6.24%
+      0     0  -1.00000e+75     0   734407.1191   688558.6107     4904    6.24%
+Time: 23.565422058105469 seconds
+MIP Gap: 0.062429281006794
+Nodes: 0
+Best Objective: 688558.610663293511607
+Incumbent Obj:  734407.119073311332613
+      0     0   690734.6826  1867   734407.1191     Cuts: 684     5633    5.95%
+      0     0   691247.4903  1640   734407.1191     Cuts: 266     6008    5.88%
+Detecting symmetries...
+      0     0   691407.0252  1866   734407.1191     Cuts: 140     6278    5.86%
+      0     0   691464.0792  1218   734407.1191     Cuts: 138     6388    5.85%
+      0     0   691489.1914   783   734407.1191      Cuts: 68     6494    5.84%
+      0     0   691502.4380   776   734407.1191      Cuts: 29     6545    5.84%
+      0     0   691505.8831  1000   734407.1191      Cuts: 21     6576    5.84%
+*     0+    0                       698962.6100   691505.8831             1.07%
+*     0+    0                       694248.5004   691505.8831             0.40%
+*     0+    0                       693889.3465   691505.8831             0.34%
+*     0+    0                       693348.9344   691505.8831             0.27%
+*     0+    0                       693211.3761   691505.8831             0.25%
+*     0+    0                       693090.0249   691505.8831             0.23%
+*     0+    0                       693010.9226   691505.8831             0.22%
+*     0+    0                       692964.9677   691505.8831             0.21%
+      0     0  -1.00000e+75     0   692964.9677   691505.8831     6576    0.21%
+Detecting symmetries...
+Time: 155.090209960937500 seconds
+MIP Gap: 0.002105567599247
+Nodes: 0
+Best Objective: 691505.883094314951450
+Incumbent Obj:  692964.967677670530975
+      0     2   691506.0378   981   692964.9677   691505.8831     6578    0.21%
+Elapsed time = 153.35 sec. (9279.35 ticks, tree = 0.02 MB, solutions = 13)
+     12    12   691834.0023   635   692964.9677   691522.2362     7041    0.21%
+     57    42   692362.7849   372   692964.9677   691587.9568     9311    0.20%
+    148    92   692454.8634   206   692964.9677   691660.5975    13160    0.19%
+    255   181   692723.0623   188   692964.9677   691660.5975    17581    0.19%
+*   264+  142                       692759.4804   691660.5975             0.16%
+*   276+  181                       692595.7851   691660.5975             0.14%
+Time: 160.312913894653320 seconds
+MIP Gap: 0.001586240106114
+Nodes: 275
+Best Objective: 691660.597507724305615
+Incumbent Obj:  692759.480379393091425
+    311   193   692540.7397   560   692595.7851   691660.5975    20866    0.14%
+    382   241   692739.0717    68   692595.7851   691660.5975    23794    0.14%
+    449   225   692559.3760   800   692595.7851   691660.5975    25700    0.14%
+    554   298   692579.9535   104   692595.7851   691660.5975    28552    0.14%
+    700   422   692555.1960    44   692595.7851   691660.5975    32308    0.14%
+Time: 165.694236040115356 seconds
+MIP Gap: 0.001121405143688
+Nodes: 1009
+Best Objective: 691819.104654406313784
+Incumbent Obj:  692595.785130348056555
+   1385   932   692302.9861    70   692595.7851   691956.9447    44446    0.09%
+Elapsed time = 164.53 sec. (12434.14 ticks, tree = 60.96 MB, solutions = 15)
+*  1425+  813                       692541.6824   691961.3731             0.08%
+*  1634+ 1002                       692513.8652   691961.3731             0.08%
+*  1655+  978                       692508.4357   691961.3731             0.08%
+*  1659+ 1002                       692508.4357   691961.3731             0.08%
+*  1681+ 1066                       692499.8009   691961.3731             0.08%
+   1979   949   692449.3402    64   692499.8009   691961.3731    53609    0.08%
+Time: 171.344456911087036 seconds
+MIP Gap: 0.000777513263045
+Nodes: 2199
+Best Objective: 691961.373082789010368
+Incumbent Obj:  692499.800862615462393
+*  2842+ 1582                       692462.3175   691961.3731             0.07%
+   2893  1605   692415.6216   122   692462.3175   691961.3731    68488    0.07%
+*  3043+ 1635                       692383.3182   691961.3731             0.06%
+*  3331+  876                       692379.7306   691961.3731             0.06%
+   3496   971   692263.8976   144   692379.7306   691961.3731    79061    0.06%
+*  3519+  893                       692324.6915   691961.3731             0.05%
+Time: 176.539304018020630 seconds
+MIP Gap: 0.000604231363983
+Nodes: 3312
+Best Objective: 691961.373082789010368
+Incumbent Obj:  692379.730631822953001
+*  4226+  927                       692318.8107   691961.3731             0.05%
+   4393  1061   692305.8559   125   692318.8107   691961.3731    87300    0.05%
+*  4485+ 1035                       692310.8922   691961.3731             0.05%
+*  4540+ 1117                       692309.6475   691961.3731             0.05%
+*  4922+ 1259                       692309.5194   691961.3731             0.05%
+   5178  1389        cutoff         692309.5194   691961.3731    96072    0.05%
+Time: 182.456540107727051 seconds
+MIP Gap: 0.000502876673892
+Nodes: 4844
+Best Objective: 691961.373082789010368
+Incumbent Obj:  692309.519391203997657
+*  5311+ 1535                       692289.8908   691961.3731             0.05%
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 1 time.
+MIP Presolve eliminated 0 rows and 264 columns.
+Reduced MIP has 4612 rows, 84986 columns, and 169972 nonzeros.
+Reduced MIP has 84986 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.17 sec. (105.17 ticks)
+Tried aggregator 1 time.
+Reduced MIP has 4612 rows, 84986 columns, and 169972 nonzeros.
+Reduced MIP has 84986 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.22 sec. (127.37 ticks)
+Represolve time = 3.54 sec. (726.90 ticks)
+*  5394+    0                       692289.7416   692161.7850             0.02%
+   5394     0   691528.0808   839   692289.7416      Cuts: 18   110192    0.02%
+   5394     0   691530.9186   731   692289.7416      Cuts: 22   110213    0.02%
+   5394     0   691532.4904   731   692289.7416       Cuts: 6   110231    0.02%
+*  5394+    0                       692289.4164   692161.7850             0.02%
+   5394     0  -1.00000e+75     0   692289.4164   692161.7850   110231    0.02%
+   5394     0   691536.6239   706   692289.4164      Cuts: 16   110248    0.02%
+   5394     0   691537.8572   708   692289.4164      Cuts: 11   110255    0.02%
+   5394     0   691538.9236   783   692289.4164       Cuts: 6   110272    0.02%
+   5394     0   691540.3771   719   692289.4164      Cuts: 16   110281    0.02%
+   5394     0   691540.7092   712   692289.4164       Cuts: 6   110287    0.02%
+Time: 243.081088066101074 seconds
+MIP Gap: 0.000184361324299
+Nodes: 5394
+Best Objective: 692161.785034521017224
+Incumbent Obj:  692289.416428131749853
+   5394     2   691540.7092   712   692289.4164   692161.7850   110287    0.02%
+   5398     4   691999.9772   658   692289.4164   692161.7850   110417    0.02%
+   5411     9   692635.2297   393   692289.4164   692161.7850   111004    0.02%
+   5423     9   692228.4188   836   692289.4164   692161.7850   110975    0.02%
+   5431     9   692126.0903   766   692289.4164   692161.7850   110819    0.02%
+Elapsed time = 248.68 sec. (36050.51 ticks, tree = 0.11 MB, solutions = 39)
+Time: 251.842073917388916 seconds
+MIP Gap: 0.000184361324299
+Nodes: 5437
+Best Objective: 692161.785034521017224
+Incumbent Obj:  692289.416428131749853
+   5444    10   692215.2083   721   692289.4164   692161.7850   113567    0.02%
+   5450    10   692181.2405   941   692289.4164   692161.7850   114139    0.02%
+   5454    10   692249.4176  1305   692289.4164   692161.7850   114553    0.02%
+Time: 257.258519887924194 seconds
+MIP Gap: 0.000184361324299
+Nodes: 5458
+Best Objective: 692161.785034521017224
+Incumbent Obj:  692289.416428131749853
+   5457    11   692136.6308   530   692289.4164   692161.7850   114503    0.02%
+   5461    13   692142.1838   887   692289.4164   692161.7850   114634    0.02%
+   5467    12   692146.2373   840   692289.4164   692161.7850   114682    0.02%
+   5566    51   692224.2251   110   692289.4164   692161.7850   115295    0.02%
+*  5571+   39                       692286.4797   692161.7850             0.02%
+*  5574+   38                       692286.4797   692161.7850             0.02%
+Time: 264.294105052947998 seconds
+MIP Gap: 0.000180119971520
+Nodes: 5522
+Best Objective: 692161.785034521017224
+Incumbent Obj:  692286.479655520524830
+   5980   399   692251.8362    90   692286.4797   692161.7850   118050    0.02%
+   6533   787   692273.9556    66   692286.4797   692161.7850   121372    0.02%
+Time: 271.016065120697021 seconds
+MIP Gap: 0.000180119971520
+Nodes: 6356
+Best Objective: 692161.785034521017224
+Incumbent Obj:  692286.479655520291999
+   7298  1226   692234.6849    91   692286.4797   692161.7850   126103    0.02%
+Elapsed time = 272.43 sec. (47014.06 ticks, tree = 108.32 MB, solutions = 40)
+Time: 278.572449922561646 seconds
+MIP Gap: 0.000180119971520
+Nodes: 7850
+Best Objective: 692161.785034521017224
+Incumbent Obj:  692286.479655520291999
+Stopping optimization: Gap is less than 1% for more than 120.00 seconds.
+   8243  1675   692261.5715   104   692286.4797   692161.7850   131627    0.02%
+Stopping optimization: Gap is less than 1% for more than 120.00 seconds.
+
+Clique cuts applied:  2605
+Cover cuts applied:  341
+Flow cuts applied:  14
+Mixed integer rounding cuts applied:  83
+Zero-half cuts applied:  19
+Gomory fractional cuts applied:  11
+
+Root node processing (before b&c):
+  Real time             =  150.86 sec. (9330.06 ticks)
+Parallel b&c, 32 threads:
+  Real time             =  126.83 sec. (39588.16 ticks)
+  Sync time (average)   =   40.27 sec.
+  Wait time (average)   =    0.63 sec.
+                          ------------
+Total (root+branch&cut) =  277.70 sec. (48918.22 ticks)
+[INFO] Saving variables cplex:
+./outputs/solutions/2024-08-28_LIT_seed_0_1-5p/VarsValues_cplex/test_lit_fnl4461_0100_CPMP_Vars_Bin_p_100_RSSV_EXACT_CPMP_BIN.txt
+[INFO] Saving results cplex: 
+./outputs/solutions/2024-08-28_LIT_seed_0_1-5p/Results_cplex/test_lit_fnl4461_0100_Bin_RSSV_EXACT_CPMP_BIN.csv
+
+Final solution CPMP:
+p locations: 3796 3038 3002 2501 4357 3908 3574 2940 772 3778 4248 3580 1157 2660 2998 1328 872 2041 3160 422 1864 404 3594 1010 876 975 4214 2942 1599 1766 502 1055 949 1413 2491 2798 1534 504 66 1804 4253 815 2374 2226 4056 1718 1644 3068 1565 2056 3636 3055 3716 1712 3450 4154 3127 167 1115 1834 1166 4052 1993 587 718 3891 4058 1067 3121 59 3232 2588 417 2629 2072 3909 453 2872 1703 3578 1574 795 1893 3275 2607 2106 3533 1396 2565 3964 1459 679 2586 4256 3728 2938 95 2099 737 1906 
+p size: 100
+objective: 692286.479655463132076
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+Statistics:
+Max distance: 523.948470748794193
+Min distance: 0.000000000000000
+Avg distance: 155.186388624851645
+Std deviation distance: 85.064967627259364
+
+
+Final total elapsed time: 465s
+[INFO] Saving assignment: ./outputs/solutions/2024-08-28_LIT_seed_0_1-5p/Assignments/test_lit_fnl4461_0100_p_100_RSSV_EXACT_CPMP_BIN.txt
+[INFO] Saving results: ./outputs/solutions/2024-08-28_LIT_seed_0_1-5p/test_lit_fnl4461_0100_results_RSSV_EXACT_CPMP_BIN.csv
+[INFO] Saving all results: ./outputs/solutions/test_all_results.csv
+Post Optimization: EXACT_CPMP_BIN
+
+
+-------------------------------------------------
+Post Optimization
+-------------------------------------------------
+method: EXACT_CPMP_BIN
+-------------------------------------------------
+Time for post-optimization: 3135.000000000000000s
+PostOptimization constructor for Solution_cap
+p locations: 3796 3038 3002 2501 4357 3908 3574 2940 772 3778 4248 3580 1157 2660 2998 1328 872 2041 3160 422 1864 404 3594 1010 876 975 4214 2942 1599 1766 502 1055 949 1413 2491 2798 1534 504 66 1804 4253 815 2374 2226 4056 1718 1644 3068 1565 2056 3636 3055 3716 1712 3450 4154 3127 167 1115 1834 1166 4052 1993 587 718 3891 4058 1067 3121 59 3232 2588 417 2629 2072 3909 453 2872 1703 3578 1574 795 1893 3275 2607 2106 3533 1396 2565 3964 1459 679 2586 4256 3728 2938 95 2099 737 1906 
+p size: 100
+objective: 692286.479655463132076
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+[INFO] Running post-optimization
+Time limit: 3135.000000000000000
+Max size of the neigh: 43
+ ------------------------------------ 
+
+Iteration Post-Optimization: 1
+Size of neighborhood: 1
+[INFO] Adding MIP start solution
+Gap Cplex Reports: gap_Bin_service_fnl4461_0100_p_100_RSSV_POSTOPT.csv
+[CALLBACK] Generating reports cplex callbacks...
+Default row names c1, c2 ... being created.
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_TimeLimit                               3135
+CPXPARAM_MIP_Tolerances_LowerCutoff              692161.78503452102
+Legacy callback                                  i
+1 of 2 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 692287.8283.
+Presolve has eliminated 18592386 rows and 18592386 columns...
+Tried aggregator 1 time.
+MIP Presolve eliminated 18592386 rows and 18592386 columns.
+Reduced MIP has 9023 rows, 1312596 columns, and 2625392 nonzeros.
+Reduced MIP has 1312596 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 37.25 sec. (20882.14 ticks)
+Tried aggregator 1 time.
+Detecting symmetries...
+Reduced MIP has 9023 rows, 1312596 columns, and 2625392 nonzeros.
+Reduced MIP has 1312596 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 6.41 sec. (2865.18 ticks)
+Probing time = 2.93 sec. (308.01 ticks)
+Clique table members: 1312696.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: deterministic, using up to 32 threads.
+Root relaxation solution time = 11.05 sec. (5013.81 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                       692287.8283        0.0000           100.00%
+      0     0   577874.5722   654   692287.8283   577874.5722    21628   16.53%
+Time: 247.775750875473022 seconds
+MIP Gap: 0.165268334044891
+Nodes: 0
+Best Objective: 577874.572236346662976
+Incumbent Obj:  692287.828298854175955
+*     0+    0                       692287.6707   577874.5722            16.53%
+Time: 257.160101890563965 seconds
+MIP Gap: 0.165268143995568
+Nodes: 0
+Best Objective: 577874.572236346662976
+Incumbent Obj:  692287.670680773211643
+      0     0   606845.5379  3820   692287.6707    Cuts: 2355    25021   12.34%
+Time: 271.986023902893066 seconds
+MIP Gap: 0.123419983358561
+Nodes: 0
+Best Objective: 606845.537886015488766
+Incumbent Obj:  692287.670680773211643
+      0     0   617439.4538  4778   692287.6707    Cuts: 2355    27928   10.81%
+Time: 277.118691921234131 seconds
+MIP Gap: 0.108117217853204
+Nodes: 0
+Best Objective: 617439.453772692708299
+Incumbent Obj:  692287.670680773211643
+      0     0   621021.0821  2602   692287.6707    Cuts: 1147    28967   10.29%
+*     0+    0                       691814.6710   621021.0821            10.23%
+      0     0  -1.00000e+75     0   691814.6710   621021.0821    28967   10.23%
+Time: 298.253845930099487 seconds
+MIP Gap: 0.102330279857308
+Nodes: 0
+Best Objective: 621021.082096327561885
+Incumbent Obj:  691814.670987911988050
+      0     0   623653.2514  1771   691814.6710     Cuts: 894    29929    9.85%
+Time: 306.732940912246704 seconds
+MIP Gap: 0.098525548002532
+Nodes: 0
+Best Objective: 623653.251412636367604
+Incumbent Obj:  691814.670987911988050
+      0     0   625786.6133  2554   691814.6710     Cuts: 609    30876    9.54%
+Detecting symmetries...
+Time: 314.332702875137329 seconds
+MIP Gap: 0.095441829296489
+Nodes: 0
+Best Objective: 625786.613254676922224
+Incumbent Obj:  691814.670987911988050
+      0     0   627964.5411  3390   691814.6710     Cuts: 736    31904    9.23%
+Time: 320.548191785812378 seconds
+MIP Gap: 0.092293691614858
+Nodes: 0
+Best Objective: 627964.541089119273238
+Incumbent Obj:  691814.670987911988050
+      0     0   629788.3057  2559   691814.6710     Cuts: 676    32850    8.97%
+Time: 326.597601890563965 seconds
+MIP Gap: 0.089657487594363
+Nodes: 0
+Best Objective: 629788.305706214858219
+Incumbent Obj:  691814.670987911988050
+      0     0   631461.7853  1961   691814.6710     Cuts: 583    33694    8.72%
+Time: 332.325587987899780 seconds
+MIP Gap: 0.087238516673740
+Nodes: 0
+Best Objective: 631461.785277795279399
+Incumbent Obj:  691814.670987911988050
+      0     0   632950.1107  2399   691814.6710     Cuts: 603    34432    8.51%
+Time: 340.532013893127441 seconds
+MIP Gap: 0.085087181265421
+Nodes: 0
+Best Objective: 632950.110675485921092
+Incumbent Obj:  691814.670987911988050
+      0     0   634403.7216  2711   691814.6710     Cuts: 668    35287    8.30%
+Time: 346.639307975769043 seconds
+MIP Gap: 0.082986024683105
+Nodes: 0
+Best Objective: 634403.721625174977817
+Incumbent Obj:  691814.670987911988050
+      0     0   635739.2901  2061   691814.6710     Cuts: 603    36007    8.11%
+*     0+    0                       673597.7001   635739.2901             5.62%
+Time: 351.822365999221802 seconds
+MIP Gap: 0.056203294607644
+Nodes: 0
+Best Objective: 635739.290068109985441
+Incumbent Obj:  673597.700051113963127
+      0     0   636847.7603  2574   673597.7001     Cuts: 538    36828    5.46%
+*     0+    0                       673216.0114   636847.7603             5.40%
+*     0+    0                       673153.7380   636847.7603             5.39%
+      0     0  -1.00000e+75     0   673153.7380   636847.7603    36828    5.39%
+Time: 361.924450874328613 seconds
+MIP Gap: 0.053934154429337
+Nodes: 0
+Best Objective: 636847.760322193615139
+Incumbent Obj:  673153.737981154466979
+      0     0   638053.2437  2246   673153.7380     Cuts: 573    37433    5.21%
+Time: 370.841481924057007 seconds
+MIP Gap: 0.052143354939598
+Nodes: 0
+Best Objective: 638053.243692686082795
+Incumbent Obj:  673153.737981154466979
+      0     0   639032.0933  2165   673153.7380     Cuts: 553    38101    5.07%
+      0     0   640072.8118  2379   673153.7380     Cuts: 570    38788    4.91%
+*     0+    0                       673091.8609   640072.8118             4.91%
+Time: 381.403486013412476 seconds
+MIP Gap: 0.049055784261409
+Nodes: 0
+Best Objective: 640072.811770324711688
+Incumbent Obj:  673091.860886061331257
+      0     0   641047.2792  2144   673091.8609     Cuts: 629    39512    4.76%
+Time: 388.503407955169678 seconds
+MIP Gap: 0.047608036199013
+Nodes: 0
+Best Objective: 641047.279207736835815
+Incumbent Obj:  673091.860886061331257
+      0     0   641926.8203  2810   673091.8609     Cuts: 599    40221    4.63%
+      0     0   642804.1271  2561   673091.8609     Cuts: 554    40972    4.50%
+Time: 393.506421804428101 seconds
+MIP Gap: 0.044997920097109
+Nodes: 0
+Best Objective: 642804.127111895708367
+Incumbent Obj:  673091.860886061331257
+      0     0   643632.9908  2272   673091.8609     Cuts: 504    41613    4.38%
+Time: 406.463571786880493 seconds
+MIP Gap: 0.043766492806143
+Nodes: 0
+Best Objective: 643632.990798717830330
+Incumbent Obj:  673091.860886061331257
+      0     0   644428.3541  2178   673091.8609     Cuts: 486    42223    4.26%
+Time: 416.036696910858154 seconds
+MIP Gap: 0.042584836483860
+Nodes: 0
+Best Objective: 644428.354051611036994
+Incumbent Obj:  673091.860886061331257
+      0     0   645160.0613  2581   673091.8609     Cuts: 529    42814    4.15%
+Time: 424.380958795547485 seconds
+MIP Gap: 0.041497752744982
+Nodes: 0
+Best Objective: 645160.061268351972103
+Incumbent Obj:  673091.860886061331257
+      0     0   645913.0536  2474   673091.8609     Cuts: 498    43410    4.04%
+Time: 429.909245014190674 seconds
+MIP Gap: 0.040379046156182
+Nodes: 0
+Best Objective: 645913.053567992756143
+Incumbent Obj:  673091.860886061331257
+      0     0   646600.5763  2449   673091.8609     Cuts: 555    44009    3.94%
+*     0+    0                       673084.7022   646600.5763             3.93%
+Time: 436.807787895202637 seconds
+MIP Gap: 0.039347389535555
+Nodes: 0
+Best Objective: 646600.576267185620964
+Incumbent Obj:  673084.702236508252099
+      0     0   647234.8175  2541   673084.7022     Cuts: 454    44607    3.84%
+Time: 449.683843851089478 seconds
+MIP Gap: 0.038405099184004
+Nodes: 0
+Best Objective: 647234.817487879307009
+Incumbent Obj:  673084.702236508252099
+      0     0   647919.1507  2337   673084.7022     Cuts: 462    45209    3.74%
+Time: 455.849287986755371 seconds
+MIP Gap: 0.037388387370526
+Nodes: 0
+Best Objective: 647919.150656114565209
+Incumbent Obj:  673084.702236508252099
+      0     0   648504.7430  2338   673084.7022     Cuts: 429    45819    3.65%
+Time: 461.533336877822876 seconds
+MIP Gap: 0.036518374553799
+Nodes: 0
+Best Objective: 648504.742973803309724
+Incumbent Obj:  673084.702236508252099
+      0     0   649076.2995  2757   673084.7022     Cuts: 433    46438    3.57%
+Time: 468.830582857131958 seconds
+MIP Gap: 0.035669214598119
+Nodes: 0
+Best Objective: 649076.299549723276868
+Incumbent Obj:  673084.702236508252099
+      0     0   649611.7318  2868   673084.7022     Cuts: 422    46960    3.49%
+Time: 476.649675846099854 seconds
+MIP Gap: 0.034873724400859
+Nodes: 0
+Best Objective: 649611.731832278077491
+Incumbent Obj:  673084.702236508252099
+      0     0   650134.9326  2598   673084.7022     Cuts: 423    47551    3.41%
+Time: 482.110780954360962 seconds
+MIP Gap: 0.034096406544063
+Nodes: 0
+Best Objective: 650134.932590462733060
+Incumbent Obj:  673084.702236508252099
+      0     0   650677.5627  2163   673084.7022     Cuts: 475    48217    3.33%
+Time: 493.603803873062134 seconds
+MIP Gap: 0.033290222504336
+Nodes: 0
+Best Objective: 650677.562734789913520
+Incumbent Obj:  673084.702236508252099
+      0     0   651172.7892  2956   673084.7022     Cuts: 433    48969    3.26%
+Time: 502.675553798675537 seconds
+MIP Gap: 0.032554466041305
+Nodes: 0
+Best Objective: 651172.789154627826065
+Incumbent Obj:  673084.702236508252099
+      0     0   651578.8450  2823   673084.7022     Cuts: 399    49513    3.20%
+Time: 511.036539793014526 seconds
+MIP Gap: 0.031951190060981
+Nodes: 0
+Best Objective: 651578.844988210708834
+Incumbent Obj:  673084.702236508252099
+      0     0   652022.0228  2774   673084.7022     Cuts: 437    50048    3.13%
+Time: 520.174059867858887 seconds
+MIP Gap: 0.031292762018177
+Nodes: 0
+Best Objective: 652022.022831345908344
+Incumbent Obj:  673084.702236508252099
+      0     0   652465.7974  2411   673084.7022     Cuts: 387    50540    3.06%
+Time: 526.294428825378418 seconds
+MIP Gap: 0.030633447457744
+Nodes: 0
+Best Objective: 652465.797375934780575
+Incumbent Obj:  673084.702236508252099
+      0     0   652868.9553  2720   673084.7022     Cuts: 417    51040    3.00%
+Time: 533.416564941406250 seconds
+MIP Gap: 0.030034476857714
+Nodes: 0
+Best Objective: 652868.955323904287070
+Incumbent Obj:  673084.702236508252099
+      0     0   653245.1375  1979   673084.7022     Cuts: 393    51511    2.95%
+Time: 539.329890012741089 seconds
+MIP Gap: 0.029475584074140
+Nodes: 0
+Best Objective: 653245.137506718398072
+Incumbent Obj:  673084.702236508252099
+      0     0   653641.5308  2538   673084.7022     Cuts: 359    52013    2.89%
+Time: 544.669349908828735 seconds
+MIP Gap: 0.028886663753350
+Nodes: 0
+Best Objective: 653641.530765478732064
+Incumbent Obj:  673084.702236508252099
+      0     0   654036.0895  2045   673084.7022     Cuts: 373    52526    2.83%
+Time: 555.752907991409302 seconds
+MIP Gap: 0.028300469053372
+Nodes: 0
+Best Objective: 654036.089450565516017
+Incumbent Obj:  673084.702236508252099
+      0     0   654428.9932  2032   673084.7022     Cuts: 360    52999    2.77%
+Time: 562.453044891357422 seconds
+MIP Gap: 0.027716733092111
+Nodes: 0
+Best Objective: 654428.993196235853247
+Incumbent Obj:  673084.702236508252099
+      0     0   654721.2943  2619   673084.7022     Cuts: 445    53516    2.73%
+Time: 570.318298816680908 seconds
+MIP Gap: 0.027282462151700
+Nodes: 0
+Best Objective: 654721.294322852278128
+Incumbent Obj:  673084.702236508252099
+      0     0   655037.9383  2279   673084.7022     Cuts: 359    54031    2.68%
+Time: 579.542953968048096 seconds
+MIP Gap: 0.026812025152170
+Nodes: 0
+Best Objective: 655037.938270602026023
+Incumbent Obj:  673084.702236508252099
+      0     0   655412.9134  2184   673084.7022     Cuts: 366    54571    2.63%
+Time: 585.164217948913574 seconds
+MIP Gap: 0.026254925626671
+Nodes: 0
+Best Objective: 655412.913438838440925
+Incumbent Obj:  673084.702236508252099
+      0     0   655753.5583  2287   673084.7022     Cuts: 316    55083    2.57%
+*     0+    0                       673069.3240   655753.5583             2.57%
+Time: 592.387614965438843 seconds
+MIP Gap: 0.025726570827114
+Nodes: 0
+Best Objective: 655753.558318746159784
+Incumbent Obj:  673069.323952980106696
+      0     0   656097.8302  2216   673069.3240     Cuts: 377    55646    2.52%
+Time: 600.782770872116089 seconds
+MIP Gap: 0.025215075439294
+Nodes: 0
+Best Objective: 656097.830173631198704
+Incumbent Obj:  673069.323952980106696
+      0     0   656383.1894  2354   673069.3240     Cuts: 351    56181    2.48%
+Time: 607.863583803176880 seconds
+MIP Gap: 0.024791108309561
+Nodes: 0
+Best Objective: 656383.189443018985912
+Incumbent Obj:  673069.323952980106696
+      0     0   656703.8347  2755   673069.3240     Cuts: 376    56728    2.43%
+Time: 614.147661924362183 seconds
+MIP Gap: 0.024314715676268
+Nodes: 0
+Best Objective: 656703.834710645140149
+Incumbent Obj:  673069.323952980106696
+      0     0   656978.8508  2481   673069.3240     Cuts: 335    57237    2.39%
+Time: 621.396197795867920 seconds
+MIP Gap: 0.023906115688229
+Nodes: 0
+Best Objective: 656978.850828361813910
+Incumbent Obj:  673069.323952980106696
+      0     0   657233.7188  1829   673069.3240     Cuts: 337    57722    2.35%
+Time: 626.637405872344971 seconds
+MIP Gap: 0.023527450360721
+Nodes: 0
+Best Objective: 657233.718844352639280
+Incumbent Obj:  673069.323952980106696
+      0     0   657515.8881  2280   673069.3240     Cuts: 303    58173    2.31%
+*     0+    0                       672035.8018   657515.8881             2.16%
+      0     0  -1.00000e+75     0   672035.8018   657515.8881    58173    2.16%
+Detecting symmetries...
+Time: 710.222584962844849 seconds
+MIP Gap: 0.021605863385482
+Nodes: 0
+Best Objective: 657515.888086105696857
+Incumbent Obj:  672035.801810168894008
+      0     2   657515.8881  2280   672035.8018   657515.8881    58173    2.16%
+Elapsed time = 663.69 sec. (283510.31 ticks, tree = 0.02 MB, solutions = 10)
+Time: 719.873200893402100 seconds
+MIP Gap: 0.021605302001182
+Nodes: 1
+Best Objective: 657516.265356453484856
+Incumbent Obj:  672035.801810168894008
+      1     3   657527.6975  2472   672035.8018   657516.2654    58212    2.16%
+      2     4   657551.1490  2354   672035.8018   657516.2654    58267    2.16%
+*     3+    2                       672022.4033   657516.2654             2.16%
+*     3+    2                       671510.2524   657516.2654             2.08%
+*     3+    2                       671118.9506   657516.2654             2.03%
+      3     4   657528.5342  2389   671118.9506   657516.2654    58230    2.03%
+      4     3   657517.5451  2114   671118.9506   657516.2654    58187    2.03%
+*     5+    3                       671065.4312   657516.2654             2.02%
+      5     5   657552.3597  2359   671065.4312   657516.2654    58272    2.02%
+      6     4        cutoff         671065.4312   657516.2654    58782    2.02%
+      7     7   657761.8410  2336   671065.4312   657517.6760    58775    2.02%
+      9     9   657826.4580  2502   671065.4312   657517.6760    59755    2.02%
+     11    10   657768.5597  2053   671065.4312   657517.6760    59784    2.02%
+     15    14   657769.6072  1939   671065.4312   657517.6760    59798    2.02%
+Elapsed time = 702.40 sec. (296659.04 ticks, tree = 0.57 MB, solutions = 17)
+*    17+    4                       671047.9576   657517.6760             2.02%
+     19    19   657831.8335  2300   671047.9576   657517.6760    59823    2.02%
+*    21+    4                       671009.4612   657517.6760             2.01%
+*    26+    6                       671009.4444   657517.6760             2.01%
+     26     9   657825.9158  2503   671009.4444   657517.6760    59753    2.01%
+     29    11   657768.1722  2047   671009.4444   657517.6760    59789    2.01%
+*    31+   11                       670987.3539   657517.6760             2.01%
+     33    22   658038.4674  2505   670987.3539   657517.6760    60778    2.01%
+     36    17   657809.1410  1964   670987.3539   657517.6760    59881    2.01%
+     40    27   658012.8659  2237   670987.3539   657551.3674    62735    2.00%
+     44    32   658016.2478  2254   670987.3539   657551.3674    63763    2.00%
+     49    38   658100.9891  2222   670987.3539   657551.3674    64499    2.00%
+     51    25   658068.1688  2461   670987.3539   657551.3674    62360    2.00%
+Time: 789.675413846969604 seconds
+MIP Gap: 0.019733360254163
+Nodes: 49
+Best Objective: 657768.173273439402692
+Incumbent Obj:  671009.444373201578856
+     54     3        cutoff         670987.3539   657551.3674    60887    2.00%
+Elapsed time = 736.50 sec. (308366.54 ticks, tree = 0.57 MB, solutions = 21)
+     57    44   658256.0139  2147   670987.3539   657551.3674    65659    2.00%
+     60    51   658386.9003  2018   670987.3539   657769.7261    69724    1.97%
+     64    47   658518.4887  2307   670987.3539   657769.7261    69169    1.97%
+     68    49   658422.5951  2203   670987.3539   657770.1136    69890    1.97%
+     71    45   658433.5998  2110   670987.3539   657770.1136    69455    1.97%
+Time: 808.605529785156250 seconds
+MIP Gap: 0.019690592471329
+Nodes: 63
+Best Objective: 657775.215349815436639
+Incumbent Obj:  670987.353888652054593
+     72    55   658354.8229  2296   670987.3539   657770.1136    71856    1.97%
+     74    57   658269.5077  2215   670987.3539   657775.2153    72735    1.97%
+Time: 819.594044923782349 seconds
+MIP Gap: 0.019690592471329
+Nodes: 69
+Best Objective: 657775.215349815436639
+Incumbent Obj:  670987.353888652054593
+     78    58   658435.6405  2179   670987.3539   657775.2153    73843    1.97%
+     80    63   658670.8707  2079   670987.3539   657775.2153    76896    1.97%
+     87    66   658641.8970  2104   670987.3539   657775.2153    78431    1.97%
+Elapsed time = 780.65 sec. (321404.65 ticks, tree = 10.70 MB, solutions = 22)
+     93    72   658648.7079  2023   670987.3539   657775.2153    80530    1.97%
+    105    71   659060.7480  2081   670987.3539   657775.2153    79533    1.97%
+    106    73   658989.4662  2258   670987.3539   657775.2153    82021    1.97%
+    119    82   659245.1971  1907   670987.3539   657775.2153    84665    1.97%
+*   121+   57                       670947.4934   657775.2153             1.96%
+    121    85   659163.2967  1949   670947.4934   657775.2153    85076    1.96%
+*   125+   57                       670864.0932   657775.2153             1.95%
+    125    59   658589.7505  2107   670864.0932   657775.2153    75898    1.95%
+*   128+   60                       670839.2138   657775.2153             1.95%
+    129    62   658671.2257  2426   670839.2138   657775.2153    77157    1.95%
+    130    90   658598.6822  1820   670839.2138   657775.2153    87112    1.95%
+    134    88   658812.4232  2134   670839.2138   657775.2153    87108    1.95%
+    141    91   658931.1780  2258   670839.2138   657775.2153    88721    1.95%
+Elapsed time = 885.74 sec. (333934.98 ticks, tree = 17.49 MB, solutions = 30)
+    144    92   658824.6014  2345   670839.2138   657775.2153    89772    1.95%
+    152   105   658826.6694  1986   670839.2138   657775.2153    93591    1.95%
+    159   102   658740.9696  2192   670839.2138   657775.2153    93525    1.95%
+    164   106   658881.7709  2044   670839.2138   657775.2153    94990    1.95%
+*   165+   71                       670838.6935   657775.2153             1.95%
+    169   107   658945.5570  2145   670838.6935   657775.2153    96088    1.95%
+    172   113        cutoff         670838.6935   657775.2153    97623    1.95%
+    176   108   659095.0134  1784   670838.6935   657775.2153    97218    1.95%
+    178    35   669642.7259  1042   670838.6935   657775.2153    70898    1.95%
+*   179+   83                       670823.5967   657775.2153             1.95%
+    182   119   669671.2681   646   670823.5967   657775.2153   105253    1.95%
+*   184+   83                       670778.0825   657775.2153             1.94%
+    187   123   669785.5019   406   670778.0825   657775.2153   105330    1.94%
+Elapsed time = 1073.54 sec. (353149.03 ticks, tree = 25.05 MB, solutions = 42)
+    196    36   668243.7735  1149   670778.0825   657775.2153    72097    1.94%
+    206   123   668326.7885   824   670778.0825   657775.2153   125941    1.94%
+    214    81   658942.0742  1940   670778.0825   657775.2153    85495    1.94%
+    230   144   668212.5393   689   670778.0825   657786.4443   138478    1.94%
+    243   121   658895.4485  2057   670778.0825   657786.4443   110682    1.94%
+    262   142   669810.9124    62   670778.0825   657786.4443   126131    1.94%
+    275   167   668419.5332    64   670778.0825   657786.4443   147196    1.94%
+    290   145   659196.4756  1785   670778.0825   657786.4443   141150    1.94%
+    306   194   669828.8667    59   670778.0825   657786.4443   147939    1.94%
+*   312+  153                       669923.0099   657786.4443             1.81%
+    328   196   670307.8969   123   669923.0099   657786.4443   147892    1.81%
+Elapsed time = 1116.34 sec. (363111.78 ticks, tree = 66.50 MB, solutions = 48)
+    350   208   668322.5370    60   669923.0099   657786.4443   164070    1.81%
+    356   219   669846.1291    47   669923.0099   657786.4443   171838    1.81%
+    368   238   668458.1580    61   669923.0099   657786.4443   180317    1.81%
+    382   206   668342.3777   271   669923.0099   657786.4443   156324    1.81%
+    386   250   668355.1677    68   669923.0099   657832.1830   189104    1.80%
+    403   253   668464.2597    49   669923.0099   657832.1830   180427    1.80%
+    419   258   668369.4608    58   669923.0099   657832.1830   189284    1.80%
+    437   305   669744.1825   705   669923.0099   657832.1830   204036    1.80%
+    450   307   669864.7263   607   669923.0099   657832.1830   204117    1.80%
+    470    67   668398.1211   961   669923.0099   657832.1830    85613    1.80%
+Elapsed time = 1170.85 sec. (373118.92 ticks, tree = 12.46 MB, solutions = 48)
+Time: 1228.412259817123413 seconds
+MIP Gap: 0.018036966659100
+Nodes: 392
+Best Objective: 657839.630949314916506
+Incumbent Obj:  669923.009943835670128
+    499   286   668489.9284    51   669923.0099   657839.6309   189483    1.80%
+    533   308   659219.3273  1966   669923.0099   657839.6309   205657    1.80%
+*   552+   63                       669913.8688   657839.6309             1.80%
+    554   323   669895.3862    64   669913.8688   657839.6309   196768    1.80%
+*   573+   83                       668615.4299   657985.7367             1.59%
+    575   350   669908.7369    42   668615.4299   657985.7367   205715    1.59%
+*   587+   83                       668613.8987   657985.7367             1.59%
+*   602+   83                       668607.9963   657985.7367             1.59%
+    603   356   669912.2110    42   668607.9963   657985.7367   205757    1.59%
+*   607+   83                       668415.7608   657985.7367             1.56%
+    621   356   668495.4722    58   668415.7608   658019.1836   214822    1.56%
+*   626+   83                       668359.3853   658019.1836             1.55%
+    644   413   669896.8437    70   668359.3853   658019.1836   226164    1.55%
+*   648+   83                       668288.8980   658019.1836             1.54%
+Time: 1267.230880022048950 seconds
+MIP Gap: 0.017755543981624
+Nodes: 537
+Best Objective: 658019.183592953602783
+Incumbent Obj:  669913.868753506569192
+    657   380   668460.1640    46   668288.8980   658019.1836   225759    1.54%
+*   665+   83                       668230.4467   658019.1836             1.53%
+    670   344   659398.3144  2208   668230.4467   658019.1836   218364    1.53%
+    684   452   668416.0020   146   668230.4467   658019.1836   242713    1.53%
+Elapsed time = 1225.47 sec. (382975.72 ticks, tree = 200.02 MB, solutions = 66)
+    693   458   668420.8381    52   668230.4467   658019.1836   242815    1.53%
+    707   477   668524.4424    78   668230.4467   658019.1836   248727    1.53%
+    717   476   668155.6712   650   668230.4467   658019.1836   256873    1.53%
+    724   262   668210.2700    74   668230.4467   658019.1836   265154    1.53%
+    735   266   668220.8108    72   668230.4467   658019.1836   265201    1.53%
+Time: 1303.563965797424316 seconds
+MIP Gap: 0.015281050363571
+Nodes: 661
+Best Objective: 658019.183592953602783
+Incumbent Obj:  668230.446703501278535
+    744   112   668927.7064   917   668230.4467   658019.1836   105519    1.53%
+    747   201   659584.7317  1902   668230.4467   658019.1836   314501    1.53%
+    748   202   659585.6806  1909   668230.4467   658019.1836   314512    1.53%
+    749   117   669042.3498  1149   668230.4467   658019.1836   106887    1.53%
+    751   407   659117.1612  2138   668230.4467   658019.1836   243782    1.53%
+Elapsed time = 1287.16 sec. (397037.89 ticks, tree = 168.51 MB, solutions = 67)
+Time: 1346.902022838592529 seconds
+MIP Gap: 0.015281050363571
+Nodes: 717
+Best Objective: 658019.183592953602783
+Incumbent Obj:  668230.446703501278535
+    755   204   659593.6111  1849   668230.4467   658019.1836   305476    1.53%
+    759   213   659606.8288  2540   668230.4467   658019.1836   345002    1.53%
+    765   218   659618.3885  1872   668230.4467   658019.1836   332854    1.53%
+    773   211   659818.9034  2740   668230.4467   658019.1836   348646    1.53%
+    783   215   659926.8765  2619   668230.4467   658019.1836   352843    1.53%
+    789   217   659927.6967  2282   668230.4467   658019.1836   352859    1.53%
+    811   140   669953.5101   890   668230.4467   658062.0294   138554    1.52%
+    821   214   659476.4603  2788   668230.4467   658062.0294   350689    1.52%
+    835   232   659491.6480  2177   668230.4467   658062.0294   375280    1.52%
+    887   220   659577.5002  2391   668230.4467   658062.0294   365253    1.52%
+Elapsed time = 1363.33 sec. (411868.25 ticks, tree = 54.81 MB, solutions = 68)
+    940   285   659967.4449  2043   668230.4467   658235.6497   394220    1.50%
+    999   302   659992.8145  2091   668230.4467   658384.6988   394313    1.47%
+   1059   332   659806.4736  2047   668230.4467   658384.6988   454781    1.47%
+*  1064+  333                       668230.1336   658384.6988             1.47%
+   1148   371   659795.6876  1919   668230.1336   658384.6988   458817    1.47%
+   1214   379        cutoff         668230.1336   658384.6988   465344    1.47%
+   1305   451   660332.6734  1837   668230.1336   658384.6988   478138    1.47%
+Time: 1600.672592878341675 seconds
+MIP Gap: 0.014722784525087
+Nodes: 1096
+Best Objective: 658391.925355952116661
+Incumbent Obj:  668230.133626505266875
+   1380   468   660359.1744  1947   668230.1336   658384.6988   478237    1.47%
+   1466   568   660237.2131  1946   668230.1336   658391.9254   527271    1.47%
+   1558   592   660015.0645  1743   668230.1336   658392.9844   534441    1.47%
+   1644   604   660037.7670  1889   668230.1336   658398.9557   534557    1.47%
+Elapsed time = 1617.77 sec. (450542.00 ticks, tree = 229.29 MB, solutions = 69)
+   1744   715   660098.0269  2184   668230.1336   658412.7961   570401    1.47%
+Time: 1707.135193824768066 seconds
+MIP Gap: 0.014691551699923
+Nodes: 1580
+Best Objective: 658412.796070885146037
+Incumbent Obj:  668230.133626505266875
+   1821   802   660263.3172  1937   668230.1336   658412.7961   583445    1.47%
+   1929   815   660274.3031  1948   668230.1336   658412.7961   583534    1.47%
+   2021   837   660241.0215  1967   668230.1336   658412.7961   583731    1.47%
+   2128   862   660231.2091  2161   668230.1336   658412.7961   611917    1.47%
+   2216   974   660314.2771  2621   668230.1336   658412.7961   629926    1.47%
+   2296  1037   660727.0756  1958   668230.1336   658412.7961   630382    1.47%
+   2390  1008   660351.0866  2602   668230.1336   658412.7961   630062    1.47%
+   2476  1105        cutoff         668230.1336   658412.7961   651639    1.47%
+   2559  1236   660846.5007  2206   668230.1336   658412.7961   660880    1.47%
+Elapsed time = 1904.82 sec. (489209.44 ticks, tree = 510.90 MB, solutions = 69)
+   2641  1391        cutoff         668230.1336   658412.7961   689973    1.47%
+*  2695+ 1310                       668229.1675   658412.7961             1.47%
+   2746  1393   660239.1327  1928   668229.1675   658412.7961   690186    1.47%
+   2843  1477   660806.8713  1975   668229.1675   658412.7961   695927    1.47%
+   2940  1531   660479.9520  2017   668229.1675   658412.7961   707476    1.47%
+   3036  1592   661040.9634  1973   668229.1675   658412.7961   720897    1.47%
+Time: 2101.399266004562378 seconds
+MIP Gap: 0.014690127091697
+Nodes: 2613
+Best Objective: 658412.796070885146037
+Incumbent Obj:  668229.167467359220609
+   3142  1560   660529.6928  2056   668229.1675   658412.7961   707619    1.47%
+   3223   716        cutoff         668229.1675   658412.7961   579842    1.47%
+   3297  1848   660616.6609  2011   668229.1675   658412.7961   790089    1.47%
+   3366  2025   660704.3279  1932   668229.1675   658412.7961   809334    1.47%
+   3453  2018   660456.3568  2095   668229.1675   658412.7961   848484    1.47%
+Elapsed time = 2157.73 sec. (527744.43 ticks, tree = 951.93 MB, solutions = 70)
+   3583  1894   660751.1610  2299   668229.1675   658412.7961   790282    1.47%
+   3674  2023   660374.8784  1964   668229.1675   658412.7961   836612    1.47%
+   3768  2121   660476.0585  2445   668229.1675   658412.7961   871634    1.47%
+   3870  2065   660603.1804  1867   668229.1675   658412.7961   861993    1.47%
+   3964  1680        cutoff         668229.1675   658412.7961   772006    1.47%
+   4067  2144   660439.2681  1901   668229.1675   658412.7961   884614    1.47%
+   4155  2207   660428.6968  1788   668229.1675   658412.7961   900718    1.47%
+   4258  2294   660437.0880  1938   668229.1675   658412.7961   946539    1.47%
+Time: 2431.907137870788574 seconds
+MIP Gap: 0.014690127091697
+Nodes: 3834
+Best Objective: 658412.796070885146037
+Incumbent Obj:  668229.167467359220609
+   4359  2509   661346.7318  1747   668229.1675   658412.7961   976505    1.47%
+   4449  2325   660473.2161  1706   668229.1675   658412.7961   946725    1.47%
+Elapsed time = 2403.57 sec. (566114.05 ticks, tree = 1132.28 MB, solutions = 70)
+   4576  2549   660409.4814  1721   668229.1675   658412.7961  1026238    1.47%
+   4706  2551        cutoff         668229.1675   658412.7961  1012642    1.47%
+   4778  2647   660515.4558  1917   668229.1675   658412.7961  1027292    1.47%
+   4889  2735        cutoff         668229.1675   658412.7961  1050331    1.47%
+   5008  2679   660576.6587  1912   668229.1675   658412.7961  1027480    1.47%
+   5080  2694   660601.9038  1880   668229.1675   658412.7961  1027579    1.47%
+   5143  2700   660914.3291  1869   668229.1675   658412.7961  1045053    1.47%
+   5202  2969   660572.8755  1807   668229.1675   658412.7961  1095708    1.47%
+   5256  3115   661653.4069  1618   668229.1675   658412.7961  1115209    1.47%
+   5312  3115   660522.6226  1803   668229.1675   658412.7961  1120443    1.47%
+Elapsed time = 2684.82 sec. (604875.42 ticks, tree = 1673.86 MB, solutions = 70)
+   5361  3090   660992.0396  1791   668229.1675   658412.7961  1099047    1.47%
+   5404  3107   661026.6738  1750   668229.1675   658412.7961  1099145    1.47%
+   5458  3200   660713.5417  1751   668229.1675   658412.7961  1169638    1.47%
+   5530  3227        cutoff         668229.1675   658412.7961  1193604    1.47%
+   5602  3328   660656.4808  1871   668229.1675   658412.7961  1221782    1.47%
+Time: 2854.235235929489136 seconds
+MIP Gap: 0.014690127091697
+Nodes: 5302
+Best Objective: 658412.796070885146037
+Incumbent Obj:  668229.167467359220609
+   5667  3464   660671.7700  1782   668229.1675   658412.7961  1251022    1.47%
+Starting limited solution polishing.
+   5736  3478   660684.5911  1803   668229.1675   658412.7961  1251157    1.47%
+   5798  3377   660662.3755  1800   668229.1675   658412.7961  1225481    1.47%
+   5854  3509   660716.8542  1819   668229.1675   658412.7961  1251288    1.47%
+   5906  3306        cutoff         668229.1675   658412.7961  1213592    1.47%
+Elapsed time = 2943.29 sec. (643706.80 ticks, tree = 1799.25 MB, solutions = 70)
+   5955  3559   660936.5023  1814   668229.1675   658412.7961  1291440    1.47%
+   6013  3591   660726.8982  1939   668229.1675   658412.7961  1284679    1.47%
+   6077  3739   660817.7837  1874   668229.1675   658412.7961  1316128    1.47%
+   6162  3615   660754.3425  1920   668229.1675   658412.7961  1284800    1.47%
+   6240  3704   660829.4940  1971   668229.1675   658412.7961  1310076    1.47%
+   6319  3891   661051.9866  1694   668229.1675   658412.7961  1363590    1.47%
+   6425  3799   661075.4682  1748   668229.1675   658412.7961  1345711    1.47%
+Time: 3204.224941968917847 seconds
+MIP Gap: 0.014690127091697
+Nodes: 6539
+Best Objective: 658412.796070885146037
+Incumbent Obj:  668229.167467359220609
+   6508  3755   661953.8215  1891   668229.1675   658412.7961  1337380    1.47%
+   6535  3717        cutoff         668229.1675   658412.7961  1326237    1.47%
+
+Clique cuts applied:  7100
+Cover cuts applied:  15397
+Flow cuts applied:  319
+Mixed integer rounding cuts applied:  931
+Zero-half cuts applied:  612
+Gomory fractional cuts applied:  32
+
+Root node processing (before b&c):
+  Real time             =  633.04 sec. (286083.85 ticks)
+Parallel b&c, 32 threads:
+  Real time             = 2547.04 sec. (413795.48 ticks)
+  Sync time (average)   =  727.88 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) = 3180.08 sec. (699879.33 ticks)
+Post-Optimization Solution: 
+p locations: 4384 4267 4253 4214 4154 4058 4052 3964 3875 3832 3796 3623 3594 3728 3561 1644 1565 3578 1574 1534 2798 3035 1443 4106 1434 486 1564 1067 1010 949 876 1745 2588 1055 3267 1115 82 1328 1662 95 3580 741 1392 430 167 668 3733 894 59 484 795 587 679 1703 3908 1737 2640 1805 1166 1834 4361 1856 524 1860 1900 2374 1993 3909 2072 872 2041 3559 2056 2106 975 2144 404 2241 2636 693 3031 3322 2487 2565 2629 3055 2844 2501 3002 3160 2938 3491 437 2942 2969 3127 1157 2660 2994 3135 
+p size: 100
+objective: 668229.167467358638532
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+Comparing Best Bounds: 
+Old Best Bound: 658412.796070885146037
+New Best Bound: 658412.796070885146037
+Time elapsed: 3296.199935893000202s
+Time remaining: 3135.000000000000000s
+
+
+
+Finishing post-optimization
+p locations: 4384 4267 4253 4214 4154 4058 4052 3964 3875 3832 3796 3623 3594 3728 3561 1644 1565 3578 1574 1534 2798 3035 1443 4106 1434 486 1564 1067 1010 949 876 1745 2588 1055 3267 1115 82 1328 1662 95 3580 741 1392 430 167 668 3733 894 59 484 795 587 679 1703 3908 1737 2640 1805 1166 1834 4361 1856 524 1860 1900 2374 1993 3909 2072 872 2041 3559 2056 2106 975 2144 404 2241 2636 693 3031 3322 2487 2565 2629 3055 2844 2501 3002 3160 2938 3491 437 2942 2969 3127 1157 2660 2994 3135 
+p size: 100
+objective: 668229.167467358638532
+sum (dij * xij) 
+demand/capacity: 224395.000000000000000/280500
+Solution is Feasible
+Solution Stats
+Statistics:
+Max distance: 467.634472638619741
+Min distance: 0.000000000000000
+Avg distance: 149.793581588737652
+Std deviation distance: 79.848193901100757
+
+
+[INFO] Saving assignment: ./outputs/solutions/2024-08-28_LIT_seed_0_1-5p/Assignments/test_lit_fnl4461_0100_p_100_RSSV_EXACT_CPMP_BIN_POSTOPT.txt
+[INFO] Saving results: ./outputs/solutions/2024-08-28_LIT_seed_0_1-5p/test_lit_fnl4461_0100_results_RSSV_EXACT_CPMP_BIN_POSTOPT.csv
+[INFO] Saving all results: ./outputs/solutions/test_all_results.csv
+Final total elapsed time (post opt): 3761s
+PostOptimization destructor
+Finish solving problem
+Elapsed time: 3761361 ms
+
+RSSV finished.

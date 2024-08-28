@@ -11,7 +11,7 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
         : locations(locations), customers(customers), cust_weights(cust_weights),
           loc_capacities(loc_capacities),dist_matrix(dist_matrix),
           p(p),loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service){
-    total_demand = 0;
+    total_demand = 0.0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
@@ -25,7 +25,7 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
           p(p),loc_max_id(loc_max), cust_max_id(cust_max), type_service(type_service), 
           unique_subareas(unique_subareas), loc_coverages(loc_coverages), type_subarea(type_subarea){
     cover_mode = true;
-    total_demand = 0;
+    total_demand = 0.0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
@@ -42,7 +42,7 @@ Instance::Instance(vector<uint_t> locations, vector<uint_t> customers, shared_pt
           unique_subareas_n2(unique_subareas_n2), loc_coverages_n2(loc_coverages_n2), type_subarea_n2(type_subarea_n2){
     cover_mode = true;
     cover_mode_n2 = true;
-    total_demand = 0;
+    total_demand = 0.0;
     for (auto cust:this->customers) {
         total_demand += this->getCustWeight(cust);
     }
@@ -99,7 +99,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             // Load weights
             start = tick();
             cout << "Loading weights...\n";
-            total_demand = 0;
+            total_demand = 0.0;
             cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
             for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
             // Predefine the size of cust_coordinates to match cust_weights and initialize with default value (0,0)
@@ -116,7 +116,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
                 w_cnt++;
             }
             cout << "Loaded " << w_cnt << " weights\n";
-            cout << "Total customer demand: " << total_demand << endl;
+            cout << "Total customer demand: " << fixed << setprecision(2) << total_demand << endl;
             tock(start);
             // Load capacities
             start = tick();
@@ -222,7 +222,7 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         // Load weights
         start = tick();
         cout << "Loading weights...\n";
-        total_demand = 0;
+        total_demand = 0.0;
         cust_weights = shared_ptr<dist_t[]>(new dist_t[cust_max_id + 1], std::default_delete<dist_t[]>());
         for (uint_t cust = 0; cust < cust_max_id + 1; cust++) cust_weights[cust] = DEFAULT_WEIGHT;
         // Predefine the size of cust_coordinates to match cust_weights and initialize with default value (0,0)
@@ -247,7 +247,7 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         }
         cout << "Loaded " << w_cnt << " weights\n";
         if (coord_cnt > 0) cout << "Loaded " << coord_cnt << " coordinates\n";
-        cout << "Total customer demand: " << total_demand << endl;
+        cout << "Total customer demand: " << fixed << setprecision(2) << total_demand << endl;
         tock(start);
         // Load capacities
         start = tick();
@@ -470,7 +470,7 @@ void Instance::print() {
         cout << "subareas n2: "<< type_subarea_n2 << endl;
     }
     cout << "p: " << p << endl;
-    cout << "total_demand: " << total_demand << endl;
+    cout << "total_demand: " << fixed << setprecision(2) << total_demand << endl;
     if(threshold_dist > 0){
         cout << "threshold_dist: " << threshold_dist << endl;
     }

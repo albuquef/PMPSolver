@@ -3,10 +3,10 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --partition=cpuonly
-#SBATCH --mem=64G
+#SBATCH --mem=128G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-55%7
+#SBATCH --array=0-69%4
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -15,175 +15,223 @@
 # Executable
 CMD=./build/large_PMP
 # Data
-DIR_DATA=./data/filterData_PACA_may23/
+DIR_DATA=./data/PACA_Jul24/
 DIST_TYPE=minutes
-D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}.txt"
-WEIGHTS="${DIR_DATA}cust_weights.txt"
+D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}_filtered.txt"
+WEIGHTS="${DIR_DATA}cust_weights_PACA_filtered_Jul24.txt"
 # WEIGHTS_files=("${DIR_DATA}cust_weights.txt" "${DIR_DATA}cust_weights_shuffled.txt" "${DIR_DATA}cust_weights_split.txt")
 # Time
 TIME_CPLEX=3600
 TIME_CLOCK=3600
 # Number of threads (not used as parameter in the code)
-NUM_THREADS=20
+
+
+# ---------------------------------------- Machine configuration ----------------------------------------
 SEED=0
+NUM_THREADS=20
 ADD_TYPE_TEST="PACA"
-IsWeighted_OBJ=true
+IsWeighted_OBJ=false
 
-##### Methods
+
+# ----------------------------------------- Methods configuration -----------------------------------------
+FOR_METHODS=("RSSV")
 # FOR_METHODS=("EXACT_CPMP" "RSSV")
-FOR_METHODS=("EXACT_CPMP")
-# FOR_METHODS=("RSSV")
-
-# METHOD_RSSV_FINAL="VNS_CPMP"
-# METHOD_RSSV_FINAL="EXACT_CPMP"
+METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 
+# METHOD_POSTOPT="EXACT_CPMP"
+METHOD_POSTOPT="null"
+
+COVER_MODE=false
+IsWeighted_OBJ=false
+
+TIME_CPLEX=3600 # 1 hour
+# TIME_CPLEX=2400 # 1 hour
+# TIME_CLOCK=3600
+
+FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
+TIME_SUBP_RSSV=0 # 0 = No limit   (by default 0)
+MAX_ITE_SUBP_RSSV=0 # 0 = No limit (by default 0)
+
+ADD_THRESHOLD_DIST_SUBP_RSSV=false # Add threshold distance create by subproblems
 SUB_PROB_SIZE=800
 
-# SERVICES
+BW_MULTIPLIER=0.5   # Bandwidth multiplier
+
+ADD_GENERATE_REPORTS=false
+ADD_BREAK_CALLBACK=false
+FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
+# ----------------------------------------- Instance configuration -----------------------------------------
 # SERVICES=("mat" "urgenc" "lycee" "poste")
-# SERVICES=("mat" "lycee" "poste")
-SERVICES=("mat" "poste")
-# SERVICES=("mat")
+SERVICES=("cinema" "terrainsGJ")
 
-# NOT COVERAGES
-# COVER_MODE=0
-# SUBAREAS=("null")
-
-# p_values_mat=(26)
-p_values_mat=(26 30 33 37 41 44 48)
+# p_values_mat=(26 30 33 37 41 44 48)
 # p_values_urgenc=(42 48 54 60 66 72 78)
 # p_values_lycee=(246 281 316 352 387 422 457)
-p_values_poste=(476 544 612 681 749 817 885)
+# p_values_poste=(476 544 612 681 749 817 885)
+p_values_cinema=(134 154 173 192 211 230 250)
+# p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
 
 
 # COVERAGES
-COVER_MODE=1
-# kmeans_cover=1
-kmeans_cover=0
-grid_cover=1
+#  ------- COVER LEVEL 1 -------
+COVER_MODE=0
+KMEANS_COVER_MODE=0
+GRID_COVER_MODE=0
 
-# SUBAREAS=("null")
-SUBAREAS=("arrond" "EPCI" "canton" "commune")
-# SUBAREAS="EPCI"
-# p_values_mat_arrond=(26)
+# SUBAREAS=("commune")
+SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
+# SUBAREAS=("arrond" "EPCI" "canton" "commune")
 
+#  -------  COVER LEVEL 2 -------
 COVER_MODE_N2=0
 SUBAREAS_N2="null"
 
-# METHOD="RSSV"
-# for METHOD_RSSV_FINAL in "EXACT_CPMP" "VNS_CPMP" "TB_CPMP"; do
+
+# ----------------------------------------- Main loop -----------------------------------------
 arr=()
 console_names=()
 for METHOD in "${FOR_METHODS[@]}"; do
-  METHOD_RSSV_FINAL="EXACT_CPMP"
-  for serv in "${SERVICES[@]}"; do
 
-    # if [ "$serv" = "mat" ]; then
-    #   SUBAREAS=("arrond" "EPCI" "canton")
-    # elif [ "$serv" = "urgenc" ]; then
-    #   SUBAREAS=("arrond" "EPCI")
-    # elif [ "$serv" = "lycee" ]; then
-    #   SUBAREAS=("canton" "commune")
-    # elif [ "$serv" = "poste" ]; then
-    #   echo "poste"
-    #   SUBAREAS=("commune")
-    # fi
+	if [ "$METHOD" = "RSSV" ]; then
+		ADD_GENERATE_REPORTS=true
+		ADD_BREAK_CALLBACK=true
+		TIME_CPLEX=2400 # 1 hour
+		TIME_CLOCK=3600
+		METHOD_RSSV_FINAL="EXACT_CPMP"
+		metsp="TB_PMP" # Subproblem method
+		TIME_SUBP_RSSV=300
+		METHOD_POSTOPT="EXACT_CPMP"
+		N=2037
+		SUB_PROB_SIZE=$(echo "scale=0; 0.4 * $N / 1" | bc)
+		# SUB_PROB_SIZE=$(echo "scale=0; 1.5 * $p / 1" | bc)
+		# echo "SUB_PROB_SIZE: $SUB_PROB_SIZE"
+	fi
 
-    if [ "$COVER_MODE" != "1" ]; then
-      SUBAREAS=("null")
-    fi
- 
- 
-    for subar in "${SUBAREAS[@]}"; do
-
-
-      CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}.txt"
-      COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
-      if [ "$COVER_MODE_N2" = "1" ]; then
-        COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}.txt"
-      fi
-      # if kmeans_cover= 1, then the coverages are the kmeans coverages
-      if [ $kmeans_cover = 1 ]; then
-        COVERAGES="${DIR_DATA}loc_coverages_kmeans_${subar}.txt"
-        subar="kmeans_${subar}"
-      fi
-
-      if [ $grid_cover = 1 ]; then
-        COVERAGES="${DIR_DATA}loc_coverages_grid_${subar}.txt"
-        subar="grid_${subar}"
-      fi
-    
-       #create a dir with date and time
-      NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
-      mkdir -p $NEW_DIR
-      mkdir -p $NEW_DIR/VarsValues_cplex/
-      mkdir -p $NEW_DIR/Results_cplex/
-      mkdir -p $NEW_DIR/Assignments/
-      # OUTPUT="${NEW_DIR}/test_${SLURM_JOB_NAME}_${serv}"
-      OUTPUT="${NEW_DIR}/test_paca_${serv}_${subar}"
+	if [ "$METHOD" = "EXACT_CPMP" ]; then
+		ADD_GENERATE_REPORTS=false
+		ADD_BREAK_CALLBACK=false
+		TIME_CPLEX=3600
+		METHOD_POSTOPT="null"
+	fi
 
 
-      if [ "$COVER_MODE_N2" = "1"  ]; then
-          OUTPUT="${NEW_DIR}/test_paca_${serv}_${subar}_${SUBAREAS_N2}"
-      fi
+  	for serv in "${SERVICES[@]}"; do
 
-      if [ "$COVER_MODE" != "1" ]; then
-        COVERAGES="${DIR_DATA}loc_coverages.txt"
-        OUTPUT="${NEW_DIR}/test_paca_${serv}"
-      fi
+		for subar in "${SUBAREAS[@]}"; do
 
-
-      if [ "$serv" = "mat" ]; then
-        p_values=("${p_values_mat[@]}")
-      elif [ "$serv" = "urgenc" ]; then
-        p_values=("${p_values_urgenc[@]}")
-      elif [ "$serv" = "lycee" ]; then
-        p_values=("${p_values_lycee[@]}")
-      elif [ "$serv" = "poste" ]; then
-        p_values=("${p_values_poste[@]}")
-      fi
-
-      for p in "${p_values[@]}"; do
-        CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.txt"
-        if [ "$subar" != "null" ] && [ "$COVER_MODE" = "1" ]; then
-          CONSOLE_NAME="console_${serv}_${METHOD}_${subar}_p_${p}.txt"
-        fi
-        if [ "$METHOD" = "RSSV" ]; then
-          CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.txt"
-        fi
-        if [ "$METHOD" = "RSSV" ] && [ "$subar" != "null" ] && [ "$COVER_MODE" = "1" ]; then
-          CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_${subar}_p_${p}.txt"
-        fi
-
-        console_names+=("$CONSOLE_NAME")
-        arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv \
-        -cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE\
-        -cover_n2 $COVERAGES_N2 -subarea_n2 ${SUBAREAS_N2} -cover_mode_n2 $COVER_MODE_N2\
-        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
-        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
-        -o $OUTPUT --seed $SEED | tee ./console/$CONSOLE_NAME")
+			if [ "$subar" == "null" ]; then
+				COVER_MODE=0
+				KMEANS_COVER_MODE=0
+				GRID_COVER_MODE=0
+			else
+				COVER_MODE=1
+			fi
 
 
-      done
-    done
+			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_Jul24.txt"
+			COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
+			if [ "$COVER_MODE_N2" = "1" ]; then
+				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}.txt"
+			fi
+			# if KMEANS_COVER_MODE= 1, then the coverages are the kmeans coverages
+			if [ $KMEANS_COVER_MODE = 1 ]; then
+				COVERAGES="${DIR_DATA}loc_coverages_kmeans_${subar}.txt"
+				subar="kmeans_${subar}"
+			fi
+
+			if [ $GRID_COVER_MODE = 1 ]; then
+				COVERAGES="${DIR_DATA}loc_coverages_grid_${subar}.txt"
+				subar="grid_${subar}"
+			fi
+			
+			NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
+			mkdir -p $NEW_DIR_CONSOLE
+			#create a dir with date and time
+			NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
+			mkdir -p $NEW_DIR
+			mkdir -p $NEW_DIR/VarsValues_cplex/
+			mkdir -p $NEW_DIR/Results_cplex/
+			mkdir -p $NEW_DIR/Assignments/
+			# OUTPUT="${NEW_DIR}/test_${SLURM_JOB_NAME}_${serv}"
+			OUTPUT="${NEW_DIR}/test_paca_${serv}_${subar}"
+
+
+			if [ "$COVER_MODE_N2" = "1"  ]; then
+				OUTPUT="${NEW_DIR}/test_paca_${serv}_${subar}_${SUBAREAS_N2}"
+			fi
+
+			if [ "$COVER_MODE" != "1" ]; then
+				COVERAGES="${DIR_DATA}loc_coverages.txt"
+				OUTPUT="${NEW_DIR}/test_paca_${serv}"
+			fi
+
+
+			if [ "$serv" = "mat" ]; then
+				p_values=("${p_values_mat[@]}")
+			elif [ "$serv" = "urgenc" ]; then
+				p_values=("${p_values_urgenc[@]}")
+			elif [ "$serv" = "lycee" ]; then
+				p_values=("${p_values_lycee[@]}")
+			elif [ "$serv" = "poste" ]; then
+				p_values=("${p_values_poste[@]}")
+			elif [ "$serv" = "cinema" ]; then
+				p_values=("${p_values_cinema[@]}")
+			elif [ "$serv" = "terrainsGJ" ]; then
+				p_values=("${p_values_terrainsGJ[@]}")
+			fi
+
+			for p in "${p_values[@]}"; do
+
+				CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.log"
+				if [ "$subar" != "null" ] && [ "$COVER_MODE" = "1" ]; then
+				CONSOLE_NAME="console_${serv}_${METHOD}_${subar}_p_${p}.log"
+				fi
+				if [ "$METHOD" = "RSSV" ]; then
+				CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.log"
+				fi
+				if [ "$METHOD" = "RSSV" ] && [ "$subar" != "null" ] && [ "$COVER_MODE" = "1" ]; then
+				CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_${subar}_p_${p}.log"
+				fi
+
+				console_names+=("$CONSOLE_NAME")
+
+				arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\
+				-cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE \
+				-cover_n2 $COVERAGES_N2 -subarea_n2 ${SUBAREAS_N2} -cover_mode_n2 $COVER_MODE_N2\
+				-time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
+				-method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
+				-add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
+				-time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
+				-add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK -fixed_threshold_distance $FIXED_THRESHOLD_DIST\
+				-o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
+
+
+
+			done
+		done
   done
 done
 
 
-if [ ${#arr[@]} -eq 0 ]; then
-  echo "No instances"
+if [ -z "$2" ]; then
+    set -- "$1" "$1"
 fi
 
-echo "Number of instances: ${#arr[@]}"
+if [ "$2" == "cmds" ]; then
+    for element in "${arr[@]}"; do
+        echo "$element"
+    done
+elif [ "$2" == "size" ]; then
+    echo "Number of instances: ${#arr[@]}"
+elif [ "$2" == "run" ]; then
+    for element in "${arr[@]}"; do
+        eval $element
+    done
+elif [ "$2" == "srun" ]; then
+    NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
+    mkdir -p $NEW_DIR_CONSOLE
+    srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee $NEW_DIR_CONSOLE/${console_names[$SLURM_ARRAY_TASK_ID]}
+fi
 
-for element in "${arr[@]}"; do
-  eval $element
-done
-
-# srun ${arr[$SLURM_ARRAY_TASK_ID]}
-
-# NEW_DIR="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
-# mkdir -p $NEW_DIR
-# srun ${arr[$SLURM_ARRAY_TASK_ID]} | tee $NEW_DIR/${console_names[$SLURM_ARRAY_TASK_ID]}
 

@@ -65,7 +65,8 @@ class PMP
         bool VERBOSE;
         string typeServ;
         bool getFeasibility_Solver();
-        void setGenerateReports(bool generate_reports);
+        void setGenerateReports(bool add_generate_reports);
+        void setAddBreakCallback(bool add_break_callback);
         // void setVerbose(bool VERBOSE);
         bool CoverModel=false;
         bool CoverModel_n2=false;
@@ -103,7 +104,8 @@ class PMP
         IloBoolVarArray y;
         NumVarMatrix x_cont;
         bool isFeasible_Solver=false;
-        bool generate_reports=false;
+        bool add_generate_reports=false;
+        bool add_break_callback=false;
         double UpperBound=0;
         dist_t BestBound=0;
         // IloNumVarArray y_cont;

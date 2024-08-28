@@ -5,7 +5,7 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
-#SBATCH --array=0-19%5
+#SBATCH --array=0-9%5
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -18,11 +18,12 @@ CMD="./build/large_PMP"
 DIR_DATA="./data/Literature/"
 
 # ---------------------------------------- Machine configuration ----------------------------------------
-SEED=20
+SEED=500
 NUM_THREADS=20
-ADD_TYPE_TEST="LIT"
+ADD_TYPE_TEST="LIT_seed_${SEED}_Subp_nxC"
 
 # ----------------------------------------- Methods configuration -----------------------------------------
+# FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
 FOR_METHODS=("RSSV")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="TB_CPMP"
@@ -33,22 +34,24 @@ METHOD_POSTOPT="EXACT_CPMP_BIN"
 
 COVER_MODE=false
 IsWeighted_OBJ=false
-# TIME_CPLEX=3600 # 1 hour
-TIME_CPLEX=2400 # 1 hour
-TIME_CLOCK=3600
 
 ADD_THRESHOLD_DIST_SUBP_RSSV=true
 # TIME_SUBP_RSSV=600 # 10 minutes  
 TIME_SUBP_RSSV=300   
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
 
+# TIME_CPLEX=3600 # 1 hour
+TIME_CPLEX=2400 # 40 minutes
+TIME_CLOCK=3600
 
-TIME_SUBP_RSSV=30  
-TIME_CPLEX=100 # sum the time of the subproblems
-TIME_CLOCK=180 # sum of all times
+# TIME_SUBP_RSSV=30  
+# TIME_CPLEX=100 # sum the time of the subproblems
+# TIME_CLOCK=180 # sum of all times
 
 BW_MULTIPLIER=0.5   # Bandwidth multiplier
 
+ADD_GENERATE_REPORTS=true
+ADD_BREAK_CALLBACK=true
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
@@ -77,8 +80,8 @@ elif [ "$1" == "benchmark" ]; then
     # filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
     # filters=("SJC1" "SJC2" "SJC3a" "SJC3b" "SJC4a" "SJC4b") 
     filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
-    filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
-    filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
+    # filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
+    # filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
     filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
     # INSTANCE_GROUPS=("group2/" "group4/" "group3/" "group5/")
     INSTANCE_GROUPS=("group3/" "group5/")
@@ -107,6 +110,30 @@ arr=()
 console_names=()
 
 for METHOD in "${FOR_METHODS[@]}"; do
+
+    if [ "$METHOD" = "RSSV" ]; then
+		ADD_GENERATE_REPORTS=true
+		ADD_BREAK_CALLBACK=true
+		TIME_CPLEX=2400 # 1 hour
+		TIME_CLOCK=3600
+		metsp="TB_PMP" # Subproblem method
+		TIME_SUBP_RSSV=300
+		METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
+		METHOD_POSTOPT="EXACT_CPMP_BIN"
+	fi
+
+
+
+	if [ "$METHOD" = "EXACT_CPMP_BIN" ]; then
+		ADD_GENERATE_REPORTS=false
+		ADD_BREAK_CALLBACK=false
+		TIME_CPLEX=3600
+        TIME_CLOCK=3600
+		METHOD_POSTOPT="null"
+	fi
+
+
+
     for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
         DIR_DATA_GROUP="${DIR_DATA}${INSTANCE_GROUP}"
 
@@ -170,7 +197,10 @@ for METHOD in "${FOR_METHODS[@]}"; do
             if [ "$N" -lt 800 ]; then
                 SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
             else
-                SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
+                # SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
+                # SUB_PROB_SIZE=$(echo "1.2 * $p" | bc)
+                # SUB_PROB_SIZE=$(echo "1.5 * $p" | bc)
+                SUB_PROB_SIZE=800
             fi
 
 
@@ -202,9 +232,9 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
             if $match_filter; then
 
-                echo "Instance: $file"
-                echo "p: $p"
-                echo "N: $N"
+                # echo "Instance: $file"
+                # echo "p: $p"
+                # echo "N: $N"
 
                 console_names+=("$CONSOLE_NAME")
                 arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\
@@ -213,6 +243,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
                 -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
                 -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
                 -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
+                -add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK\
                 -o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
             fi
 

@@ -39,6 +39,7 @@ bool SolverManager::isCPMPMethod(const string& method) {
 void SolverManager::solveProblem() {
     cout << "-------------------------------------------------\n";
 
+
     auto start_time = high_resolution_clock::now();
     shared_ptr<Instance> shared_instance = make_shared<Instance>(instance);
 
@@ -50,7 +51,7 @@ void SolverManager::solveProblem() {
         } else if (isCPMPMethod(config.Method)) {
             auto solution = runCPMPMethod(shared_instance, config, start_time);
             cout << "Post Optimization: " << config.Method_PostOpt  << endl;
-            if (config.Method_PostOpt != "null" || config.Method_PostOpt != "") {
+            if (config.Method_PostOpt != "null" && config.Method_PostOpt != "") {
                 runPostOptimization(solution, config, external_time, start_time);
             }
         } else {
@@ -58,6 +59,8 @@ void SolverManager::solveProblem() {
             exit(1);
         }
     }
+
+    cout << "Finish solving problem\n";
 }
 
 
@@ -203,13 +206,14 @@ void SolverManager::setRSSVParameters(RSSV& metaheuristic, const Config& config)
     metaheuristic.setCoverMode_n2(config.cover_mode_n2);
     metaheuristic.setMAX_ITE_SUBPROBLEMS(config.MAX_ITE_SUBPROB_RSSV);
     metaheuristic.setTIME_LIMIT_SUBPROBLEMS(config.CLOCK_LIMIT_SUBPROB_RSSV);
-    metaheuristic.setAddThresholdDist(config.add_threshold_distance_rssv);
+    if (config.fixed_threshold_distance <= 0) metaheuristic.setAddThresholdDist(config.add_threshold_distance_rssv);
     CLOCK_THREADED = true;
 }
 
 
 void SolverManager::setExactMethodParams(PMP& pmp, const Config& config, const shared_ptr<Instance>& instance, double external_time) {
-    pmp.setGenerateReports(true);
+    pmp.setGenerateReports(config.add_generate_reports);
+    pmp.setAddBreakCallback(config.add_break_callback);
     pmp.setCoverModel(config.cover_mode, instance->getTypeSubarea());
     pmp.setCoverModel_n2(config.cover_mode_n2, instance->getTypeSubarea_n2());
     pmp.setTimeLimit(config.CLOCK_LIMIT_CPLEX - external_time);
@@ -247,7 +251,7 @@ void SolverManager::handleInitialSolution(const shared_ptr<Instance>& instance, 
 
 void printHeader(const string& method_name) {
     cout << "-------------------------------------------------\n";
-    cout << method_name << "\n";
+    cout << "    " << method_name << "\n";
     cout << "-------------------------------------------------\n";
 }
 

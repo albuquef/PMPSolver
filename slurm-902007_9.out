@@ -1,0 +1,64 @@
+Debug: configOverride contents: IsWeighted_ObjFunc add_break_callback add_generate_reports add_threshold_distance_rssv bw_multiplier capacities cover_mode coverages cust_max_id distance_matrix loc_max_id max_ite_subprob_rssv method method_post_opt method_rssv_fp method_rssv_sp output p seed service size_subproblems_rssv subarea threads time time_cplex time_subprob_rssv weights 
+Loading instance...
+Scanning input data...
+Distance matrix dimensions: 4462 x 4462 = 19909444
+Elapsed time: 0 ms
+
+Loading weights...
+Skipped line: customer weight coord_x coord_y
+Loaded 4461 weights
+Loaded 4461 coordinates
+Total customer demand: 224395.00
+Elapsed time: 10 ms
+
+Loading capacities...
+Skipped line: location capacity coord_x coord_y
+Loaded 4461 capacities
+Loaded 4461 coordinates
+Elapsed time: 8 ms
+
+Loading distance matrix...
+Computing euclidian distances...
+bw multiplier: 0.50
+Loaded 19904982 distances
+dists stdev: 954.33
+bandwidth h: 17.53
+locations: 4461
+customers: 4461
+p: 1000
+Elapsed time: 604 ms
+
+[INFO] Instance loaded
+loc_max_id: 4461
+loc_cnt: 4461
+service: fnl4461_1000
+cust_max_id: 4461
+cust_cnt: 4461
+unweighted obj function
+p: 1000
+total_demand: 224395.00
+
+
+Default row names c1, c2 ... being created.
+-------------------------------------------------
+-------------------------------------------------
+    EXACT_CPMP_BIN
+-------------------------------------------------
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_TimeLimit                               3600
+Presolve has eliminated 0 rows and 0 columns...
+Tried aggregator 1 time.
+Presolve has eliminated 0 rows and 0 columns...
+Reduced MIP has 8923 rows, 19904982 columns, and 39809964 nonzeros.
+Reduced MIP has 19904982 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 179.62 sec. (35609.46 ticks)
+Presolve has eliminated 0 rows and 0 columns...
+Tried aggregator 1 time.
+Presolve has eliminated 0 rows and 0 columns...
+Detecting symmetries...
+Reduced MIP has 8923 rows, 19904982 columns, and 39809964 nonzeros.
+Reduced MIP has 19904982 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 238.10 sec. (40340.28 ticks)
+slurmstepd: error: Detected 1 oom-kill event(s) in step 902027.0 cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+srun: error: gaia: task 0: Out Of Memory
+slurmstepd: error: Detected 1 oom-kill event(s) in step 902027.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
