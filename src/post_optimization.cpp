@@ -117,6 +117,7 @@ void PostOptimization::run(string Method_name) {
             instance->set_ThresholdDist(this->solution_cap.getMaxDist());
             PMP pmp(instance, "CPMP", true);
             pmp.setGenerateReports(true);
+            pmp.setAddBreakCallback(true);
             pmp.setTimeLimit(timelimit);
 
             if (solution_final.isSolutionFeasible()) {

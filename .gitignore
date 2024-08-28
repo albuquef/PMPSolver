@@ -13,6 +13,7 @@
 console/*
 outputs/*
 outputs/solutions/*
+slurm-* 
 model.lp
 build
 build/Makefile
