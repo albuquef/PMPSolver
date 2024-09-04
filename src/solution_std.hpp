@@ -27,6 +27,7 @@ private:
     dist_t min_dist=numeric_limits<dist_t>::max();;
     dist_t avg_dist=0;
     dist_t std_dev_dist=0; 
+    uint max_num_assignments=0;
 public:
 
     Solution_std() = default;
@@ -55,6 +56,9 @@ public:
     dist_t getMinDist();
     dist_t getAvgDist();
     dist_t getStdDevDist();
+
+    uint_t getMaxNumberAssignments();
+    uint_t calculateMaxNumberAssignments();
 };
 
 

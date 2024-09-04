@@ -78,6 +78,7 @@ class PMP
         void setTimeLimit(double timeLimit);
         void setMIPStartSolution(Solution_cap sol);
         void setBestBound(dist_t BestBound);
+        void setDisplayCPLEX(bool displayCPLEX);
 
         // void setInitialSolution(Solution_cap sol);
         
@@ -117,6 +118,7 @@ class PMP
         bool useMIPStart=false;
         Solution_cap initial_solution;
         void set_gap_report_filename(string Method_name);
+        bool displayCPLEX=true;
 
         void initVars();
         void initILP        (void);
@@ -160,7 +162,11 @@ class PMP
 
         template <typename VarType>
         void constr_MaxDistance (IloModel model, VarType x);
-        
+
+        template <typename VarType>
+        void constr_MaxAssignments (IloModel model, VarType x);
+
+
         bool add_constr_maxNeighbors_from_solution = false;
         uint_t MaxNeighbors_with_solution = 0;
         unordered_set<uint_t> p_locations_from_solution; // p selected locations from  a solution

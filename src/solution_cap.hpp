@@ -30,6 +30,7 @@ private:
     dist_t min_dist=numeric_limits<dist_t>::max();;
     dist_t avg_dist=0;
     dist_t std_dev_dist=0;
+    uint max_num_assignments=0;
 
     dist_t Best_Bound=0;
 
@@ -71,12 +72,17 @@ public:
     void setCoverMode(bool cover_mode);
     void setCoverMode_n2(bool cover_mode_n2);
     void add_UpperBound(double UB); 
+    
     void statsDistances();
     dist_t getMaxDist();
     dist_t getMinDist();
     dist_t getAvgDist();
     dist_t getStdDevDist();
+    uint_t getMaxNumberAssignments();
+    uint_t calculateMaxNumberAssignments();
     void printStatsDistances();
+
+
 
     void setBestBound(dist_t Best_Bound);
     dist_t getBestBound();

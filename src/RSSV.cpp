@@ -2,6 +2,7 @@
 #include "globals.hpp"
 #include "utils.hpp"
 #include <random>
+#include <chrono>
 
 void printDDE(void){
     cout << "RSSV finished." << endl;
@@ -27,10 +28,19 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
 }
 shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, bool is_cap) {
     cout << "RSSV running...\n";
+    
+    num_facilities_subproblem = min(n, N);
+    // num_facilities_subproblem = min(n, 2*instance->get_p());
+    num_customers_subproblem = instance->getCustomers().size();
+    // num_customers_subproblem = num_facilities_subproblem;
+    // p_subproblem = min(uint_t(0.1*instance->get_p()),uint_t(10));
+    p_subproblem = instance->get_p();
+    
     cout << "cPMP size (N): " << N << endl;
-    cout << "sub-cPMP size (n): " << min(n, N) << endl;
+    cout << "sub-cPMP size (n): " << num_facilities_subproblem << endl;
+    if (num_facilities_subproblem != num_customers_subproblem) cout << "Customers cnt: " << num_customers_subproblem << endl;
     cout << "Subproblems cnt (M): " << M << endl;
-    cout << "p: " << instance->get_p() << endl;
+    cout << "p (subproblems): " << p_subproblem << endl;
     this->method_RSSV_sp = method_sp;
     // cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl;
     cout << "Seed: " << seed_rssv  << endl;
@@ -40,16 +50,32 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     cout << endl;
 
 
-    if (instance->get_p() > min(n, N)) {
+    if (p_subproblem > num_facilities_subproblem) {
         cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
         cout << "[WARN] Setting n = min(1.5 * p, N)" << endl;
-        n = min(static_cast<uint_t>(1.5 * instance->get_p()), N);
+        n = min(static_cast<uint_t>(1.5 * p_subproblem), N);
     }
+
+
+    // instance->createClustersLocsWithKmeans(M,0);
+    // M=min(thread_cnt,M);
+
+    // if(M < thread_cnt){ 
+    //     M=thread_cnt;
+    //     cout << "[INFO] Number of subproblems adjusted to the number of threads: " << M << endl;
+    // }
+
+
+
+
 
     sem.setCount(thread_cnt);
     cout << "thread cnt: " << thread_cnt << endl << endl;
 
+    double TIME_LIMIT_ALL_SUBPROBLEMS = 2000; // time limit to solve all subproblems
+
     auto start_time = tick();
+    auto start_cpu = chrono::high_resolution_clock::now();
     vector<thread> threads;
     for (uint_t i = 1; i <= M; i += thread_cnt) {
         for (uint_t j = 0; j < thread_cnt && (i + j) <= M; ++j) {
@@ -76,6 +102,13 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
             }
         }
         threads.clear();
+
+        auto elapsed_time = chrono::duration_cast<seconds>(high_resolution_clock::now() - start_cpu).count();
+        if (elapsed_time > TIME_LIMIT_ALL_SUBPROBLEMS) {
+            cout << "\n[TIMELIMIT] Time limit exceeded to solve all Sub-cPMPs " << endl;
+            break;
+        }
+
     }
 
     cout << "[INFO] All subproblems solved." << endl << endl;
@@ -88,8 +121,8 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     cout << "Min dist: " << subSols_min_dist << endl;
     cout << "avg of Avg dists: " << subSols_avg_dist << endl;
     cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
+    cout << "Max number of assignments: " << subSols_max_num_assignments << endl;
     cout << endl;
-
 
     auto filtered_cnt = n;
     auto filtered_locations = filterLocations(filtered_cnt);
@@ -122,14 +155,34 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
     
     if (add_threshold_dist) {
-        filtered_instance->set_ThresholdDist(subSols_max_dist+subSols_std_dev_dist);
+        // filtered_instance->set_ThresholdDist(subSols_max_dist+subSols_std_dev_dist);
+        filtered_instance->set_ThresholdDist(subSols_max_dist);
     }
+
+    bool add_maxlimit_num_assignments = false;
+    if (add_maxlimit_num_assignments) {
+        filtered_instance->set_MaxLimitAssignments(subSols_max_num_assignments);
+    }
+
+
 
     atexit(printDDE);
 
     return filtered_instance;
 }
 
+
+Instance returnSampleInstance(string typeSample, uint n, uint m, uint p, uint seed, int thread_id, int num_clusters, shared_ptr<Instance> instance){ 
+    if (typeSample == "RANDOM") {
+        return instance->sampleSubproblem(n, m, p, seed);
+    } else if (typeSample == "KMEANS_CLUSTERS") {
+        return instance->sampleSubproblemFromClusters(n, m, p, num_clusters, seed);
+    } else {
+        cout << "[WARN] Type of sample not found" << endl;
+        cout << "Using random sample" << endl;
+        return instance->sampleSubproblem(n, m, p, seed);
+    }
+}
 
 template <typename SolutionType>
 void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
@@ -140,17 +193,29 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
 
     cout << "Solving sub-PMP " << thread_id << "/" << M << "..." << endl;
     auto start = tick();
-    // uint_t nu = this->n;
-    uint_t num_customers = instance->getCustomers().size();
-    uint_t p_subproblem = min(instance->get_p(),uint_t(100));
     // Instance subInstance = instance->sampleSubproblem(n, n, instance->get_p(), seed);
-    Instance subInstance = instance->sampleSubproblem(n, n, p_subproblem, seed);
+    // Instance subInstance = instance->sampleSubproblem(num_facilities_subproblem, num_customers_subproblem, p_subproblem, seed);
+
+    string typeSample;
+    int num_clusters = 0;
+    // if (thread_id/2 < thread_id) {
+    //     typeSample = "KMEANS_CLUSTERS";
+    //     num_clusters = thread_id + 1;
+    //     cout << "Thread " << thread_id << " using sample type: " << typeSample << " with " << num_clusters << " clusters" << endl;
+    // }else{
+    //     typeSample = "RANDOM";
+    //     cout << "Thread " << thread_id << " using sample type: " << typeSample << endl;
+    // }
+
+    // typeSample = "RANDOM";
+    typeSample = "KMEANS_CLUSTERS";
+    num_clusters = int(0.5*p_subproblem);
+    Instance subInstance = returnSampleInstance(typeSample, num_facilities_subproblem, num_customers_subproblem, p_subproblem, seed, thread_id, num_clusters, instance);
+
+    // int num_cluster = thread_id;
+    // Instance subInstance = instance->getSubproblemFromClusters(num_cluster);
+
     subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
-    
-    if (instance->get_p() > n) {
-        cout << "[ERROR] The number of facilities is greater than the number of locations to be selected" << endl;
-        exit(1);
-    }
 
     double time_limit_subproblem = 0; // no time limit = 0
     uint_t MAX_ITER_SUBP = UB_MAX_ITER; // Upper Bound for the number of iterations in the subproblem; 
@@ -158,16 +223,23 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
     if (MAX_ITE_SUBPROBLEMS > 0) MAX_ITER_SUBP = MAX_ITE_SUBPROBLEMS;
     if (TIME_LIMIT_SUBPROBLEMS > 0) time_limit_subproblem = TIME_LIMIT_SUBPROBLEMS;
     
-    
+    auto clusters_locs = instance->getClusters();
+    cout << "RSSV [ Total number of clusters: " << clusters_locs.size() << endl;
+
+
     bool verb = false;
 
     SolutionType sol;
     if (checkClock()) {
-        if (method_RSSV_sp == "EXACT_PMP" || (isCapacitated && method_RSSV_sp == "EXACT_CPMP")) {
-            PMP pmp(make_shared<Instance>(subInstance), isCapacitated ? "CPMP" : "PMP");
+        if (method_RSSV_sp == "EXACT_PMP" || (isCapacitated && method_RSSV_sp == "EXACT_CPMP") || (isCapacitated && method_RSSV_sp == "EXACT_CPMP_BIN")) {
+            PMP pmp(make_shared<Instance>(subInstance), isCapacitated ? "CPMP" : "PMP", method_RSSV_sp == "EXACT_CPMP_BIN");
             pmp.setCoverModel(cover_mode, instance->getTypeSubarea());
             pmp.setCoverModel_n2(cover_mode_n2, instance->getTypeSubarea_n2());
             if (time_limit_subproblem > 0) pmp.setTimeLimit(time_limit_subproblem);
+            pmp.setAddBreakCallback(true);
+            // pmp.setGenerateReports(true);
+            pmp.setDisplayCPLEX(false);
+            pmp.run(method_RSSV_sp);
             if constexpr (std::is_same_v<SolutionType, Solution_std>) {
                 sol = pmp.getSolution_std();
             } else if constexpr (std::is_same_v<SolutionType, Solution_cap>) {
@@ -177,6 +249,7 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
             TB heuristic(make_shared<Instance>(subInstance), seed);
             heuristic.setCoverMode(cover_mode);
             heuristic.setCoverMode_n2(cover_mode_n2);
+            // if (num_clusters>0) heuristic.setRandomClusterInitialSolution(true);
             if (time_limit_subproblem > 0) heuristic.setTimeLimit(time_limit_subproblem);
             if constexpr (std::is_same_v<SolutionType, Solution_std>) {
                 sol = heuristic.run(verb, MAX_ITER_SUBP);
@@ -200,6 +273,8 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
 
         if (VERBOSE) cout << "Solution " << seed << ": ";
         if (VERBOSE) sol.print();
+        cout << "Solution " << seed << ": ";
+        sol.print();
         processSubsolutionScores(make_shared<SolutionType>(sol));
         processSubsolutionDists(make_shared<SolutionType>(sol));
         if (VERBOSE) tock(start);
@@ -240,6 +315,7 @@ void RSSV::processSubsolutionDists(shared_ptr<SolutionType> solution) {
     dist_t min_dist_local = solution->getMinDist();
     dist_t avg_dist_local = solution->getAvgDist();
     dist_t std_dev_dist_local = solution->getStdDevDist();
+    uint_t max_num_assignments_local = solution->getMaxNumberAssignments();
     
 
     dist_mutex.lock();
@@ -247,6 +323,7 @@ void RSSV::processSubsolutionDists(shared_ptr<SolutionType> solution) {
     subSols_min_dist = min(subSols_min_dist, min_dist_local);
     subSols_avg_dist += avg_dist_local;
     subSols_std_dev_dist += std_dev_dist_local;
+    subSols_max_num_assignments = max(subSols_max_num_assignments, max_num_assignments_local);
     dist_mutex.unlock();
 }
 

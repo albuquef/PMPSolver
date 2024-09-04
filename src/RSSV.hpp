@@ -5,6 +5,7 @@
 #include <thread>
 #include <functional>
 #include <mutex>
+#include <chrono>
 #include "TB.hpp"
 #include "VNS.hpp"
 #include "PMP.hpp"
@@ -14,6 +15,7 @@
 #include "semaphore.hpp"
 
 using namespace std;
+using namespace chrono;
 
 class RSSV {
 private:
@@ -23,6 +25,9 @@ private:
     uint_t N; // original PMP size (no. of locations)
     uint_t M; // no. of sub-PMPs
     uint_t n; // sub-PMP size
+    uint_t num_customers_subproblem;
+    uint_t num_facilities_subproblem;
+    uint_t p_subproblem;
     Semaphore sem;
     mutex weights_mutex;
     mutex dist_mutex;
@@ -38,6 +43,7 @@ private:
     dist_t subSols_min_dist=numeric_limits<dist_t>::max();;
     dist_t subSols_avg_dist=0;
     dist_t subSols_std_dev_dist=0; 
+    uint_t subSols_max_num_assignments=0;
 
     uint_t MAX_ITE_SUBPROBLEMS = 0;
     dist_t TIME_LIMIT_SUBPROBLEMS = 0;

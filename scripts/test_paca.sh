@@ -6,7 +6,9 @@
 #SBATCH --mem=128G
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
-#SBATCH --array=0-69%4
+# SBATCH --array=0-69%4
+#SBATCH --array=0-1%2
+
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -17,11 +19,13 @@ CMD=./build/large_PMP
 # Data
 DIR_DATA=./data/PACA_Jul24/
 DIST_TYPE=minutes
-D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}_filtered.txt"
-WEIGHTS="${DIR_DATA}cust_weights_PACA_filtered_Jul24.txt"
+MAX_ID_LOC_CUST=2037
+D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}_${MAX_ID_LOC_CUST}.txt"
+D_MATRIX="euclidean"
+WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}_Jul24.txt"
 # WEIGHTS_files=("${DIR_DATA}cust_weights.txt" "${DIR_DATA}cust_weights_shuffled.txt" "${DIR_DATA}cust_weights_split.txt")
 # Time
-TIME_CPLEX=3600
+TIME_CPLEX=2400
 TIME_CLOCK=3600
 # Number of threads (not used as parameter in the code)
 
@@ -30,37 +34,7 @@ TIME_CLOCK=3600
 SEED=0
 NUM_THREADS=20
 ADD_TYPE_TEST="PACA"
-IsWeighted_OBJ=false
 
-
-# ----------------------------------------- Methods configuration -----------------------------------------
-FOR_METHODS=("RSSV")
-# FOR_METHODS=("EXACT_CPMP" "RSSV")
-METHOD_RSSV_FINAL="EXACT_CPMP"
-metsp="TB_PMP" # Subproblem method
-
-# METHOD_POSTOPT="EXACT_CPMP"
-METHOD_POSTOPT="null"
-
-COVER_MODE=false
-IsWeighted_OBJ=false
-
-TIME_CPLEX=3600 # 1 hour
-# TIME_CPLEX=2400 # 1 hour
-# TIME_CLOCK=3600
-
-FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
-TIME_SUBP_RSSV=0 # 0 = No limit   (by default 0)
-MAX_ITE_SUBP_RSSV=0 # 0 = No limit (by default 0)
-
-ADD_THRESHOLD_DIST_SUBP_RSSV=false # Add threshold distance create by subproblems
-SUB_PROB_SIZE=800
-
-BW_MULTIPLIER=0.5   # Bandwidth multiplier
-
-ADD_GENERATE_REPORTS=false
-ADD_BREAK_CALLBACK=false
-FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
 # ----------------------------------------- Instance configuration -----------------------------------------
 # SERVICES=("mat" "urgenc" "lycee" "poste")
 SERVICES=("cinema" "terrainsGJ")
@@ -69,8 +43,10 @@ SERVICES=("cinema" "terrainsGJ")
 # p_values_urgenc=(42 48 54 60 66 72 78)
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
-p_values_cinema=(134 154 173 192 211 230 250)
+# p_values_cinema=(134 154 173 192 211 230 250)
+p_values_cinema=(1000)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
+p_values_terrainsGJ=(1500)
 
 
 # COVERAGES
@@ -80,13 +56,51 @@ KMEANS_COVER_MODE=0
 GRID_COVER_MODE=0
 
 # SUBAREAS=("commune")
-SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
+# SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
 # SUBAREAS=("arrond" "EPCI" "canton" "commune")
+SUBAREAS="null"
 
 #  -------  COVER LEVEL 2 -------
 COVER_MODE_N2=0
 SUBAREAS_N2="null"
 
+
+# ------- params instance ------
+N=2037
+MAX_ID_LOC_CUST=2037
+IsWeighted_OBJ=false
+
+
+# ----------------------------------------- Methods configuration -----------------------------------------
+FOR_METHODS=("RSSV" "EXACT_CPMP")
+METHOD_RSSV_FINAL="EXACT_CPMP"
+metsp="TB_PMP" # Subproblem method
+METHOD_POSTOPT="EXACT_CPMP"
+
+
+TIME_CPLEX=3600 # 1 hour
+# TIME_CPLEX=2400 # 1 hour
+# TIME_CLOCK=3600
+
+
+SUB_PROB_SIZE=800
+FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
+TIME_SUBP_RSSV=0 # 0 = No limit   (by default 0)
+MAX_ITE_SUBP_RSSV=0 # 0 = No limit (by default 0)
+
+BW_MULTIPLIER=0.5   # Bandwidth multiplier
+
+ADD_THRESHOLD_DIST_SUBP_RSSV=false # Add threshold distance create by subproblems
+ADD_GENERATE_REPORTS=false
+ADD_BREAK_CALLBACK=false
+# FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
+FIXED_THRESHOLD_DIST=0 # maximum distance  between the service and the customer 2h
+
+FOR_METHODS=("EXACT_CPMP_BIN")
+ADD_GENERATE_REPORTS=false
+ADD_BREAK_CALLBACK=false
+TIME_CPLEX=3600
+METHOD_POSTOPT="null"
 
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
@@ -129,10 +143,10 @@ for METHOD in "${FOR_METHODS[@]}"; do
 			fi
 
 
-			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_Jul24.txt"
-			COVERAGES="${DIR_DATA}loc_coverages_${subar}.txt"
+			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}_Jul24.txt"
+			COVERAGES="${DIR_DATA}loc_coverages_${subar}_reindexed.txt"
 			if [ "$COVER_MODE_N2" = "1" ]; then
-				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}.txt"
+				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}_reindexed.txt"
 			fi
 			# if KMEANS_COVER_MODE= 1, then the coverages are the kmeans coverages
 			if [ $KMEANS_COVER_MODE = 1 ]; then
@@ -204,6 +218,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
 				-add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
 				-time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
 				-add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK -fixed_threshold_distance $FIXED_THRESHOLD_DIST\
+				-cust_max_id $MAX_ID_LOC_CUST -loc_max_id $MAX_ID_LOC_CUST\
 				-o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
 
 

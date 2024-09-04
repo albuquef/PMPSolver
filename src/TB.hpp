@@ -29,6 +29,8 @@ private:
     bool cover_mode=false;
     bool cover_mode_n2=false;
     double time_limit=CLOCK_LIMIT;
+    bool randomcluster_initial_solution=false;
+
 public:
     explicit TB(shared_ptr<Instance> instance, uint_t seed);
     Solution_std initRandomSolution();
@@ -39,6 +41,10 @@ public:
     Solution_cap initSmartRandomCapSolution();
     Solution_cap initCPLEXCapSolution(double time_limit, const char* typeProb);
     Solution_cap fixedCapSolution(string eval_Method);
+    Solution_cap fixedCapSolution_gb21();
+    Solution_cap generateSolutionFromFile();
+    void setRandomClusterInitialSolution(bool randomcluster_initial_solution);
+    Solution_std initRandomClusterSolution();
 
     Solution_std run(bool verbose, int MAX_ITE);
     Solution_cap run_cap(bool verbose, int MAX_ITE);
@@ -63,7 +69,6 @@ public:
     void setCoverMode(bool cover_mode);
     void setCoverMode_n2(bool cover_mode_n2);
     void setTimeLimit(double time_limit);
-
 
 
 

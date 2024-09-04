@@ -317,6 +317,9 @@ void Solution_std::statsDistances() {
     this->min_dist = min_dist;
     this->avg_dist = avg_dist;
     this->std_dev_dist = std_dev_dist;
+
+    max_num_assignments = calculateMaxNumberAssignments();
+
 }
 
 dist_t Solution_std::getMaxDist() {
@@ -330,4 +333,20 @@ dist_t Solution_std::getAvgDist() {
 }
 dist_t Solution_std::getStdDevDist() {
     return std_dev_dist;
+}
+
+uint_t Solution_std::getMaxNumberAssignments() {
+    return max_num_assignments;
+}
+
+uint Solution_std::calculateMaxNumberAssignments() {
+    uint max = 0;
+    for (auto loc:p_locations) {
+        uint count = 0;
+        for (auto cust:instance->getCustomers()) {
+            if (assignment[cust].node == loc) count++;
+        }
+        if (count > max) max = count;
+    }
+    return max;
 }

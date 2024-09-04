@@ -1,0 +1,79 @@
+Processing files for base filename p3038_600:
+Processing files for base filename p3038_600:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group3/cust_weights_p3038_600.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.p3038_600_122710.txt
+Total Euclidean Distance: 122710.59430797209
+Maximum Distance: 181.04419349981927
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 1.0
+Average Distance: 40.39190069386846
+Standard Deviation of Distances: 25.959092845452837
+Sum of Distances from Clusters: 122710.53000000006
+
+Processing files for base filename p3038_700:
+Processing files for base filename p3038_700:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group3/cust_weights_p3038_700.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.p3038_700_109670.txt
+Total Euclidean Distance: 109670.53283774041
+Maximum Distance: 123.82245353731285
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 1.0
+Average Distance: 36.09958289589883
+Standard Deviation of Distances: 24.22945893885655
+Sum of Distances from Clusters: 109670.59
+
+Processing files for base filename p3038_800:
+Processing files for base filename p3038_800:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group3/cust_weights_p3038_800.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.p3038_800_100060.txt
+Total Euclidean Distance: 100060.05995978114
+Maximum Distance: 130.13838787997952
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 1.0
+Average Distance: 32.93616193541192
+Standard Deviation of Distances: 23.237415909590492
+Sum of Distances from Clusters: 100060.05999999997
+
+Processing files for base filename p3038_900:
+Processing files for base filename p3038_900:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group3/cust_weights_p3038_900.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.p3038_900_92309.txt
+Total Euclidean Distance: 92309.53179057487
+Maximum Distance: 112.14722466472365
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 1.0
+Average Distance: 30.384967673000347
+Standard Deviation of Distances: 22.460215150667718
+Sum of Distances from Clusters: 92309.56999999992
+
+Processing files for base filename p3038_1000:
+Processing files for base filename p3038_1000:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group3/cust_weights_p3038_1000.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.p3038_1000_85854.txt
+Total Euclidean Distance: 85854.05673505043
+Maximum Distance: 95.4829827770373
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 1.0
+Average Distance: 28.260058174802715
+Standard Deviation of Distances: 22.00279386370239
+Sum of Distances from Clusters: 85853.77000000003
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

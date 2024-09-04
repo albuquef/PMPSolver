@@ -57,6 +57,7 @@ void writeReport_TB(const string& filename, dist_t objective, int num_ite, int n
 
 TB::TB(shared_ptr<Instance> instance, uint_t seed):instance(std::move(instance)) {
     engine.seed(seed);
+    
 //    cout << "TB heuristic initialized\n";
 //    instance->print();
 
@@ -88,6 +89,47 @@ Solution_std TB::initRandomSolution() {
     sol.setCoverMode_n2(cover_mode_n2);
     return sol;
 }
+
+
+void TB::setRandomClusterInitialSolution(bool randomcluster_initial_solution) {
+    this->randomcluster_initial_solution = randomcluster_initial_solution;
+}
+Solution_std TB::initRandomClusterSolution() {
+    // Sample p distinct locations
+    unordered_set<uint_t> p_locations;
+    auto p = instance->get_p();
+    auto locations = instance->getLocations();
+    auto clusters = instance->getClusters(); // clusters_locs
+    auto num_clusters = clusters.size();
+
+    // Check if clusters are empty
+    if (clusters.empty()) {
+        cout << "[ERROR] No clusters found\n";
+        cout << "[WARN] Returning a random solution\n";
+        return initRandomSolution();
+    } 
+
+
+    std::vector<double> cluster_weights(num_clusters);
+    for (size_t i = 0; i < num_clusters; ++i) {
+        cluster_weights[i] = clusters[i].size();
+    }
+
+    std::discrete_distribution<int> distribution(cluster_weights.begin(), cluster_weights.end());
+
+    while (p_locations.size() < p) {
+        uint_t cluster = distribution(engine); // Get a cluster index based on weights
+        std::uniform_int_distribution<uint_t> distribution_loc(0, clusters[cluster].size() - 1);
+        uint_t loc = clusters[cluster][distribution_loc(engine)];
+        p_locations.insert(locations[loc]); // Add the location to the unordered_set
+    }
+    Solution_std sol(instance, p_locations);
+    sol.setCoverMode(cover_mode);
+    sol.setCoverMode_n2(cover_mode_n2);
+    return sol;
+}
+
+
 
 Solution_std TB::initRandomSolution_Cover() {
     // Sample p distinct locations
@@ -409,6 +451,112 @@ Solution_cap TB::fixedCapSolution(string eval_Method){
 }
 
 
+std::unordered_set<uint_t> extract_unique_values(const std::string& file_path) {
+    std::unordered_set<uint_t> unique_values; // Set to store unique values
+    std::ifstream file(file_path);
+
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << file_path << std::endl;
+        return unique_values;
+    }
+
+    std::string line;
+    while (std::getline(file, line)) {
+        try {
+            uint_t numeric_value = std::stoul(line); // Convert line to unsigned int
+            unique_values.insert(numeric_value+1); // Add to result set (add 1 to the value)
+        } catch (const std::invalid_argument& e) {
+            // Handle non-numeric values if needed
+            continue;
+        }
+    }
+
+    return unique_values;
+}
+Solution_cap TB::fixedCapSolution_gb21(){
+
+    cout << "[INFO] Initial Solution Fixed Capacited \n";
+
+    unordered_set<uint_t> p_locations;
+    // p_locations = {3,15,29,21,75,50,55,62,90,97};
+
+    string path_sols_lit = "/users/falbuquerque/Projects/GB21_code/GB21-MH/outputs/first_global_phase/medians_" + instance->getTypeService() + ".txt";
+    cout << "path_sols_lit: " << path_sols_lit << "\n";
+    p_locations = extract_unique_values(path_sols_lit);
+
+    cout << "service: " << instance->getTypeService() << "\n";
+
+
+    Solution_cap solut(instance, p_locations, "GAP");
+    solut.setCoverMode(cover_mode);
+    solut.setCoverMode_n2(cover_mode_n2);
+    solut.print();
+    return solut;
+}
+
+
+Solution_cap TB::generateSolutionFromFile(){
+
+
+    cout << "Initial Solution from File\n";
+
+    string path_sol = "/users/falbuquerque/Projects/GB21_code/GB21-MH/outputs/first_global_phase/assignments_" + instance->getTypeService() + ".txt";
+    cout << "path: " << path_sol << "\n";
+
+    std::ifstream infile(path_sol);
+    if (!infile) {
+        std::cerr << "Unable to open file " << path_sol << std::endl;
+        throw std::runtime_error("File could not be opened");
+    }
+
+    std::unordered_map<uint_t, uint_t> data;
+    std::string line;
+
+    // Read the file line by line
+    while (std::getline(infile, line)) {
+        std::istringstream iss(line);
+        uint_t customer, location;
+        char arrow;
+
+        // Parse the line in the format "customer -> location"
+        if (iss >> customer >> arrow >> arrow >> location) {
+            data[customer] = location;
+        }
+    }
+
+    infile.close();
+
+
+    // Now generate the parameters for Solution_cap
+    std::unordered_set<uint_t> p_locations;
+    std::unordered_map<uint_t, dist_t> loc_usages;
+    std::unordered_map<uint_t, dist_t> cust_satisfactions;
+    std::unordered_map<uint_t, assignment> assignments;
+    
+    // Parse the data to generate p_locations, loc_usages, and assignments
+    dist_t objtest = 0.0;
+    for (const auto& [customer, location] : data) {
+        uint_t cust = customer+1;
+        uint_t loc = location+1;
+        auto dem_used = instance->getCustWeight(cust);
+
+        p_locations.insert(loc);
+        loc_usages[loc] += dem_used;
+        cust_satisfactions[cust] = dem_used; // Assuming default satisfaction
+        assignments[cust].emplace_back(my_tuple{loc, dem_used, instance->getRealDist(loc, cust)});
+                        
+        auto obj_increment =  instance->getRealDist(loc, cust);
+        if (instance->get_isWeightedObjFunc()) obj_increment = dem_used * instance->getRealDist(loc, cust);
+        objtest += obj_increment;
+    }
+    cout << "objtest: " << objtest << "\n";
+    // Create and return the Solution_cap object
+    return Solution_cap(instance, p_locations, loc_usages, cust_satisfactions, assignments);
+
+}   
+
+
+
 Solution_cap TB::initCPLEXCapSolution(double time_limit, const char* typeProb) {
     
     CLOCK_LIMIT_CPLEX = time_limit;
@@ -433,7 +581,8 @@ Solution_std TB::run(bool verbose, int MAX_ITE) {
     cout << "uncapacitated TB started\n";
 
     Solution_std sol_best;
-    if (!cover_mode) sol_best = initRandomSolution();
+    if (randomcluster_initial_solution) sol_best = initRandomClusterSolution();
+    else if (!cover_mode) sol_best = initRandomSolution();
     if (cover_mode) sol_best = initRandomSolution_Cover();
     sol_best.setCoverMode(cover_mode);
     sol_best.setCoverMode_n2(cover_mode_n2);
@@ -450,6 +599,8 @@ Solution_cap TB::run_cap(bool verbose, int MAX_ITE) {
     if (cover_mode) sol_best = initHighestCapSolution_Cover();
     else sol_best = initHighestCapSolution();
     // sol_best = initCPLEXCapSolution(3, "CPMP");
+    sol_best.setCoverMode(cover_mode);
+    sol_best.setCoverMode_n2(cover_mode_n2);
     sol_best.print();
 
     sol_best = localSearch_cap(sol_best, verbose, MAX_ITE);
@@ -643,7 +794,7 @@ bool TB::test_basic_Solution_cap(Solution_cap sol, uint_t in_p, uint_t out_p) {
 
 Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
 
-    cout << "\n[INFO] Local Search cap (TB)\n";
+    cout << "\n[INFO] Capacitated TB local search started\n";
 
     string report_filename = "./outputs/reports/report_" + this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size());
     if (cover_mode) report_filename += "_cover_" + instance->getTypeSubarea();
@@ -689,8 +840,8 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                     // else if (test_LB_PMP(sol_tmp,p_loc,loc) && test_UB_heur(sol_tmp, p_loc, loc)) { // LB1 and UB1
                         
                         sol_tmp.add_UpperBound(sol_best.get_objective());
-                        sol_tmp.replaceLocation(p_loc, loc, "GAP"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
-                        // sol_tmp.replaceLocation(p_loc, loc, "heuristic");
+                        // sol_tmp.replaceLocation(p_loc, loc, "GAP"); if(sol_tmp.isSolutionFeasible()) solutions_map.addUniqueSolution(sol_tmp);
+                        sol_tmp.replaceLocation(p_loc, loc, "heuristic");
 
                         auto elapsed_time_total = (get_cpu_time_TB() - start_time_total) + external_time;
                         // #pragma omp critical
@@ -702,8 +853,8 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
                             }
                             sol_cand = copySolution_cap(sol_tmp, 0);
                             improved = true;
-                            cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
-                            sol_cand.print();
+                            // cout << "Improved solution (TB): \n"; cout << "Interation: " << ite << "\n";
+                            // sol_cand.print();
 
                             if (generate_reports) writeReport_TB(report_filename, sol_cand.get_objective(), ite, solutions_map.getNumSolutions(),elapsed_time_total);
 
@@ -723,7 +874,7 @@ Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_IT
             if (improved) {
 
                 sol_best = copySolution_cap(sol_cand, 0);
-                sol_best.print();
+                // sol_best.print();
 
                 if (verbose) {
                     cout << "\n[INFO] Improved global TB solution: \n" << "Interation: " << ite << "\n";

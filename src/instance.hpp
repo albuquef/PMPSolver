@@ -33,6 +33,7 @@ private:
     uint_t cover_n2_max_id=0; 
     dist_t h; // bandwidth
     dist_t total_demand;
+    dist_t total_capacity;
     const string type_service;
     vector<uint_t> voted_locs;
 
@@ -52,8 +53,13 @@ private:
 
     void setDist(uint_t loc, uint_t cust, dist_t value);
     dist_t threshold_dist=0;
+    uint_t max_limit_assignments=0;
 
     bool isBinProblem=false;
+
+    vector<vector<uint_t>> clusters_locs;
+
+
 public:
     // Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> dist_matrix, shared_ptr<dist_t[]> loc_capacities, uint_t p, uint_t loc_max, uint_t cust_max, string type_service);    
     Instance(vector<uint_t> locations, vector<uint_t> customers, shared_ptr<dist_t[]> cust_weights, shared_ptr<dist_t[]> loc_capacities,shared_ptr<dist_t[]> dist_matrix, uint_t p, uint_t loc_max, uint_t cust_max, string type_service);    
@@ -108,13 +114,25 @@ public:
     bool isPcoversAllSubareas(unordered_set<uint_t> p_loc_cand);
     bool isPcoversAllSubareas_n2(unordered_set<uint_t> p_loc_cand);
     bool get_isWeightedObjFunc();
-
-    
     void set_isWeightedObjFunc(bool is_weighted_obj_func);
+
     void set_ThresholdDist(dist_t threshold_dist);
     dist_t get_ThresholdDist();
+    void set_MaxLimitAssignments(uint_t maxlimit_assignments);
+    uint_t get_MaxLimitAssignments();
 
+    
+    void createClustersLocsWithKmeans(uint_t k, uint_t seed);
+    // vector<int> getClustersLocsKmeans();
+    vector<uint_t> initializeCentroids(uint_t n, uint_t k, uint_t seed);
+    vector<uint_t> updateCentroids(const std::vector<uint_t>& clusters, const std::shared_ptr<dist_t[]>& dist_matrix, uint_t n, int k);
+    vector<uint_t> assignClusters(const std::shared_ptr<dist_t[]>& dist_matrix, const std::vector<uint_t>& centroids, uint_t n, int k);
+    vector<uint_t> kMeans(const std::shared_ptr<dist_t[]>& dist_matrix, uint_t n, int k, uint_t seed, int maxIterations);
+    vector<vector<uint_t>> getClusters();
+    void setClusters(vector<vector<uint_t>> clusters);
 
+    Instance getSubproblemFromClusters(uint_t k); // just work when N=C set of locations and customers are the same points
+    Instance sampleSubproblemFromClusters(uint_t loc_cnt, uint_t cust_cnt, uint_t p_new, uint_t num_clusters, uint_t seed); // just work when N=C
 };
 
 

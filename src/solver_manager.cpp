@@ -54,6 +54,17 @@ void SolverManager::solveProblem() {
             if (config.Method_PostOpt != "null" && config.Method_PostOpt != "") {
                 runPostOptimization(solution, config, external_time, start_time);
             }
+        } else if (config.Method == "fixedSolution") {
+            cout << "Fixed solution\n";
+            TB heuristic(shared_instance, seed);
+            // setHeuristicParams(heuristic, config.Method , config, Solution_MAP(shared_instance), external_time);
+            // auto solution = heuristic.fixedCapSolution_gb21();
+            auto solution = heuristic.generateSolutionFromFile();
+            solution.print();
+            cout << "Post Optimization: " << config.Method_PostOpt  << endl;
+            if (config.Method_PostOpt != "null" && config.Method_PostOpt != "") {
+                runPostOptimization(solution, config, external_time, start_time);
+            }
         } else {
             cerr << "[ERROR] Method not found" << endl;
             exit(1);
@@ -171,7 +182,7 @@ void SolverManager::runRSSVHeuristic(const shared_ptr<Instance>& instance, const
     } else if (isCPMPMethod(config.Method_RSSV_fp)) {
         auto solution = runCPMPMethod(filtered_instance, config, start_time);
         cout << "Post Optimization: " << config.Method_PostOpt  << endl;
-        if (config.Method_PostOpt != "null" || config.Method_PostOpt != "") {
+        if (config.Method_PostOpt != "null" && config.Method_PostOpt != "") {
             runPostOptimization(solution, config, external_time, start_time);
         }
     } else {

@@ -1,4 +1,4 @@
-customer subarea_id
+location subarea_id
 246 2
 271 2
 1039 3

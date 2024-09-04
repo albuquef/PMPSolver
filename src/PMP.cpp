@@ -222,6 +222,7 @@ void PMP::run(string Method_name){
         if (timeLimit != 0) cplex.setParam(IloCplex::Param::TimeLimit, timeLimit);
         if (useMIPStart) addMIPStartSolution();
         if (BestBound != 0) cplex.setParam(IloCplex::Param::MIP::Tolerances::LowerCutoff, BestBound);
+        if (!displayCPLEX) cplex.setParam(IloCplex::Param::MIP::Display, 0);  // Disable console output
 
         // Callbacks CPLEX
         CallbackParams params(cplex);
@@ -229,11 +230,11 @@ void PMP::run(string Method_name){
         if (timeLimit == 0) add_break_callback = false; // if time limit is not set, do not use break callback
         
         double gapThreshold = 0.01; // alpha% improvement, e.g., 1% improvement
-        double timeThreshold = 120; // T seconds, e.g., 300 seconds
+        double timeThreshold = 180; // T seconds, e.g., 300 seconds
         params.gapThreshold = gapThreshold;
         params.timeThreshold = timeThreshold;
 
-        double time_limit_with_gap_less_than_1perc = 120; // limit of time with gap less than 1%
+        double time_limit_with_gap_less_than_1perc = 60; // limit of time with gap less than 1%
         params.timelimite_less_than_1perc = time_limit_with_gap_less_than_1perc;
 
 
@@ -448,6 +449,7 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if(CoverModel_n2) {constr_Cover_n2(model,y);}
     if (UpperBound != 0) {constr_UpperBound(model,x);}
     if (instance->get_ThresholdDist() > 0) {constr_MaxDistance(model,x);}
+    if (instance->get_MaxLimitAssignments() > 0) {constr_MaxAssignments(model,x);}
     if (add_constr_maxNeighbors_from_solution) {constr_MaxNeighborsFromSolution(model,y);}
 }
 
@@ -708,8 +710,8 @@ void PMP::constr_UpperBound (IloModel model, VarType x){
 template <typename VarType>
 void PMP::constr_MaxDistance(IloModel model, VarType x){
 
-    if (VERBOSE){cout << "[INFO] Adding Max Distance Constraints "<< endl; 
-    cout << "Threshold Distance: " << instance->get_ThresholdDist() << endl;}
+    if (VERBOSE){cout << "[INFO] Adding Max Distance Constraints "<< endl;}
+    cout << "Threshold Distance: " << instance->get_ThresholdDist() << endl;
 
     for(IloInt i = 0; i < num_customers; i++)
         for(IloInt j = 0; j < num_facilities; j++){
@@ -720,7 +722,24 @@ void PMP::constr_MaxDistance(IloModel model, VarType x){
         }
 }
 
+template <typename VarType>
+void PMP::constr_MaxAssignments(IloModel model, VarType x){
 
+    if (VERBOSE){cout << "[INFO] Adding Max Number Assigments of Constraints "<< endl;}
+    cout << "Max Limit of Assigments: " << instance->get_MaxLimitAssignments() << endl; 
+   
+
+    IloEnv env = model.getEnv();
+    // count number of assignments for each facility
+    for(IloInt j = 0; j < num_facilities; j++){
+        IloExpr expr(env);
+        for(IloInt i = 0; i < num_customers; i++){
+            expr += x[i][j];
+        }
+        model.add(expr <= int(instance->get_MaxLimitAssignments()));
+    }
+
+}
 
 void PMP::constr_MaxNeighborsFromSolution(IloModel model, IloBoolVarArray y){
 
@@ -785,7 +804,6 @@ void PMP::constr_fixedAllocs_from_solution(IloModel model, IloBoolVarArray y, Va
     }
 
 }
-
 
 
 template <typename VarType>  
@@ -1271,4 +1289,8 @@ void PMP::set_Fixed_pLocations_from_solution(unordered_set<uint_t> fixed_p_locat
 
 void PMP::setBestBound(dist_t bestBound){
     this->BestBound = bestBound;
+}
+
+void PMP::setDisplayCPLEX(bool displayCPLEX){
+    this->displayCPLEX = displayCPLEX;
 }

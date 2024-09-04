@@ -765,6 +765,9 @@ void Solution_cap::statsDistances(){
     }
     std_dev_dist = sqrt(sum/cont);
     this->std_dev_dist = std_dev_dist;
+
+    this->max_num_assignments = calculateMaxNumberAssignments();
+
 }
 
 dist_t Solution_cap::getMaxDist(){
@@ -779,6 +782,26 @@ dist_t Solution_cap::getAvgDist(){
 dist_t Solution_cap::getStdDevDist(){
     return std_dev_dist;
 }
+
+uint_t Solution_cap::getMaxNumberAssignments() {
+    return max_num_assignments;
+}
+
+uint Solution_cap::calculateMaxNumberAssignments() {
+    uint max = 0;
+    for (auto loc:p_locations) {
+        uint num_assignments = 0;
+        for (auto cust:instance->getCustomers()) {
+            for (auto a:assignments[cust]) {
+                if (a.node == loc) num_assignments++;
+            }
+        }
+        if (num_assignments > max) max = num_assignments;
+    }
+    return max;
+}
+
+
 
 void Solution_cap::printStatsDistances(){
     cout << "Statistics:\n";
@@ -796,3 +819,4 @@ void Solution_cap::setBestBound(dist_t best_bound){
 dist_t Solution_cap::getBestBound(){
     return this->Best_Bound;
 }
+

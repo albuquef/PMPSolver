@@ -5,7 +5,8 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
-#SBATCH --array=0-9%5
+# # SBATCH --array=0-9%5
+#SBATCH --array=0-1%2
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -24,7 +25,7 @@ ADD_TYPE_TEST="LIT_seed_${SEED}_Subp_nxC"
 
 # ----------------------------------------- Methods configuration -----------------------------------------
 # FOR_METHODS=("EXACT_CPMP_BIN" "RSSV")
-FOR_METHODS=("RSSV")
+FOR_METHODS=("fixedSolution")
 METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
 # METHOD_RSSV_FINAL="TB_CPMP"
 metsp="TB_PMP" # Subproblem method
@@ -37,7 +38,7 @@ IsWeighted_OBJ=false
 
 ADD_THRESHOLD_DIST_SUBP_RSSV=true
 # TIME_SUBP_RSSV=600 # 10 minutes  
-TIME_SUBP_RSSV=300   
+TIME_SUBP_RSSV=180   
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit
 
 # TIME_CPLEX=3600 # 1 hour
@@ -57,9 +58,14 @@ ADD_BREAK_CALLBACK=true
 INSTANCE_GROUPS=("group2/" "group3/" "group4/" "group5/")
 mapfile -t filters < ./scripts/filter_lit.txt
 
-if [ "$1" == "basic" ]; then
-    filters=("SJC4a")
-    # filters=("SJC1")
+
+if [ "$1" == "test_indexes" ]; then
+    # filters=("SJC4a")
+    filters=("SJC1_modif")
+    INSTANCE_GROUPS=("groupTEST/")
+elif [ "$1" == "basic" ]; then
+    # filters=("SJC4a")
+    filters=("SJC1")
     INSTANCE_GROUPS=("group2/")
 elif [ "$1" == "spain" ]; then
     filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
@@ -71,18 +77,22 @@ elif [ "$1" == "pr2392" ]; then
     filters=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
     INSTANCE_GROUPS=("group5/")
 elif [ "$1" == "p3038" ]; then
-    filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    # filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    filters=("p3038_600" "p3038_1000")
     INSTANCE_GROUPS=("group3/")
 elif [ "$1" == "fnl4461" ]; then
-    filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    # filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    filters=("fnl4461_0020.txt" "fnl4461_1000.txt")
     INSTANCE_GROUPS=("group5/")
 elif [ "$1" == "benchmark" ]; then
     # filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
     # filters=("SJC1" "SJC2" "SJC3a" "SJC3b" "SJC4a" "SJC4b") 
     filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    # filters=("p3038_600" "p3038_1000")
     # filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
     # filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
     filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    # filters+=("fnl4461_0020.txt" "fnl4461_1000.txt")
     # INSTANCE_GROUPS=("group2/" "group4/" "group3/" "group5/")
     INSTANCE_GROUPS=("group3/" "group5/")
 fi
@@ -93,6 +103,7 @@ p_values_group2=(10 15 25 30 30 40)
 p_values_group3=(1000 600 700 800 900)
 p_values_group4=(74 74 148 148)
 p_values_group5=(5 25 50 100 150 20 100 250 500 1000 5 15 40 70 100 20 75 150 300 500 10 50 100 200 300 10 30 75 125 200)
+p_values_groupTEST=(3)
 
 # Define N values for each group
 N_values_group1=(50 50 50 50 50 50 50 50 50 50 100 100 100 100 100 100 100 100 100 100)
@@ -100,6 +111,7 @@ N_values_group2=(100 200 300 300 402 402)
 N_values_group3=(3038 3038 3038 3038 3038)
 N_values_group4=(737 737 737 737)
 N_values_group5=(535 535 535 535 535 4461 4461 4461 4461 4461 318 318 318 318 318 2392 2392 2392 2392 2392 1304 1304 1304 1304 1304 724 724 724 724 724)
+N_values_groupTEST=(100)
 
 # Define GB21 values
 N_values_GB21=(52057 52057 52057 498378 498378 498378 104814 104814 104814 10150 10150 10150)
@@ -109,149 +121,191 @@ p_values_GB21=(1000 100 2000 1000 100 2000 1000 100 2000 1000 100 2000)
 arr=()
 console_names=()
 
-for METHOD in "${FOR_METHODS[@]}"; do
+# FOR_METHODS=("fixedSolution")
+FOR_METHODS=("RSSV")
+# for size_subprob in "fixed" "dynamic"; do
+#     for timesp in 180 300; do
+for size_subprob in "fixed"; do
+    for timesp in 180; do
+        for METHOD in "${FOR_METHODS[@]}"; do
+            METHOD_POSTOPT="EXACT_CPMP_BIN"
+            ADD_THRESHOLD_DIST_SUBP_RSSV=true
 
-    if [ "$METHOD" = "RSSV" ]; then
-		ADD_GENERATE_REPORTS=true
-		ADD_BREAK_CALLBACK=true
-		TIME_CPLEX=2400 # 1 hour
-		TIME_CLOCK=3600
-		metsp="TB_PMP" # Subproblem method
-		TIME_SUBP_RSSV=300
-		METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
-		METHOD_POSTOPT="EXACT_CPMP_BIN"
-	fi
-
-
-
-	if [ "$METHOD" = "EXACT_CPMP_BIN" ]; then
-		ADD_GENERATE_REPORTS=false
-		ADD_BREAK_CALLBACK=false
-		TIME_CPLEX=3600
-        TIME_CLOCK=3600
-		METHOD_POSTOPT="null"
-	fi
-
-
-
-    for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
-        DIR_DATA_GROUP="${DIR_DATA}${INSTANCE_GROUP}"
-
-        if [ ! -d "$DIR_DATA_GROUP" ]; then
-            echo "Error: Directory $DIR_DATA_GROUP does not exist."
-            exit 1
-        fi
-
-        INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist|\.grd$')
-
-        case "$INSTANCE_GROUP" in
-            "group1/")
-                p_values=("${p_values_group1[@]}")
-                N_values=("${N_values_group1[@]}")
-                ;;
-            "group2/")
-                p_values=("${p_values_group2[@]}")
-                N_values=("${N_values_group2[@]}")
-                ;;
-            "group3/")
-                p_values=("${p_values_group3[@]}")
-                N_values=("${N_values_group3[@]}")
-                ;;
-            "group4/")
-                p_values=("${p_values_group4[@]}")
-                N_values=("${N_values_group4[@]}")
-                ;;
-            "group5/")
-                p_values=("${p_values_group5[@]}")
-                N_values=("${N_values_group5[@]}")
-                ;;
-            "GB21/")
-                p_values=("${p_values_GB21[@]}")
-                N_values=("${N_values_GB21[@]}")
-                ;;
-            *)
-                echo "Error: Unknown INSTANCE_GROUP $INSTANCE_GROUP."
-                exit 1
-                ;;
-        esac
-
-        index=0
-        for file in $INSTANCE_FILENAMES; do
-            D_MATRIX="euclidian"
-
-            if [[ "$file" == *"spain"* ]]; then
-                D_MATRIX="./data/Literature/group4/dist_matrix_spain.txt"
-            fi
-
-            file=${file//.dat/.txt}
-            WEIGHTS="${DIR_DATA_GROUP}cust_weights_${file//.dat/.txt}"
-            CAPACITIES="${DIR_DATA_GROUP}loc_capacities_${file//.dat/.txt}"
-            filename_without_extension="${file%.dat}"
-            filename_without_extension="${file%.txt}"
-            COVERAGES="${DIR_DATA_GROUP}loc_coverages_kmeans_${filename_without_extension}.txt"
-            serv="${file%.txt}"
-            p="${p_values[$index]}"
-            N="${N_values[$index]}"
-
-
-            if [ "$N" -lt 800 ]; then
-                SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
-            else
-                # SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)
-                # SUB_PROB_SIZE=$(echo "1.2 * $p" | bc)
-                # SUB_PROB_SIZE=$(echo "1.5 * $p" | bc)
-                SUB_PROB_SIZE=800
-            fi
-
-
-            NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
-            mkdir -p $NEW_DIR_CONSOLE
-            export CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.log"
             if [ "$METHOD" = "RSSV" ]; then
-                export CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.log"
+                ADD_GENERATE_REPORTS=true
+                ADD_BREAK_CALLBACK=true
+                TIME_CPLEX=2400 # 1 hour
+                TIME_CLOCK=3600
+                metsp="TB_PMP" # Subproblem method
+                # metsp="EXACT_PMP" # Subproblem method
+                TIME_SUBP_RSSV=$timesp
+                METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
+                # METHOD_POSTOPT="null"
+            fi
+
+            if [ "$METHOD" = "fixedSolution" ]; then
+                ADD_GENERATE_REPORTS=true
+                ADD_BREAK_CALLBACK=true
+                TIME_CPLEX=2400 # 1 hour
+                TIME_CLOCK=3000
+                METHOD_POSTOPT="EXACT_CPMP_BIN"
+            fi
+
+            if [ "$METHOD" = "EXACT_CPMP_BIN" ]; then
+                ADD_GENERATE_REPORTS=false
+                ADD_BREAK_CALLBACK=false
+                TIME_CPLEX=3600
+                TIME_CLOCK=3600
+                METHOD_POSTOPT="null"
             fi
 
 
-            mkdir -p ./outputs/reports/
-            NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
-            mkdir -p $NEW_DIR
-            mkdir -p $NEW_DIR/VarsValues_cplex/
-            mkdir -p $NEW_DIR/Results_cplex/
-            mkdir -p $NEW_DIR/Assignments/
-            OUTPUT="${NEW_DIR}/test_lit_${serv}"
 
-            match_filter=false
-            for filter in "${filters[@]}"; do
-                if [[ -n $filter ]]; then
-                    if [[ $file == *$filter* ]]; then
-                        match_filter=true
-                        break
-                    fi
+            for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
+                DIR_DATA_GROUP="${DIR_DATA}${INSTANCE_GROUP}"
+
+                if [ ! -d "$DIR_DATA_GROUP" ]; then
+                    echo "Error: Directory $DIR_DATA_GROUP does not exist."
+                    exit 1
                 fi
+
+                INSTANCE_FILENAMES=$(ls -1 "$DIR_DATA_GROUP" | grep -vE '^loc|^cust|^dist|\.grd$')
+
+                for filename in $INSTANCE_FILENAMES; do
+                    echo "$filename"
+                done
+                echo $INSTANCE_GROUP
+
+                case "$INSTANCE_GROUP" in
+                    "group1/")
+                        p_values=("${p_values_group1[@]}")
+                        N_values=("${N_values_group1[@]}")
+                        ;;
+                    "group2/")
+                        p_values=("${p_values_group2[@]}")
+                        N_values=("${N_values_group2[@]}")
+                        ;;
+                    "group3/")
+                        p_values=("${p_values_group3[@]}")
+                        N_values=("${N_values_group3[@]}")
+                        ;;
+                    "group4/")
+                        p_values=("${p_values_group4[@]}")
+                        N_values=("${N_values_group4[@]}")
+                        ;;
+                    "group5/")
+                        p_values=("${p_values_group5[@]}")
+                        N_values=("${N_values_group5[@]}")
+                        ;;
+                    "GB21/")
+                        p_values=("${p_values_GB21[@]}")
+                        N_values=("${N_values_GB21[@]}")
+                        ;;
+                    "groupTEST/")
+                        p_values=("${p_values_groupTEST[@]}")
+                        N_values=("${N_values_groupTEST[@]}")
+                        ;;
+                    *)
+                        echo "Error: Unknown INSTANCE_GROUP $INSTANCE_GROUP."
+                        exit 1
+                        ;;
+                esac
+
+                index=0
+                for file in $INSTANCE_FILENAMES; do
+                    D_MATRIX="euclidean"
+
+                    if [[ "$file" == *"spain"* ]]; then
+                        D_MATRIX="./data/Literature/group4/dist_matrix_spain.txt"
+                    fi
+
+                    file=${file//.dat/.txt}
+                    WEIGHTS="${DIR_DATA_GROUP}cust_weights_${file//.dat/.txt}"
+                    CAPACITIES="${DIR_DATA_GROUP}loc_capacities_${file//.dat/.txt}"
+                    filename_without_extension="${file%.dat}"
+                    filename_without_extension="${file%.txt}"
+                    COVERAGES="${DIR_DATA_GROUP}loc_coverages_kmeans_${filename_without_extension}.txt"
+                    serv="${file%.txt}"
+                    p="${p_values[$index]}"
+                    N="${N_values[$index]}"
+
+
+                    # if [ "$N" -lt 800 ]; then
+                    #     # If N is less than 800, set SUB_PROB_SIZE to 80% of N
+                    #     SUB_PROB_SIZE=$(echo "0.8 * $N" | bc)
+                    # else
+                    #     # If N is 800 or more, set SUB_PROB_SIZE to 120% of p
+                    #     # The following options are commented out but could be used instead:
+                    #     # SUB_PROB_SIZE=$(echo "0.4 * $N" | bc)  # Set to 40% of N
+                    #     # SUB_PROB_SIZE=$(echo "2 * $p" | bc)    # Set to 200% of p
+                    #     # SUB_PROB_SIZE=800                      # Set to 800
+                    #     SUB_PROB_SIZE=$(echo "1.2 * $p" | bc)
+                    # fi
+
+                    # SUB_PROB_SIZE=$(echo "4 * $p" | bc)
+                    # SUB_PROB_SIZE=$(echo "5 * $N / 20" | bc)
+                    # SUB_PROB_SIZE=$(echo "0.1 * $N" | bc)
+                    # SUB_PROB_SIZE=1500
+
+                    if [ "$size_subprob" == "fixed" ]; then
+                        SUB_PROB_SIZE=2400
+                    fi
+
+                    if [ "$size_subprob" == "dynamic" ]; then
+                        SUB_PROB_SIZE=$(echo "1.2 * $p" | bc)
+                    fi
+
+
+
+                    NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
+                    mkdir -p $NEW_DIR_CONSOLE
+                    export CONSOLE_NAME="console_${serv}_${METHOD}_p_${p}.log"
+                    if [ "$METHOD" = "RSSV" ]; then
+                        export CONSOLE_NAME="console_${serv}_${METHOD}_${METHOD_RSSV_FINAL}_p_${p}.log"
+                    fi
+
+
+                    mkdir -p ./outputs/reports/
+                    NEW_DIR="./outputs/solutions/$(date '+%Y-%m-%d')_${ADD_TYPE_TEST}"
+                    mkdir -p $NEW_DIR
+                    mkdir -p $NEW_DIR/VarsValues_cplex/
+                    mkdir -p $NEW_DIR/Results_cplex/
+                    mkdir -p $NEW_DIR/Assignments/
+                    OUTPUT="${NEW_DIR}/test_lit_${serv}"
+
+                    match_filter=false
+                    for filter in "${filters[@]}"; do
+                        if [[ -n $filter ]]; then
+                            if [[ $file == *$filter* ]]; then
+                                match_filter=true
+                                break
+                            fi
+                        fi
+                    done
+
+                    
+                    if $match_filter; then
+
+                        # echo "p: $p"
+                        # echo "N: $N"
+
+                        console_names+=("$CONSOLE_NAME")
+                        arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\
+                        -cover $COVERAGES -subarea null -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
+                        -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
+                        -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
+                        -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
+                        -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
+                        -add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK\
+                        -o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
+                    fi
+
+                    ((index++))
+                done
             done
-
-            if $match_filter; then
-
-                # echo "Instance: $file"
-                # echo "p: $p"
-                # echo "N: $N"
-
-                console_names+=("$CONSOLE_NAME")
-                arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\
-                -cover $COVERAGES -subarea null -cover_mode $COVER_MODE -cust_max_id $N -loc_max_id $N\
-                -time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
-                -method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
-                -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
-                -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
-                -add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK\
-                -o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
-            fi
-
-            ((index++))
         done
     done
 done
-
 # ----------------------------------------- Run the instances -----------------------------------------
 if [ -z "$arr" ]; then
     echo "No instances"

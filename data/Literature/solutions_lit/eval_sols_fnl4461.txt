@@ -1,0 +1,64 @@
+Processing files for base filename fnl4461_0020:
+Processing files for base filename fnl4461_0020:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group5/cust_weights_fnl4461_0020.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.fnl4461_0020_1283536.txt
+Total Euclidean Distance: 1283536.7483642441
+Maximum Distance: 624.1578326032607
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 14.866068747318506
+Average Distance: 287.72399649501045
+Standard Deviation of Distances: 113.95329575160359
+Sum of Distances from Clusters: 1283536.73
+
+Processing files for base filename fnl4461_0100:
+Processing files for base filename fnl4461_0100:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group5/cust_weights_fnl4461_0100.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.fnl4461_0100_548909.txt
+Total Euclidean Distance: 548909.0362923912
+Maximum Distance: 323.05572274763995
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 10.0
+Average Distance: 123.04618612248231
+Standard Deviation of Distances: 52.052199903656856
+Sum of Distances from Clusters: 548909.0
+
+Processing files for base filename fnl4461_0250:
+Processing files for base filename fnl4461_0250:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group5/cust_weights_fnl4461_0250.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.fnl4461_0250_335888.txt
+Total Euclidean Distance: 335888.8924024649
+Maximum Distance: 185.9946235782099
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 10.04987562112089
+Average Distance: 75.29452867125417
+Standard Deviation of Distances: 34.39924574417791
+Sum of Distances from Clusters: 335888.8700000001
+
+Processing files for base filename fnl4461_0500:
+Processing files for base filename fnl4461_0500:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group5/cust_weights_fnl4461_0500.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.fnl4461_0500_224662.txt
+Total Euclidean Distance: 224662.5098284147
+Maximum Distance: 139.71399357258383
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 10.0
+Average Distance: 50.3614682421908
+Standard Deviation of Distances: 26.291041569911748
+Sum of Distances from Clusters: 224662.41999999987
+
+Processing files for base filename fnl4461_1000:
+Processing files for base filename fnl4461_1000:
+Customer Data File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/group5/cust_weights_fnl4461_1000.txt
+--------------------------------------------------
+Solution File: /home/falbuquerque/Documents/projects/Project_PMP/large-PMP/data/Literature/solutions_lit/solucao.fnl4461_1000_145862.txt
+Total Euclidean Distance: 145862.49230756584
+Maximum Distance: 107.44766167767449
+Minimum Distance: 0.0
+Minimum Distance Different from Zero: 10.0
+Average Distance: 32.6972634628032
+Standard Deviation of Distances: 21.774257951648817
+Sum of Distances from Clusters: 145862.43000000017
