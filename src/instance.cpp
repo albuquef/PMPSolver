@@ -1066,14 +1066,6 @@ vector<uint_t> Instance::kMeans(const std::shared_ptr<dist_t[]>& dist_matrix, ui
     // Step 1: Initialize centroids
     std::vector<uint_t> centroids = initializeCentroids(n, k, seed);
 
-    // print centroids in line
-    cout << "Centroids: ";
-    for (uint_t i = 0; i < k; ++i) {
-        cout << centroids[i] << " ";
-    }
-    cout << endl;
-
-
     std::vector<uint_t> clusters(n);
     for (int iter = 0; iter < maxIterations; ++iter) {
         // Step 2: Assign clusters
@@ -1117,31 +1109,25 @@ void Instance::createClustersLocsWithKmeans(uint_t k, uint_t seed) {
 
     std::vector<uint_t> clusters = kMeans(dist_matrix, uint_t(locations.size()), k, seed);
 
-    // Output the results
-    // for (uint_t i = 0; i < clusters.size(); ++i) {
-    //     std::cout << "Point " << i << " is in cluster " << clusters[i] << std::endl;
-    // }
-
     // print number of locs in each cluster     
     std::vector<std::vector<uint_t>> clusters_locs(k);
     for (uint_t i = 0; i < clusters.size(); ++i) {
         clusters_locs[clusters[i]].push_back(i);
     }
+
     int sum = 0;
+    int cont_empty = 0;
     for (uint_t i = 0; i < clusters_locs.size(); ++i) {
         // std::cout << "Cluster " << i << " has " << clusters_locs[i].size() << " locations" << std::endl;
         sum += clusters_locs[i].size();
-    }
-    cout << "Total number of clusters: " << clusters_locs.size() << endl;
-    // cout << "Total number of locations: " << sum << endl;
-    // print list of locations for each cluster:
-    for (uint_t i = 0; i < clusters_locs.size(); ++i) {
-        std::cout << "Cluster " << i << ": ";
-        for (uint_t j = 0; j < clusters_locs[i].size(); ++j) {
-            std::cout << clusters_locs[i][j] << " ";
+        if (clusters_locs[i].size() == 0) {
+            cont_empty++;
         }
-        std::cout << std::endl;
     }
+    if (cont_empty > 0) {
+        cout << "[WARN] number of empty clusters: " << cont_empty << endl;
+    }
+
 
     this->clusters_locs = clusters_locs;    
 
@@ -1235,21 +1221,18 @@ Instance Instance::sampleSubproblemFromClusters(uint_t loc_cnt, uint_t cust_cnt,
 
     // generate random points proporcional to the number of locations in each cluster
     std::default_random_engine generator(seed);
+    // seed generator
+    std::mt19937 rng(seed); // Use Mersenne Twister for randomness
     std::vector<uint_t> locations_new;
     std::vector<uint_t> customers_new;
 
-    if (num_clusters > loc_cnt || num_clusters > cust_cnt || num_clusters > locations.size() || num_clusters > customers.size()) {
-        cerr << "[Error]: number of clusters is greater than the number of locations" << endl;
-        return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
-    }
-
     createClustersLocsWithKmeans(num_clusters, seed);
-
 
     // check if clusters_locs is empty
     if (clusters_locs.size() == 0) {
-        cerr << "[Error]: no clusters found" << endl;
-        return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service, unique_subareas, loc_coverages, type_subarea);
+        cout << "[Error] No clusters found during sampling" << endl;
+        cout << "[Warning] Returning a random sample" << endl;
+        return sampleSubproblem(loc_cnt, cust_cnt, p_new, seed);
     }
 
     // if cust_cnt is equal to the number of customers, then copy all customers
@@ -1261,33 +1244,57 @@ Instance Instance::sampleSubproblemFromClusters(uint_t loc_cnt, uint_t cust_cnt,
         locations_new = locations;
     }
 
-    if(loc_cnt < locations.size()){
-
-        std::vector<double> cluster_weights(clusters_locs.size());
-        for (size_t i = 0; i < clusters_locs.size(); ++i) {
-            cluster_weights[i] = clusters_locs[i].size();
-        }
-
-        std::discrete_distribution<int> distribution(cluster_weights.begin(), cluster_weights.end());
-
-        for (uint_t i = 0; i < loc_cnt; ++i) {
-            uint_t cluster = distribution(generator); // return the index of the cluster
-            std::uniform_int_distribution<uint_t> distribution_loc(0, clusters_locs[cluster].size() - 1);
-            uint_t loc = clusters_locs[cluster][distribution_loc(generator)];
-            locations_new.push_back(locations[loc]);
-
-            if (cust_cnt != customers.size()){ // if (cust_cnt < customers.size()) {
-                customers_new.push_back(customers[loc]);
-            }
-
-        }
+    // Total number of elements across all clusters
+    uint_t total_elements = 0;
+    for (const auto& cluster : clusters_locs) {
+        total_elements += cluster.size();
     }
 
-    // print info susbproblem
-    // cout << "Subproblem with " << loc_cnt << " locations" << endl;  
-    // cout << "locations_new: " << locations_new.size() << endl;
-    // cout << "customers_new: " << customers_new.size() << endl;
-    // cout << "p_new: " << p_new << endl;
+    // Check if there are enough elements
+    if (total_elements < loc_cnt || total_elements < cust_cnt) {
+        cout << "[Error] Not enough elements across all clusters to loc_cnt or cust_cnt." << std::endl;
+        cout << "[Warning] Returning a random sample" << endl;
+        return sampleSubproblem(loc_cnt, cust_cnt, p_new, seed);
+    }
+
+
+
+    // Track added elements to ensure uniqueness
+    std::unordered_set<uint_t> added_elements;
+
+    // Add elements until loc_cnt and cust_cnt are satisfied
+    while (locations_new.size() < loc_cnt || customers_new.size() < cust_cnt) {
+        // Calculate cluster weights
+        std::vector<double> cluster_weights(clusters_locs.size(), 0.0);
+        for (size_t i = 0; i < clusters_locs.size(); ++i) {
+            if (!clusters_locs[i].empty()) {
+                cluster_weights[i] = clusters_locs[i].size();
+            }
+        }
+
+        // Create distribution
+        std::discrete_distribution<int> distribution(cluster_weights.begin(), cluster_weights.end());
+
+        // Pick a cluster and ensure it is not empty
+        uint_t cluster;
+        do {
+            cluster = distribution(generator);
+        } while (clusters_locs[cluster].empty());
+
+        // Randomly select a location from the chosen cluster
+        std::uniform_int_distribution<uint_t> distribution_loc(0, clusters_locs[cluster].size() - 1);
+        uint_t loc = clusters_locs[cluster][distribution_loc(generator)];
+
+        // Ensure that we have not already added this element
+        if (added_elements.find(loc) == added_elements.end()) {
+            locations_new.push_back(locations[loc]);
+            added_elements.insert(loc);
+
+            if (customers_new.size() < cust_cnt) { // if customers_subproblem is diff from all customers
+                customers_new.push_back(customers[loc]);
+            }
+        }
+    }
 
     if (!cover_mode) {
         return Instance(locations_new, customers_new, cust_weights, loc_capacities, dist_matrix, p_new, loc_max_id, cust_max_id,type_service);

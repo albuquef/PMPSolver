@@ -104,8 +104,8 @@ Solution_std TB::initRandomClusterSolution() {
 
     // Check if clusters are empty
     if (clusters.empty()) {
-        cout << "[ERROR] No clusters found\n";
-        cout << "[WARN] Returning a random solution\n";
+        cout << "[ERROR] No clusters found in TB\n";
+        cout << "[WARN] Returning a random solution TB\n";
         return initRandomSolution();
     } 
 

@@ -30,6 +30,7 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     cout << "RSSV running...\n";
     
     num_facilities_subproblem = min(n, N);
+    n = num_facilities_subproblem;
     // num_facilities_subproblem = min(n, 2*instance->get_p());
     num_customers_subproblem = instance->getCustomers().size();
     // num_customers_subproblem = num_facilities_subproblem;
@@ -209,11 +210,14 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
 
     // typeSample = "RANDOM";
     typeSample = "KMEANS_CLUSTERS";
-    num_clusters = int(0.5*p_subproblem);
+    num_clusters = int(p_subproblem);
+    cout << "Sampling sub-PMP " <<  thread_id << " with " << typeSample << " method" << endl;
     Instance subInstance = returnSampleInstance(typeSample, num_facilities_subproblem, num_customers_subproblem, p_subproblem, seed, thread_id, num_clusters, instance);
+
 
     // int num_cluster = thread_id;
     // Instance subInstance = instance->getSubproblemFromClusters(num_cluster);
+
 
     subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
 
@@ -223,9 +227,6 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
     if (MAX_ITE_SUBPROBLEMS > 0) MAX_ITER_SUBP = MAX_ITE_SUBPROBLEMS;
     if (TIME_LIMIT_SUBPROBLEMS > 0) time_limit_subproblem = TIME_LIMIT_SUBPROBLEMS;
     
-    auto clusters_locs = instance->getClusters();
-    cout << "RSSV [ Total number of clusters: " << clusters_locs.size() << endl;
-
 
     bool verb = false;
 
