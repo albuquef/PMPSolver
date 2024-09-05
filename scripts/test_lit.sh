@@ -6,7 +6,7 @@
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
 # # SBATCH --array=0-9%5
-#SBATCH --array=0-5%5
+#SBATCH --array=0-19%5
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -78,7 +78,7 @@ elif [ "$1" == "pr2392" ]; then
     INSTANCE_GROUPS=("group5/")
 elif [ "$1" == "p3038" ]; then
     # filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
-    filters=("p3038_600" "p3038_700")
+    filters=("p3038_600")
     # filters=("p3038_600" "p3038_1000")
     INSTANCE_GROUPS=("group3/")
 elif [ "$1" == "fnl4461" ]; then
@@ -92,7 +92,8 @@ elif [ "$1" == "benchmark" ]; then
     # filters=("p3038_600" "p3038_1000")
     # filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
     # filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
-    filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    # filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt")
     # filters+=("fnl4461_0020.txt" "fnl4461_1000.txt")
     # INSTANCE_GROUPS=("group2/" "group4/" "group3/" "group5/")
     INSTANCE_GROUPS=("group3/" "group5/")
@@ -126,8 +127,8 @@ console_names=()
 FOR_METHODS=("RSSV")
 # for size_subprob in "fixed" "dynamic"; do
 #     for timesp in 180 300; do
-for seed in 0 400 2024; do
-# for seed in 200; do
+# for seed in 0 400 2024; do
+for seed in 400 100 500 600; do
     for size_subprob in "fixed"; do
         for timesp in 180; do
             for METHOD in "${FOR_METHODS[@]}"; do
@@ -249,11 +250,17 @@ for seed in 0 400 2024; do
 
                         if [ "$size_subprob" == "fixed" ]; then
                             SUB_PROB_SIZE=2000
+                            # SUB_PROB_SIZE=$(echo "4 * $p" | bc)
+                            # if (( $(echo "$LIMITED_VALUE > 1000" | bc -l) )); then
+                            #     SUB_PROB_SIZE=1000
+                            # fi
                         fi
 
                         if [ "$size_subprob" == "dynamic" ]; then
                             SUB_PROB_SIZE=$(echo "1.2 * $p" | bc)
                         fi
+
+                        ADD_TYPE_TEST="LIT_seed_${SEED}_Subp_${size_subprob}_${timesp}"
 
 
 

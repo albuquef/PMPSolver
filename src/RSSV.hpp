@@ -61,6 +61,7 @@ public:
     template <typename SolutionType>
     void processSubsolutionDists(shared_ptr<SolutionType> solution);
     vector<uint_t> filterLocations(uint_t cnt);
+    vector<uint_t> filterLocations_nonzero(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
     vector<uint_t> extractFixedLocations(vector<uint_t> vet_locs);
     void setTIME_LIMIT_SUBPROBLEMS(dist_t time_limit);

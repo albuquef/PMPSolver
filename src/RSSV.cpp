@@ -153,7 +153,7 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     }
 
     // this->final_voted_locs = final_locations;
-    this->final_voted_locs = filterLocations(n);
+    this->final_voted_locs = filterLocations_nonzero(n);
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
     filtered_instance->setVotedLocs(filtered_locations);
 
@@ -363,6 +363,40 @@ vector<uint_t> RSSV::filterLocations(uint_t cnt) {
 
     return filtered_locs;
 }
+
+vector<uint_t> RSSV::filterLocations_nonzero(uint_t cnt) {
+    vector<pair<uint_t, double>> weights_vec;
+    for (auto w:weights) { // put pairs loc, weight in a vector
+        weights_vec.emplace_back(w);
+    }
+    sort(weights_vec.begin(), weights_vec.end(), cmp); // sort by weight
+    reverse(weights_vec.begin(), weights_vec.end()); // reverse (high to low weight now)
+
+    // cont non zero weights
+    uint_t cnt_nonzero = 0;
+    for (auto w:weights_vec) {
+        if (w.second > 0) {
+            cnt_nonzero++;
+        }
+    }
+    cout << "First " << cnt_nonzero << " voting non zero weights (sorted): ";
+    vector<uint_t> filtered_locs; // Extract at most cnt first locations
+    uint_t cnt_ = 0;
+    for (auto w:weights_vec) {
+        if (w.second > 0) {
+            printf("%d(%.2f) ", w.first, w.second);
+            filtered_locs.emplace_back(w.first);
+            cnt_++;
+            if (cnt_ == cnt) {
+                break;
+            }
+        }
+    }
+    cout << endl;
+
+    return filtered_locs;
+}
+
 
 unordered_set<uint_t> RSSV::extractPrioritizedLocations(uint_t min_cnt) {
     unordered_set<uint_t> locations;
