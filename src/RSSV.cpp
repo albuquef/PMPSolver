@@ -208,8 +208,8 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
     //     cout << "Thread " << thread_id << " using sample type: " << typeSample << endl;
     // }
 
-    // typeSample = "RANDOM";
-    typeSample = "KMEANS_CLUSTERS";
+    typeSample = "RANDOM";
+    // typeSample = "KMEANS_CLUSTERS";
     num_clusters = int(p_subproblem);
     cout << "Sampling sub-PMP " <<  thread_id << " with " << typeSample << " method" << endl;
     Instance subInstance = returnSampleInstance(typeSample, num_facilities_subproblem, num_customers_subproblem, p_subproblem, seed, thread_id, num_clusters, instance);

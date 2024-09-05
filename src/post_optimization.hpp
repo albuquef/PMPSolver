@@ -42,7 +42,7 @@ private:
     Solution_cap solution_cap;
     std::vector<uint_t> selectedLocations;
     bool isBinModel=false;
-
+    bool VERBOSE=false;
 
     double timelimit=0;
     // PMP pmpSolver;
@@ -50,6 +50,15 @@ private:
     // Helper methods
     // void fetchSolutionValues();
     // void processSolution();
+
+    vector<uint_t> getLocationsPostOptimization(uint_t num_facilities_po, unordered_set<uint_t> p_locations, vector<uint_t>  p_locations_less_used_cap);
+    void printIterationInfo(int iter, uint_t num_facilities_po, double alpha) const;
+    vector<uint_t> getLessUsedLocations(const unordered_set<uint_t>& p_locations, uint_t num_facilities_added);
+    vector<uint_t> getLessUsedCapacityLocations(const unordered_set<uint_t>& p_locations, uint_t num_facilities_added, uint_t p_value);
+    Instance createNewInstance(const vector<uint_t>& new_locations, Solution_cap& solution_curr);
+    PMP setupPMP(Instance& new_instance, const string& Method_name, bool is_feasible, Solution_cap& solution_curr);
+    void evaluateSolution(Solution_cap& solution_curr, double& alpha);
+    void handleNoSolutionFound(Solution_cap& solution_curr, double& alpha);
 };
 
 #endif // POSTOPTIMIZATION_HPP
