@@ -32,7 +32,7 @@ private:
     mutex weights_mutex;
     mutex dist_mutex;
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
-    // vector<uint_t> filtered_locs; // locations that are filtered 
+    vector<uint_t> final_voted_locs; // locations that are filtered 
     string method_RSSV_sp;
     int DEFAULT_MAX_NUM_ITER = 10000000;
     bool add_threshold_dist = false;
@@ -65,7 +65,7 @@ public:
     vector<uint_t> extractFixedLocations(vector<uint_t> vet_locs);
     void setTIME_LIMIT_SUBPROBLEMS(dist_t time_limit);
     void setMAX_ITE_SUBPROBLEMS(uint_t max_ite);
-
+    vector<uint_t> getFinalVotedLocs();
 
     void setCoverMode(bool mode) {
         cover_mode = mode;

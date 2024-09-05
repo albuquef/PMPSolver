@@ -35,6 +35,7 @@ private:
     const Instance& instance;
     double external_time = 0;
     int seed = 0;
+    vector<uint_t> priorityLocations;
     // void solveCPMP();
     // void solveRSSV();
     template<typename Heuristic>

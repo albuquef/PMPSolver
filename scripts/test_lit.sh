@@ -6,7 +6,7 @@
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
 # # SBATCH --array=0-9%5
-#SBATCH --array=0-14%5
+#SBATCH --array=0-5%5
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -77,7 +77,8 @@ elif [ "$1" == "pr2392" ]; then
     filters=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
     INSTANCE_GROUPS=("group5/")
 elif [ "$1" == "p3038" ]; then
-    filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    # filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    filters=("p3038_600" "p3038_700")
     # filters=("p3038_600" "p3038_1000")
     INSTANCE_GROUPS=("group3/")
 elif [ "$1" == "fnl4461" ]; then
@@ -125,8 +126,8 @@ console_names=()
 FOR_METHODS=("RSSV")
 # for size_subprob in "fixed" "dynamic"; do
 #     for timesp in 180 300; do
-# for seed in 200 400 2024; do
-for seed in 200; do
+for seed in 0 400 2024; do
+# for seed in 200; do
     for size_subprob in "fixed"; do
         for timesp in 180; do
             for METHOD in "${FOR_METHODS[@]}"; do
@@ -137,14 +138,14 @@ for seed in 200; do
 
                 if [ "$METHOD" = "RSSV" ]; then
                     ADD_GENERATE_REPORTS=true
-                    ADD_BREAK_CALLBACK=true
-                    TIME_CPLEX=2400 # 1 hour
+                    ADD_BREAK_CALLBACK=false
+                    TIME_CPLEX=3600 # 1 hour
                     TIME_CLOCK=3600
                     metsp="TB_PMP" # Subproblem method
                     # metsp="EXACT_PMP" # Subproblem method
                     TIME_SUBP_RSSV=$timesp
                     METHOD_RSSV_FINAL="EXACT_CPMP_BIN"
-                    # METHOD_POSTOPT="null"
+                    METHOD_POSTOPT="null"
                 fi
 
                 if [ "$METHOD" = "fixedSolution" ]; then
@@ -247,7 +248,7 @@ for seed in 200; do
                         # SUB_PROB_SIZE=1500
 
                         if [ "$size_subprob" == "fixed" ]; then
-                            SUB_PROB_SIZE=150
+                            SUB_PROB_SIZE=2000
                         fi
 
                         if [ "$size_subprob" == "dynamic" ]; then

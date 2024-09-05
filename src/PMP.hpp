@@ -93,6 +93,7 @@ class PMP
         void set_MaxNeighbors_from_solution(uint_t MaxNeighbors);
         void set_Fixed_pLocations_from_solution(unordered_set<uint_t> p_locations_fixed);
 
+        void set_PriorityListLocations(vector<uint_t> priorityLocations);
 
     private:
         // mutex callbackMutex;
@@ -128,7 +129,10 @@ class PMP
         void createModel(IloModel model, 
                         VarType x,
                         IloBoolVarArray y);
-        
+
+        vector<uint_t> priorityVoteLocations;        
+        void createPriorityListLocations(IloModel model, IloBoolVarArray y);
+
         template <typename VarType>
         void objFunction (IloModel model, VarType x);
         // void objFunction (IloModel model, BoolVarMatrix x);

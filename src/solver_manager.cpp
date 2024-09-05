@@ -173,6 +173,9 @@ void SolverManager::runRSSVHeuristic(const shared_ptr<Instance>& instance, const
     setFilterInstanceParameters(filtered_instance, config);
     external_time = duration_cast<seconds>(high_resolution_clock::now() - start_time).count();
 
+    priorityLocations = metaheuristic.getFinalVotedLocs();
+    // priorityLocations = filtered_instace->getLocations();
+
     cout << "\n-------------------------------------------------\n";
     cout << "Final Problem RSSV heuristic"<< "\n";
 
@@ -228,6 +231,9 @@ void SolverManager::setExactMethodParams(PMP& pmp, const Config& config, const s
     pmp.setCoverModel(config.cover_mode, instance->getTypeSubarea());
     pmp.setCoverModel_n2(config.cover_mode_n2, instance->getTypeSubarea_n2());
     pmp.setTimeLimit(config.CLOCK_LIMIT_CPLEX - external_time);
+    if (priorityLocations.size() > 0) {
+        pmp.set_PriorityListLocations(priorityLocations);
+    }
     if (config.CLOCK_LIMIT_CPLEX == 0) {pmp.setTimeLimit(0);} // no time limit
 
     if(config.Method == "RSSV") {handleInitialSolution(instance, pmp, config, config.Method + "_" + config.Method_RSSV_fp);}

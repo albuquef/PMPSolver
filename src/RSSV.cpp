@@ -125,7 +125,8 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     cout << "Max number of assignments: " << subSols_max_num_assignments << endl;
     cout << endl;
 
-    auto filtered_cnt = n;
+    // auto filtered_cnt = n;
+    auto filtered_cnt = N;
     auto filtered_locations = filterLocations(filtered_cnt);
     cout << endl << endl;
     cout << "Filtered " << filtered_cnt << " locations: ";
@@ -151,6 +152,8 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
         cout << "Size of final locations: " << final_locations.size() << endl << endl;
     }
 
+    // this->final_voted_locs = final_locations;
+    this->final_voted_locs = filterLocations(n);
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
     filtered_instance->setVotedLocs(filtered_locations);
 
@@ -490,4 +493,8 @@ void RSSV::setTIME_LIMIT_SUBPROBLEMS(dist_t time_limit) {
 }
 void RSSV::setMAX_ITE_SUBPROBLEMS(uint_t max_ite) {
     MAX_ITE_SUBPROBLEMS = max_ite;
+}
+
+vector<uint_t> RSSV::getFinalVotedLocs(){
+    return this->final_voted_locs;
 }

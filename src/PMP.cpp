@@ -262,6 +262,7 @@ void PMP::run(string Method_name){
 
         // Solve CPLEX
         cplex.exportModel("./model.lp");
+        if (priorityVoteLocations.size() > 0) {createPriorityListLocations(model,y);}
         solveILP();
 
         bool verb = false;
@@ -1293,4 +1294,66 @@ void PMP::setBestBound(dist_t bestBound){
 
 void PMP::setDisplayCPLEX(bool displayCPLEX){
     this->displayCPLEX = displayCPLEX;
+}
+
+void PMP::set_PriorityListLocations(vector<uint_t> priorityVoteLocations){
+    this->priorityVoteLocations = priorityVoteLocations;
+}
+
+void PMP::createPriorityListLocations(IloModel model, IloBoolVarArray y){
+
+    // NOT WORKING
+    
+    string priorityStrategy = "index_based";  // "index_based" or "presence_based"
+
+    if (VERBOSE){cout << "[INFO] Adding Priority List Locations "<< endl;}
+    cout << "Priority List Locations: " << priorityVoteLocations.size() << endl;
+    cout << "Priority Strategy: " << priorityStrategy << endl;
+    
+    if (priorityVoteLocations.size() == 0){
+        cout << "[WARN] Priority List Locations is empty" << endl;
+        return;
+    }
+    
+
+
+    IloEnv env = model.getEnv();
+    try {
+        // Initialize the priority array
+        IloNumArray priorities(env, num_facilities);
+
+        // Assign priorities based on the priorityVoteLocations list
+        for (IloInt j = 0; j < num_facilities; ++j) {
+            auto loc = instance->getLocations()[j];
+
+
+           if (priorityStrategy == "index_based") {
+                // Index-based: Use the index of the location in the priority list
+                auto it = std::find(priorityVoteLocations.begin(), priorityVoteLocations.end(), loc);
+                if (it != priorityVoteLocations.end()) {
+                    auto index = std::distance(priorityVoteLocations.begin(), it);
+                    priorities[j] = index;  // Set priority based on index
+                } else {
+                    priorities[j] = priorityVoteLocations.size() + 1;  // Low priority if not found
+                }
+            } 
+            else if (priorityStrategy == "presence_based") {
+                // Presence-based: Assign high (1) or low (2) priority based on location presence in the list
+                if (std::find(priorityVoteLocations.begin(), priorityVoteLocations.end(), loc) != priorityVoteLocations.end()) {
+                    priorities[j] = 1;  // High priority
+                } else {
+                    priorities[j] = 2;  // Low priority
+                }
+            }
+        }
+
+        // Set priorities for the variable array `y`
+        cplex.setPriorities(y, priorities);
+    }
+    catch (const IloException& e) {
+        cerr << "Error in setting priorities: " << e.getMessage() << endl;
+    }
+
+    // // Clean up
+    // priorities.end();
 }
