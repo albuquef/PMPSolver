@@ -7,7 +7,7 @@
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
 # SBATCH --array=0-69%4
-#SBATCH --array=0-1%2
+#SBATCH --array=0-7%5
 
 
 # Activate the conda env if needed
@@ -44,9 +44,9 @@ SERVICES=("cinema" "terrainsGJ")
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
 # p_values_cinema=(134 154 173 192 211 230 250)
-p_values_cinema=(1000)
+p_values_cinema=(134 250)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
-p_values_terrainsGJ=(1500)
+p_values_terrainsGJ=(706 1310)
 
 
 # COVERAGES
@@ -68,7 +68,7 @@ SUBAREAS_N2="null"
 # ------- params instance ------
 N=2037
 MAX_ID_LOC_CUST=2037
-IsWeighted_OBJ=false
+IsWeighted_OBJ=true
 
 
 # ----------------------------------------- Methods configuration -----------------------------------------
@@ -84,6 +84,7 @@ TIME_CPLEX=3600 # 1 hour
 
 
 SUB_PROB_SIZE=800
+# FINAL_PROB_RSSV_SIZE=0
 FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
 TIME_SUBP_RSSV=0 # 0 = No limit   (by default 0)
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit (by default 0)
@@ -96,30 +97,21 @@ ADD_BREAK_CALLBACK=false
 # FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
 FIXED_THRESHOLD_DIST=0 # maximum distance  between the service and the customer 2h
 
-FOR_METHODS=("EXACT_CPMP_BIN")
-ADD_GENERATE_REPORTS=false
-ADD_BREAK_CALLBACK=false
-TIME_CPLEX=3600
-METHOD_POSTOPT="null"
-
+FOR_METHODS=("EXACT_CPMP" "RSSV")
+ADD_TYPE_TEST="PACA_1"
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
 console_names=()
 for METHOD in "${FOR_METHODS[@]}"; do
 
 	if [ "$METHOD" = "RSSV" ]; then
-		ADD_GENERATE_REPORTS=true
-		ADD_BREAK_CALLBACK=true
-		TIME_CPLEX=2400 # 1 hour
+		TIME_CPLEX=3600 # 1 hour
 		TIME_CLOCK=3600
-		METHOD_RSSV_FINAL="EXACT_CPMP"
 		metsp="TB_PMP" # Subproblem method
-		TIME_SUBP_RSSV=300
+		TIME_SUBP_RSSV=180
+		METHOD_RSSV_FINAL="EXACT_CPMP"
 		METHOD_POSTOPT="EXACT_CPMP"
-		N=2037
-		SUB_PROB_SIZE=$(echo "scale=0; 0.4 * $N / 1" | bc)
-		# SUB_PROB_SIZE=$(echo "scale=0; 1.5 * $p / 1" | bc)
-		# echo "SUB_PROB_SIZE: $SUB_PROB_SIZE"
+		# SUB_PROB_SIZE=$(echo "2 * $p" | bc)
 	fi
 
 	if [ "$METHOD" = "EXACT_CPMP" ]; then
@@ -210,11 +202,14 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
 				console_names+=("$CONSOLE_NAME")
 
+				# FINAL_PROB_RSSV_SIZE=$N
+				SUB_PROB_SIZE=$(echo "2 * $p" | bc)
+
 				arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\
 				-cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE \
 				-cover_n2 $COVERAGES_N2 -subarea_n2 ${SUBAREAS_N2} -cover_mode_n2 $COVER_MODE_N2\
 				-time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
-				-method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\
+				-method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\ 
 				-add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
 				-time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
 				-add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK -fixed_threshold_distance $FIXED_THRESHOLD_DIST\

@@ -28,6 +28,7 @@ method_rssv_sp = "TB_PMP"
 method_rssv_fp = "TB_PMP"
 method_post_opt = "null"
 size_subproblems_rssv=800
+size_final_prob_rssv=0
 time_subprob_rssv=0
 max_ite_subprob_rssv=0
 add_threshold_distance_rssv = false

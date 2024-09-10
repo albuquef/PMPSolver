@@ -116,10 +116,20 @@ void PostOptimization::run(string Method_name) {
 
         // Generate new locations for post-optimization and create a new instance
         auto new_locations = getLocationsPostOptimization(num_facilities_po, p_locations, p_locations_less_cap_used);
+        // add p locations in new locations
         auto new_instance = createNewInstance(new_locations, solution_curr);
+
+        // new locations without p locations to prioritize
+        vector<uint_t> new_locations_no_p;
+        for (auto loc : new_locations) {
+            if (p_locations.find(loc) == p_locations.end()) {
+                new_locations_no_p.push_back(loc);
+            }
+        }
 
         // Run PMP with the new instance and update solution
         PMP pmp = setupPMP(new_instance, Method_name, solution_curr.isSolutionFeasible(), solution_curr);
+        pmp.set_PriorityListLocations(new_locations_no_p, "presence_based");
         pmp.run(Method_name);
         solution_curr = pmp.getSolution_cap();
 
@@ -214,24 +224,17 @@ vector<uint_t> PostOptimization::getLocationsPostOptimization(uint_t num_locatio
     unordered_set<uint_t> final_locs_set;  // For fast lookup
     uint_t cont_loc = 0;
 
-    // Add initial locations from p_locations
-    for (auto loc : p_locations) {
-        final_locs.push_back(loc);
-        final_locs_set.insert(loc);
-        cont_loc++;
-    }
-
     // // print p loc and p loc less used cap
-    // cout << "P Locations: ";
-    // for (auto loc : p_locations) {
-    //     cout << loc << " ";
-    // }
-    // cout << endl;
-    // cout << "P Locations Less Used Cap: ";
-    // for (auto loc : p_locations_less_used_cap) {
-    //     cout << loc << " ";
-    // }
-    // cout << endl;
+    cout << "P Locations: ";
+    for (auto loc : p_locations) {
+        cout << loc << " ";
+    }
+    cout << endl;
+    cout << "P Locations Less Used Cap: ";
+    for (auto loc : p_locations_less_used_cap) {
+        cout << loc << " ";
+    }
+    cout << endl;
 
     // Ensure we haven't already fulfilled the required number of locations
     while (cont_loc < num_locations_po) {

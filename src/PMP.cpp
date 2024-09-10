@@ -1296,15 +1296,13 @@ void PMP::setDisplayCPLEX(bool displayCPLEX){
     this->displayCPLEX = displayCPLEX;
 }
 
-void PMP::set_PriorityListLocations(vector<uint_t> priorityVoteLocations){
+void PMP::set_PriorityListLocations(vector<uint_t> priorityVoteLocations, string priorityStrategy){
     this->priorityVoteLocations = priorityVoteLocations;
+    this->priorityStrategy = priorityStrategy;
 }
 
 void PMP::createPriorityListLocations(IloModel model, IloBoolVarArray y){
 
-    // NOT WORKING
-    
-    string priorityStrategy = "index_based";  // "index_based" or "presence_based"
 
     if (VERBOSE){cout << "[INFO] Adding Priority List Locations "<< endl;}
     cout << "Priority List Locations: " << priorityVoteLocations.size() << endl;
@@ -1315,7 +1313,17 @@ void PMP::createPriorityListLocations(IloModel model, IloBoolVarArray y){
         return;
     }
     
-
+    // order locations based on capacity
+    vector<pair<uint_t, dist_t>> loc_capacities;
+    if (priorityStrategy == "capacity_based") {
+        for(auto loc: instance->getLocations()) {
+            loc_capacities.push_back(make_pair(loc, instance->getLocCapacity(loc)));
+        }
+        // Sort by descending capacity
+        sort(loc_capacities.begin(), loc_capacities.end(), [](const pair<uint_t, dist_t>& a, const pair<uint_t, dist_t>& b) {
+            return a.second > b.second;
+        });
+    }
 
     IloEnv env = model.getEnv();
     try {
@@ -1345,6 +1353,27 @@ void PMP::createPriorityListLocations(IloModel model, IloBoolVarArray y){
                     priorities[j] = 2;  // Low priority
                 }
             }
+            else if (priorityStrategy == "capacity_based") {
+                if (loc_capacities.size() != 0) {
+                    // assign priorities based on the order of the locations
+                    auto it = std::find_if(loc_capacities.begin(), loc_capacities.end(),
+                                        [loc](const std::pair<uint_t, dist_t>& loc_capacity) {
+                                            return loc_capacity.first == loc;
+                                        });
+                    if (it != loc_capacities.end()) {
+                        auto index = std::distance(loc_capacities.begin(), it);
+                        priorities[j] = index + 1;  // Set priority based on index
+                    } else {
+                        priorities[j] = loc_capacities.size() + 1;  // Low priority if not found
+                    }
+                } else {
+                    cerr << "Capacity-based priority strategy requires location capacities" << endl;
+                }
+            }
+            else {
+                cerr << "Invalid priority strategy: " << priorityStrategy << endl;
+            }
+
         }
 
         // Set priorities for the variable array `y`
@@ -1356,4 +1385,8 @@ void PMP::createPriorityListLocations(IloModel model, IloBoolVarArray y){
 
     // // Clean up
     // priorities.end();
+}
+
+void PMP::setPriorityStrategy(string priorityStrategy){
+    this->priorityStrategy = priorityStrategy;
 }

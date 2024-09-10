@@ -44,6 +44,7 @@ struct Config {
     double CLOCK_LIMIT_SUBPROB_RSSV = 0;
     uint_t MAX_ITE_SUBPROB_RSSV = 0;
     uint_t size_subproblems_rssv = 800;
+    uint_t size_final_prob_rssv = 800;
 
     double BW_MULTIPLIER = 1.0;
     double fixed_threshold_distance = 0.0;

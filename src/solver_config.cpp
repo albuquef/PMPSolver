@@ -107,7 +107,11 @@ void parseArguments(int argc, char* argv[], Config& config) {
                 config.size_subproblems_rssv = std::stoi(argv[i+1]);
                 configOverride.insert("size_subproblems_rssv");
                 SUB_PMP_SIZE = static_cast<uint_t>(config.size_subproblems_rssv);
-            } else if (key == "-method_post_opt") {
+            } else if (key == "-size_final_prob_rssv") {
+                config.size_final_prob_rssv = std::stoi(argv[i+1]);
+                configOverride.insert("size_final_prob_rssv");
+                FINAL_PROB_RSSV_SIZE = static_cast<uint_t>(config.size_final_prob_rssv);
+            }else if (key == "-method_post_opt") {
                 config.Method_PostOpt = argv[i+1];
                 configOverride.insert("method_post_opt");
             } else if (key == "-bw_multiplier") {
@@ -169,6 +173,7 @@ void setupConfig(Config& config, std::set<std::string>& configOverride) {
     configParser.setFromConfig(&config.Method_RSSV_fp, "method_rssv_fp");
     configParser.setFromConfig(&config.coverages_filename_n2, "coverages_n2");
     configParser.setFromConfig(&config.size_subproblems_rssv, "size_subproblems_rssv");
+    configParser.setFromConfig(&config.size_final_prob_rssv, "size_final_prob_rssv");
     configParser.setFromConfig(&config.TypeSubarea, "subarea");
     configParser.setFromConfig(&config.TypeSubarea_n2, "subarea_n2");
     configParser.setFromConfig(&config.cover_mode, "cover_mode");

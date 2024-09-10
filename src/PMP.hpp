@@ -93,7 +93,8 @@ class PMP
         void set_MaxNeighbors_from_solution(uint_t MaxNeighbors);
         void set_Fixed_pLocations_from_solution(unordered_set<uint_t> p_locations_fixed);
 
-        void set_PriorityListLocations(vector<uint_t> priorityLocations);
+        void set_PriorityListLocations(vector<uint_t> priorityLocations, string priorityStrategy);
+        void setPriorityStrategy(string priorityStrategy);
 
     private:
         // mutex callbackMutex;
@@ -120,6 +121,7 @@ class PMP
         Solution_cap initial_solution;
         void set_gap_report_filename(string Method_name);
         bool displayCPLEX=true;
+        string priorityStrategy = "index_based";  // "index_based" or "presence_based"
 
         void initVars();
         void initILP        (void);

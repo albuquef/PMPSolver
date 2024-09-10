@@ -8,6 +8,7 @@ uint_t MAX_SUB_P = 100;
 uint_t FILTERING_SIZE = 4;
 uint_t LOC_FREQUENCY = 5; // how many times each location is used in subproblems
 uint_t SUB_PMP_SIZE = 800; // size of subproblems for RSSV
+uint_t FINAL_PROB_RSSV_SIZE = 0; // size of subproblems for RSSV
 int THREAD_NUMBER = 1;
 uint_t CLOCK_START = 0;
 uint_t CLOCK_LIMIT = 3600;

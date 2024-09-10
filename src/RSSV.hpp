@@ -25,6 +25,7 @@ private:
     uint_t N; // original PMP size (no. of locations)
     uint_t M; // no. of sub-PMPs
     uint_t n; // sub-PMP size
+    uint_t n_cand; // no. of candidate locations
     uint_t num_customers_subproblem;
     uint_t num_facilities_subproblem;
     uint_t p_subproblem;
@@ -50,7 +51,7 @@ private:
 
 
 public:
-    RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n);
+    RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n, uint_t n_cand=0);
     shared_ptr<Instance> run(uint_t thread_cnt, const string& method_sp);
     shared_ptr<Instance> run_CAP(uint_t thread_cnt, const string& method_sp);
     shared_ptr<Instance> run_impl(uint_t thread_cnt, const string& method_sp, bool is_cap);
@@ -62,6 +63,7 @@ public:
     void processSubsolutionDists(shared_ptr<SolutionType> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     vector<uint_t> filterLocations_nonzero(uint_t cnt);
+    vector<uint_t> randomLocations(uint_t cnt);
     unordered_set<uint_t> extractPrioritizedLocations(uint_t min_cnt);
     vector<uint_t> extractFixedLocations(vector<uint_t> vet_locs);
     void setTIME_LIMIT_SUBPROBLEMS(dist_t time_limit);

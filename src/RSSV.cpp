@@ -8,9 +8,13 @@ void printDDE(void){
     cout << "RSSV finished." << endl;
 }
 
-RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n):instance(instance), n(n) {
+RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n, uint_t n_cand):instance(instance), n(n), n_cand(n_cand) {
     seed_rssv = seed;
     engine.seed(seed_rssv);
+
+    if (n_cand == 0) {
+        this->n_cand = n;
+    }
 
     N = instance->getLocations().size();
     M = max(static_cast<uint_t>(1), (LOC_FREQUENCY*N/n));
@@ -31,44 +35,27 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     
     num_facilities_subproblem = min(n, N);
     n = num_facilities_subproblem;
-    // num_facilities_subproblem = min(n, 2*instance->get_p());
-    num_customers_subproblem = instance->getCustomers().size();
-    // num_customers_subproblem = num_facilities_subproblem;
-    // p_subproblem = min(uint_t(0.1*instance->get_p()),uint_t(10));
+    // num_customers_subproblem = instance->getCustomers().size();
+    num_customers_subproblem = num_facilities_subproblem;
     p_subproblem = instance->get_p();
     
-    cout << "cPMP size (N): " << N << endl;
-    cout << "sub-cPMP size (n): " << num_facilities_subproblem << endl;
-    if (num_facilities_subproblem != num_customers_subproblem) cout << "Customers cnt: " << num_customers_subproblem << endl;
+    cout << "Prob size (N,C): (" << N << "," << instance->getCustomers().size() <<  ")" << endl;
+    cout << "sub-Prob size (n,c): (" << num_facilities_subproblem << "," << num_customers_subproblem <<  ")" << endl;
+    cout << "sub-Prob p: " << p_subproblem << endl;
     cout << "Subproblems cnt (M): " << M << endl;
-    cout << "p (subproblems): " << p_subproblem << endl;
+    cout << "Final Prob RSSV size (N',C): (" << n_cand << "," << instance->getCustomers().size() <<  ")" << endl;
     this->method_RSSV_sp = method_sp;
-    // cout << "Method to solve the Subproblems: " << method_RSSV_sp << endl;
     cout << "Seed: " << seed_rssv  << endl;
     if(TIME_LIMIT_SUBPROBLEMS > 0) cout << "Time limit for subproblems: " << TIME_LIMIT_SUBPROBLEMS << endl;
     if(MAX_ITE_SUBPROBLEMS > 0) cout << "Max iterations for subproblems: " << MAX_ITE_SUBPROBLEMS << endl;
-    
     cout << endl;
 
 
     if (p_subproblem > num_facilities_subproblem) {
         cout << "[ERROR] The number of facilities is smaller than the number of locations to be selected" << endl;
-        cout << "[WARN] Setting n = min(1.5 * p, N)" << endl;
-        n = min(static_cast<uint_t>(1.5 * p_subproblem), N);
+        cout << "[WARN] Setting n = min(2 * p, N)" << endl;
+        n = min(static_cast<uint_t>(2 * p_subproblem), N);
     }
-
-
-    // instance->createClustersLocsWithKmeans(M,0);
-    // M=min(thread_cnt,M);
-
-    // if(M < thread_cnt){ 
-    //     M=thread_cnt;
-    //     cout << "[INFO] Number of subproblems adjusted to the number of threads: " << M << endl;
-    // }
-
-
-
-
 
     sem.setCount(thread_cnt);
     cout << "thread cnt: " << thread_cnt << endl << endl;
@@ -126,21 +113,20 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     cout << endl;
 
     // auto filtered_cnt = n;
-    auto filtered_cnt = N;
+    auto filtered_cnt = min(n_cand,N);
     auto filtered_locations = filterLocations(filtered_cnt);
     cout << endl << endl;
     cout << "Filtered " << filtered_cnt << " locations: ";
     for (auto fl : filtered_locations) cout << fl << " ";
     cout << endl << endl;
 
+
     auto prioritized_locations = extractPrioritizedLocations(LOC_PRIORITY_CNT);
     cout << "Extracted " << prioritized_locations.size() << " prioritized locations: ";
     for (auto pl : prioritized_locations) cout << pl << " ";
     cout << endl << endl;
-
     for (auto fl : filtered_locations) prioritized_locations.insert(fl);
     vector<uint_t> final_locations(prioritized_locations.begin(), prioritized_locations.end());
-
     bool extract_fixed_locations = false;
     if (extract_fixed_locations) {
         cout << "Replace with fixed locations: ";
@@ -152,8 +138,16 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
         cout << "Size of final locations: " << final_locations.size() << endl << endl;
     }
 
+    // final_locations = randomLocations(filtered_cnt);
+    // cout << endl << endl;
+    // cout << "Random locations (test voted -> random) " << filtered_cnt << " locations: ";
+    // for (auto fl : final_locations) cout << fl << " ";
+    // cout << endl << endl;
+
+
+
     // this->final_voted_locs = final_locations;
-    this->final_voted_locs = filterLocations_nonzero(n);
+    this->final_voted_locs = filterLocations_nonzero(filtered_cnt);
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
     filtered_instance->setVotedLocs(filtered_locations);
 
@@ -395,6 +389,16 @@ vector<uint_t> RSSV::filterLocations_nonzero(uint_t cnt) {
     cout << endl;
 
     return filtered_locs;
+}
+
+vector<uint_t> RSSV::randomLocations(uint_t cnt) {
+    vector<uint_t> locations;
+    vector<uint_t> locs = instance->getLocations();
+    shuffle(locs.begin(), locs.end(), engine);
+    for (uint_t i = 0; i < cnt; ++i) {
+        locations.emplace_back(locs[i]);
+    }
+    return locations;
 }
 
 
