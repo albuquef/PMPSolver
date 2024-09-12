@@ -732,16 +732,18 @@ void Solution_cap::statsDistances(){
     dist_t avg_dist = 0;
     dist_t dist;
     uint_t cont = 0;
-    
+    // bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
+
     for (auto cust:instance->getCustomers()) {
         for (auto a:assignments[cust]) {
         
-            // if(is_weighted_obj_func){obj_value += a.usage * instance->getRealDist(a.node, cust);}
-            // // xij = a.usage/wi
-            // else{obj_value += (a.usage/instance->getCustWeight(cust)) * instance->getRealDist(a.node, cust);}
-
-            // dist = instance->getRealDist(a.node, cust);
+            
+        //     // dist = instance->getRealDist(a.node, cust);
+        //    if(is_weighted_obj_func){dist = a.usage * instance->getRealDist(a.node, cust);} // PACA LIMIT IN WITHOUT DIST not weighted
+        //     // xij = a.usage/wi
+        //     else{dist = (a.usage/instance->getCustWeight(cust)) * instance->getRealDist(a.node, cust);}
             dist = (a.usage/instance->getCustWeight(cust)) * instance->getRealDist(a.node, cust);
+
             if (dist > max_dist) max_dist = dist;
             if (dist < min_dist) min_dist = dist;
             avg_dist += dist;

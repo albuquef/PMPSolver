@@ -90,6 +90,10 @@ void PostOptimization::run(string Method_name) {
     bool finish = false;
     int iter = 1;
 
+    if (timelimit <= 0) {
+        cout << "[INFO] Time limit is less than or equal to 0. Exiting post-optimization." << endl;
+        return;
+    }
 
     while (!finish) {
         // Calculate the number of facilities for post-optimization in this iteration
@@ -224,6 +228,14 @@ vector<uint_t> PostOptimization::getLocationsPostOptimization(uint_t num_locatio
     unordered_set<uint_t> final_locs_set;  // For fast lookup
     uint_t cont_loc = 0;
 
+    // Add p locations to the final locations set
+    for (auto loc : p_locations) {
+        final_locs.push_back(loc);
+        final_locs_set.insert(loc);
+        cont_loc++;
+    }
+
+
     // // print p loc and p loc less used cap
     cout << "P Locations: ";
     for (auto loc : p_locations) {
@@ -246,8 +258,8 @@ vector<uint_t> PostOptimization::getLocationsPostOptimization(uint_t num_locatio
             // Get the closest locations to the current `loc`
             auto k_locs = instance->get_kClosestLocations(loc, instance->getLocations().size() - 1);
             for (auto k_loc : k_locs) {
-                // If the location is not in the final_locs_set, add it
-                if (final_locs_set.find(k_loc) == final_locs_set.end()) {
+                // If the location is not in the final_locs_set and not in tabu_locs, add it 
+                if (final_locs_set.find(k_loc) == final_locs_set.end() && tabu_locs.find(k_loc) == tabu_locs.end()) {
                     final_locs.push_back(k_loc);
                     final_locs_set.insert(k_loc);
                     cont_loc++;
@@ -324,11 +336,29 @@ void PostOptimization::evaluateSolution(Solution_cap& solution_curr, double& alp
         cout << "Comparing Best Bounds: " << endl;
         cout << "Old Best Bound: " << this->solution_cap.getBestBound() << endl;
         cout << "New Best Bound: " << solution_curr.getBestBound() << endl;
+
+        // get locations in solution_cap and not in solution_curr
+        auto p_locations = this->solution_cap.get_pLocations();
+        auto p_locations_new = solution_curr.get_pLocations();
+        vector<uint_t> p_locations_diff;
+        set_difference(p_locations.begin(), p_locations.end(), p_locations_new.begin(), p_locations_new.end(), inserter(p_locations_diff, p_locations_diff.begin()));
+        // add to tabu_locs
+        // for (auto loc : p_locations_diff) {
+        //     tabu_locs.insert(loc);
+        // }
+        // cout << "Tabu Locations: ";
+        // for (auto loc : tabu_locs) {
+        //     cout << loc << " ";
+        // }
+        // cout << endl;
+
         this->solution_cap = solution_curr;  // Update the current solution
         alpha = 0.5;  // Reset alpha
     } else {
-        cout << "[INFO] Solution not improved. Using last solution and increasing alpha." << endl;
+        cout << "[INFO] Solution not improved. Using last solution and increasing alpha. Reset tabu locations" << endl;
         alpha += 0.5;  // Increase alpha if the solution hasn't improved
+        // clear tabu_locs
+        tabu_locs.clear();
     }
 }
 

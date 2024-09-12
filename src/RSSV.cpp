@@ -12,11 +12,13 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n, uint_t n
     seed_rssv = seed;
     engine.seed(seed_rssv);
 
+    N = instance->getLocations().size();
     if (n_cand == 0) {
         this->n_cand = n;
+    }else{
+        this->n_cand = min(n_cand, N);
     }
 
-    N = instance->getLocations().size();
     M = max(static_cast<uint_t>(1), (LOC_FREQUENCY*N/n));
 
     for (auto loc : instance->getLocations()) {
@@ -35,8 +37,8 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     
     num_facilities_subproblem = min(n, N);
     n = num_facilities_subproblem;
-    // num_customers_subproblem = instance->getCustomers().size();
-    num_customers_subproblem = num_facilities_subproblem;
+    num_customers_subproblem = instance->getCustomers().size();
+    // num_customers_subproblem = num_facilities_subproblem;
     p_subproblem = instance->get_p();
     
     cout << "Prob size (N,C): (" << N << "," << instance->getCustomers().size() <<  ")" << endl;
@@ -147,21 +149,17 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
 
     // this->final_voted_locs = final_locations;
-    this->final_voted_locs = filterLocations_nonzero(filtered_cnt);
+    this->final_voted_locs = filterLocations_nonzero(min(n,n_cand));
     shared_ptr<Instance> filtered_instance = make_shared<Instance>(instance->getReducedSubproblem(final_locations, instance->getTypeService()));
     filtered_instance->setVotedLocs(filtered_locations);
 
-    
-    if (add_threshold_dist) {
-        // filtered_instance->set_ThresholdDist(subSols_max_dist+subSols_std_dev_dist);
+    cout << " instance threshold dist: " << instance->get_ThresholdDist() << endl;
+
+    if(instance->get_ThresholdDist() > 0)
+        filtered_instance->set_ThresholdDist(instance->get_ThresholdDist());
+    if (add_threshold_dist)
+        if (instance->get_ThresholdDist() > 0)  subSols_max_dist = min(subSols_max_dist, instance->get_ThresholdDist());
         filtered_instance->set_ThresholdDist(subSols_max_dist);
-    }
-
-    bool add_maxlimit_num_assignments = false;
-    if (add_maxlimit_num_assignments) {
-        filtered_instance->set_MaxLimitAssignments(subSols_max_num_assignments);
-    }
-
 
 
     atexit(printDDE);
@@ -186,7 +184,7 @@ template <typename SolutionType>
 void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
     // Use the seed for random number generation
     int thread_id = seed - seed_rssv;
-    // std::mt19937 gen(seed);
+    std::mt19937 gen(seed);
     sem.wait(thread_id);
 
     cout << "Solving sub-PMP " << thread_id << "/" << M << "..." << endl;
@@ -196,14 +194,6 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
 
     string typeSample;
     int num_clusters = 0;
-    // if (thread_id/2 < thread_id) {
-    //     typeSample = "KMEANS_CLUSTERS";
-    //     num_clusters = thread_id + 1;
-    //     cout << "Thread " << thread_id << " using sample type: " << typeSample << " with " << num_clusters << " clusters" << endl;
-    // }else{
-    //     typeSample = "RANDOM";
-    //     cout << "Thread " << thread_id << " using sample type: " << typeSample << endl;
-    // }
 
     typeSample = "RANDOM";
     // typeSample = "KMEANS_CLUSTERS";
@@ -216,7 +206,7 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
     // Instance subInstance = instance->getSubproblemFromClusters(num_cluster);
 
 
-    subInstance.set_isWeightedObjFunc(instance->get_isWeightedObjFunc());
+    subInstance.set_isWeightedObjFunc(false);
 
     double time_limit_subproblem = 0; // no time limit = 0
     uint_t MAX_ITER_SUBP = UB_MAX_ITER; // Upper Bound for the number of iterations in the subproblem; 
@@ -373,7 +363,7 @@ vector<uint_t> RSSV::filterLocations_nonzero(uint_t cnt) {
             cnt_nonzero++;
         }
     }
-    cout << "First " << cnt_nonzero << " voting non zero weights (sorted): ";
+    cout << "First " << min(cnt,cnt_nonzero) << " voting non zero weights (sorted): ";
     vector<uint_t> filtered_locs; // Extract at most cnt first locations
     uint_t cnt_ = 0;
     for (auto w:weights_vec) {

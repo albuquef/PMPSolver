@@ -7,7 +7,7 @@
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
 # SBATCH --array=0-69%4
-#SBATCH --array=0-7%5
+#SBATCH --array=0-3%4
 
 
 # Activate the conda env if needed
@@ -18,10 +18,9 @@
 CMD=./build/large_PMP
 # Data
 DIR_DATA=./data/PACA_Jul24/
-DIST_TYPE=minutes
+DIST_TYPE=minutes # minutes or metres
 MAX_ID_LOC_CUST=2037
 D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}_${MAX_ID_LOC_CUST}.txt"
-D_MATRIX="euclidean"
 WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}_Jul24.txt"
 # WEIGHTS_files=("${DIR_DATA}cust_weights.txt" "${DIR_DATA}cust_weights_shuffled.txt" "${DIR_DATA}cust_weights_split.txt")
 # Time
@@ -89,7 +88,7 @@ FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
 TIME_SUBP_RSSV=0 # 0 = No limit   (by default 0)
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit (by default 0)
 
-BW_MULTIPLIER=0.5   # Bandwidth multiplier
+BW_MULTIPLIER=0.5  # Bandwidth multiplier
 
 ADD_THRESHOLD_DIST_SUBP_RSSV=false # Add threshold distance create by subproblems
 ADD_GENERATE_REPORTS=false
@@ -97,28 +96,62 @@ ADD_BREAK_CALLBACK=false
 # FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
 FIXED_THRESHOLD_DIST=0 # maximum distance  between the service and the customer 2h
 
-FOR_METHODS=("EXACT_CPMP" "RSSV")
-ADD_TYPE_TEST="PACA_1"
+# FOR_METHODS=("FORMULATION" "FORMULATION_RED" "FORMULATION_RED_POST_OPT" "RSSV_TRAD")
+FOR_METHODS=("FORMULATION")
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
 console_names=()
-for METHOD in "${FOR_METHODS[@]}"; do
+for METHOD_TEST in "${FOR_METHODS[@]}"; do
 
-	if [ "$METHOD" = "RSSV" ]; then
+	if [ "$METHOD_TEST" = "FORMULATION" ]; then
+		METHOD="EXACT_CPMP"
+		METHOD_POSTOPT="null"
+		ADD_GENERATE_REPORTS=true
+		ADD_BREAK_CALLBACK=false
+		ADD_THRESHOLD_DIST_SUBP_RSSV=true
 		TIME_CPLEX=3600 # 1 hour
 		TIME_CLOCK=3600
-		metsp="TB_PMP" # Subproblem method
-		TIME_SUBP_RSSV=180
-		METHOD_RSSV_FINAL="EXACT_CPMP"
-		METHOD_POSTOPT="EXACT_CPMP"
-		# SUB_PROB_SIZE=$(echo "2 * $p" | bc)
 	fi
 
-	if [ "$METHOD" = "EXACT_CPMP" ]; then
-		ADD_GENERATE_REPORTS=false
+	if [ "$METHOD_TEST" = "FORMULATION_RED" ]; then
+		METHOD="RSSV"
+		metsp="TB_PMP" # Subproblem method
+		METHOD_RSSV_FINAL="EXACT_CPMP"
+		METHOD_POSTOPT="EXACT_CPMP"
+		ADD_GENERATE_REPORTS=true
 		ADD_BREAK_CALLBACK=false
-		TIME_CPLEX=3600
-		METHOD_POSTOPT="null"
+		ADD_THRESHOLD_DIST_SUBP_RSSV=true
+		TIME_CPLEX=3600 # 1 hour
+		TIME_CLOCK=3600
+		TIME_SUBP_RSSV=180
+		SIZE_FP_RSSV=ALL
+	fi
+
+	if [ "$METHOD" = "FORMULATION_RED_POST_OPT" ]; then
+		METHOD="RSSV"
+		metsp="TB_PMP" # Subproblem method
+		METHOD_RSSV_FINAL="EXACT_CPMP"
+		METHOD_POSTOPT="EXACT_CPMP"
+		ADD_GENERATE_REPORTS=true
+		ADD_BREAK_CALLBACK=true
+		ADD_THRESHOLD_DIST_SUBP_RSSV=true
+		TIME_CPLEX=2400 # 1 hour
+		TIME_CLOCK=3600
+		TIME_SUBP_RSSV=180
+		SIZE_FP_RSSV=ALL
+	fi
+
+	if [ "$METHOD_TEST" = "RSSV_TRAD" ]; then
+		METHOD="RSSV"
+		metsp="TB_PMP" # Subproblem method
+		METHOD_RSSV_FINAL="EXACT_CPMP"
+		METHOD_POSTOPT="EXACT_CPMP"
+		ADD_GENERATE_REPORTS=true
+		ADD_BREAK_CALLBACK=true
+		ADD_THRESHOLD_DIST_SUBP_RSSV=true
+		TIME_CPLEX=2400 # 1 hour
+		TIME_CLOCK=3600
+		TIME_SUBP_RSSV=180
 	fi
 
 
@@ -135,7 +168,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
 			fi
 
 
-			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}_Jul24.txt"
+			# CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}_Jul24.txt"
+			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_Jul24.txt"
 			COVERAGES="${DIR_DATA}loc_coverages_${subar}_reindexed.txt"
 			if [ "$COVER_MODE_N2" = "1" ]; then
 				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}_reindexed.txt"
@@ -202,14 +236,25 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
 				console_names+=("$CONSOLE_NAME")
 
-				# FINAL_PROB_RSSV_SIZE=$N
+				if [ "$FINAL_PROB_RSSV_SIZE" = "ALL" ]; then
+					FINAL_PROB_RSSV_SIZE=$N
+				else
+					FINAL_PROB_RSSV_SIZE=0
+				fi
+
 				SUB_PROB_SIZE=$(echo "2 * $p" | bc)
+				if [ "$SUB_PROB_SIZE" -lt 800 ]; then
+					SUB_PROB_SIZE=800
+				fi
+
+				ADD_TYPE_TEST="PACA_${METHOD}_${BW_MULTIPLIER}_${serv}_${METHOD}_${SUB_PROB_SIZE}_${FINAL_PROB_RSSV_SIZE}_${TIME_CPLEX}"
+
 
 				arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\
 				-cover $COVERAGES -subarea $subar -cover_mode $COVER_MODE \
 				-cover_n2 $COVERAGES_N2 -subarea_n2 ${SUBAREAS_N2} -cover_mode_n2 $COVER_MODE_N2\
 				-time_cplex $TIME_CPLEX -time $TIME_CLOCK -th $NUM_THREADS -IsWeighted_ObjFunc $IsWeighted_OBJ\
-				-method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE\ 
+				-method $METHOD -method_rssv_fp $METHOD_RSSV_FINAL -method_rssv_sp $metsp -size_subproblems_rssv $SUB_PROB_SIZE -size_final_prob_rssv $FINAL_PROB_RSSV_SIZE\
 				-add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
 				-time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
 				-add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK -fixed_threshold_distance $FIXED_THRESHOLD_DIST\

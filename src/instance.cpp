@@ -161,6 +161,7 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             cout << "Loading distance matrix...\n";
             dist_t sum = 0; // sum of distances
             dist_t sum_sq = 0; // sum of squared distances
+            dist_t max_dist = 0;
             uint_t cnt = 0;
             getline(dist_matrix_file, line); // skip first line
             cout << "Skipped line: " << line << endl;
@@ -173,9 +174,11 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
                 loc_flags[loc] = true;
                 cust_flags[cust] = true;
                 sum += dist;
+                if (dist > max_dist) max_dist = dist;
                 sum_sq += dist * dist;
                 cnt++;
             }
+            cout << "Max dist: " << max_dist << endl;
             // Determine stdev and bandwidth
             calculate_Bandwidth(sum, sum_sq, cnt);
 
@@ -311,6 +314,7 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         cout << "Computing euclidean distances...\n";
         dist_t sum = 0; // sum of distances
         dist_t sum_sq = 0; // sum of squared distances
+        dist_t max_dist = 0;
         uint_t cnt = 0;
         // Loop through all pairs of locations and customers
 
@@ -335,12 +339,13 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
                     cust_flags[cust] = true;
                     cust_flags[loc] = true; // Set flags for both cust and loc
                     sum += euclidean_dist * 2; // Adding twice the distance since it's symmetric
+                    if (euclidean_dist > max_dist) max_dist = euclidean_dist;
                     sum_sq += euclidean_dist * euclidean_dist * 2; // Adding squared distance twice
                     cnt += 2; // Incrementing count by 2 since each distance is added twice
                 }
             }
         }
-
+        cout << "Max dist: " << max_dist << endl;
         // Determine stdev and bandwidth
         calculate_Bandwidth(sum, sum_sq, cnt);
 

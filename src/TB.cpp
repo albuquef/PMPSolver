@@ -83,6 +83,8 @@ Solution_std TB::initRandomSolution() {
         auto loc = locations[loc_id];
         p_locations.insert(loc);
     }
+
+    cout << "Instance weighted for TB: " << instance->get_isWeightedObjFunc() << endl;
     Solution_std sol(instance, p_locations);
 
     sol.setCoverMode(cover_mode);

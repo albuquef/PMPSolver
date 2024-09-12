@@ -242,7 +242,8 @@ void PMP::run(string Method_name){
             params.useGapInfoCallback = add_generate_reports;
             set_gap_report_filename(Method_name);
             params.useBreakCallbackLessThan1Percent = add_break_callback;
-            params.useBreakCallbackImprovementCheck = add_break_callback;
+            // params.useBreakCallbackImprovementCheck = add_break_callback;
+            params.useBreakCallbackImprovementCheck = false;
 
             cplex.use(CombinedCallback(env, &params));
 
@@ -254,7 +255,7 @@ void PMP::run(string Method_name){
             if (add_break_callback) {
                 cout << "[CALLBACK] Using BreakCallback..." << endl;
                 cout << fixed << setprecision(2);
-                cout << "Time Limit with not improving " <<  params.gapThreshold * 100 << "% (gap): " << params.timeThreshold << " seconds" << endl;
+                if(params.useBreakCallbackImprovementCheck) cout << "Time Limit with not improving " <<  params.gapThreshold * 100 << "% (gap): " << params.timeThreshold << " seconds" << endl;
                 cout << "Time Limit with Gap less than 1%: " << time_limit_with_gap_less_than_1perc << " seconds" << endl;
             }
         } 
@@ -711,6 +712,9 @@ void PMP::constr_UpperBound (IloModel model, VarType x){
 template <typename VarType>
 void PMP::constr_MaxDistance(IloModel model, VarType x){
 
+    // bool is_weighted_obj_func = false;
+    bool is_weighted_obj_func = instance->get_isWeightedObjFunc();
+
     if (VERBOSE){cout << "[INFO] Adding Max Distance Constraints "<< endl;}
     cout << "Threshold Distance: " << instance->get_ThresholdDist() << endl;
 
@@ -718,8 +722,17 @@ void PMP::constr_MaxDistance(IloModel model, VarType x){
         for(IloInt j = 0; j < num_facilities; j++){
             auto loc = instance->getLocations()[j];
             auto cust = instance->getCustomers()[i];
+            
+            // PACA CONSTRAINT IS FIXED UNWEIGHTED 7200
+            // if (is_weighted_obj_func){
+            //     if (instance->getWeightedDist(loc,cust) > instance->get_ThresholdDist() + 0.01)
+            //         model.add(x[i][j] == 0);
+            // }
+            // if (!is_weighted_obj_func){
             if (instance->getRealDist(loc,cust) > instance->get_ThresholdDist())
-                model.add(x[i][j] == 0);
+                    model.add(x[i][j] == 0);
+            // }
+
         }
 }
 

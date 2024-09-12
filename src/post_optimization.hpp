@@ -43,6 +43,8 @@ private:
     std::vector<uint_t> selectedLocations;
     bool isBinModel=false;
     bool VERBOSE=false;
+    bool add_threshold_distance=true;
+    unordered_set<uint_t> tabu_locs; // exclude locations from being selected again with was in the p locations in the previous iteration and change in the current iteration
 
     double timelimit=0;
     // PMP pmpSolver;
