@@ -82,10 +82,10 @@ public:
     uint_t calculateMaxNumberAssignments();
     void printStatsDistances();
 
-
-
     void setBestBound(dist_t Best_Bound);
     dist_t getBestBound();
+
+    bool capacitiesAssigmentRespected(const shared_ptr<Instance>& instance_total);
 };
 
 

@@ -166,6 +166,8 @@ void SolverManager::runRSSVHeuristic(const shared_ptr<Instance>& instance, const
     cout << "method final problem: " << config.Method_RSSV_fp << "\n";
     cout << "-------------------------------------------------\n";
 
+    cout << "FINAL_PROB_RSSV_SIZE: " << FINAL_PROB_RSSV_SIZE << "\n";
+
     RSSV metaheuristic(instance, seed, SUB_PMP_SIZE, FINAL_PROB_RSSV_SIZE);
     setRSSVParameters(metaheuristic, config);
 
@@ -175,6 +177,8 @@ void SolverManager::runRSSVHeuristic(const shared_ptr<Instance>& instance, const
 
     priorityLocations = metaheuristic.getFinalVotedLocs();
     // priorityLocations = filtered_instace->getLocations();
+
+    exit(1);
 
     cout << "\n-------------------------------------------------\n";
     cout << "Final Problem RSSV heuristic"<< "\n";

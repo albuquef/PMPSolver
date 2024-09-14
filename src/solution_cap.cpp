@@ -822,3 +822,14 @@ dist_t Solution_cap::getBestBound(){
     return this->Best_Bound;
 }
 
+bool Solution_cap::capacitiesAssigmentRespected(const shared_ptr<Instance>& instance_total){
+    bool is_respected = true;
+    for (auto loc:instance->getLocations()) {
+        if (loc_usages[loc] > instance->getLocCapacity(loc)){
+            is_respected = false;
+            break;
+        }
+
+    }
+    return is_respected;
+}

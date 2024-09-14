@@ -19,7 +19,8 @@ RSSV::RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n, uint_t n
         this->n_cand = min(n_cand, N);
     }
 
-    M = max(static_cast<uint_t>(1), (LOC_FREQUENCY*N/n));
+    M = max(static_cast<uint_t>(1), (LOC_FREQUENCY*N/min(n,N)));
+
 
     for (auto loc : instance->getLocations()) {
         weights[loc] = DEFAULT_WEIGHT;
@@ -35,6 +36,8 @@ shared_ptr<Instance> RSSV::run_CAP(uint_t thread_cnt, const string& method_sp) {
 shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, bool is_cap) {
     cout << "RSSV running...\n";
     
+    M = min(M,thread_cnt);
+
     num_facilities_subproblem = min(n, N);
     n = num_facilities_subproblem;
     num_customers_subproblem = instance->getCustomers().size();
@@ -108,6 +111,7 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     subSols_std_dev_dist = subSols_std_dev_dist / M;
     cout << "\nStats: \n";
     cout << "Max dist: " << subSols_max_dist << endl;
+    cout << "Minmax dist: " << subSols_minmax_dist << endl;
     cout << "Min dist: " << subSols_min_dist << endl;
     cout << "avg of Avg dists: " << subSols_avg_dist << endl;
     cout << "avg Std dev dist: " << subSols_std_dev_dist << endl;
@@ -155,12 +159,15 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
     cout << " instance threshold dist: " << instance->get_ThresholdDist() << endl;
 
+    subSols_max_dist = subSols_minmax_dist+subSols_std_dev_dist;
+
     if(instance->get_ThresholdDist() > 0)
         filtered_instance->set_ThresholdDist(instance->get_ThresholdDist());
-    if (add_threshold_dist)
+    if (add_threshold_dist){
         if (instance->get_ThresholdDist() > 0)  subSols_max_dist = min(subSols_max_dist, instance->get_ThresholdDist());
         filtered_instance->set_ThresholdDist(subSols_max_dist);
-
+        if(method_sp == "TB_CPMP" || method_sp == "EXACT_CPMP") filtered_instance->set_ThresholdDist(subSols_minmax_dist);
+    }
 
     atexit(printDDE);
 
@@ -265,6 +272,7 @@ void RSSV::solveSubproblemTemplate(int seed, bool isCapacitated) {
         sol.print();
         processSubsolutionScores(make_shared<SolutionType>(sol));
         processSubsolutionDists(make_shared<SolutionType>(sol));
+        if (method_RSSV_sp == "TB_PMP") processSubsolutionCapacities(make_shared<SolutionType>(sol));
         if (VERBOSE) tock(start);
         sem.notify(seed);
     } else {
@@ -308,11 +316,34 @@ void RSSV::processSubsolutionDists(shared_ptr<SolutionType> solution) {
 
     dist_mutex.lock();
     subSols_max_dist = max(subSols_max_dist, max_dist_local);
+    subSols_minmax_dist = min(subSols_minmax_dist, max_dist_local); // need to change the subSols_max_dist initial
     subSols_min_dist = min(subSols_min_dist, min_dist_local);
     subSols_avg_dist += avg_dist_local;
     subSols_std_dev_dist += std_dev_dist_local;
     subSols_max_num_assignments = max(subSols_max_num_assignments, max_num_assignments_local);
     dist_mutex.unlock();
+}
+
+
+template <typename SolutionType>
+void RSSV::processSubsolutionCapacities(shared_ptr<SolutionType> solution) {
+    // check for each assigment if capacity is bigger than the sum of the demands
+    cap_check_mutex.lock();
+    if(solution->capacitiesAssigmentRespected(this->instance)){
+        // capacities_respected = true;
+        cout << "Solution Capacities respected" << endl;
+        solution->statsDistances();
+            cout << "\nStats: \n";
+            cout << "Max dist: " << solution->getMaxDist() << endl;
+            cout << "Min dist: " << solution->getMinDist() << endl;
+            cout << "avg of Avg dists: " << solution->getAvgDist() << endl;
+            cout << "avg Std dev dist: " << solution->getStdDevDist() << endl;
+            cout << "Max number of assignments: " << solution->getMaxNumberAssignments() << endl;
+    }else{
+        // capacities_respected = false;
+        cout << "Solution Capacities NOT respected" << endl;
+    }
+    cap_check_mutex.unlock();
 }
 
 

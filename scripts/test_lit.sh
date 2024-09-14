@@ -5,8 +5,8 @@
 #SBATCH --partition=cpuonly
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
-# # SBATCH --array=0-9%5
-#SBATCH --array=0-4%5
+# # SBATCH --array=0-9%
+#SBATCH --array=0-9%10
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -81,16 +81,20 @@ elif [ "$1" == "p3038" ]; then
     filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
     INSTANCE_GROUPS=("group3/")
 elif [ "$1" == "fnl4461" ]; then
-    filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    # filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    # filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt")
+    filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt")
     INSTANCE_GROUPS=("group5/")
 elif [ "$1" == "benchmark" ]; then
     # filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
     # filters+=("SJC1" "SJC2" "SJC3a" "SJC3b" "SJC4a" "SJC4b") 
-    filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    #  filters=("p3038_600" "p3038_700" "p3038_800" "p3038_900" "p3038_1000")
+    filters=("p3038_600" "p3038_1000")
     # filters=("p3038_600" "p3038_1000")
     # filters+=("rl1304_010.txt" "rl1304_050.txt" "rl1304_100.txt" "rl1304_200.txt" "rl1304_300.txt") 
     # filters+=("pr2392_020.txt" "pr2392_075.txt" "pr2392_150.txt" "pr2392_300.txt" "pr2392_500.txt")
-    filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    # filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
+    filters+=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt")
     INSTANCE_GROUPS=("group2/" "group4/" "group3/" "group5/")
     # INSTANCE_GROUPS=("group3/" "group5/")
 fi
@@ -119,14 +123,14 @@ p_values_GB21=(1000 100 2000 1000 100 2000 1000 100 2000 1000 100 2000)
 arr=()
 console_names=()
 
-# FOR_METHODS=("FORMULATION" "FORMULATION_RED" "FORMULATION_RED_POST_OPT" "RSSV_TRAD")
+# FOR_METHODS=("FORMULATION_RED" "FORMULATION_RED_POST_OPT" "RSSV_PO")
+FOR_METHODS=("RSSV_PO")
+PROB="EXACT_CPMP_BIN"
 
-PROB="EXACT_CPMP"
-
-FOR_METHODS=("FORMULATION")
+# FOR_METHODS=("FORMULATION")
 for bwmult in 0.5; do
     for seed in 200; do
-        for size_subprob in "dynamic"; do
+        for met_sub in "TB_PMP"; do
             for timesp in 180; do
                 for METHOD_TEST in "${FOR_METHODS[@]}"; do
                     
@@ -146,7 +150,8 @@ for bwmult in 0.5; do
 
                     if [ "$METHOD_TEST" = "FORMULATION_RED" ]; then
                         METHOD="RSSV"
-                        metsp="TB_PMP" # Subproblem method
+                        # metsp="TB_PMP" # Subproblem method
+                        metsp=$met_sub
                         METHOD_RSSV_FINAL=$PROB
                         METHOD_POSTOPT=$PROB
                         ADD_GENERATE_REPORTS=true
@@ -158,9 +163,10 @@ for bwmult in 0.5; do
                         SIZE_FP_RSSV=ALL
                     fi
 
-                    if [ "$METHOD" = "FORMULATION_RED_POST_OPT" ]; then
+                    if [ "$METHOD_TEST" = "FORMULATION_RED_POST_OPT" ]; then
                         METHOD="RSSV"
-                        metsp="TB_PMP" # Subproblem method
+                        # metsp="TB_PMP" # Subproblem method
+                        metsp=$met_sub
                         METHOD_RSSV_FINAL=$PROB
                         METHOD_POSTOPT=$PROB
                         ADD_GENERATE_REPORTS=true
@@ -172,9 +178,10 @@ for bwmult in 0.5; do
                         SIZE_FP_RSSV=ALL
                     fi
 
-                    if [ "$METHOD_TEST" = "RSSV_TRAD" ]; then
+                    if [ "$METHOD_TEST" = "RSSV_PO" ]; then
                         METHOD="RSSV"
-                        metsp="TB_PMP" # Subproblem method
+                        # metsp="TB_PMP" # Subproblem method
+                        metsp=$met_sub # Subproblem method
                         METHOD_RSSV_FINAL=$PROB
                         METHOD_POSTOPT=$PROB
                         ADD_GENERATE_REPORTS=true
@@ -183,7 +190,24 @@ for bwmult in 0.5; do
                         TIME_CPLEX=2400 # 1 hour
                         TIME_CLOCK=3600
                         TIME_SUBP_RSSV=$timesp
+                        SIZE_FP_RSSV=DEFAULT
                     fi
+
+                    if [ "$METHOD_TEST" = "RSSV_ONLY" ]; then
+                        METHOD="RSSV"
+                        # metsp="TB_PMP" # Subproblem method
+                        metsp=$met_sub # Subproblem method
+                        METHOD_RSSV_FINAL=$PROB
+                        METHOD_POSTOPT=$PROB
+                        ADD_GENERATE_REPORTS=true
+                        ADD_BREAK_CALLBACK=false
+                        ADD_THRESHOLD_DIST_SUBP_RSSV=true
+                        TIME_CPLEX=3600 # 1 hour
+                        TIME_CLOCK=3600
+                        TIME_SUBP_RSSV=$timesp
+                        SIZE_FP_RSSV=DEFAULT
+                    fi
+
 
 
                     for INSTANCE_GROUP in "${INSTANCE_GROUPS[@]}"; do
@@ -251,18 +275,30 @@ for bwmult in 0.5; do
 
 
 
-                            if [ "$FINAL_PROB_RSSV_SIZE" = "ALL" ]; then
+                            if [ "$SIZE_FP_RSSV" = "ALL" ]; then
                                 FINAL_PROB_RSSV_SIZE=$N
                             else
                                 FINAL_PROB_RSSV_SIZE=0
                             fi
 
+
                             SUB_PROB_SIZE=$(echo "2 * $p" | bc)
-                            if [ "$SUB_PROB_SIZE" -lt 800 ]; then
-                                SUB_PROB_SIZE=800
+                            THRESHOLD=$(echo "(0.1 * $N + 0.999)/1" | bc) # Ceiling of 0.1*N
+
+                            if [ "$(echo "2 * $p < $THRESHOLD" | bc)" -eq 1 ]; then
+                                FINAL_PROB_RSSV_SIZE=$(echo "($THRESHOLD + 2 * $p + 0.999)/1" | bc) # Ceil(0.1 * N) + 2 * p
+                            else
+                                FINAL_PROB_RSSV_SIZE=$(echo "2 * $p" | bc) # 2 * p
                             fi
+
+                            SUB_PROB_SIZE=$(echo "2 * $p" | bc)
+                            if [ "$SUB_PROB_SIZE" -lt 200 ]; then
+                                SUB_PROB_SIZE=200
+                            fi
+
+
                             # ADD_TYPE_TEST="LIT_seed_${SEED}_Subp_${SUB_PROB_SIZE}_${timesp}_hmult_${BW_MULTIPLIER}"
-                            ADD_TYPE_TEST="LIT_${}_seed_${SEED}_${SUB_PROB_SIZE}_${timesp}_hmult_${bwmult}_sb_800"
+                            ADD_TYPE_TEST="LIT_X_FRAC_${METHOD_TEST}_seed_${SEED}_${SUB_PROB_SIZE}_${timesp}_hmult_${bwmult}"
 
 
                             NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"
@@ -296,7 +332,6 @@ for bwmult in 0.5; do
                                 # echo "Instance: $file"
                                 # echo "p: $p"
                                 # echo "N: $N"
-                                FINAL_PROB_RSSV_SIZE=$N
 
                                 console_names+=("$CONSOLE_NAME")
                                 arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\

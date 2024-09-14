@@ -350,3 +350,41 @@ uint Solution_std::calculateMaxNumberAssignments() {
     }
     return max;
 }
+
+
+bool Solution_std::capacitiesAssigmentRespected(const shared_ptr<Instance>& instance_total) {
+    // check if the assignment respects the capacities of the locations
+    int cont = 0;
+    bool cap_feasible = true;
+    for (auto loc:p_locations) {
+        uint_t sum_demands = 0;
+        dist_t biggest_capacity_in_cluster = instance->getLocCapacity(loc);
+        bool cluster_feasible = true;
+        for (auto cust:instance->getCustomers()) {
+            if (assignment[cust].node == loc){
+                sum_demands += instance->getCustDemand(cust); 
+                if (instance_total->getLocCapacity(cust) > biggest_capacity_in_cluster){
+                    biggest_capacity_in_cluster = instance_total->getLocCapacity(cust);
+                }             
+            }
+        }
+        if (sum_demands <= biggest_capacity_in_cluster){
+            cont++;
+        }
+
+
+
+        if (sum_demands > instance->getLocCapacity(loc)){
+            cap_feasible = false;
+        }
+
+        // if (sum_demands > instance->getLocCapacity(loc)) return false;
+        // check if there a cust that is also in loc and have the biggest capacity
+        
+    }
+
+    cout << "Number of feasible clusters in the solution: " << cont << endl;
+
+    return cap_feasible;
+    // return true;
+}

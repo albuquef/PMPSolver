@@ -59,6 +59,8 @@ public:
 
     uint_t getMaxNumberAssignments();
     uint_t calculateMaxNumberAssignments();
+
+    bool capacitiesAssigmentRespected(const shared_ptr<Instance>& instance_total);
 };
 
 

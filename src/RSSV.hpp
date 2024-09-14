@@ -32,6 +32,7 @@ private:
     Semaphore sem;
     mutex weights_mutex;
     mutex dist_mutex;
+    mutex cap_check_mutex;
     unordered_map<uint_t, double> weights; // spatial voting weights of N original locations
     vector<uint_t> final_voted_locs; // locations that are filtered 
     string method_RSSV_sp;
@@ -41,6 +42,7 @@ private:
     bool cover_mode_n2 = false;
     mutex mtx;
     dist_t subSols_max_dist=0;
+    dist_t subSols_minmax_dist=numeric_limits<dist_t>::max();;
     dist_t subSols_min_dist=numeric_limits<dist_t>::max();;
     dist_t subSols_avg_dist=0;
     dist_t subSols_std_dev_dist=0; 
@@ -49,6 +51,8 @@ private:
     uint_t MAX_ITE_SUBPROBLEMS = 0;
     dist_t TIME_LIMIT_SUBPROBLEMS = 0;
 
+
+    bool capacities_respected = false;
 
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n, uint_t n_cand=0);
@@ -61,6 +65,8 @@ public:
     void processSubsolutionScores(shared_ptr<SolutionType> solution);
     template <typename SolutionType>
     void processSubsolutionDists(shared_ptr<SolutionType> solution);
+    template <typename SolutionType>
+    void processSubsolutionCapacities(shared_ptr<SolutionType> solution);
     vector<uint_t> filterLocations(uint_t cnt);
     vector<uint_t> filterLocations_nonzero(uint_t cnt);
     vector<uint_t> randomLocations(uint_t cnt);

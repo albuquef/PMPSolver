@@ -557,6 +557,10 @@ dist_t Instance::getLocCapacity(uint_t loc) {
     return loc_capacities[loc];
 }
 
+dist_t Instance::getCustDemand(uint_t cust) {
+    return cust_weights[cust];
+}
+
 dist_t Instance::getTotalDemand() const {
     return total_demand;
 }

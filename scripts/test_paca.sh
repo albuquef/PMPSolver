@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=pmpPACA
+#SBATCH --job-name=pmpPACAcov
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --partition=cpuonly
@@ -7,8 +7,7 @@
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
 # SBATCH --array=0-69%4
-#SBATCH --array=0-3%4
-
+#SBATCH --array=0-1%2
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -43,21 +42,21 @@ SERVICES=("cinema" "terrainsGJ")
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
 # p_values_cinema=(134 154 173 192 211 230 250)
-p_values_cinema=(134 250)
+# p_values_cinema=(134 250)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
 p_values_terrainsGJ=(706 1310)
 
 
 # COVERAGES
 #  ------- COVER LEVEL 1 -------
-COVER_MODE=0
+COVER_MODE=1
 KMEANS_COVER_MODE=0
 GRID_COVER_MODE=0
 
 # SUBAREAS=("commune")
 # SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
 # SUBAREAS=("arrond" "EPCI" "canton" "commune")
-SUBAREAS="null"
+SUBAREAS="commune"
 
 #  -------  COVER LEVEL 2 -------
 COVER_MODE_N2=0
@@ -127,7 +126,7 @@ for METHOD_TEST in "${FOR_METHODS[@]}"; do
 		SIZE_FP_RSSV=ALL
 	fi
 
-	if [ "$METHOD" = "FORMULATION_RED_POST_OPT" ]; then
+	if [ "$METHOD_TEST" = "FORMULATION_RED_POST_OPT" ]; then
 		METHOD="RSSV"
 		metsp="TB_PMP" # Subproblem method
 		METHOD_RSSV_FINAL="EXACT_CPMP"
@@ -236,7 +235,7 @@ for METHOD_TEST in "${FOR_METHODS[@]}"; do
 
 				console_names+=("$CONSOLE_NAME")
 
-				if [ "$FINAL_PROB_RSSV_SIZE" = "ALL" ]; then
+				if [ "$SIZE_FP_RSSV" = "ALL" ]; then
 					FINAL_PROB_RSSV_SIZE=$N
 				else
 					FINAL_PROB_RSSV_SIZE=0

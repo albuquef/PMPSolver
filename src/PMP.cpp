@@ -118,6 +118,8 @@ ILOMIPINFOCALLBACK1(CombinedCallback, CallbackParams*, params) {
                 }
             }
         }
+
+
     } catch (const IloException &ex) {
         std::cerr << "Error in callback function: " << ex.getMessage() << std::endl;
         throw; // Rethrow the exception to terminate the program
@@ -731,6 +733,8 @@ void PMP::constr_MaxDistance(IloModel model, VarType x){
             // if (!is_weighted_obj_func){
             if (instance->getRealDist(loc,cust) > instance->get_ThresholdDist())
                     model.add(x[i][j] == 0);
+            else
+                model.add(x[i][j] <= y[j]);
             // }
 
         }

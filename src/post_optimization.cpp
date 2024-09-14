@@ -86,7 +86,11 @@ void PostOptimization::run(string Method_name) {
 
     uint_t p_value = uint_t(this->instance->get_p());
     auto num_facilities = this->instance->getLocations().size();
-    double alpha = 0.5;
+    alpha_init = 0.5;
+    if(alpha_init*p_value < 0.2*num_facilities){
+        alpha_init = 0.2*num_facilities/p_value;
+    }
+
     bool finish = false;
     int iter = 1;
 
@@ -95,6 +99,8 @@ void PostOptimization::run(string Method_name) {
         return;
     }
 
+    double alpha = alpha_init;
+    cout << "Alpha value: " << alpha << endl;
     while (!finish) {
         // Calculate the number of facilities for post-optimization in this iteration
         uint_t num_facilities_added = ceil(alpha * p_value);
@@ -287,6 +293,11 @@ vector<uint_t> PostOptimization::getLocationsPostOptimization(uint_t num_locatio
         }
     }
     cout << "Number of different locations: " << cont << endl;
+    cout << "Final Locations: ";
+    for (auto loc : final_locs) {
+        cout << loc << " ";
+    }
+    cout << endl;
 
     return final_locs;
 }
@@ -343,20 +354,20 @@ void PostOptimization::evaluateSolution(Solution_cap& solution_curr, double& alp
         vector<uint_t> p_locations_diff;
         set_difference(p_locations.begin(), p_locations.end(), p_locations_new.begin(), p_locations_new.end(), inserter(p_locations_diff, p_locations_diff.begin()));
         // add to tabu_locs
-        // for (auto loc : p_locations_diff) {
-        //     tabu_locs.insert(loc);
-        // }
-        // cout << "Tabu Locations: ";
-        // for (auto loc : tabu_locs) {
-        //     cout << loc << " ";
-        // }
-        // cout << endl;
+        for (auto loc : p_locations_diff) {
+            tabu_locs.insert(loc);
+        }
+        cout << "Tabu Locations: ";
+        for (auto loc : tabu_locs) {
+            cout << loc << " ";
+        }
+        cout << endl;
 
         this->solution_cap = solution_curr;  // Update the current solution
-        alpha = 0.5;  // Reset alpha
+        alpha = alpha_init;  // Reset alpha
     } else {
-        cout << "[INFO] Solution not improved. Using last solution and increasing alpha. Reset tabu locations" << endl;
-        alpha += 0.5;  // Increase alpha if the solution hasn't improved
+        cout << "[INFO] Solution not improved. Using last solution and increasing alpha." << endl;
+        alpha += alpha_init;  // Increase alpha if the solution hasn't improved
         // clear tabu_locs
         tabu_locs.clear();
     }

@@ -88,6 +88,7 @@ public:
     uint_t getClosestCust(uint_t loc);
     double getVotingScore(uint_t loc, uint_t cust);
     dist_t getLocCapacity(uint_t loc);
+    dist_t getCustDemand(uint_t cust);
     dist_t getTotalDemand() const;
     string getTypeService() const;
     void setVotedLocs(vector<uint_t> voted_locs);
