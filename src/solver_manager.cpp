@@ -178,7 +178,6 @@ void SolverManager::runRSSVHeuristic(const shared_ptr<Instance>& instance, const
     priorityLocations = metaheuristic.getFinalVotedLocs();
     // priorityLocations = filtered_instace->getLocations();
 
-    exit(1);
 
     cout << "\n-------------------------------------------------\n";
     cout << "Final Problem RSSV heuristic"<< "\n";
