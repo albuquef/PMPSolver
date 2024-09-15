@@ -13,6 +13,7 @@
 console/*
 outputs/*
 outputs/solutions/*
+outputs/reports/*
 slurm-* 
 model.lp
 build
