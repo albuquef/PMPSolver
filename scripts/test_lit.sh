@@ -6,7 +6,7 @@
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
 # # SBATCH --array=0-9%
-#SBATCH --array=0-9%10
+#SBATCH --array=0-2%3
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -83,7 +83,7 @@ elif [ "$1" == "p3038" ]; then
 elif [ "$1" == "fnl4461" ]; then
     # filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt" "fnl4461_1000.txt")
     # filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt")
-    filters=("fnl4461_0020.txt" "fnl4461_0100.txt" "fnl4461_0250.txt")
+    filters=("fnl4461_0100.txt" "fnl4461_0250.txt" "fnl4461_0500.txt")
     INSTANCE_GROUPS=("group5/")
 elif [ "$1" == "benchmark" ]; then
     # filters=("spain737_148_1.txt" "spain737_148_2.txt" "spain737_74_1.txt" "spain737_74_2.txt")
@@ -129,7 +129,7 @@ PROB="EXACT_CPMP_BIN"
 
 # FOR_METHODS=("FORMULATION")
 for bwmult in 0.5; do
-    for seed in 200; do
+    for seed in 97; do
         for met_sub in "TB_PMP"; do
             for timesp in 180; do
                 for METHOD_TEST in "${FOR_METHODS[@]}"; do
@@ -286,19 +286,21 @@ for bwmult in 0.5; do
                             THRESHOLD=$(echo "(0.1 * $N + 0.999)/1" | bc) # Ceiling of 0.1*N
 
                             if [ "$(echo "2 * $p < $THRESHOLD" | bc)" -eq 1 ]; then
-                                FINAL_PROB_RSSV_SIZE=$(echo "($THRESHOLD + 2 * $p + 0.999)/1" | bc) # Ceil(0.1 * N) + 2 * p
+                                FINAL_PROB_RSSV_SIZE=$(echo "($THRESHOLD + 4 * $p + 0.999)/1" | bc) # Ceil(0.1 * N) + 2 * p
                             else
                                 FINAL_PROB_RSSV_SIZE=$(echo "2 * $p" | bc) # 2 * p
                             fi
 
                             SUB_PROB_SIZE=$(echo "2 * $p" | bc)
-                            if [ "$SUB_PROB_SIZE" -lt 200 ]; then
-                                SUB_PROB_SIZE=200
+                            if [ "$SUB_PROB_SIZE" -lt 800 ]; then
+                                SUB_PROB_SIZE=800
                             fi
 
+                            FINAL_PROB_RSSV_SIZE=$(echo "(1000 + 4 * $p + 0.999)/1" | bc)
+                            
 
                             # ADD_TYPE_TEST="LIT_seed_${SEED}_Subp_${SUB_PROB_SIZE}_${timesp}_hmult_${BW_MULTIPLIER}"
-                            ADD_TYPE_TEST="LIT_X_FRAC_${METHOD_TEST}_seed_${SEED}_${SUB_PROB_SIZE}_${timesp}_hmult_${bwmult}"
+                            ADD_TYPE_TEST="LIT_${METHOD_TEST}_seed_${SEED}_Subp_${SUB_PROB_SIZE}"
 
 
                             NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"

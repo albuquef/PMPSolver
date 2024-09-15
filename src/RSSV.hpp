@@ -53,6 +53,7 @@ private:
 
 
     bool capacities_respected = false;
+    dist_t max_dist_feas = numeric_limits<dist_t>::max();;
 
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n, uint_t n_cand=0);

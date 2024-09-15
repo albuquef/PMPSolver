@@ -159,7 +159,7 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
     cout << " instance threshold dist: " << instance->get_ThresholdDist() << endl;
 
-    subSols_max_dist = subSols_minmax_dist+subSols_std_dev_dist;
+    subSols_max_dist = min(subSols_max_dist, max_dist_feas);
 
     if(instance->get_ThresholdDist() > 0)
         filtered_instance->set_ThresholdDist(instance->get_ThresholdDist());
@@ -339,6 +339,7 @@ void RSSV::processSubsolutionCapacities(shared_ptr<SolutionType> solution) {
             cout << "avg of Avg dists: " << solution->getAvgDist() << endl;
             cout << "avg Std dev dist: " << solution->getStdDevDist() << endl;
             cout << "Max number of assignments: " << solution->getMaxNumberAssignments() << endl;
+        if (max_dist_feas < solution->getMaxDist()) max_dist_feas = solution->getMaxDist();
     }else{
         // capacities_respected = false;
         cout << "Solution Capacities NOT respected" << endl;
