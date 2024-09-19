@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=pmpPACAcov
+#SBATCH --job-name=pmpPACA
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --partition=cpuonly
@@ -7,7 +7,7 @@
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
 # SBATCH --array=0-69%4
-#SBATCH --array=0-1%2
+#SBATCH --array=0-2%3
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -17,7 +17,7 @@
 CMD=./build/large_PMP
 # Data
 DIR_DATA=./data/PACA_Jul24/
-DIST_TYPE=minutes # minutes or metres
+DIST_TYPE=minutes
 MAX_ID_LOC_CUST=2037
 D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}_${MAX_ID_LOC_CUST}.txt"
 WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}_Jul24.txt"
@@ -35,28 +35,28 @@ ADD_TYPE_TEST="PACA"
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 # SERVICES=("mat" "urgenc" "lycee" "poste")
-SERVICES=("cinema" "terrainsGJ")
+SERVICES=("urgenc")
 
 # p_values_mat=(26 30 33 37 41 44 48)
-# p_values_urgenc=(42 48 54 60 66 72 78)
+p_values_urgenc=(42 60 78)
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
-# p_values_cinema=(134 154 173 192 211 230 250)
+# p_values_cinema=(50 58 96 134 173 192 211 250 288 326 500 900)
 # p_values_cinema=(134 250)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
-p_values_terrainsGJ=(706 1310)
+# p_values_terrainsGJ=(706 1310)
 
 
 # COVERAGES
 #  ------- COVER LEVEL 1 -------
-COVER_MODE=1
+COVER_MODE=0
 KMEANS_COVER_MODE=0
 GRID_COVER_MODE=0
 
 # SUBAREAS=("commune")
 # SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
 # SUBAREAS=("arrond" "EPCI" "canton" "commune")
-SUBAREAS="commune"
+SUBAREAS="null"
 
 #  -------  COVER LEVEL 2 -------
 COVER_MODE_N2=0
@@ -87,70 +87,37 @@ FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
 TIME_SUBP_RSSV=0 # 0 = No limit   (by default 0)
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit (by default 0)
 
-BW_MULTIPLIER=0.5  # Bandwidth multiplier
+BW_MULTIPLIER=0.5   # Bandwidth multiplier
 
 ADD_THRESHOLD_DIST_SUBP_RSSV=false # Add threshold distance create by subproblems
 ADD_GENERATE_REPORTS=false
 ADD_BREAK_CALLBACK=false
 # FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
-FIXED_THRESHOLD_DIST=0 # maximum distance  between the service and the customer 2h
 
-# FOR_METHODS=("FORMULATION" "FORMULATION_RED" "FORMULATION_RED_POST_OPT" "RSSV_TRAD")
-FOR_METHODS=("FORMULATION")
+FOR_METHODS=("RSSV")
+ADD_TYPE_TEST="PACA_urgenc_rssv"
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
 console_names=()
-for METHOD_TEST in "${FOR_METHODS[@]}"; do
+for METHOD in "${FOR_METHODS[@]}"; do
 
-	if [ "$METHOD_TEST" = "FORMULATION" ]; then
-		METHOD="EXACT_CPMP"
+	if [ "$METHOD" = "RSSV" ]; then
+		ADD_GENERATE_REPORTS=true
+		ADD_BREAK_CALLBACK=true
+		ADD_THRESHOLD_DIST_SUBP_RSSV=false
+		TIME_CPLEX=3600 # 1 hour
+		TIME_CLOCK=3600
+		metsp="TB_PMP" # Subproblem method
+		TIME_SUBP_RSSV=180
+		METHOD_RSSV_FINAL="EXACT_CPMP"
+		METHOD_POSTOPT="EXACT_CPMP"
+	fi
+
+	if [ "$METHOD" = "EXACT_CPMP" ]; then
+		ADD_GENERATE_REPORTS=false
+		ADD_BREAK_CALLBACK=false
+		TIME_CPLEX=18000 # 5 hours
 		METHOD_POSTOPT="null"
-		ADD_GENERATE_REPORTS=true
-		ADD_BREAK_CALLBACK=false
-		ADD_THRESHOLD_DIST_SUBP_RSSV=true
-		TIME_CPLEX=3600 # 1 hour
-		TIME_CLOCK=3600
-	fi
-
-	if [ "$METHOD_TEST" = "FORMULATION_RED" ]; then
-		METHOD="RSSV"
-		metsp="TB_PMP" # Subproblem method
-		METHOD_RSSV_FINAL="EXACT_CPMP"
-		METHOD_POSTOPT="EXACT_CPMP"
-		ADD_GENERATE_REPORTS=true
-		ADD_BREAK_CALLBACK=false
-		ADD_THRESHOLD_DIST_SUBP_RSSV=true
-		TIME_CPLEX=3600 # 1 hour
-		TIME_CLOCK=3600
-		TIME_SUBP_RSSV=180
-		SIZE_FP_RSSV=ALL
-	fi
-
-	if [ "$METHOD_TEST" = "FORMULATION_RED_POST_OPT" ]; then
-		METHOD="RSSV"
-		metsp="TB_PMP" # Subproblem method
-		METHOD_RSSV_FINAL="EXACT_CPMP"
-		METHOD_POSTOPT="EXACT_CPMP"
-		ADD_GENERATE_REPORTS=true
-		ADD_BREAK_CALLBACK=true
-		ADD_THRESHOLD_DIST_SUBP_RSSV=true
-		TIME_CPLEX=2400 # 1 hour
-		TIME_CLOCK=3600
-		TIME_SUBP_RSSV=180
-		SIZE_FP_RSSV=ALL
-	fi
-
-	if [ "$METHOD_TEST" = "RSSV_TRAD" ]; then
-		METHOD="RSSV"
-		metsp="TB_PMP" # Subproblem method
-		METHOD_RSSV_FINAL="EXACT_CPMP"
-		METHOD_POSTOPT="EXACT_CPMP"
-		ADD_GENERATE_REPORTS=true
-		ADD_BREAK_CALLBACK=true
-		ADD_THRESHOLD_DIST_SUBP_RSSV=true
-		TIME_CPLEX=2400 # 1 hour
-		TIME_CLOCK=3600
-		TIME_SUBP_RSSV=180
 	fi
 
 
@@ -167,8 +134,8 @@ for METHOD_TEST in "${FOR_METHODS[@]}"; do
 			fi
 
 
-			# CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}_Jul24.txt"
-			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_Jul24.txt"
+			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}_Jul24.txt"
+			# CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_Jul24.txt"
 			COVERAGES="${DIR_DATA}loc_coverages_${subar}_reindexed.txt"
 			if [ "$COVER_MODE_N2" = "1" ]; then
 				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}_reindexed.txt"
@@ -240,13 +207,14 @@ for METHOD_TEST in "${FOR_METHODS[@]}"; do
 				else
 					FINAL_PROB_RSSV_SIZE=0
 				fi
-
-				SUB_PROB_SIZE=$(echo "2 * $p" | bc)
-				if [ "$SUB_PROB_SIZE" -lt 800 ]; then
-					SUB_PROB_SIZE=800
+				
+				MIN_FP_SIZE=$(echo "(0.1 * $N + 0.999)/1" | bc) # Ceiling of 0.1*N
+				SUB_PROB_SIZE=$(echo "($MIN_FP_SIZE + 2 * $p + 0.999)/1" | bc) # Ceil(0.1 * N) + 2 * p
+				
+				if [ "$METHOD_TEST" = "RSSV_PO" ]; then
+					# FINAL_PROB_RSSV_SIZE=$SUB_PROB_SIZE
+					FINAL_PROB_RSSV_SIZE=1000
 				fi
-
-				ADD_TYPE_TEST="PACA_${METHOD}_${BW_MULTIPLIER}_${serv}_${METHOD}_${SUB_PROB_SIZE}_${FINAL_PROB_RSSV_SIZE}_${TIME_CPLEX}"
 
 
 				arr+=("$CMD -p $p -dm $D_MATRIX -w $WEIGHTS -c $CAPACITIES -service $serv -bw_multiplier $BW_MULTIPLIER\

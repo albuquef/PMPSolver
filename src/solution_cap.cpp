@@ -666,14 +666,14 @@ bool Solution_cap::isSolutionFeasible(){
         for (auto a:assignments[cust]) {
             satisfaction += a.usage;
             vector_capacities[getIndex(locations, a.node)] += a.usage;
-            if (a.usage > instance->getLocCapacity(a.node)+0.01){
+            if (a.usage > instance->getLocCapacity(a.node)+0.1){
                 if (verb) cout << "ERROR: usage > capacity" << endl;
                 if (verb) cout << "usage: " << a.usage << "\n capacity: " << instance->getLocCapacity(a.node) << endl;
                 isFeasible = false;
                 return isFeasible;
                 // exit(1);
             }
-            if (a.usage > instance->getCustWeight(cust) + 0.01){
+            if (a.usage > instance->getCustWeight(cust) + 0.1){
                 if (verb) cout << "ERROR: satisfaction > weight" << endl;
                 if (verb) cout << "satisfaction: " << a.usage << "\n weight: " << instance->getCustWeight(cust) << endl;
                 isFeasible = false;

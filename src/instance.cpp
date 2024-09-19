@@ -110,6 +110,8 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             cout << "Skipped line: " << line << endl;
             uint_t w_cnt = 0;
             dist_t max_weight = 0;
+            dist_t min_weight = std::numeric_limits<dist_t>::max();
+            dist_t sum_sq_weight = 0; // sum of squared weights
             while (getline(weights_file, line)) {
                 auto tokens = tokenize(line, delim);
                 auto cust = stoi(tokens[0]);
@@ -118,10 +120,18 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
                 total_demand += weight;
                 w_cnt++;
                 if (weight > max_weight) max_weight = weight;
+                if (weight < min_weight) min_weight = weight;
+                sum_sq_weight += weight * weight; // Adding squared weight
             }
             cout << "Loaded " << w_cnt << " weights\n";
             cout << "Total customer demand: " << fixed << setprecision(2) << total_demand << endl;
             cout << "Max weight: " << max_weight << endl;
+            cout << "Min weight: " << min_weight << endl;
+            dist_t mean_weight = total_demand / w_cnt;
+            dist_t variance_weight = sum_sq_weight / w_cnt - mean_weight * mean_weight;
+            dist_t stdev_weight = sqrt(variance_weight);
+            cout << "Mean: " << mean_weight << endl;
+            cout << "dists stdev: " << stdev_weight << endl;
             tock(start);
             // Load capacities
             start = tick();
@@ -134,6 +144,8 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
             cout << "Skipped line: " << line << endl;
             uint_t cap_cnt = 0;
             dist_t max_cap = 0;
+            dist_t min_cap = std::numeric_limits<dist_t>::max();
+            dist_t sum_sq_cap = 0; // sum of squared distances
             total_capacity = 0.0;
             while (getline(capacities_file, line)) {
                 auto tokens = tokenize(line, delim);
@@ -143,10 +155,19 @@ Instance::Instance(const string &dist_matrix_filename, const string &weights_fil
                 total_capacity += cap;
                 cap_cnt++;
                 if (cap > max_cap) max_cap = cap;
+                if (cap < min_cap) min_cap = cap;
+                sum_sq_cap += cap * cap; // Adding squared cap
+
             }
             cout << "Loaded " << cap_cnt << " capacities\n";
             cout << "Total capacity: " << fixed << setprecision(2) << total_capacity << endl;
             cout << "Max capacity: " << max_cap << endl;
+            cout << "Min capacity: " << min_cap << endl;
+            dist_t mean_cap = total_capacity / cap_cnt;
+            dist_t variance_cap = sum_sq_cap / cap_cnt - mean_cap * mean_cap;
+            dist_t stdev_cap = sqrt(variance_cap);
+            cout << "Mean: " << mean_cap << endl;
+            cout << "dists stdev: " << stdev_cap << endl;
             tock(start);
 
             // Preallocate distance matrix and loc, cust flag vectors
@@ -246,6 +267,8 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         uint_t w_cnt = 0;
         uint_t coord_cnt = 0;
         dist_t max_weight = 0;
+        dist_t min_weight = std::numeric_limits<dist_t>::max();
+        dist_t sum_sq_weight = 0; // sum of squared weights
         while (getline(weights_file, line)) {
             auto tokens = tokenize(line, delim);
             auto cust = stoi(tokens[0]);
@@ -254,6 +277,8 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
             total_demand += weight;
             w_cnt++;
             if (weight > max_weight) max_weight = weight;
+            if (weight < min_weight) min_weight = weight;
+            sum_sq_weight += weight * weight; // Adding squared weight
             if (tokens.size() >= 4) {
                 auto x_coord = stod(tokens[2]);
                 auto y_coord = stod(tokens[3]);
@@ -265,6 +290,12 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         if (coord_cnt > 0) cout << "Loaded " << coord_cnt << " coordinates\n";
         cout << "Total customer demand: " << fixed << setprecision(2) << total_demand << endl;
         cout << "Max weight: " << max_weight << endl;
+        cout << "Min weight: " << min_weight << endl;
+        dist_t mean_weight = total_demand / w_cnt;
+        dist_t variance_weight = sum_sq_weight / w_cnt - mean_weight * mean_weight;
+        dist_t stdev_weight = sqrt(variance_weight);
+        cout << "Mean: " << mean_weight << endl;
+        cout << "dists stdev: " << stdev_weight << endl;
         tock(start);
         // Load capacities
         start = tick();
@@ -279,6 +310,8 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         coord_cnt = 0;
         total_capacity = 0.0;
         dist_t max_cap = 0;
+        dist_t min_cap = std::numeric_limits<dist_t>::max();
+        dist_t sum_sq_cap = 0; // sum of squared capacities
         while (getline(capacities_file, line)) {
             auto tokens = tokenize(line, delim);
             auto loc = stoi(tokens[0]);
@@ -287,6 +320,8 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
             cap_cnt++;
             total_capacity += cap;
             if (cap > max_cap) max_cap = cap;
+            if (cap < min_cap) min_cap = cap;
+            sum_sq_cap += cap * cap; // Adding squared distance twice
 
             if (tokens.size() >= 4) {
                 auto x_coord = stod(tokens[2]);
@@ -299,6 +334,12 @@ Instance::Instance(uint_t cust_max_id, uint_t loc_max_id, const string &weights_
         if (coord_cnt > 0) cout << "Loaded " << coord_cnt << " coordinates\n";
         cout << "Total capacity: " << fixed << setprecision(2) << total_capacity << endl;
         cout << "Max capacity: " << max_cap << endl;
+        cout << "Min capacity: " << min_cap << endl;
+        dist_t mean_cap = total_capacity / cap_cnt;
+        dist_t variance_cap = sum_sq_cap / cap_cnt - mean_cap * mean_cap;
+        dist_t stdev_cap = sqrt(variance_cap);
+        cout << "Mean: " << mean_cap << endl;
+        cout << "dists stdev: " << stdev_cap << endl;
         tock(start);
 
         // dist matrix using euclidean distances

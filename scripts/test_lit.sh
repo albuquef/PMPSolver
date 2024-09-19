@@ -6,7 +6,7 @@
 #SBATCH --mem=128G
 #SBATCH --time=90:00:00
 # # SBATCH --array=0-9%
-#SBATCH --array=0-2%3
+#SBATCH --array=0-4%5
 
 # Activate the conda env if needed
 source /etc/profile.d/conda.sh # Required before using conda
@@ -124,12 +124,11 @@ arr=()
 console_names=()
 
 # FOR_METHODS=("FORMULATION_RED" "FORMULATION_RED_POST_OPT" "RSSV_PO")
-FOR_METHODS=("RSSV_PO")
+FOR_METHODS=("FORMULATION")
 PROB="EXACT_CPMP_BIN"
 
-# FOR_METHODS=("FORMULATION")
 for bwmult in 0.5; do
-    for seed in 97; do
+    for seed in 783; do
         for met_sub in "TB_PMP"; do
             for timesp in 180; do
                 for METHOD_TEST in "${FOR_METHODS[@]}"; do
@@ -143,7 +142,7 @@ for bwmult in 0.5; do
                         METHOD_POSTOPT="null"
                         ADD_GENERATE_REPORTS=true
                         ADD_BREAK_CALLBACK=false
-                        ADD_THRESHOLD_DIST_SUBP_RSSV=true
+                        ADD_THRESHOLD_DIST_SUBP_RSSV=false
                         TIME_CPLEX=3600 # 1 hour
                         TIME_CLOCK=3600
                     fi
@@ -157,8 +156,8 @@ for bwmult in 0.5; do
                         ADD_GENERATE_REPORTS=true
                         ADD_BREAK_CALLBACK=false
                         ADD_THRESHOLD_DIST_SUBP_RSSV=true
-                        TIME_CPLEX=3600 # 1 hour
-                        TIME_CLOCK=3600
+                        TIME_CPLEX=2000 # 1 hour
+                        TIME_CLOCK=2000
                         TIME_SUBP_RSSV=$timesp
                         SIZE_FP_RSSV=ALL
                     fi
@@ -186,9 +185,9 @@ for bwmult in 0.5; do
                         METHOD_POSTOPT=$PROB
                         ADD_GENERATE_REPORTS=true
                         ADD_BREAK_CALLBACK=true
-                        ADD_THRESHOLD_DIST_SUBP_RSSV=true
-                        TIME_CPLEX=2400 # 1 hour
-                        TIME_CLOCK=3600
+                        ADD_THRESHOLD_DIST_SUBP_RSSV=false
+                        TIME_CPLEX=2000 # 1 hour
+                        TIME_CLOCK=2000
                         TIME_SUBP_RSSV=$timesp
                         SIZE_FP_RSSV=DEFAULT
                     fi
@@ -282,25 +281,18 @@ for bwmult in 0.5; do
                             fi
 
 
-                            SUB_PROB_SIZE=$(echo "2 * $p" | bc)
-                            THRESHOLD=$(echo "(0.1 * $N + 0.999)/1" | bc) # Ceiling of 0.1*N
-
-                            if [ "$(echo "2 * $p < $THRESHOLD" | bc)" -eq 1 ]; then
-                                FINAL_PROB_RSSV_SIZE=$(echo "($THRESHOLD + 4 * $p + 0.999)/1" | bc) # Ceil(0.1 * N) + 2 * p
-                            else
-                                FINAL_PROB_RSSV_SIZE=$(echo "2 * $p" | bc) # 2 * p
-                            fi
-
-                            SUB_PROB_SIZE=$(echo "2 * $p" | bc)
-                            if [ "$SUB_PROB_SIZE" -lt 800 ]; then
-                                SUB_PROB_SIZE=800
-                            fi
-
-                            FINAL_PROB_RSSV_SIZE=$(echo "(1000 + 4 * $p + 0.999)/1" | bc)
                             
+   
+                            
+                            MIN_FP_SIZE=$(echo "(0.1 * $N + 0.999)/1" | bc) # Ceiling of 0.1*N
+                            SUB_PROB_SIZE=$(echo "($MIN_FP_SIZE + 2 * $p + 0.999)/1" | bc) # Ceil(0.1 * N) + 2 * p
+                            
+                            if [ "$METHOD_TEST" = "RSSV_PO" ]; then
+                                FINAL_PROB_RSSV_SIZE=$SUB_PROB_SIZE
+                            fi
 
                             # ADD_TYPE_TEST="LIT_seed_${SEED}_Subp_${SUB_PROB_SIZE}_${timesp}_hmult_${BW_MULTIPLIER}"
-                            ADD_TYPE_TEST="LIT_${METHOD_TEST}_seed_${SEED}_Subp_${SUB_PROB_SIZE}"
+                            ADD_TYPE_TEST="LIT_${METHOD_TEST}"
 
 
                             NEW_DIR_CONSOLE="./console/$(date '+%Y-%m-%d')_console_${ADD_TYPE_TEST}"

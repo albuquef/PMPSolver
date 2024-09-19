@@ -796,6 +796,7 @@ bool TB::test_basic_Solution_cap(Solution_cap sol, uint_t in_p, uint_t out_p) {
 Solution_cap TB::localSearch_cap(Solution_cap sol_best, bool verbose, int MAX_ITE) {
 
     cout << "\n[INFO] Capacitated TB local search started\n";
+    if (cover_mode) cout << "Cover mode: " << instance->getTypeSubarea() << "\n";
 
     string report_filename = "./outputs/reports/report_" + this->typeMethod + "_" + instance->getTypeService() + "_p_" + to_string(sol_best.get_pLocations().size());
     if (cover_mode) report_filename += "_cover_" + instance->getTypeSubarea();

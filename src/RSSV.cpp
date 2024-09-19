@@ -159,15 +159,19 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
 
     cout << " instance threshold dist: " << instance->get_ThresholdDist() << endl;
 
-    subSols_max_dist = min(subSols_max_dist, max_dist_feas);
 
-    if(instance->get_ThresholdDist() > 0)
-        filtered_instance->set_ThresholdDist(instance->get_ThresholdDist());
-    if (add_threshold_dist){
-        if (instance->get_ThresholdDist() > 0)  subSols_max_dist = min(subSols_max_dist, instance->get_ThresholdDist());
-        filtered_instance->set_ThresholdDist(subSols_max_dist);
-        if(method_sp == "TB_CPMP" || method_sp == "EXACT_CPMP") filtered_instance->set_ThresholdDist(subSols_minmax_dist);
+    auto threshold_dist = instance->get_ThresholdDist();
+    if (threshold_dist == 0) {
+        threshold_dist = subSols_max_dist;
+        // threshold_dist = subSols_minmax_dist;
     }
+    if(method_sp == "TB_CPMP" || method_sp == "EXACT_CPMP") threshold_dist = min(threshold_dist, subSols_minmax_dist);
+    // if (add_threshold_dist) threshold_dist = min(threshold_dist, subSols_max_dist);
+    if (add_threshold_dist) threshold_dist = min(threshold_dist, subSols_minmax_dist);
+    
+    cout << "Threshold dist: " << threshold_dist << endl;
+
+    if (add_threshold_dist || instance->get_ThresholdDist()>0) filtered_instance->set_ThresholdDist(threshold_dist);
 
     atexit(printDDE);
 
