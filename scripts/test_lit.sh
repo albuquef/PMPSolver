@@ -32,6 +32,8 @@ metsp="TB_PMP" # Subproblem method
 
 METHOD_POSTOPT="EXACT_CPMP_BIN"
 # FOR_METHODS=("EXACT_CPMP_BIN")
+MAXDIST_STRATEGY_RSSV="minmax"
+CUTS_TYPE="PairwiseCut_closestJ"
 
 COVER_MODE=false
 IsWeighted_OBJ=false
@@ -124,7 +126,7 @@ arr=()
 console_names=()
 
 # FOR_METHODS=("FORMULATION_RED" "FORMULATION_RED_POST_OPT" "RSSV_PO")
-FOR_METHODS=("FORMULATION")
+FOR_METHODS=("FORMULATION_RED")
 PROB="EXACT_CPMP_BIN"
 
 for bwmult in 0.5; do
@@ -156,8 +158,9 @@ for bwmult in 0.5; do
                         ADD_GENERATE_REPORTS=true
                         ADD_BREAK_CALLBACK=false
                         ADD_THRESHOLD_DIST_SUBP_RSSV=true
-                        TIME_CPLEX=2000 # 1 hour
-                        TIME_CLOCK=2000
+                        MAXDIST_STRATEGY_RSSV="minmax"
+                        TIME_CPLEX=3600 # 1 hour
+                        TIME_CLOCK=3600
                         TIME_SUBP_RSSV=$timesp
                         SIZE_FP_RSSV=ALL
                     fi
@@ -335,6 +338,7 @@ for bwmult in 0.5; do
                                 -add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
                                 -time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
                                 -add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK\
+                                -maxdist_strategy_rssv $MAXDIST_STRATEGY_RSSV -cuts_type $CUTS_TYPE --verbose $VERBOSE\
                                 -o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
                             fi
 

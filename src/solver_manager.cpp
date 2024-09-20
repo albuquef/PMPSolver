@@ -222,6 +222,7 @@ void SolverManager::setRSSVParameters(RSSV& metaheuristic, const Config& config)
     metaheuristic.setCoverMode_n2(config.cover_mode_n2);
     metaheuristic.setMAX_ITE_SUBPROBLEMS(config.MAX_ITE_SUBPROB_RSSV);
     metaheuristic.setTIME_LIMIT_SUBPROBLEMS(config.CLOCK_LIMIT_SUBPROB_RSSV);
+    metaheuristic.setMaxDistStrategy(config.maxdist_strategy_rssv);
     if (config.fixed_threshold_distance <= 0) metaheuristic.setAddThresholdDist(config.add_threshold_distance_rssv);
     CLOCK_THREADED = true;
 }
@@ -233,6 +234,7 @@ void SolverManager::setExactMethodParams(PMP& pmp, const Config& config, const s
     pmp.setCoverModel(config.cover_mode, instance->getTypeSubarea());
     pmp.setCoverModel_n2(config.cover_mode_n2, instance->getTypeSubarea_n2());
     pmp.setTimeLimit(config.CLOCK_LIMIT_CPLEX - external_time);
+    pmp.setCutsType(config.cuts_type);
     if (priorityLocations.size() > 0) {
         pmp.set_PriorityListLocations(priorityLocations, "index_based");
     }

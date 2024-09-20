@@ -45,6 +45,7 @@ struct Config {
     uint_t MAX_ITE_SUBPROB_RSSV = 0;
     uint_t size_subproblems_rssv = 800;
     uint_t size_final_prob_rssv = 800;
+    string maxdist_strategy_rssv;
 
     double BW_MULTIPLIER = 1.0;
     double fixed_threshold_distance = 0.0;
@@ -52,6 +53,9 @@ struct Config {
     bool add_generate_reports = false;
     bool add_break_callback = false;
 
+    string cuts_type;
+
+    
     bool cover_mode = false;
     bool cover_mode_n2 = false;
     uint_t cust_max_id = 0;
@@ -60,6 +64,7 @@ struct Config {
     // std::set<const char*> configOverride;
     std::set<std::string> configOverride;
     std::string configPath = "config.toml";
+    
 };
 
 void parseArguments(int argc, char* argv[], Config& config);

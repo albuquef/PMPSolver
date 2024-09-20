@@ -54,6 +54,7 @@ private:
 
     bool capacities_respected = false;
     dist_t max_dist_feas = numeric_limits<dist_t>::max();;
+    string maxdist_strategy_rssv="maxmax";
 
 public:
     RSSV(const shared_ptr<Instance>& instance, uint_t seed, uint_t n, uint_t n_cand=0);
@@ -85,6 +86,9 @@ public:
     }
     void setAddThresholdDist(bool add_threshold) {
         add_threshold_dist = add_threshold;
+    }
+    void setMaxDistStrategy(const string& strategy) {
+        maxdist_strategy_rssv = strategy;
     }
 };
 

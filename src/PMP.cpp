@@ -455,8 +455,11 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if (instance->get_ThresholdDist() > 0) {constr_MaxDistance(model,x);}
     if (instance->get_MaxLimitAssignments() > 0) {constr_MaxAssignments(model,x);}
     if (add_constr_maxNeighbors_from_solution) {constr_MaxNeighborsFromSolution(model,y);}
-    bool add_cut = true;
-    if (add_cut) {cut_UBvarX_closestj(model,x,y);}
+    if (cuts_type != "none" && strcmp(typeProb,"PMP") != 0 || strcmp(typeProb,"pmp") != 0) {cut_UBvarX_closestj(model,x,y);}
+}
+
+void PMP::setCutsType(string cuts_type){
+    this->cuts_type = cuts_type;
 }
 
 
@@ -829,7 +832,7 @@ void PMP::constr_fixedAllocs_from_solution(IloModel model, IloBoolVarArray y, Va
 template <typename VarType> 
 void PMP::cut_UBvarX_closestj(IloModel model, VarType x, IloBoolVarArray y){
 
-    if (VERBOSE){cout << "[INFO] Adding Cuts xij <= yj, forall i only for the closest j"<< endl;}
+    if (VERBOSE){cout << "[INFO] Adding Cuts xij <= yj"<< endl;}
 
     // add xii < yi
     // for(IloInt i = 0; i < num_customers; i++){
@@ -838,11 +841,23 @@ void PMP::cut_UBvarX_closestj(IloModel model, VarType x, IloBoolVarArray y){
     //     model.add(x[i][instance->getLocIndex(loc)] <= y[instance->getLocIndex(loc)]);
     // }
 
-    for (auto cust:instance->getCustomers()) {
-        // auto loc = instance->getClosestLoc(cust);
-        auto loc = instance->getClosestLoc_notloc(cust,cust);
-        // cout << "cust: " << cust << " loc: " << loc << endl;
-        model.add(x[instance->getCustIndex(cust)][instance->getLocIndex(loc)] <= y[instance->getLocIndex(loc)]);
+    if (cuts_type == "PairwiseCut_closestJ"){
+        if(VERBOSE){cout << "...forall i only for the closest j != i"<< endl;}
+        for (auto cust:instance->getCustomers()) {
+            // auto loc = instance->getClosestLoc(cust);
+            auto loc = instance->getClosestLoc_notloc(cust,cust);
+            // cout << "cust: " << cust << " loc: " << loc << endl;
+            model.add(x[instance->getCustIndex(cust)][instance->getLocIndex(loc)] <= y[instance->getLocIndex(loc)]);
+        }
+    }else if (cuts_type == "PairwiseCut_allJ"){
+        if(VERBOSE){cout << "...forall i for all j"<< endl;}
+        for(IloInt i = 0; i < num_customers; i++){
+            for(IloInt j = 0; j < num_facilities; j++){
+                model.add(x[i][j] <= y[j]);
+            }
+        }
+    }else {
+        cout << "[WARN] cuts type not found" << endl;
     }
 
 }
@@ -1070,7 +1085,6 @@ void PMP::setMIPStartSolution(Solution_cap solut){
     this->useMIPStart = true;
     this->initial_solution = solut;
 }
-
 
 
 void PMP::saveResults(const string& filename,const string& Method){
@@ -1321,11 +1335,6 @@ void PMP::set_Fixed_pLocations_from_solution(unordered_set<uint_t> fixed_p_locat
     this->add_constr_FixedAllocs_from_solution = true;
     this->fixed_p_locations = fixed_p_locations;
 }
-
-// IloCplex PMP::getCplex(){
-//     return this->cplex;
-// } 
-
 
 void PMP::setBestBound(dist_t bestBound){
     this->BestBound = bestBound;

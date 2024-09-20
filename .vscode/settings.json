@@ -72,7 +72,7 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "filesystem": "cpp",
-        "*.sh": "c"
+        "*.sh": "shellscript"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "editor.foldingStrategy": "indentation",

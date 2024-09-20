@@ -158,19 +158,15 @@ shared_ptr<Instance> RSSV::run_impl(uint_t thread_cnt, const string& method_sp, 
     filtered_instance->setVotedLocs(filtered_locations);
 
     cout << " instance threshold dist: " << instance->get_ThresholdDist() << endl;
-
-
     auto threshold_dist = instance->get_ThresholdDist();
     if (threshold_dist == 0) {
-        threshold_dist = subSols_max_dist;
+        if(maxdist_strategy_rssv == "minmax") threshold_dist = subSols_minmax_dist;
+        else threshold_dist = subSols_max_dist;
         // threshold_dist = subSols_minmax_dist;
     }
     if(method_sp == "TB_CPMP" || method_sp == "EXACT_CPMP") threshold_dist = min(threshold_dist, subSols_minmax_dist);
-    // if (add_threshold_dist) threshold_dist = min(threshold_dist, subSols_max_dist);
-    if (add_threshold_dist) threshold_dist = min(threshold_dist, subSols_minmax_dist);
     
     cout << "Threshold dist: " << threshold_dist << endl;
-
     if (add_threshold_dist || instance->get_ThresholdDist()>0) filtered_instance->set_ThresholdDist(threshold_dist);
 
     atexit(printDDE);

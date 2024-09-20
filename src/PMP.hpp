@@ -95,6 +95,7 @@ class PMP
 
         void set_PriorityListLocations(vector<uint_t> priorityLocations, string priorityStrategy);
         void setPriorityStrategy(string priorityStrategy);
+        void setCutsType(string cuts_type);
 
     private:
         // mutex callbackMutex;
@@ -122,6 +123,7 @@ class PMP
         void set_gap_report_filename(string Method_name);
         bool displayCPLEX=true;
         string priorityStrategy = "index_based";  // "index_based" or "presence_based"
+        string cuts_type="none"; // 
 
         void initVars();
         void initILP        (void);

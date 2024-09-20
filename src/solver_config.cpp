@@ -111,6 +111,12 @@ void parseArguments(int argc, char* argv[], Config& config) {
                 config.size_final_prob_rssv = std::stoi(argv[i+1]);
                 configOverride.insert("size_final_prob_rssv");
                 FINAL_PROB_RSSV_SIZE = static_cast<uint_t>(config.size_final_prob_rssv);
+            }else if (key == "-maxdist_strategy_rssv") {
+                config.maxdist_strategy_rssv = argv[i+1];
+                configOverride.insert("maxdist_strategy_rssv");
+            }else if (key == "-cuts_type") {
+                config.cuts_type = argv[i+1];
+                configOverride.insert("cuts_type");
             }else if (key == "-method_post_opt") {
                 config.Method_PostOpt = argv[i+1];
                 configOverride.insert("method_post_opt");
@@ -187,6 +193,9 @@ void setupConfig(Config& config, std::set<std::string>& configOverride) {
     configParser.setFromConfig(&config.add_generate_reports, "add_generate_reports");
     configParser.setFromConfig(&config.add_break_callback, "add_break_callback");
     configParser.setFromConfig(&config.fixed_threshold_distance, "fixed_threshold_distance");
+    configParser.setFromConfig(&config.cuts_type, "cuts_type");
+    configParser.setFromConfig(&config.maxdist_strategy_rssv, "maxdist_strategy_rssv");
+    
 
     // Additional fields can be set similarly
 

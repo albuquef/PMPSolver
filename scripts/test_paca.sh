@@ -68,35 +68,29 @@ SUBAREAS_N2="commune"
 N=2037
 MAX_ID_LOC_CUST=2037
 IsWeighted_OBJ=true
-
+VERBOSE=true
 
 # ----------------------------------------- Methods configuration -----------------------------------------
 FOR_METHODS=("RSSV" "EXACT_CPMP")
 METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 METHOD_POSTOPT="EXACT_CPMP"
-
-
+MAXDIST_STRATEGY_RSSV="maxmax"
+CUTS_TYPE="PairwiseCut_closestJ"
 TIME_CPLEX=3600 # 1 hour
-# TIME_CPLEX=2400 # 1 hour
-# TIME_CLOCK=3600
-
-
-SUB_PROB_SIZE=800
-# FINAL_PROB_RSSV_SIZE=0
+TIME_CLOCK=3600
+BW_MULTIPLIER=0.5   # Bandwidth multiplier
 FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
+# FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
+SUB_PROB_SIZE=800
+FINAL_PROB_RSSV_SIZE=0
 TIME_SUBP_RSSV=0 # 0 = No limit   (by default 0)
 MAX_ITE_SUBP_RSSV=0 # 0 = No limit (by default 0)
-
-BW_MULTIPLIER=0.5   # Bandwidth multiplier
-
 ADD_THRESHOLD_DIST_SUBP_RSSV=false # Add threshold distance create by subproblems
 ADD_GENERATE_REPORTS=false
 ADD_BREAK_CALLBACK=false
-# FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
 
-FOR_METHODS=("EXACT_CPMP")
-ADD_TYPE_TEST="PACA_urgenc_rssv_cut_rosa"
+ADD_TYPE_TEST="PACA_urgenc_form_red_cut"
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
 console_names=()
@@ -226,7 +220,8 @@ for METHOD in "${FOR_METHODS[@]}"; do
 				-add_threshold_distance_rssv $ADD_THRESHOLD_DIST_SUBP_RSSV -method_post_opt $METHOD_POSTOPT\
 				-time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
 				-add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK -fixed_threshold_distance $FIXED_THRESHOLD_DIST\
-				-cust_max_id $MAX_ID_LOC_CUST -loc_max_id $MAX_ID_LOC_CUST\
+				-maxdist_strategy_rssv $MAXDIST_STRATEGY_RSSV -cuts_type $CUTS_TYPE\
+				-cust_max_id $MAX_ID_LOC_CUST -loc_max_id $MAX_ID_LOC_CUST --verbose" $VERBOSE\
 				-o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
 
 
