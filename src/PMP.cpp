@@ -455,6 +455,8 @@ void PMP::createModel(IloModel model, VarType x, IloBoolVarArray y){
     if (instance->get_ThresholdDist() > 0) {constr_MaxDistance(model,x);}
     if (instance->get_MaxLimitAssignments() > 0) {constr_MaxAssignments(model,x);}
     if (add_constr_maxNeighbors_from_solution) {constr_MaxNeighborsFromSolution(model,y);}
+    bool add_cut = true;
+    if (add_cut) {cut_UBvarX_closestj(model,x,y);}
 }
 
 
@@ -823,6 +825,27 @@ void PMP::constr_fixedAllocs_from_solution(IloModel model, IloBoolVarArray y, Va
 
 }
 
+
+template <typename VarType> 
+void PMP::cut_UBvarX_closestj(IloModel model, VarType x, IloBoolVarArray y){
+
+    if (VERBOSE){cout << "[INFO] Adding Cuts xij <= yj, forall i only for the closest j"<< endl;}
+
+    // add xii < yi
+    // for(IloInt i = 0; i < num_customers; i++){
+    //     auto cust = instance->getCustomers()[i];
+    //     auto loc = instance->getClosestLoc(cust);
+    //     model.add(x[i][instance->getLocIndex(loc)] <= y[instance->getLocIndex(loc)]);
+    // }
+
+    for (auto cust:instance->getCustomers()) {
+        // auto loc = instance->getClosestLoc(cust);
+        auto loc = instance->getClosestLoc_notloc(cust,cust);
+        // cout << "cust: " << cust << " loc: " << loc << endl;
+        model.add(x[instance->getCustIndex(cust)][instance->getLocIndex(loc)] <= y[instance->getLocIndex(loc)]);
+    }
+
+}
 
 template <typename VarType>  
 void PMP::printSolution(IloCplex& cplex, VarType x, IloBoolVarArray y){
@@ -1293,7 +1316,6 @@ void PMP::set_pLocations_from_solution(unordered_set<uint_t> p_locations){
 void PMP::set_MaxNeighbors_from_solution(uint_t MaxNeighbors){
     this->MaxNeighbors_with_solution = MaxNeighbors;
 }
-
 
 void PMP::set_Fixed_pLocations_from_solution(unordered_set<uint_t> fixed_p_locations){
     this->add_constr_FixedAllocs_from_solution = true;

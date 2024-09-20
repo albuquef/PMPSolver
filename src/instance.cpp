@@ -569,6 +569,35 @@ uint_t Instance::getClosestCust(uint_t loc) {
     return cust_cl;
 }
 
+uint_t  Instance::getClosestLoc(uint_t cust) {
+    dist_t dist_min = numeric_limits<dist_t>::max();
+    uint_t loc_cl = numeric_limits<uint_t>::max();
+    for (auto loc:locations) {
+        auto dist = getRealDist(loc, cust);
+        if (dist <= dist_min) {
+            dist_min = dist;
+            loc_cl = loc;
+        }
+    }
+    // cout <<"dist_min: " << dist_min << endl;
+    return loc_cl;
+}
+
+uint_t Instance::getClosestLoc_notloc(uint_t cust, uint_t loc_avoid) {
+    dist_t dist_min = numeric_limits<dist_t>::max();
+    uint_t loc_cl = numeric_limits<uint_t>::max();
+    for (auto loc:locations) {
+        auto dist = getRealDist(loc, cust);
+        if (dist <= dist_min && loc != loc_avoid) {
+            dist_min = dist;
+            loc_cl = loc;
+        }
+    }
+    // cout <<"dist_min: " << dist_min << endl;
+    return loc_cl;
+}
+
+
 double Instance::getVotingScore(uint_t loc, uint_t cust) {
     auto dist = getRealDist(loc, cust);
     double score = 0;

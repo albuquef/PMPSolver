@@ -86,6 +86,8 @@ public:
     uint_t getLocIndex(uint_t loc);
     uint_t getCustIndex(uint_t cust);
     uint_t getClosestCust(uint_t loc);
+    uint_t getClosestLoc(uint_t cust);
+    uint_t getClosestLoc_notloc(uint_t cust, uint_t loc);
     double getVotingScore(uint_t loc, uint_t cust);
     dist_t getLocCapacity(uint_t loc);
     dist_t getCustDemand(uint_t cust);

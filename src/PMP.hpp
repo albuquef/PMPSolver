@@ -183,7 +183,8 @@ class PMP
         template <typename VarType>
         void constr_fixedAllocs_from_solution (IloModel model, IloBoolVarArray y, VarType x);
 
-
+        template <typename VarType>
+        void cut_UBvarX_closestj (IloModel model, VarType x, IloBoolVarArray y);
 
 };
 

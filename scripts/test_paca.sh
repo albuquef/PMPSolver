@@ -35,6 +35,7 @@ ADD_TYPE_TEST="PACA"
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 # SERVICES=("mat" "urgenc" "lycee" "poste")
+# SERVICES=("urgenc" "cinema" "terrainsGJ")
 SERVICES=("urgenc")
 
 # p_values_mat=(26 30 33 37 41 44 48)
@@ -42,25 +43,25 @@ p_values_urgenc=(42 60 78)
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
 # p_values_cinema=(50 58 96 134 173 192 211 250 288 326 500 900)
-# p_values_cinema=(134 250)
+p_values_cinema=(134 192 250)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
-# p_values_terrainsGJ=(706 1310)
+p_values_terrainsGJ=(706 1008 1310)
 
 
 # COVERAGES
 #  ------- COVER LEVEL 1 -------
-COVER_MODE=0
+COVER_MODE=1
 KMEANS_COVER_MODE=0
 GRID_COVER_MODE=0
 
-# SUBAREAS=("commune")
+SUBAREAS=("EPCI")
 # SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
 # SUBAREAS=("arrond" "EPCI" "canton" "commune")
-SUBAREAS="null"
+# SUBAREAS="null"
 
 #  -------  COVER LEVEL 2 -------
-COVER_MODE_N2=0
-SUBAREAS_N2="null"
+COVER_MODE_N2=1
+SUBAREAS_N2="commune"
 
 
 # ------- params instance ------
@@ -94,8 +95,8 @@ ADD_GENERATE_REPORTS=false
 ADD_BREAK_CALLBACK=false
 # FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
 
-FOR_METHODS=("RSSV")
-ADD_TYPE_TEST="PACA_urgenc_rssv"
+FOR_METHODS=("EXACT_CPMP")
+ADD_TYPE_TEST="PACA_urgenc_rssv_cut_rosa"
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
 console_names=()
@@ -114,9 +115,9 @@ for METHOD in "${FOR_METHODS[@]}"; do
 	fi
 
 	if [ "$METHOD" = "EXACT_CPMP" ]; then
-		ADD_GENERATE_REPORTS=false
+		ADD_GENERATE_REPORTS=true
 		ADD_BREAK_CALLBACK=false
-		TIME_CPLEX=18000 # 5 hours
+		TIME_CPLEX=3600 # 5 hours
 		METHOD_POSTOPT="null"
 	fi
 
