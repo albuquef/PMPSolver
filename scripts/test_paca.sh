@@ -16,11 +16,12 @@
 # Executable
 CMD=./build/large_PMP
 # Data
-DIR_DATA=./data/PACA_Jul24/
+DIR_DATA=./data/PACA_jul24/
 DIST_TYPE=minutes
 MAX_ID_LOC_CUST=2037
+N=2037
 D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}_${MAX_ID_LOC_CUST}.txt"
-WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}_Jul24.txt"
+WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}.txt"
 # WEIGHTS_files=("${DIR_DATA}cust_weights.txt" "${DIR_DATA}cust_weights_shuffled.txt" "${DIR_DATA}cust_weights_split.txt")
 # Time
 TIME_CPLEX=2400
@@ -34,18 +35,14 @@ NUM_THREADS=20
 ADD_TYPE_TEST="PACA"
 
 # ----------------------------------------- Instance configuration -----------------------------------------
-# SERVICES=("mat" "urgenc" "lycee" "poste")
 # SERVICES=("urgenc" "cinema" "terrainsGJ")
 SERVICES=("urgenc")
 
 # p_values_mat=(26 30 33 37 41 44 48)
-p_values_urgenc=(42 60 78)
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
-# p_values_cinema=(50 58 96 134 173 192 211 250 288 326 500 900)
-p_values_cinema=(134 192 250)
+p_values_cinema=(50 58 96 134 173 192 211 250 288 326 500 900)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
-p_values_terrainsGJ=(706 1008 1310)
 
 
 # COVERAGES
@@ -56,17 +53,14 @@ GRID_COVER_MODE=0
 
 SUBAREAS=("EPCI")
 # SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
-# SUBAREAS=("arrond" "EPCI" "canton" "commune")
 # SUBAREAS="null"
 
 #  -------  COVER LEVEL 2 -------
-COVER_MODE_N2=1
+COVER_MODE_N2=0
 SUBAREAS_N2="commune"
 
 
 # ------- params instance ------
-N=2037
-MAX_ID_LOC_CUST=2037
 IsWeighted_OBJ=true
 VERBOSE=true
 
@@ -76,9 +70,7 @@ METHOD_RSSV_FINAL="EXACT_CPMP"
 metsp="TB_PMP" # Subproblem method
 METHOD_POSTOPT="EXACT_CPMP"
 MAXDIST_STRATEGY_RSSV="maxmax"
-CUTS_TYPE="PairwiseCut_closestJ"
-TIME_CPLEX=3600 # 1 hour
-TIME_CLOCK=3600
+CUTS_TYPE="none" #"PairwiseCut_closestJ"
 BW_MULTIPLIER=0.5   # Bandwidth multiplier
 FIXED_THRESHOLD_DIST=0 # 0 = No fixed threshold (by default 0)
 # FIXED_THRESHOLD_DIST=7200.0 # maximum distance  between the service and the customer 2h
@@ -129,11 +121,11 @@ for METHOD in "${FOR_METHODS[@]}"; do
 			fi
 
 
-			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}_Jul24.txt"
+			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}.txt"
 			# CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_Jul24.txt"
 			COVERAGES="${DIR_DATA}loc_coverages_${subar}_reindexed.txt"
 			if [ "$COVER_MODE_N2" = "1" ]; then
-				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}_reindexed.txt"
+				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}_${MAX_ID_LOC_CUST}.txt"
 			fi
 			# if KMEANS_COVER_MODE= 1, then the coverages are the kmeans coverages
 			if [ $KMEANS_COVER_MODE = 1 ]; then
@@ -221,7 +213,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
 				-time_subprob_rssv $TIME_SUBP_RSSV -max_ite_subprob_rssv $MAX_ITE_SUBP_RSSV\
 				-add_generate_reports $ADD_GENERATE_REPORTS -add_break_callback $ADD_BREAK_CALLBACK -fixed_threshold_distance $FIXED_THRESHOLD_DIST\
 				-maxdist_strategy_rssv $MAXDIST_STRATEGY_RSSV -cuts_type $CUTS_TYPE\
-				-cust_max_id $MAX_ID_LOC_CUST -loc_max_id $MAX_ID_LOC_CUST --verbose" $VERBOSE\
+				-cust_max_id $MAX_ID_LOC_CUST -loc_max_id $MAX_ID_LOC_CUST --verbose $VERBOSE\
 				-o $OUTPUT --seed $SEED | tee $NEW_DIR_CONSOLE/$CONSOLE_NAME")
 
 
