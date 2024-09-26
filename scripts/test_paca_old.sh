@@ -7,7 +7,7 @@
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
 # SBATCH --array=0-69%4
-#SBATCH --array=0-14%5
+#SBATCH --array=0-11%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -53,9 +53,9 @@ p_values_cinema=(45 51 58 96 134 173 192 211 250 288 326 500 900)
 p_values_terrainsGJ=(706 1008 1310)
 
 
-p_values_cinema=(18 20 23 41 46 51 56 61 188 230 682 767 852 937 1022)
+p_values_cinema=(41 46 51 56 61 188 230 682 767 852 937 1022)
 
-# p_values_cinema=(900)
+p_values_cinema=(58)
 
 # COVERAGES
 #  ------- COVER LEVEL 1 -------
@@ -63,7 +63,7 @@ COVER_MODE=1
 KMEANS_COVER_MODE=0
 GRID_COVER_MODE=0
 
-SUBAREAS=("commune")
+SUBAREAS=("EPCI")
 # SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
 # SUBAREAS=("arrond" "EPCI" "canton" "commune")
 # SUBAREAS="null"

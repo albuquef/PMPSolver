@@ -182,7 +182,7 @@ ILOMIPINFOCALLBACK4(GapInfoCallback, IloCplex, cplex, IloNum, startTime, IloNum,
 PMP::PMP(const shared_ptr<Instance>& instance,const char* typeProb, bool is_BinModel):instance(instance)
 {
 
-    VERBOSE = false;    
+    VERBOSE = true;    
 
     // this->instance = instance;
     this->typeServ = typeServ;
@@ -597,6 +597,11 @@ void PMP::constr_Cover(IloModel model, IloBoolVarArray y){
     if (VERBOSE){cout << "[INFO] Adding Cover Constraints "<< endl;}
 
     num_subareas = instance->getSubareasSet().size();   
+
+    // print number of possible subareas to cover that exist at least one location
+    // cout << "num_subareas: " << num_subareas << endl;
+
+
 
     if (p >= num_subareas){
 
