@@ -36,13 +36,16 @@ ADD_TYPE_TEST="PACA"
 
 # ----------------------------------------- Instance configuration -----------------------------------------
 # SERVICES=("urgenc" "cinema" "terrainsGJ")
-SERVICES=("urgenc")
+SERVICES=("cinema")
 
 # p_values_mat=(26 30 33 37 41 44 48)
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
 p_values_cinema=(50 58 96 134 173 192 211 250 288 326 500 900)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
+
+
+p_values_cinema=(18 20 23 41 46 51 56 61 188 230 682 767 852)
 
 
 # COVERAGES
@@ -123,7 +126,7 @@ for METHOD in "${FOR_METHODS[@]}"; do
 
 			CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_${MAX_ID_LOC_CUST}.txt"
 			# CAPACITIES="${DIR_DATA}loc_capacities_cap_${serv}_Jul24.txt"
-			COVERAGES="${DIR_DATA}loc_coverages_${subar}_reindexed.txt"
+			COVERAGES="${DIR_DATA}loc_coverages_${subar}_${MAX_ID_LOC_CUST}.txt"
 			if [ "$COVER_MODE_N2" = "1" ]; then
 				COVERAGES_N2="${DIR_DATA}loc_coverages_${SUBAREAS_N2}_${MAX_ID_LOC_CUST}.txt"
 			fi

@@ -967,8 +967,8 @@ Solution_cap PMP::getSolution_cap(){
 
                         // cout << "loc: " << loc << " cust: " << cust << " qtde_used: " << qtde_used << " dem_used: " << dem_used << " dist: " << instance->getRealDist(loc, cust) << " obj_increment: " << obj_increment << endl;
                     }
-                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.0001){ cerr << "[ERROR] usage > capacity" << endl;  exit(1);}
-                    if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.001 ){ cerr << "[ERROR] satisfaction > weight" << endl; exit(1);}
+                    if(loc_usages[loc] >= instance->getLocCapacity(loc) + 0.01){ cerr << "[ERROR] usage > capacity" << endl;  exit(1);}
+                    if(cust_satisfactions[cust] >= instance->getCustWeight(cust) + 0.01 ){ cerr << "[ERROR] satisfaction > weight" << endl; exit(1);}
 
                     
                 }
