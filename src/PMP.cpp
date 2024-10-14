@@ -226,17 +226,41 @@ void PMP::run(string Method_name){
         if (BestBound != 0) cplex.setParam(IloCplex::Param::MIP::Tolerances::LowerCutoff, BestBound);
         if (!displayCPLEX) cplex.setParam(IloCplex::Param::MIP::Display, 0);  // Disable console output
 
+        // ADD FOR BIG INSTANCES
+
+        // 1. Set Memory Emphasis (1 = memory emphasis)
+        // cplex.setParam(IloCplex::Param::Emphasis::Memory, 1);
+
+        // 2. Set maximum working memory to 128 GB (in MB)
+        cplex.setParam(IloCplex::Param::WorkMem, 120000); // 120 GB = 120000 MB
+
+        // 3. Control node file storage (3 = store nodes on disk only when necessary)
+        cplex.setParam(IloCplex::Param::MIP::Strategy::File, 3);
+
+
+        // 4. Stop if the optimality gap is less than 0.5%
+        // cplex.setParam(IloCplex::Param::MIP::Tolerances::MIPGap, 0.005); // 0.5% gap
+        
+        
+        // // 4. Set number of threads (optional, depending on your CPU core count)
+        // int numThreads = <number_of_threads>;  // Replace with the number of available threads
+        // cplex.setParam(IloCplex::Param::Threads, numThreads);
+
+        // END ADD FOR BIG INSTANCES
+
+
+
         // Callbacks CPLEX
         CallbackParams params(cplex);
         // bool add_break_callback = true;
         if (timeLimit == 0) add_break_callback = false; // if time limit is not set, do not use break callback
         
         double gapThreshold = 0.01; // alpha% improvement, e.g., 1% improvement
-        double timeThreshold = 180; // T seconds, e.g., 300 seconds
+        double timeThreshold = 180000; // T seconds, e.g., 300 seconds
         params.gapThreshold = gapThreshold;
         params.timeThreshold = timeThreshold;
 
-        double time_limit_with_gap_less_than_1perc = 60; // limit of time with gap less than 1%
+        double time_limit_with_gap_less_than_1perc = 3600; // limit of time with gap less than 1%
         params.timelimite_less_than_1perc = time_limit_with_gap_less_than_1perc;
 
 

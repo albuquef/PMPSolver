@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=pmpPACA
+#SBATCH --job-name=PACAincrease
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=20
 #SBATCH --partition=cpuonly
-#SBATCH --mem=128G
+#SBATCH --mem=180GB
 #SBATCH --time=100:00:00 
 # #SBATCH --array=0-17%5
 # SBATCH --array=0-69%4
-#SBATCH --array=0-11%5
+#SBATCH --array=0-20%5
 
 # Activate the conda env if needed
 # source /etc/profile.d/conda.sh # Required before using conda
@@ -20,9 +20,15 @@ DIR_DATA=./data/PACA_jul24/
 DIST_TYPE=minutes
 MAX_ID_LOC_CUST=2037
 D_MATRIX="${DIR_DATA}dist_matrix_${DIST_TYPE}_${MAX_ID_LOC_CUST}.txt"
-WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}.txt"
+
+# WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}.txt"
 
 # WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}_shuffle.txt"
+
+# WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}_increase.txt"
+
+WEIGHTS="${DIR_DATA}cust_weights_PACA_${MAX_ID_LOC_CUST}_constant.txt"
+echo $WEIGHTS
 
 # WEIGHTS_files=("${DIR_DATA}cust_weights.txt" "${DIR_DATA}cust_weights_shuffled.txt" "${DIR_DATA}cust_weights_split.txt")
 # Time
@@ -41,31 +47,53 @@ ADD_TYPE_TEST="PACA"
 # SERVICES=("urgenc" "cinema" "terrainsGJ")
 SERVICES=("cinema")
 
-# p_values_mat=(26 30 33 37 41 44 48)
-p_values_urgenc=(42 60 78)
+# p_values_mat=(33 37 41 44 48)
+# p_values_urgenc=(42 60 78)
 # p_values_lycee=(246 281 316 352 387 422 457)
 # p_values_poste=(476 544 612 681 749 817 885)
-# p_values_cinema=(50 58 96 134 173 192 211 250 288 326 500 900)
-p_values_cinema=(45 51 58 96 134 173 192 211 250 288 326 500 900)
-# p_values_cinema=(58 173 192 211 288 500 900)
-# p_values_cinema=(134 192 250)
+p_values_cinema=(41 46 51 56 61 96 134 173 188 192 211 230 250 288 326 500 682 767 852 937 1022)
 # p_values_terrainsGJ=(706 806 1008 1109 1210 1310)
-p_values_terrainsGJ=(706 1008 1310)
+
+# p_values_cinema=(41 46 51 56 61 96 134 173 188 192 211 230 250 288 326 500 682 767 852 937 1022)
+# COVER_MODE=1
+# SUBAREAS=("commune")
+# ADD_TYPE_TEST="PACA_constant_form_cinema_commune_5h_180GB_1hgapless1"
 
 
-p_values_cinema=(41 46 51 56 61 188 230 682 767 852 937 1022)
+# p_values_cinema=(41 46 51 56 61 96 134 173 188 192 211 230 250 288 326 500 682 767 852 937 1022)
+# COVER_MODE=1
+# SUBAREAS=("canton")
+# ADD_TYPE_TEST="PACA_constant_form_cinema_canton_5h_180GB_1hgapless1"
 
-p_values_cinema=(58)
+# p_values_cinema=(41 46 51 56 61 96 134 173 188 192 211 230 250 288 326 500 682 767 852 937 1022)
+# COVER_MODE=1
+# SUBAREAS=("EPCI")
+# ADD_TYPE_TEST="PACA_constant_form_cinema_EPCI_5h_180GB_1hgapless1"
+
+# # cover arrond 8
+p_values_cinema=(41 46 51 56 61 96 134 173 188 192 211 230 250 288 326 500 682 767 852 937 1022)
+COVER_MODE=1
+SUBAREAS="arrond"
+ADD_TYPE_TEST="PACA_constant_form_cinema_arrond_5h_180GB_1hgapless1"
+
+
+# # slurm-908402 nocover
+# p_values_cinema=(41 46 51 56 61 96 134 173 188 192 211 230 250 288 326 500 682 767 852 937 1022)
+# COVER_MODE=0
+# SUBAREAS="null"
+# ADD_TYPE_TEST="PACA_constant_form_cinema_5h_180GB_1hgapless1"
+
+echo $SUBAREAS
 
 # COVERAGES
 #  ------- COVER LEVEL 1 -------
-COVER_MODE=1
+# COVER_MODE=0
 KMEANS_COVER_MODE=0
 GRID_COVER_MODE=0
 
-SUBAREAS=("EPCI")
-# SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
-# SUBAREAS=("arrond" "EPCI" "canton" "commune")
+# # SUBAREAS=("EPCI")
+# # SUBAREAS=("null" "arrond" "EPCI" "canton" "commune")
+# # SUBAREAS=("arrond" "EPCI" "canton" "commune")
 # SUBAREAS="null"
 
 #  -------  COVER LEVEL 2 -------
@@ -109,7 +137,6 @@ CUTS_TYPES=("none")
 timesp=180
 
 
-ADD_TYPE_TEST="PACA_form_cinema_18000s_128GB"
 # ----------------------------------------- Main loop -----------------------------------------
 arr=()
 console_names=()
@@ -120,7 +147,11 @@ for CUTS_TYPE in "${CUTS_TYPES[@]}"; do
 			METHOD=$PROB
 			METHOD_POSTOPT="null"
 			ADD_GENERATE_REPORTS=true
-			ADD_BREAK_CALLBACK=false
+
+			
+			ADD_BREAK_CALLBACK=true ## 1h gap less than 1%
+			
+			
 			ADD_THRESHOLD_DIST_SUBP_RSSV=false
 			TIME_CPLEX=18000 # 5 hours
 			TIME_CLOCK=18000
@@ -229,6 +260,13 @@ for CUTS_TYPE in "${CUTS_TYPES[@]}"; do
 				OUTPUT="${NEW_DIR}/test_paca_${serv}_${subar}"
 
 
+
+				###### SHUFFLE ######
+				OUTPUT="${NEW_DIR}/test_paca_${serv}_${subar}"
+
+
+
+
 				if [ "$COVER_MODE_N2" = "1"  ]; then
 					OUTPUT="${NEW_DIR}/test_paca_${serv}_${subar}_${SUBAREAS_N2}"
 				fi
@@ -236,6 +274,11 @@ for CUTS_TYPE in "${CUTS_TYPES[@]}"; do
 				if [ "$COVER_MODE" != "1" ]; then
 					COVERAGES="${DIR_DATA}loc_coverages.txt"
 					OUTPUT="${NEW_DIR}/test_paca_${serv}"
+
+					###### SHUFFLE ######
+					OUTPUT="${NEW_DIR}/test_paca_increase_${serv}"
+
+
 				fi
 
 
